@@ -13,7 +13,7 @@
 #       This file is part of sphobjinv (Sphinx-ObjectsInv), a toolkit for
 #       encoding and decoding objects.inv files for use with intersphinx
 #
-#       http://www.github.com/bskinn/opan
+#       http://www.github.com/bskinn/sphinvobj
 #
 #-------------------------------------------------------------------------------
 
