@@ -1,3 +1,22 @@
+#-------------------------------------------------------------------------------
+# Name:        encode
+# Purpose:     Encoder script for Sphinx objects.inv files
+#
+# Author:      Brian Skinn
+#                bskinn@alum.mit.edu
+#
+# Created:     16 May 2016
+# Copyright:   (c) Brian Skinn 2016
+# License:     The MIT License; see "license.txt" for full license terms
+#                   and contributor agreement.
+#
+#       This file is part of sphobjinv (Sphinx-ObjectsInv), a toolkit for
+#       encoding and decoding objects.inv files for use with intersphinx
+#
+#       http://www.github.com/bskinn/sphobjinv
+#
+#-------------------------------------------------------------------------------
+
 
 def main():
     import os, zlib, re
