@@ -1,2 +1,3 @@
-# sphinx-objectsinv
-Decode/encode tool for Sphinx objects.inv files
+# Sphinx-ObjectsInv (sphobjinv)
+
+Decode/encode tool for intersphinx `objects.inv` files
