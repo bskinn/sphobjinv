@@ -23,6 +23,7 @@ import os
 import zlib
 import sys
 import re
+import io
 
 ENCODE = 'encode'
 DECODE = 'decode'
@@ -93,26 +94,39 @@ def decode(bstr):
     """ Decode an intersphinx 'objects.inv' bytestring 
     """
 
-    # Split by newline followed by a pound sign
-    pieces = bstr.split(b'\n#')
+    # Internal function pulled from intersphinx.py@v1.4.1:
+    # https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
+    #    ext/intersphinx.py#L79-L124.
+    # 'bufsize' taken as the default value from intersphinx signature
+    # Modified slightly to take the stream as a parameter,
+    #  rather than assuming one from the parent namespace.
+    def decompress_chunks(bstrm):
+        buflen = 16*1024
+        decompressor = zlib.decompressobj()
+        for chunk in iter(lambda: bstrm.read(buflen), b''):
+            yield decompressor.decompress(chunk)
+        yield decompressor.flush()
 
-    # Most of the header is all but the last element
-    hdr = b'\n#'.join(pieces[:-1])
+    # Make stream and output string
+    strm = io.BytesIO(bstr)
+    out_b = b''
 
-    # The rest of the header has to be recovered from
-    #  the first part of the last element
-    hdr_tail = b'#' + pieces[-1].split(b'\n')[0]
+    # Check to be sure it's v2
+    out_b = strm.readline()
+    if not out_b.endswith(b'2\n'):
+        print('\nOnly v2 objects.inv files currently supported')
+        sys.exit(1)
 
-    # The data has to be reassembled around any incidental
-    #  newlines that were present in the compressed stream
-    #  before decompression by zlib
-    cdata = b'\n'.join(pieces[-1].split(b'\n')[1:])
-    
-    # Decompress
-    data = zlib.decompress(cdata)
+    # Pull name, version, and description lines
+    for i in range(3):
+        out_b += strm.readline()
+
+    # Decompress chunks and append
+    for chunk in decompress_chunks(strm):
+        out_b += chunk
 
     # Return the newline-composited result
-    return b'\n'.join([hdr, hdr_tail, data])
+    return out_b
 
 
 def encode(bstr):
@@ -132,7 +146,11 @@ def encode(bstr):
     db = b'\n'.join(m_data) + b'\n'
 
     # Compress the data block
-    dbc = zlib.compress(db)
+    # Compression level nine is to match that specified in
+    #  sphinx html builder:
+    # https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
+    #    builders/html.py#L843
+    dbc = zlib.compress(db, 9)
 
     # Return the composited bytestring
     return hb + dbc
@@ -193,4 +211,3 @@ def main():
 
 if __name__ ==  '__main__':
     main()
-
