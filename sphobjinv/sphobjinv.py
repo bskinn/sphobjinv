@@ -39,11 +39,11 @@ DEF_NAME = 'objects'
 
 
 #: Bytestring regex pattern for comment lines in decoded
-#: `objects.inv` files
+#: ``objects.inv`` files
 p_comments = re.compile(b'^#.*$', re.M)
 
 #: Bytestring regex pattern for data lines in decoded
-#: `objects.inv` files
+#: ``objects.inv`` files
 p_data = re.compile(b'^[^#].*$', re.M)
 
 
@@ -95,7 +95,32 @@ def readfile(path, cmdline=False):
 
 
 def writefile(path, contents, cmdline=False):
-    """ Write file (with clobber) to contain the indicated contents.
+    """ Write indicated file contents (with clobber).
+
+    Parameters
+    ----------
+    path
+
+        |str| -- Path to file to be written.
+
+    contents
+
+        |bytes| -- Binary string of data to be written to file.
+
+    cmdline
+
+        |bool| -- If |False|, exceptions are raised as normal.
+        If |True|, on raise of any subclass of :class:`Exception`,
+        the function returns |None|.
+
+    Returns
+    -------
+    p
+
+        |str| -- If write is successful, echo of the `path` input |str| is 
+        returned.  If any :class:`Exception` is raised and `cmdline` is 
+        |True|, |None| is returned.
+
     """
 
     # Write the decoded file

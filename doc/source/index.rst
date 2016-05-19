@@ -13,10 +13,16 @@ of objects.inv files for intersphinx interop with other documentation not built
 with Sphinx.)*
 
 Sphinx Objects.inv Encoder/Decoder is available on PyPI under the package name
-``sphobjinv``
+``sphobjinv``::
+
+    pip install sphobjinv
+
+The project source repository is on GitHub: `bskinn/sphobjinv 
+<https://www.github.com/bskinn/sphobjinv>`__.
 
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -24,6 +30,7 @@ Contents:
    cmdline
    api
    syntax
+   customfile
 
 
 
