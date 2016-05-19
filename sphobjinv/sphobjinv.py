@@ -38,25 +38,46 @@ DEF_INP_EXT = {ENCODE: '.txt', DECODE: '.inv'}
 DEF_NAME = 'objects'
 
 
-# Regex pattern for comment lines
+#: Bytestring regex pattern for comment lines in decoded
+#: `objects.inv` files
 p_comments = re.compile(b'^#.*$', re.M)
 
-# Regex pattern for not-comment lines
+#: Bytestring regex pattern for data lines in decoded
+#: `objects.inv` files
 p_data = re.compile(b'^[^#].*$', re.M)
 
 
 # Set up the argparse framework
 prs = ap.ArgumentParser(description="Decode intersphinx 'objects.inv' files.")
 
-prs.add_argument(MODE, help="Conversion mode", 
+prs.add_argument(MODE, help="Conversion mode",
         choices=(ENCODE, DECODE))
 prs.add_argument(INFILE, help="Path to 'objects.inv' type file to be decoded")
 prs.add_argument(OUTFILE, help="Path to desired output file", nargs="?",
                  default=None)
 
 
-def readfile(path, interactive=False):
-    """ Read file contents and return as bytestring.
+def readfile(path, cmdline=False):
+    """ Read file contents and return as binary string.
+
+    Parameters
+    ----------
+    path
+
+        |str| -- Path to file to be opened.
+
+    cmdline
+
+        |bool| -- If |False|, exceptions are raised as normal.
+        If |True|, on raise of any subclass of :class:`Exception`,
+        the function returns |None|.
+
+    Returns
+    -------
+    b
+
+        |bytes| -- Binary contents of the indicated file.
+
     """
 
     # Open the file and read
@@ -64,7 +85,7 @@ def readfile(path, interactive=False):
         with open(path, 'rb') as f:
             b = f.read()
     except Exception:
-        if interactive:
+        if cmdline:
             b = None
         else:
             raise
@@ -73,7 +94,7 @@ def readfile(path, interactive=False):
     return b
 
 
-def writefile(path, contents, interactive=False):
+def writefile(path, contents, cmdline=False):
     """ Write file (with clobber) to contain the indicated contents.
     """
 
@@ -82,7 +103,7 @@ def writefile(path, contents, interactive=False):
         with open(path, 'wb') as f:
             f.write(contents)
     except Exception:
-        if interactive:
+        if cmdline:
             return None
         else:
             raise
@@ -91,7 +112,7 @@ def writefile(path, contents, interactive=False):
 
 
 def decode(bstr):
-    """ Decode an intersphinx 'objects.inv' bytestring 
+    """ Decode an intersphinx 'objects.inv' bytestring
     """
 
     # Internal function pulled from intersphinx.py@v1.4.1:
