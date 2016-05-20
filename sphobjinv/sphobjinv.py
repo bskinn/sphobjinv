@@ -47,14 +47,26 @@ p_comments = re.compile(b'^#.*$', re.M)
 p_data = re.compile(b'^[^#].*$', re.M)
 
 
-# Set up the argparse framework
-prs = ap.ArgumentParser(description="Decode intersphinx 'objects.inv' files.")
+def _getparser():
+    """ Wrapper to get the arg parser definition out of the core namespace.
 
-prs.add_argument(MODE, help="Conversion mode",
-        choices=(ENCODE, DECODE))
-prs.add_argument(INFILE, help="Path to 'objects.inv' type file to be decoded")
-prs.add_argument(OUTFILE, help="Path to desired output file", nargs="?",
-                 default=None)
+    Returns
+    -------
+    prs
+
+        :class:`ArgumentParser` -- Parser for commandline usage of ``sphobjinv``
+
+    """
+
+    prs = ap.ArgumentParser(description="Decode intersphinx 'objects.inv' files.")
+
+    prs.add_argument(MODE, help="Conversion mode",
+            choices=(ENCODE, DECODE))
+    prs.add_argument(INFILE, help="Path to 'objects.inv' type file to be decoded")
+    prs.add_argument(OUTFILE, help="Path to desired output file", nargs="?",
+                     default=None)
+
+    return prs
 
 
 def readfile(path, cmdline=False):
@@ -205,6 +217,7 @@ def encode(bstr):
 def main():
 
     # Parse commandline arguments
+    prs = _getparser()
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
