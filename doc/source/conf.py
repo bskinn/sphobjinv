@@ -148,6 +148,8 @@ rst_epilog = """
 
 .. |re.compile| replace:: :func:`re.compile`
 
+.. |isphx| replace:: `intersphinx <http://www.sphinx-doc.org/en/stable/ext/intersphinx.html>`__
+
 .. |br| raw:: html
 
     <br />

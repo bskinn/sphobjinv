@@ -129,8 +129,8 @@ def writefile(path, contents, cmdline=False):
     -------
     p
 
-        |str| -- If write is successful, echo of the `path` input |str| is 
-        returned.  If any :class:`Exception` is raised and `cmdline` is 
+        |str| -- If write is successful, echo of the `path` input |str| is
+        returned.  If any :class:`Exception` is raised and `cmdline` is
         |True|, |None| is returned.
 
     """
@@ -149,19 +149,40 @@ def writefile(path, contents, cmdline=False):
 
 
 def decode(bstr):
-    """ Decode an intersphinx 'objects.inv' bytestring
+    """ Decode a version 2 |isphx| ``objects.inv`` bytestring.
+
+    The `#`-prefixed comment lines are left unchanged, whereas the
+    :mod:`zlib`-compressed data lines are uncompressed to plaintext.
+
+    Parameters
+    ----------
+    bstr
+
+        |bytes| -- Binary string containing an encoded ``objects.inv``
+        file.
+
+    Returns
+    -------
+    out_b
+
+        |bytes| -- Decoded binary string containing the plaintext ``objects.inv``
+        content.
+
     """
 
-    # Internal function pulled from intersphinx.py@v1.4.1:
-    # https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
-    #    ext/intersphinx.py#L79-L124.
-    # 'bufsize' taken as the default value from intersphinx signature
-    # Modified slightly to take the stream as a parameter,
-    #  rather than assuming one from the parent namespace.
     def decompress_chunks(bstrm):
-        buflen = 16*1024
+        """ Internal function for handling chunk-wise zlib decompression.
+
+        Internal function pulled from intersphinx.py@v1.4.1:
+        https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
+          ext/intersphinx.py#L79-L124.
+        BUFSIZE taken as the default value from intersphinx signature
+        Modified slightly to take the stream as a parameter,
+        rather than assuming one from the parent namespace.
+        """
+
         decompressor = zlib.decompressobj()
-        for chunk in iter(lambda: bstrm.read(buflen), b''):
+        for chunk in iter(lambda: bstrm.read(BUFSIZE), b''):
             yield decompressor.decompress(chunk)
         yield decompressor.flush()
 
@@ -188,7 +209,25 @@ def decode(bstr):
 
 
 def encode(bstr):
-    """ Encode an intersphinx 'objects.inv' bytestring
+    """ Encode a version 2 |isphx| ``objects.inv`` bytestring.
+
+    The `#`-prefixed comment lines are left unchanged, whereas the
+    data lines are compressed to plaintext with :mod:`zlib`.
+
+    Parameters
+    ----------
+    bstr
+
+        |bytes| -- Binary string containing the decoded contents of an
+        ``objects.inv`` file.
+
+    Returns
+    -------
+    out_b
+
+        |bytes| -- Binary string containing the encoded ``objects.inv``
+        content.
+
     """
 
     # Preconvert any DOS newlines to Unix

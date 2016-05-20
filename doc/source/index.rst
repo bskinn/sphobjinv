@@ -6,7 +6,7 @@
 Sphinx Objects.inv Encoder/Decoder
 ==================================
 
-*What? (convert .inv to human readable)*
+*What? (convert v2 (since sphinx v1.0; sphinx-built docs from before ~July 2010 probably aren't encoded) .inv to human readable)*
 
 *Why? (1. inspect contents for making intersphinx references. 2. Enable compilation
 of objects.inv files for intersphinx interop with other documentation not built
@@ -17,7 +17,7 @@ Sphinx Objects.inv Encoder/Decoder is available on PyPI under the package name
 
     pip install sphobjinv
 
-The project source repository is on GitHub: `bskinn/sphobjinv 
+The project source repository is on GitHub: `bskinn/sphobjinv
 <https://www.github.com/bskinn/sphobjinv>`__.
 
 
