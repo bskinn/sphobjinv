@@ -6,26 +6,44 @@
 Sphinx Objects.inv Encoder/Decoder
 ==================================
 
-*What? (convert v2 (since sphinx v1.0; sphinx-built docs from before ~July 2010 probably aren't encoded) .inv to human readable)*
+When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
+an inventory of the named objects in the documentation set `is dumped
+<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L834-L861>`__
+to a file called ``objects.inv`` in the html build directory.  This file is read by |isphx| when
+generating links in other documentation.
 
-*Why? (1. inspect contents for making intersphinx references. 2. Enable compilation
-of objects.inv files for intersphinx interop with other documentation not built
-with Sphinx.)*
+Since version 1.0 of Sphinx (~July 2010), the data in these ``objects.inv`` inventories is compressed by
+:mod:`zlib` (presumably to reduce storage requirements and improve download speeds; "version 2"),
+whereas prior to that date the data was left uncompressed ("version 1").  This compression renders
+the files non-human-readable.  **It is the purpose of this package to enable quick and simple
+encoding/decoding of these files.**
 
-Sphinx Objects.inv Encoder/Decoder is available on PyPI under the package name
-``sphobjinv``::
+In particular, ``sphobjinv`` was developed to satisfy two primary use cases:
+
+ #. Searching and inspection of ``objects.inv`` contents in order to identify
+    how to properly insert |isphx| references. |br| |br|
+
+ #. Assembly of new ``objects.inv`` files in order to allow |isphx| cross-referencing
+    of other documentation sets that were not created by Sphinx.
+
+Sphinx Objects.inv Encoder/Decoder is available on PyPI under ``sphobjinv``::
 
     pip install sphobjinv
+
+The package is configured for use both as a
+:doc:`command-line script <cmdline>` and as a
+:doc:`Python package <api>`.
 
 The project source repository is on GitHub: `bskinn/sphobjinv
 <https://www.github.com/bskinn/sphobjinv>`__.
 
 
-Contents
---------
+.. Contents
+.. --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :hidden:
 
    cmdline
    api
