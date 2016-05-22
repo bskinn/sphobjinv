@@ -37,6 +37,8 @@ DEF_OUT_EXT = {ENCODE: '.inv', DECODE: '.txt'}
 DEF_INP_EXT = {ENCODE: '.txt', DECODE: '.inv'}
 DEF_NAME = 'objects'
 
+DEF_INFILE = '.'
+
 
 #: Bytestring regex pattern for comment lines in decoded
 #: ``objects.inv`` files
@@ -58,13 +60,21 @@ def _getparser():
 
     """
 
-    prs = ap.ArgumentParser(description="Decode intersphinx 'objects.inv' files.")
+    prs = ap.ArgumentParser(description="Decode/encode intersphinx 'objects.inv' files.")
 
     prs.add_argument(MODE, help="Conversion mode",
             choices=(ENCODE, DECODE))
-    prs.add_argument(INFILE, help="Path to 'objects.inv' type file to be decoded")
-    prs.add_argument(OUTFILE, help="Path to desired output file", nargs="?",
-                     default=None)
+    prs.add_argument(INFILE, help="Path to file to be decoded (encoded). Defaults to "
+                     "'./{0}{1}({2})'. ".format(DEF_NAME, *sorted(DEF_INP_EXT.values())) +
+                     "Bare paths are accepted, in which case the above default input file names "
+                     "are used in the indicated path. '-' is a synonym for these defaults.",
+                     nargs = "?", default=DEF_INFILE)
+    prs.add_argument(OUTFILE, help="Path to decoded (encoded) output file. Defaults to "
+                     "same directory and main file name as input file but with extension "
+                     "{0} ({1}). ".format(*reversed(sorted(DEF_OUT_EXT.values()))) +
+                     "Bare paths are accepted here as well, using the default output "
+                     "file names.",
+                     nargs="?", default=None)
 
     return prs
 
@@ -212,7 +222,7 @@ def encode(bstr):
     """ Encode a version 2 |isphx| ``objects.inv`` bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
-    data lines are compressed to plaintext with :mod:`zlib`.
+    plaintext data lines are compressed with :mod:`zlib`.
 
     Parameters
     ----------
@@ -263,9 +273,21 @@ def main():
     # Conversion mode
     mode = params[MODE]
 
-    # Infile path and name
+    # Infile path and name. If not specified, use current
+    #  directory, per default set in parser
     in_path = params[INFILE]
-    in_fld, in_fname = os.path.split(in_path)
+
+    # If the input is a hyphen, replace with the default
+    if in_path == "-":
+        in_path = DEF_INFILE
+
+    # If filename is actually a directory, treat as such and
+    #  use the default filename. Otherwise, split accordingly
+    if os.path.isdir(in_path):
+        in_fld = in_path
+        in_fname = None
+    else:
+        in_fld, in_fname = os.path.split(in_path)
 
     # Default filename is 'objects.xxx'
     if not in_fname:
@@ -287,7 +309,15 @@ def main():
     # Work up the output location
     out_path = params[OUTFILE]
     if out_path:
-        out_fld, out_fname = os.path.split(out_path)
+        # Must check if the path entered is a folder
+        if os.path.isdir(out_path):
+            # Set just the folder and leave the name blank
+            out_fld = out_path
+            out_fname = None
+        else:
+            # Split appropriately
+            out_fld, out_fname = os.path.split(out_path)
+
         if not out_fld:
             out_fld = in_fld
         if not out_fname:
@@ -303,7 +333,7 @@ def main():
         sys.exit(1)
 
     # Report success
-    print("\nConversion completed.")
+    print("\nConversion completed.\n'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
     sys.exit(0)
 
 
