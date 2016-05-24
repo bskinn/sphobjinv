@@ -10,10 +10,10 @@
 # License:     The MIT License; see "license.txt" for full license terms
 #                   and contributor agreement.
 #
-#       This file is part of sphobjinv (Sphinx-ObjectsInv), a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx
+#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
+#       encoding and decoding objects.inv files for use with intersphinx.
 #
-#       http://www.github.com/bskinn/sphinvobj
+#       http://www.github.com/bskinn/sphobjinv
 #
 #-------------------------------------------------------------------------------
 
@@ -37,24 +37,46 @@ DEF_OUT_EXT = {ENCODE: '.inv', DECODE: '.txt'}
 DEF_INP_EXT = {ENCODE: '.txt', DECODE: '.inv'}
 DEF_NAME = 'objects'
 
+DEF_INFILE = '.'
+
 
 #: Bytestring regex pattern for comment lines in decoded
-#: `objects.inv` files
+#: ``objects.inv`` files
 p_comments = re.compile(b'^#.*$', re.M)
 
 #: Bytestring regex pattern for data lines in decoded
-#: `objects.inv` files
+#: ``objects.inv`` files
 p_data = re.compile(b'^[^#].*$', re.M)
 
 
-# Set up the argparse framework
-prs = ap.ArgumentParser(description="Decode intersphinx 'objects.inv' files.")
+def _getparser():
+    """ Wrapper to get the arg parser definition out of the core namespace.
 
-prs.add_argument(MODE, help="Conversion mode",
-        choices=(ENCODE, DECODE))
-prs.add_argument(INFILE, help="Path to 'objects.inv' type file to be decoded")
-prs.add_argument(OUTFILE, help="Path to desired output file", nargs="?",
-                 default=None)
+    Returns
+    -------
+    prs
+
+        :class:`ArgumentParser` -- Parser for commandline usage of ``sphobjinv``
+
+    """
+
+    prs = ap.ArgumentParser(description="Decode/encode intersphinx 'objects.inv' files.")
+
+    prs.add_argument(MODE, help="Conversion mode",
+            choices=(ENCODE, DECODE))
+    prs.add_argument(INFILE, help="Path to file to be decoded (encoded). Defaults to "
+                     "'./{0}{1}({2})'. ".format(DEF_NAME, *sorted(DEF_INP_EXT.values())) +
+                     "Bare paths are accepted, in which case the above default input file names "
+                     "are used in the indicated path. '-' is a synonym for these defaults.",
+                     nargs = "?", default=DEF_INFILE)
+    prs.add_argument(OUTFILE, help="Path to decoded (encoded) output file. Defaults to "
+                     "same directory and main file name as input file but with extension "
+                     "{0} ({1}). ".format(*reversed(sorted(DEF_OUT_EXT.values()))) +
+                     "Bare paths are accepted here as well, using the default output "
+                     "file names.",
+                     nargs="?", default=None)
+
+    return prs
 
 
 def readfile(path, cmdline=False):
@@ -95,7 +117,32 @@ def readfile(path, cmdline=False):
 
 
 def writefile(path, contents, cmdline=False):
-    """ Write file (with clobber) to contain the indicated contents.
+    """ Write indicated file contents (with clobber).
+
+    Parameters
+    ----------
+    path
+
+        |str| -- Path to file to be written.
+
+    contents
+
+        |bytes| -- Binary string of data to be written to file.
+
+    cmdline
+
+        |bool| -- If |False|, exceptions are raised as normal.
+        If |True|, on raise of any subclass of :class:`Exception`,
+        the function returns |None|.
+
+    Returns
+    -------
+    p
+
+        |str| -- If write is successful, echo of the `path` input |str| is
+        returned.  If any :class:`Exception` is raised and `cmdline` is
+        |True|, |None| is returned.
+
     """
 
     # Write the decoded file
@@ -112,19 +159,40 @@ def writefile(path, contents, cmdline=False):
 
 
 def decode(bstr):
-    """ Decode an intersphinx 'objects.inv' bytestring
+    """ Decode a version 2 |isphx| ``objects.inv`` bytestring.
+
+    The `#`-prefixed comment lines are left unchanged, whereas the
+    :mod:`zlib`-compressed data lines are uncompressed to plaintext.
+
+    Parameters
+    ----------
+    bstr
+
+        |bytes| -- Binary string containing an encoded ``objects.inv``
+        file.
+
+    Returns
+    -------
+    out_b
+
+        |bytes| -- Decoded binary string containing the plaintext ``objects.inv``
+        content.
+
     """
 
-    # Internal function pulled from intersphinx.py@v1.4.1:
-    # https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
-    #    ext/intersphinx.py#L79-L124.
-    # 'bufsize' taken as the default value from intersphinx signature
-    # Modified slightly to take the stream as a parameter,
-    #  rather than assuming one from the parent namespace.
     def decompress_chunks(bstrm):
-        buflen = 16*1024
+        """ Internal function for handling chunk-wise zlib decompression.
+
+        Internal function pulled from intersphinx.py@v1.4.1:
+        https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
+          ext/intersphinx.py#L79-L124.
+        BUFSIZE taken as the default value from intersphinx signature
+        Modified slightly to take the stream as a parameter,
+        rather than assuming one from the parent namespace.
+        """
+
         decompressor = zlib.decompressobj()
-        for chunk in iter(lambda: bstrm.read(buflen), b''):
+        for chunk in iter(lambda: bstrm.read(BUFSIZE), b''):
             yield decompressor.decompress(chunk)
         yield decompressor.flush()
 
@@ -151,7 +219,25 @@ def decode(bstr):
 
 
 def encode(bstr):
-    """ Encode an intersphinx 'objects.inv' bytestring
+    """ Encode a version 2 |isphx| ``objects.inv`` bytestring.
+
+    The `#`-prefixed comment lines are left unchanged, whereas the
+    plaintext data lines are compressed with :mod:`zlib`.
+
+    Parameters
+    ----------
+    bstr
+
+        |bytes| -- Binary string containing the decoded contents of an
+        ``objects.inv`` file.
+
+    Returns
+    -------
+    out_b
+
+        |bytes| -- Binary string containing the encoded ``objects.inv``
+        content.
+
     """
 
     # Preconvert any DOS newlines to Unix
@@ -180,15 +266,28 @@ def encode(bstr):
 def main():
 
     # Parse commandline arguments
+    prs = _getparser()
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
     # Conversion mode
     mode = params[MODE]
 
-    # Infile path and name
+    # Infile path and name. If not specified, use current
+    #  directory, per default set in parser
     in_path = params[INFILE]
-    in_fld, in_fname = os.path.split(in_path)
+
+    # If the input is a hyphen, replace with the default
+    if in_path == "-":
+        in_path = DEF_INFILE
+
+    # If filename is actually a directory, treat as such and
+    #  use the default filename. Otherwise, split accordingly
+    if os.path.isdir(in_path):
+        in_fld = in_path
+        in_fname = None
+    else:
+        in_fld, in_fname = os.path.split(in_path)
 
     # Default filename is 'objects.xxx'
     if not in_fname:
@@ -210,7 +309,15 @@ def main():
     # Work up the output location
     out_path = params[OUTFILE]
     if out_path:
-        out_fld, out_fname = os.path.split(out_path)
+        # Must check if the path entered is a folder
+        if os.path.isdir(out_path):
+            # Set just the folder and leave the name blank
+            out_fld = out_path
+            out_fname = None
+        else:
+            # Split appropriately
+            out_fld, out_fname = os.path.split(out_path)
+
         if not out_fld:
             out_fld = in_fld
         if not out_fname:
@@ -226,7 +333,7 @@ def main():
         sys.exit(1)
 
     # Report success
-    print("\nConversion completed.")
+    print("\nConversion completed.\n'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
     sys.exit(0)
 
 

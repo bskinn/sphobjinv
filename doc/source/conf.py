@@ -148,6 +148,8 @@ rst_epilog = """
 
 .. |re.compile| replace:: :func:`re.compile`
 
+.. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
+
 .. |br| raw:: html
 
     <br />
@@ -411,5 +413,6 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-        'python': ('https://docs.python.org/3.5', None)
+        'python': ('https://docs.python.org/3.5', None),
+        'sphinx': ('http://www.sphinx-doc.org/en/stable/', None)
                       }
