@@ -1,0 +1,13 @@
+install:
+ - pip install -r requirements-travis.txt
+language: python
+python:
+ - 3.4
+ - 3.5
+ - 3.6
+script:
+ - python tests.py -a
+ - flake8 sphobjinv
+ - cd doc
+ - make doctest
+
