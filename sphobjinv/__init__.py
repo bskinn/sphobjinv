@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Name:        __init__
 # Purpose:     Package definition module for sphobjinv
 #
@@ -15,12 +15,19 @@
 #
 #       http://www.github.com/bskinn/sphobjinv
 #
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+
+
+"""Definition file for root of sphobjinv."""
+
 
 from __future__ import absolute_import
+
+__all__ = ['readfile', 'writefile',
+           'encode', 'decode',
+           'p_comments', 'p_data']
 
 from .sphobjinv import readfile, writefile, decode, encode
 from .sphobjinv import p_comments, p_data
 
 __version__ = '1.0'
-
