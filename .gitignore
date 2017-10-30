@@ -66,3 +66,6 @@ target/
 
 # intersphinx objects.inv hive
 doc/source/isphx/*
+
+# Test scratch
+sphobjinv/test/scratch/*
