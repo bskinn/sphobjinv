@@ -16,27 +16,42 @@
 """Base module for sphobjinv tests."""
 
 
-#import doctest as dt
+# import doctest as dt
+import os
+import os.path as osp
+# import sys
 import unittest as ut
+
+
+def res_path(fname):
+    """Construct file path in resource dir from project root."""
+    return osp.join('sphobjinv', 'test', 'resource', fname)
+
+
+def scr_path(fname):
+    """Construct file path in scratch dir from project root."""
+    return osp.join('sphobjinv', 'test', 'scratch', fname)
 
 
 class TestSphobjinvExpectGood(ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
     def test_DummyPass(self):
-        self.assertTrue(True)
+        """Perform dummy test."""
+        self.assertIn('objects_attrs.inv', os.listdir(res_path('')))
 
 
 class TestSphobjinvExpectFail(ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
     def test_DummyPass(self):
+        """Perform dummy test."""
         self.assertTrue(True)
 
 
 # Doctest suite for testing README.rst example code
-#SuiteDoctestReadme = dt.DocFileSuite('README.rst',
-#                                     module_relative=False)
+# SuiteDoctestReadme = dt.DocFileSuite('README.rst',
+#                                      module_relative=False)
 
 
 def suite_expect_good():

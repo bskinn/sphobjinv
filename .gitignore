@@ -63,6 +63,7 @@ target/
 
 # Editor backup files
 *.bak
+*.swp
 
 # intersphinx objects.inv hive
 doc/source/isphx/*
