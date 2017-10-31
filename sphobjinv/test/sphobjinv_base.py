@@ -80,8 +80,16 @@ def sphinx_inv_test(testcase, path):
 
 def cmdline_test(arglist):
     """Perform command line test."""
-    process = sp.run(['python', SOI_PATH, *arglist])
-    return process.returncode
+    # Assemble execution arguments
+    runargs = ['python', SOI_PATH]
+    list(map(runargs.append, arglist))
+
+    # subprocess.run only available on Python 3.5+
+    # Interested in the return code for now
+    try:
+        return sp.run(runargs).returncode
+    except AttributeError:
+        return sp.call(runargs)
 
 
 @contextmanager

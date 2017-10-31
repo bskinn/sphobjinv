@@ -261,6 +261,8 @@ def encode(bstr):
     # Pull all of the lines
     m_comments = p_comments.findall(s)
     m_data = p_data.finditer(s)
+
+    # Helper generator to retrive the text, not the match object
     def gen_data():
         yield next(m_data).group(0)
 
