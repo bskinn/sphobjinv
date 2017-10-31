@@ -16,11 +16,11 @@
 """Base module for sphobjinv tests."""
 
 
-# import doctest as dt
+from contextlib import contextmanager
 import os
 import os.path as osp
 import shutil as sh
-# import sys
+import subprocess as sp
 import unittest as ut
 
 
@@ -30,6 +30,7 @@ INIT_FNAME_BASE = 'objects'
 MOD_FNAME_BASE = 'objects_mod'
 ENC_EXT = '.inv'
 DEC_EXT = '.txt'
+SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 
 
 # Useful functions
@@ -77,19 +78,43 @@ def sphinx_inv_test(testcase, path):
         testcase.fail()
 
 
-class TestSphobjinvExpectGood(ut.TestCase):
-    """Testing code accuracy under good params & expected behavior."""
+def cmdline_test(arglist):
+    """Perform command line test."""
+    process = sp.run(['python', SOI_PATH, *arglist])
+    return process.returncode
+
+
+@contextmanager
+def dir_change(subdir):
+    """Context manager to change to sub-directory & drop back on exit."""
+    os.chdir(subdir)
+    yield
+    os.chdir(os.pardir)
+
+
+class SuperSphobjinv(object):
+    """Superclass with common setup code for all tests."""
 
     @classmethod
     def setUpClass(cls):
         """Run the class-wide setup code."""
+        # Make sure the scratch directory exists.
         ensure_scratch()
+
+    def setUp(self):
+        """Run the per-test-method setup code."""
+        # Always want to clear the scratch?
+        clear_scratch()
+
+
+class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
+    """Testing code accuracy under good params & expected behavior."""
 
     def test_APIEncodeSucceeds(self):
         """Check that an encode attempt via API throws no errors."""
         import sphobjinv as soi
 
-        clear_scratch()
+        # Populate scratch with the decoded ref file
         copy_dec()
 
         # See if it makes it all the way through the process without error
@@ -113,7 +138,7 @@ class TestSphobjinvExpectGood(ut.TestCase):
         """Check that a decode attempt via API throws no errors."""
         import sphobjinv as soi
 
-        clear_scratch()
+        # Populate scratch with encoded ref file
         copy_enc()
 
         # See if the encode operation completes without error
@@ -129,18 +154,37 @@ class TestSphobjinvExpectGood(ut.TestCase):
         with self.subTest('file_exists'):
             self.assertTrue(osp.isfile(scr_path(MOD_FNAME_BASE + DEC_EXT)))
 
+    def test_CmdlineDecodeNoArgs(self):
+        """Confirm commandline decode exec with no args succeeds."""
+        copy_enc()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    self.assertEquals(0, cmdline_test(['decode']))
 
-class TestSphobjinvExpectFail(ut.TestCase):
+    def test_CmdlineEncodeNoArgs(self):
+        """Confirm commandline encode exec with no args succeeds."""
+        copy_dec()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    self.assertEquals(0, cmdline_test(['encode']))
+
+
+class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
-    def test_DummyPass(self):
-        """Perform dummy test."""
-        self.assertTrue(True)
+    def test_APINoInputFile(self):
+        """Confirm that appropriate exceptions are raised w/no input file."""
+        import sphobjinv as soi
 
+        with self.subTest('decoded_input_file'):
+            with self.assertRaises(FileNotFoundError):
+                soi.readfile(INIT_FNAME_BASE + DEC_EXT)
 
-# Doctest suite for testing README.rst example code
-# SuiteDoctestReadme = dt.DocFileSuite('README.rst',
-#                                      module_relative=False)
+        with self.subTest('encoded_input_file'):
+            with self.assertRaises(FileNotFoundError):
+                soi.readfile(INIT_FNAME_BASE + ENC_EXT)
 
 
 def suite_expect_good():
