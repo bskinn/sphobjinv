@@ -260,12 +260,14 @@ def encode(bstr):
 
     # Pull all of the lines
     m_comments = p_comments.findall(s)
-    m_data = p_data.findall(s)
+    m_data = p_data.finditer(s)
+    def gen_data():
+        yield next(m_data).group(0)
 
     # Assemble the binary header comments and data
     # Comments and data blocks must end in newlines
     hb = b'\n'.join(m_comments) + b'\n'
-    db = b'\n'.join(m_data) + b'\n'
+    db = b'\n'.join(gen_data()) + b'\n'
 
     # Compress the data block
     # Compression level nine is to match that specified in
