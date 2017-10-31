@@ -1,5 +1,11 @@
 from setuptools import setup
 
+
+def readme():
+    with open('README.rst', 'r') as f:
+        return f.read()
+
+
 setup(
     name='sphobjinv',
     version='1.0',
@@ -9,6 +15,7 @@ setup(
     author='Brian Skinn',
     author_email='bskinn@alum.mit.edu',
     description='Sphinx Objects.inv Encoder/Decoder',
+    long_description=readme(),
     classifiers=['License :: OSI Approved :: MIT License',
                  'Natural Language :: English',
                  'Environment :: Console',

@@ -6,8 +6,8 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016
-# License:     The MIT License; see "license.txt" for full license terms
+# Copyright:   (c) Brian Skinn 2016-2017
+# License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
 #
 #       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
@@ -30,4 +30,4 @@ __all__ = ['readfile', 'writefile',
 from .sphobjinv import readfile, writefile, decode, encode
 from .sphobjinv import p_comments, p_data
 
-__version__ = '1.0'
+__version__ = '2.0.dev1'

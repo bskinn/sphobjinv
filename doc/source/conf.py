@@ -57,8 +57,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Sphinx Objects.inv Encoder/Decoder'
-copyright = '2016, Brian Skinn'
+project = 'sphobjinv'
+copyright = '2016-2017, Brian Skinn'
 author = 'Brian Skinn'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -258,7 +258,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SphinxObjectsinvConverterdoc'
+htmlhelp_basename = 'sphobjinv'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -280,8 +280,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'SphinxObjectsinvConverter.tex', 'Sphinx Objects.inv Converter Documentation',
-     'Brian Skinn', 'manual'),
+    (master_doc, 'sphobjinv.tex', 'Sphinx Objects.inv Converter Documentation',
+     author, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -310,7 +310,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'sphinxobjectsinvconverter', 'Sphinx Objects.inv Encoder/Decoder Documentation',
+    (master_doc, 'sphobjinv', 'Sphinx Objects.inv Encoder/Decoder Documentation',
      [author], 1)
 ]
 
@@ -324,8 +324,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'SphinxObjectsinvConverter', 'Sphinx Objects.inv Converter Documentation',
-     author, 'SphinxObjectsinvConverter', 'One line description of project.',
+    (master_doc, 'sphobjinv', 'Sphinx Objects.inv Converter Documentation',
+     author, 'sphobjinv', 'Encode/decode tool for Sphinx objects.inv files.',
      'Miscellaneous'),
 ]
 
