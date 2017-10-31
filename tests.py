@@ -37,6 +37,10 @@ def get_parser():
     prs.add_argument('-v', action='store_true',
                      help="Show verbose output")
 
+    # Warnings argument
+    prs.add_argument('-w', action='store_true',
+                     help="Display warnings emitted during tests")
+
     # Groups without subgroups
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
@@ -88,7 +92,8 @@ def main():
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,
-                            verbosity=(2 if params['v'] else 1))
+                            verbosity=(2 if params['v'] else 1),
+                            warnings=('always' if params['w'] else None))
     success = ttr.run(ts).wasSuccessful()
 
     # Return based on success result (enables tox)
