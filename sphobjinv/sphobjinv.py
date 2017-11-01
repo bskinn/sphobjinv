@@ -230,6 +230,9 @@ def decode(bstr):
     for chunk in decompress_chunks(strm):
         out_b += chunk
 
+    # Replace newlines with the OS-local newlines
+    out_b = out_b.replace(b'\n', os.linesep.encode())
+
     # Return the newline-composited result
     return out_b
 
