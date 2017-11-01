@@ -59,7 +59,8 @@ def ensure_scratch():
 def clear_scratch():
     """Clear the scratch folder."""
     for fn in os.listdir(scr_path()):
-        os.remove(scr_path(fn))
+        if osp.isfile(scr_path(fn)):
+            os.remove(scr_path(fn))
 
 
 def copy_enc():
@@ -127,7 +128,7 @@ def dir_change(subdir):
     yield
 
     if not existed:
-        list(map(os.remove(os.listdir())))
+        list(map(os.remove, os.listdir()))
 
     os.chdir(os.pardir)
 
@@ -258,6 +259,92 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
         file_exists_test(self, dest_path)
 
         decomp_cmp_test(self, dest_path)
+
+    def test_CmdlineEncodeSrcPath(self):
+        """Confirm cmdline encode with input directory arg."""
+        copy_dec()
+        dest_path = scr_path(INIT_FNAME_BASE + ENC_EXT)
+        run_cmdline_test(self, ['encode', scr_path()])
+
+        file_exists_test(self, dest_path)
+
+        sphinx_load_test(self, dest_path)
+
+    def test_CmdlineDecodeTgtNewName(self):
+        """Confirm cmdline decode to custom target name in same dir."""
+        copy_enc()
+        dest_fname = MOD_FNAME_BASE + DEC_EXT
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['decode', '-', dest_fname])
+
+                    file_exists_test(self, dest_fname)
+
+                    decomp_cmp_test(self, dest_fname)
+
+    def test_CmdlineEncodeTgtNewName(self):
+        """Confirm cmdline encode to custom target name in same dir."""
+        copy_dec()
+        dest_fname = MOD_FNAME_BASE + ENC_EXT
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['encode', '.', dest_fname])
+
+                    file_exists_test(self, dest_fname)
+
+                    sphinx_load_test(self, dest_fname)
+
+    def test_CmdlineDecodeDiffSrcPathNewNameThere(self):
+        """Confirm decode in other path outputs there if only name passed."""
+        copy_enc()
+        dest_fname = MOD_FNAME_BASE + DEC_EXT
+        run_cmdline_test(self, ['decode', scr_path(), dest_fname])
+
+        file_exists_test(self, scr_path(dest_fname))
+
+        decomp_cmp_test(self, scr_path(dest_fname))
+
+    def test_CmdlineEncodeDiffSrcPathNewNameThere(self):
+        """Confirm encode in other path outputs there if only name passed."""
+        copy_dec()
+        dest_fname = MOD_FNAME_BASE + ENC_EXT
+        run_cmdline_test(self, ['encode', scr_path(), dest_fname])
+
+        file_exists_test(self, scr_path(dest_fname))
+
+        sphinx_load_test(self, scr_path(dest_fname))
+
+    def test_CmdlineDecodeDiffSrcTgtPaths(self):
+        """Confirm decode from other path to new path."""
+        copy_enc()
+        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + DEC_EXT)
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['decode', os.pardir, dest_path])
+
+                        file_exists_test(self, dest_path)
+
+                        decomp_cmp_test(self, dest_path)
+
+    def test_CmdlineEncodeDiffSrcTgtPaths(self):
+        """Confirm encode from other path to new path."""
+        copy_dec()
+        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + ENC_EXT)
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['encode', os.pardir, dest_path])
+
+                        file_exists_test(self, dest_path)
+
+                        sphinx_load_test(self, dest_path)
 
 
 class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
