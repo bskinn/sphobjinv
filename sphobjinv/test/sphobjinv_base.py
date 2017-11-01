@@ -17,6 +17,7 @@
 
 
 from contextlib import contextmanager
+from filecmp import cmp
 import os
 import os.path as osp
 import shutil as sh
@@ -37,6 +38,11 @@ SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 def res_path(fname=''):
     """Construct file path in resource dir from project root."""
     return osp.join('sphobjinv', 'test', 'resource', fname)
+
+
+# Absolute path to the .txt file in `resource`
+# This has to come after res_path is defined
+RES_DECOMP_PATH = osp.abspath(res_path(RES_FNAME_BASE + DEC_EXT))
 
 
 def scr_path(fname=''):
@@ -68,17 +74,18 @@ def copy_dec():
             scr_path(INIT_FNAME_BASE + DEC_EXT))
 
 
-def sphinx_inv_test(testcase, path):
+def sphinx_load_test(testcase, path):
     """Perform 'live' Sphinx inventory load test."""
     from sphinx.util.inventory import InventoryFile as IFile
     try:
         with open(path, 'rb') as f:
             IFile.load(f, 'C:\\', osp.join)
     except Exception:
-        testcase.fail()
+        with testcase.subTest('sphinx_load_ok'):
+            testcase.fail()
 
 
-def cmdline_test(arglist):
+def run_cmdline_test(testcase, arglist):
     """Perform command line test."""
     # Assemble execution arguments
     runargs = ['python', SOI_PATH]
@@ -87,17 +94,45 @@ def cmdline_test(arglist):
     # subprocess.run only available on Python 3.5+
     # Interested in the return code for now
     try:
-        return sp.run(runargs).returncode
+        retcode = sp.run(runargs).returncode
     except AttributeError:
-        return sp.call(runargs)
+        retcode = sp.call(runargs)
+
+    # Test that execution completed w/o error
+    with testcase.subTest('exit_code'):
+        testcase.assertEquals(0, retcode)
+
+
+def file_exists_test(testcase, path):
+    """Confirm indicated filespec exists."""
+    with testcase.subTest('file_exists'):
+        testcase.assertTrue(osp.isfile(path))
+
+
+def decomp_cmp_test(testcase, path):
+    """Confirm that indicated decoded file compares identical to resource."""
+    with testcase.subTest('decomp_cmp'):
+        testcase.assertTrue(cmp(RES_DECOMP_PATH, path, shallow=False))
 
 
 @contextmanager
 def dir_change(subdir):
     """Context manager to change to sub-directory & drop back on exit."""
+    existed = osp.isdir(subdir)
+
+    if not existed:
+        os.mkdir(subdir)
+
     os.chdir(subdir)
     yield
+
+    if not existed:
+        list(map(os.remove(os.listdir())))
+
     os.chdir(os.pardir)
+
+    if not existed:
+        os.rmdir(subdir)
 
 
 class SuperSphobjinv(object):
@@ -125,22 +160,23 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
         # Populate scratch with the decoded ref file
         copy_dec()
 
+        # Store dest filename for reuse
+        dest_fname = scr_path(MOD_FNAME_BASE + ENC_EXT)
+
         # See if it makes it all the way through the process without error
         with self.subTest('error_in_process'):
             try:
                 b_dec = soi.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
                 b_enc = soi.encode(b_dec)
-                soi.writefile(scr_path(MOD_FNAME_BASE + ENC_EXT), b_enc)
+                soi.writefile(dest_fname, b_enc)
             except Exception:
                 self.fail(msg='objects.txt encoding failed.')
 
         # Simple assertion that encoded file now exists
-        with self.subTest('file_exists'):
-            self.assertTrue(osp.isfile(scr_path(MOD_FNAME_BASE + ENC_EXT)))
+        file_exists_test(self, dest_fname)
 
-        # Seeing if intersphinx actually likes the file
-        with self.subTest('intersphinx_is_ok'):
-            sphinx_inv_test(self, scr_path(MOD_FNAME_BASE + ENC_EXT))
+        # Seeing if sphinx actually likes the file
+        sphinx_load_test(self, dest_fname)
 
     def test_APIDecodeSucceeds(self):
         """Check that a decode attempt via API throws no errors."""
@@ -149,18 +185,23 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
         # Populate scratch with encoded ref file
         copy_enc()
 
+        # Store target filename for reuse
+        dest_fname = scr_path(MOD_FNAME_BASE + DEC_EXT)
+
         # See if the encode operation completes without error
         with self.subTest('error_in_process'):
             try:
                 b_enc = soi.readfile(scr_path(INIT_FNAME_BASE + ENC_EXT))
                 b_dec = soi.decode(b_enc)
-                soi.writefile(scr_path(MOD_FNAME_BASE + DEC_EXT), b_dec)
+                soi.writefile(dest_fname, b_dec)
             except Exception:
                 self.fail(msg='objects.inv decoding failed.')
 
         # Simple assertion of the existence of the decoded file
-        with self.subTest('file_exists'):
-            self.assertTrue(osp.isfile(scr_path(MOD_FNAME_BASE + DEC_EXT)))
+        file_exists_test(self, dest_fname)
+
+        # Testing compare w/original file
+        decomp_cmp_test(self, dest_fname)
 
     def test_CmdlineDecodeNoArgs(self):
         """Confirm commandline decode exec with no args succeeds."""
@@ -168,7 +209,11 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    self.assertEquals(0, cmdline_test(['decode']))
+                    run_cmdline_test(self, ['decode'])
+
+                    file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
+
+                    decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
     def test_CmdlineEncodeNoArgs(self):
         """Confirm commandline encode exec with no args succeeds."""
@@ -176,7 +221,43 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    self.assertEquals(0, cmdline_test(['encode']))
+                    run_cmdline_test(self, ['encode'])
+
+                    file_exists_test(self, INIT_FNAME_BASE + ENC_EXT)
+
+                    sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
+
+    def test_CmdlineDecodeSrcFile(self):
+        """Confirm cmdline decode with input file arg."""
+        copy_enc()
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        run_cmdline_test(self, ['decode',
+                                scr_path(INIT_FNAME_BASE + ENC_EXT)])
+
+        file_exists_test(self, dest_path)
+
+        decomp_cmp_test(self, dest_path)
+
+    def test_CmdlineEncodeSrcFile(self):
+        """Confirm cmdline encode with input file arg."""
+        copy_dec()
+        dest_path = scr_path(INIT_FNAME_BASE + ENC_EXT)
+        run_cmdline_test(self, ['encode',
+                                scr_path(INIT_FNAME_BASE + DEC_EXT)])
+
+        file_exists_test(self, dest_path)
+
+        sphinx_load_test(self, dest_path)
+
+    def test_CmdlineDecodeSrcPath(self):
+        """Confirm cmdline decode with input directory arg."""
+        copy_enc()
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        run_cmdline_test(self, ['decode', scr_path()])
+
+        file_exists_test(self, dest_path)
+
+        decomp_cmp_test(self, dest_path)
 
 
 class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
