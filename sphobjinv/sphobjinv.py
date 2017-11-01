@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Name:        sphobjinv
 # Purpose:     Core module for encoding/decoding Sphinx objects.inv files
 #
@@ -6,8 +6,8 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016
-# License:     The MIT License; see "license.txt" for full license terms
+# Copyright:   (c) Brian Skinn 2016-2017
+# License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
 #
 #       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
@@ -15,8 +15,14 @@
 #
 #       http://www.github.com/bskinn/sphobjinv
 #
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
+"""Core module for sphobjinv.
+
+Encodes/decodes objects.inv files used by intersphinx for
+cross-references across different projects.
+
+"""
 
 import argparse as ap
 import os
@@ -39,6 +45,9 @@ DEF_NAME = 'objects'
 
 DEF_INFILE = '.'
 
+HELP_DECODE_EXTS = "'.txt (.inv)'"
+HELP_ENCODE_FNAMES = "'./objects.inv(.txt)'"
+
 
 #: Bytestring regex pattern for comment lines in decoded
 #: ``objects.inv`` files
@@ -50,37 +59,47 @@ p_data = re.compile(b'^[^#].*$', re.M)
 
 
 def _getparser():
-    """ Wrapper to get the arg parser definition out of the core namespace.
+    """Generate argumwnt parser.
 
     Returns
     -------
     prs
 
-        :class:`ArgumentParser` -- Parser for commandline usage of ``sphobjinv``
+        :class:`ArgumentParser` -- Parser for commandline usage
+        of ``sphobjinv``
 
     """
+    prs = ap.ArgumentParser(description="Decode/encode intersphinx "
+                                        "'objects.inv' files.")
 
-    prs = ap.ArgumentParser(description="Decode/encode intersphinx 'objects.inv' files.")
-
-    prs.add_argument(MODE, help="Conversion mode",
-            choices=(ENCODE, DECODE))
-    prs.add_argument(INFILE, help="Path to file to be decoded (encoded). Defaults to "
-                     "'./{0}{1}({2})'. ".format(DEF_NAME, *sorted(DEF_INP_EXT.values())) +
-                     "Bare paths are accepted, in which case the above default input file names "
-                     "are used in the indicated path. '-' is a synonym for these defaults.",
-                     nargs = "?", default=DEF_INFILE)
-    prs.add_argument(OUTFILE, help="Path to decoded (encoded) output file. Defaults to "
-                     "same directory and main file name as input file but with extension "
-                     "{0} ({1}). ".format(*reversed(sorted(DEF_OUT_EXT.values()))) +
-                     "Bare paths are accepted here as well, using the default output "
-                     "file names.",
-                     nargs="?", default=None)
+    prs.add_argument(MODE,
+                     help="Conversion mode",
+                     choices=(ENCODE, DECODE))
+    prs.add_argument(INFILE,
+                     help="Path to file to be decoded (encoded). Defaults to "
+                          + HELP_ENCODE_FNAMES + ". "
+                          "'-' is a synonym for these defaults. "
+                          "Bare paths are accepted, in which case the "
+                          "preceding "
+                          "default file names are used in the "
+                          "indicated path.",
+                     nargs="?",
+                     default=DEF_INFILE)
+    prs.add_argument(OUTFILE,
+                     help="Path to decoded (encoded) output file. "
+                          "Defaults to same directory and main "
+                          "file name as input file but with extension "
+                          + HELP_DECODE_EXTS + ". "
+                          "Bare paths are accepted here as well, using "
+                          "the default output file names.",
+                     nargs="?",
+                     default=None)
 
     return prs
 
 
 def readfile(path, cmdline=False):
-    """ Read file contents and return as binary string.
+    """Read file contents and return as binary string.
 
     Parameters
     ----------
@@ -101,7 +120,6 @@ def readfile(path, cmdline=False):
         |bytes| -- Binary contents of the indicated file.
 
     """
-
     # Open the file and read
     try:
         with open(path, 'rb') as f:
@@ -117,7 +135,7 @@ def readfile(path, cmdline=False):
 
 
 def writefile(path, contents, cmdline=False):
-    """ Write indicated file contents (with clobber).
+    """Write indicated file contents (with clobber).
 
     Parameters
     ----------
@@ -144,7 +162,6 @@ def writefile(path, contents, cmdline=False):
         |True|, |None| is returned.
 
     """
-
     # Write the decoded file
     try:
         with open(path, 'wb') as f:
@@ -159,10 +176,10 @@ def writefile(path, contents, cmdline=False):
 
 
 def decode(bstr):
-    """ Decode a version 2 |isphx| ``objects.inv`` bytestring.
+    """Decode a version 2 |isphx| ``objects.inv`` bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
-    :mod:`zlib`-compressed data lines are uncompressed to plaintext.
+    :mod:`zlib`-compressed data lines are decompressed to plaintext.
 
     Parameters
     ----------
@@ -175,13 +192,12 @@ def decode(bstr):
     -------
     out_b
 
-        |bytes| -- Decoded binary string containing the plaintext ``objects.inv``
-        content.
+        |bytes| -- Decoded binary string containing the plaintext
+        ``objects.inv`` content.
 
     """
-
     def decompress_chunks(bstrm):
-        """ Internal function for handling chunk-wise zlib decompression.
+        """Handle chunk-wise zlib decompression.
 
         Internal function pulled from intersphinx.py@v1.4.1:
         https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
@@ -189,8 +205,8 @@ def decode(bstr):
         BUFSIZE taken as the default value from intersphinx signature
         Modified slightly to take the stream as a parameter,
         rather than assuming one from the parent namespace.
-        """
 
+        """
         decompressor = zlib.decompressobj()
         for chunk in iter(lambda: bstrm.read(BUFSIZE), b''):
             yield decompressor.decompress(chunk)
@@ -214,12 +230,15 @@ def decode(bstr):
     for chunk in decompress_chunks(strm):
         out_b += chunk
 
+    # Replace newlines with the OS-local newlines
+    out_b = out_b.replace(b'\n', os.linesep.encode())
+
     # Return the newline-composited result
     return out_b
 
 
 def encode(bstr):
-    """ Encode a version 2 |isphx| ``objects.inv`` bytestring.
+    """Encode a version 2 |isphx| ``objects.inv`` bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
     plaintext data lines are compressed with :mod:`zlib`.
@@ -239,18 +258,21 @@ def encode(bstr):
         content.
 
     """
-
     # Preconvert any DOS newlines to Unix
     s = bstr.replace(b'\r\n', b'\n')
 
     # Pull all of the lines
     m_comments = p_comments.findall(s)
-    m_data = p_data.findall(s)
+    m_data = p_data.finditer(s)
+
+    # Helper generator to retrive the text, not the match object
+    def gen_data():
+        yield next(m_data).group(0)
 
     # Assemble the binary header comments and data
     # Comments and data blocks must end in newlines
     hb = b'\n'.join(m_comments) + b'\n'
-    db = b'\n'.join(m_data) + b'\n'
+    db = b'\n'.join(gen_data()) + b'\n'
 
     # Compress the data block
     # Compression level nine is to match that specified in
@@ -264,7 +286,7 @@ def encode(bstr):
 
 
 def main():
-
+    """Handle command line invocation."""
     # Parse commandline arguments
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
@@ -333,9 +355,12 @@ def main():
         sys.exit(1)
 
     # Report success
-    print("\nConversion completed.\n'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
+    print("\nConversion completed.\n"
+          "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
+
+    # Clean exit
     sys.exit(0)
 
 
-if __name__ ==  '__main__':
+if __name__ == '__main__':
     main()

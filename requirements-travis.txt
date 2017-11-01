@@ -1,0 +1,4 @@
+flake8==3.4.1
+flake8-docstrings==1.1.0
+sphinx==1.6.5
+sphinx-rtd-theme==0.2.4

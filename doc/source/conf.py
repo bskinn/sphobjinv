@@ -24,13 +24,14 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+needs_sphinx = '1.6'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
@@ -56,8 +57,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Sphinx Objects.inv Encoder/Decoder'
-copyright = '2016, Brian Skinn'
+project = 'sphobjinv'
+copyright = '2016-2017, Brian Skinn'
 author = 'Brian Skinn'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -257,7 +258,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SphinxObjectsinvConverterdoc'
+htmlhelp_basename = 'sphobjinv'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -279,8 +280,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'SphinxObjectsinvConverter.tex', 'Sphinx Objects.inv Converter Documentation',
-     'Brian Skinn', 'manual'),
+    (master_doc, 'sphobjinv.tex', 'Sphinx Objects.inv Converter Documentation',
+     author, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -309,7 +310,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'sphinxobjectsinvconverter', 'Sphinx Objects.inv Encoder/Decoder Documentation',
+    (master_doc, 'sphobjinv', 'Sphinx Objects.inv Encoder/Decoder Documentation',
      [author], 1)
 ]
 
@@ -323,8 +324,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'SphinxObjectsinvConverter', 'Sphinx Objects.inv Converter Documentation',
-     author, 'SphinxObjectsinvConverter', 'One line description of project.',
+    (master_doc, 'sphobjinv', 'Sphinx Objects.inv Converter Documentation',
+     author, 'sphobjinv', 'Encode/decode tool for Sphinx objects.inv files.',
      'Miscellaneous'),
 ]
 
@@ -411,8 +412,16 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 
-# Example configuration for intersphinx: refer to the Python standard library.
+# Heavily customized intersphinx config, enabled for optional objects.inv
+# retrieval from a local repository.
+isphx_local = os.environ.get('ISPHX_LOCAL')
+isphx_objpath = os.path.join('isphx', '{0}')
+isphx_objstr = 'objects_{0}.inv'
+
+
+def isphx_subst(s):
+    return isphx_objpath.format(isphx_objstr.format(s)) if isphx_local else None
+
 intersphinx_mapping = {
-        'python': ('https://docs.python.org/3.5', None),
-        'sphinx': ('http://www.sphinx-doc.org/en/stable/', None)
-                      }
+    'python': ('https://docs.python.org/3.5', isphx_subst('python'))
+    }

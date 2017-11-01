@@ -1,0 +1,60 @@
+# Sphinx inventory version 2
+# Project: attrs
+# Version: 17.2
+# The remainder of this file is compressed using zlib.
+attr.Attribute py:class 1 api.html#$ -
+attr.Factory py:class 1 api.html#$ -
+attr.asdict py:function 1 api.html#$ -
+attr.assoc py:function 1 api.html#$ -
+attr.astuple py:function 1 api.html#$ -
+attr.converters.optional py:function 1 api.html#$ -
+attr.evolve py:function 1 api.html#$ -
+attr.exceptions.AttrsAttributeNotFoundError py:exception 1 api.html#$ -
+attr.exceptions.DefaultAlreadySetError py:exception 1 api.html#$ -
+attr.exceptions.FrozenInstanceError py:exception 1 api.html#$ -
+attr.exceptions.NotAnAttrsClassError py:exception 1 api.html#$ -
+attr.fields py:function 1 api.html#$ -
+attr.filters.exclude py:function 1 api.html#$ -
+attr.filters.include py:function 1 api.html#$ -
+attr.get_run_validators py:function 1 api.html#$ -
+attr.has py:function 1 api.html#$ -
+attr.ib py:function 1 api.html#$ -
+attr.make_class py:function 1 api.html#$ -
+attr.s py:function 1 api.html#$ -
+attr.set_run_validators py:function 1 api.html#$ -
+attr.validate py:function 1 api.html#$ -
+attr.validators.and_ py:function 1 api.html#$ -
+attr.validators.in_ py:function 1 api.html#$ -
+attr.validators.instance_of py:function 1 api.html#$ -
+attr.validators.optional py:function 1 api.html#$ -
+attr.validators.provides py:function 1 api.html#$ -
+api std:doc -1 api.html API
+api std:label -1 api.html#$ API
+api_validators std:label -1 api.html#api-validators Validators
+asdict std:label -1 examples.html#$ Converting to Collections Types
+backward-compatibility std:doc -1 backward-compatibility.html Backward Compatibility
+changelog std:doc -1 changelog.html Changelog
+contributing std:doc -1 contributing.html How To Contribute
+contributing std:label -1 contributing.html#$ How To Contribute
+examples std:doc -1 examples.html Examples
+examples std:label -1 examples.html#$ Examples
+examples_validators std:label -1 examples.html#examples-validators Validators
+exemption std:label -1 backward-compatibility.html#$ -
+extending std:doc -1 extending.html Extending
+extending std:label -1 extending.html#$ Extending
+extending_metadata std:label -1 extending.html#extending-metadata Metadata
+genindex std:label -1 genindex.html Index
+helpers std:label -1 api.html#$ Helpers
+how std:label -1 how-does-it-work.html#$ How Does It Work?
+how-does-it-work std:doc -1 how-does-it-work.html How Does It Work?
+how-frozen std:label -1 how-does-it-work.html#$ Immutability
+index std:doc -1 index.html attrs: Classes Without Boilerplate
+license std:doc -1 license.html License and Credits
+metadata std:label -1 examples.html#$ Metadata
+modindex std:label -1 py-modindex.html Module Index
+overview std:doc -1 overview.html Overview
+philosophy std:label -1 overview.html#$ Philosophy
+search std:label -1 search.html Search Page
+slots std:label -1 examples.html#$ Slots
+why std:doc -1 why.html Why not…
+why std:label -1 why.html#$ Why not…

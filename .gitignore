@@ -63,3 +63,10 @@ target/
 
 # Editor backup files
 *.bak
+*.swp
+
+# intersphinx objects.inv hive
+doc/source/isphx/*
+
+# Test scratch
+sphobjinv/test/scratch/*
