@@ -78,13 +78,23 @@ def copy_dec():
 
 def sphinx_load_test(testcase, path):
     """Perform 'live' Sphinx inventory load test."""
-    from sphinx.util.inventory import InventoryFile as IFile
-    try:
-        with open(path, 'rb') as f:
-            IFile.load(f, 'C:\\', osp.join)
-    except Exception:
-        with testcase.subTest('sphinx_load_ok'):
-            testcase.fail()
+    # Easier to have the file open the whole time
+    with open(path, 'rb') as f:
+
+        # Have to handle it differently for Python 3.3 compared to the rest
+        if sys.version_info.major == 3 and sys.version_info.minor < 4:
+            from sphinx.ext.intersphinx import read_inventory_v2 as readfunc
+            f.readline()    # read_inventory_v2 expects to start on 2nd line
+        else:
+            from sphinx.util.inventory import InventoryFile as IFile
+            readfunc = IFile.load
+
+        # Attempt the load operation
+        try:
+            readfunc(f, '', osp.join)
+        except Exception:
+            with testcase.subTest('sphinx_load_ok'):
+                testcase.fail()
 
 
 def run_cmdline_test(testcase, arglist):
@@ -155,7 +165,7 @@ class SuperSphobjinv(object):
 class SubTestMasker(object):
     """Inheritance class to implement mocked version of .subTest."""
 
-    if sys.version_info.minor < 4:
+    if sys.version_info.major == 3 and sys.version_info.minor < 4:
         @contextmanager
         def subTest(testcase, name):
             """Mock TestCase.subTest for Python versions <3.4."""
