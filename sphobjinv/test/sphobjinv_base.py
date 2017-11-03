@@ -97,7 +97,7 @@ def sphinx_load_test(testcase, path):
                 testcase.fail()
 
 
-def run_cmdline_test(testcase, arglist):
+def run_cmdline_test(testcase, arglist, expect=0):
     """Perform command line test."""
     # Assemble execution arguments
     runargs = ['python', SOI_PATH]
@@ -112,7 +112,7 @@ def run_cmdline_test(testcase, arglist):
 
     # Test that execution completed w/o error
     with testcase.subTest('exit_code'):
-        testcase.assertEquals(0, retcode)
+        testcase.assertEquals(expect, retcode)
 
 
 def file_exists_test(testcase, path):
@@ -382,6 +382,19 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
         with self.subTest('encoded_input_file'):
             with self.assertRaises(FileNotFoundError):
                 soi.readfile(INIT_FNAME_BASE + ENC_EXT)
+
+    def test_CmdlineDecodeWrongFileType(self):
+        """Confirm exit code 1 with invalid file format."""
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    fname = 'testfile'
+                    with open(fname, 'wb') as f:
+                        f.write(b'this is not objects.inv\n')
+
+                    run_cmdline_test(self,
+                                     ['decode', fname],
+                                     expect=1)
 
 
 def suite_expect_good():

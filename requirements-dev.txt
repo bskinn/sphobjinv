@@ -3,3 +3,4 @@ sphinx-rtd-theme==0.2.4
 wget
 flake8==3.4.1
 flake8-docstrings==1.1.0
+coverage

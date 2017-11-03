@@ -49,6 +49,14 @@ HELP_DECODE_EXTS = "'.txt (.inv)'"
 HELP_ENCODE_FNAMES = "'./objects.inv(.txt)'"
 
 
+class SphobjinvError(Exception):
+    """Exception superclass for the project."""
+
+
+class VersionError(SphobjinvError):
+    """Attempting an operation on an unsupported version."""
+
+
 #: Bytestring regex pattern for comment lines in decoded
 #: ``objects.inv`` files
 p_comments = re.compile(b'^#.*$', re.M)
@@ -214,13 +222,11 @@ def decode(bstr):
 
     # Make stream and output string
     strm = io.BytesIO(bstr)
-    out_b = b''
 
     # Check to be sure it's v2
     out_b = strm.readline()
     if not out_b.endswith(b'2\n'):
-        print('\nOnly v2 objects.inv files currently supported')
-        sys.exit(1)
+        raise VersionError('Only v2 objects.inv files currently supported')
 
     # Pull name, version, and description lines
     for i in range(3):
@@ -317,16 +323,22 @@ def main():
         in_path = os.path.join(in_fld, in_fname)
 
     # Open the file and read
-    bstr = readfile(in_path, True)
+    bstr = readfile(in_path, cmdline=True)
     if not bstr:
         print("\nError when attempting input file read")
         sys.exit(1)
 
-    # Encode or decode per 'mode'
-    if mode == DECODE:
-        result = decode(bstr)
-    else:
-        result = encode(bstr)
+    # Encode or decode per 'mode', catching and reporting
+    # any raised exception
+    try:
+        if mode == DECODE:
+            result = decode(bstr)
+        else:
+            result = encode(bstr)
+    except Exception as e:
+        print("\nError while {0}ing '{1}':".format(mode[:-1], in_path))
+        print("\n{0}".format(repr(e)))
+        sys.exit(1)
 
     # Work up the output location
     out_path = params[OUTFILE]
@@ -340,17 +352,23 @@ def main():
             # Split appropriately
             out_fld, out_fname = os.path.split(out_path)
 
+        # Output to same folder if unspecified
         if not out_fld:
             out_fld = in_fld
+
+        # Use same base filename if not specified
         if not out_fname:
             out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
+
+        # Composite the full output path
         out_path = os.path.join(out_fld, out_fname)
     else:
+        # No output location specified; use defaults
         out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
         out_path = os.path.join(in_fld, out_fname)
 
     # Write the output file
-    if not writefile(out_path, result, True):
+    if not writefile(out_path, result, cmdline=True):
         print("\nError when attempting output file write")
         sys.exit(1)
 

@@ -25,9 +25,11 @@ from __future__ import absolute_import
 
 __all__ = ['readfile', 'writefile',
            'encode', 'decode',
-           'p_comments', 'p_data']
+           'p_comments', 'p_data',
+           'SphobjinvError', 'VersionError']
 
 from .sphobjinv import readfile, writefile, decode, encode
 from .sphobjinv import p_comments, p_data
+from .sphobjinv import SphobjinvError, VersionError
 
 __version__ = '2.0.dev1'
