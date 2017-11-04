@@ -408,7 +408,6 @@ def suite_expect_good():
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestSphobjinvExpectGood)])
-#               SuiteDoctestReadme])
 
     return s
 
