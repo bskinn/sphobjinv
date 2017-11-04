@@ -21,7 +21,6 @@ from filecmp import cmp
 import os
 import os.path as osp
 import shutil as sh
-import subprocess as sp
 import sys
 import unittest as ut
 
@@ -99,16 +98,23 @@ def sphinx_load_test(testcase, path):
 
 def run_cmdline_test(testcase, arglist, expect=0):
     """Perform command line test."""
+    from sphobjinv.sphobjinv import main
+
     # Assemble execution arguments
-    runargs = ['python', SOI_PATH]
+    runargs = ['sphobjinv']
     list(map(runargs.append, arglist))
 
-    # subprocess.run only available on Python 3.5+
-    # Interested in the return code for now
+    # Mock sys.argv, run main, and restore sys.argv
+    stored_sys_argv = sys.argv
+    sys.argv = runargs
     try:
-        retcode = sp.run(runargs).returncode
-    except AttributeError:
-        retcode = sp.call(runargs)
+        main()
+    except SystemExit as e:
+        retcode = e.args[0]
+    else:
+        raise RuntimeError("SystemExit not raised on termination.")
+    finally:
+        sys.argv = stored_sys_argv
 
     # Test that execution completed w/o error
     with testcase.subTest('exit_code'):
@@ -416,5 +422,5 @@ def suite_expect_fail():
     return s
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == '__main__':
     print("Module not executable.")

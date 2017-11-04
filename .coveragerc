@@ -1,0 +1,5 @@
+[run]
+omit =
+    # Don't do coverage on test code
+    sphobjinv/test/*
+    tests.py
