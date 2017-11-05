@@ -32,6 +32,7 @@ MOD_FNAME_BASE = 'objects_mod'
 ENC_EXT = '.inv'
 DEC_EXT = '.txt'
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
+INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
 
 
 # Useful functions
@@ -424,7 +425,7 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
         b_str = b'This is a binary string!'
 
         with self.assertRaises(OSError):
-            soi.writefile('*?*?.txt', b_str)
+            soi.writefile(INVALID_FNAME, b_str)
 
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
@@ -450,7 +451,7 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
         run_cmdline_test(self,
                          ['decode',
                           scr_path(INIT_FNAME_BASE + ENC_EXT),
-                          '*?*?.txt'],
+                          INVALID_FNAME],
                          expect=1)
 
 
