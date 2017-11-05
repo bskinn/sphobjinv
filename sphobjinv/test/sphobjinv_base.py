@@ -373,6 +373,34 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
 
                         sphinx_load_test(self, dest_path)
 
+    def test_CmdlineDecodeTgtBarePath(self):
+        """Confirm decode to target as bare path."""
+        copy_enc()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['decode', os.pardir, '.'])
+
+                        file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
+
+                        decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
+
+    def test_CmdlineEncodeTgtBarePath(self):
+        """Confirm encode to target as bare path."""
+        copy_dec()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['encode', os.pardir, '.'])
+
+                        file_exists_test(self, INIT_FNAME_BASE + ENC_EXT)
+
+                        sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
+
 
 class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
     """Testing that code raises expected errors when invoked improperly."""
@@ -389,6 +417,15 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
             with self.assertRaises(FileNotFoundError):
                 soi.readfile(INIT_FNAME_BASE + ENC_EXT)
 
+    def test_APIBadOutputFile(self):
+        """Confirm OSError raised on bad filename (example of read error)."""
+        import sphobjinv as soi
+
+        b_str = b'This is a binary string!'
+
+        with self.assertRaises(OSError):
+            soi.writefile('*?*?.txt', b_str)
+
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
@@ -401,6 +438,20 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
                     run_cmdline_test(self,
                                      ['decode', fname],
                                      expect=1)
+
+    def test_CmdlineDecodeMissingFile(self):
+        """Confirm exit code 1 with nonexistent file specified."""
+        run_cmdline_test(self, ['decode', 'thisfileshouldbeabsent.txt'],
+                         expect=1)
+
+    def test_CmdlineDecodeBadOutputFilename(self):
+        """Confirm exit code 1 with invalid output file name."""
+        copy_enc()
+        run_cmdline_test(self,
+                         ['decode',
+                          scr_path(INIT_FNAME_BASE + ENC_EXT),
+                          '*?*?.txt'],
+                         expect=1)
 
 
 def suite_expect_good():
