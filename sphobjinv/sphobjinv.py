@@ -36,6 +36,7 @@ DECODE = 'decode'
 INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
+QUIET = 'quiet'
 
 BUFSIZE = 16*1024    # 16k chunks
 
@@ -83,6 +84,7 @@ def _getparser():
     prs.add_argument(MODE,
                      help="Conversion mode",
                      choices=(ENCODE, DECODE))
+
     prs.add_argument(INFILE,
                      help="Path to file to be decoded (encoded). Defaults to "
                           + HELP_ENCODE_FNAMES + ". "
@@ -93,6 +95,7 @@ def _getparser():
                           "indicated path.",
                      nargs="?",
                      default=DEF_INFILE)
+
     prs.add_argument(OUTFILE,
                      help="Path to decoded (encoded) output file. "
                           "Defaults to same directory and main "
@@ -102,6 +105,10 @@ def _getparser():
                           "the default output file names.",
                      nargs="?",
                      default=None)
+
+    prs.add_argument('-' + QUIET[0], '--' + QUIET,
+                     help="Suppress printing of status messages",
+                     action='store_true')
 
     return prs
 
@@ -293,6 +300,11 @@ def encode(bstr):
 
 def main():
     """Handle command line invocation."""
+    def selective_print(thing):
+        """Print `thing` only if not `QUIET`."""
+        if not params[QUIET]:
+            print(thing)
+
     # Parse commandline arguments
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
@@ -325,7 +337,7 @@ def main():
     # Open the file and read
     bstr = readfile(in_path, cmdline=True)
     if not bstr:
-        print("\nError when attempting input file read")
+        selective_print("\nError when attempting input file read")
         sys.exit(1)
 
     # Encode or decode per 'mode', catching and reporting
@@ -336,8 +348,9 @@ def main():
         else:
             result = encode(bstr)
     except Exception as e:
-        print("\nError while {0}ing '{1}':".format(mode[:-1], in_path))
-        print("\n{0}".format(repr(e)))
+        selective_print("\nError while {0}ing '{1}':".format(mode[:-1],
+                                                             in_path))
+        selective_print("\n{0}".format(repr(e)))
         sys.exit(1)
 
     # Work up the output location
@@ -369,12 +382,12 @@ def main():
 
     # Write the output file
     if not writefile(out_path, result, cmdline=True):
-        print("\nError when attempting output file write")
+        selective_print("\nError when attempting output file write")
         sys.exit(1)
 
-    # Report success
-    print("\nConversion completed.\n"
-          "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
+    # Report success, if not QUIET
+    selective_print("\nConversion completed.\n"
+                    "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
 
     # Clean exit
     sys.exit(0)
