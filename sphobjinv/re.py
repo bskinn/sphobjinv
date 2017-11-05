@@ -1,11 +1,11 @@
 # ----------------------------------------------------------------------------
-# Name:        __init__
-# Purpose:     Package definition module for sphobjinv
+# Name:        regex
+# Purpose:     Helper regexes for sphobjinv
 #
 # Author:      Brian Skinn
 #                bskinn@alum.mit.edu
 #
-# Created:     17 May 2016
+# Created:     5 Nov 2017
 # Copyright:   (c) Brian Skinn 2016-2017
 # License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
@@ -17,21 +17,19 @@
 #
 # ----------------------------------------------------------------------------
 
+"""Module with helper regexes for sphobjinv."""
 
-"""Definition file for root of sphobjinv."""
-
-
-from __future__ import absolute_import
-
-__all__ = ['readfile', 'writefile',
-           'encode', 'decode',
-           'p_comments', 'p_data',
-           'SphobjinvError', 'VersionError']
-
-from .error import SphobjinvError, VersionError
-from .fileops import readfile, writefile
-from .re import p_comments, p_data
-from .zlib import decode, encode
+import re
 
 
-__version__ = '2.0.dev1'
+#: Bytestring regex pattern for comment lines in decoded
+#: ``objects.inv`` files
+p_comments = re.compile(b'^#.*$', re.M)
+
+#: Bytestring regex pattern for data lines in decoded
+#: ``objects.inv`` files
+p_data = re.compile(b'^[^#].*$', re.M)
+
+
+if __name__ == '__main__':    # pragma: no cover
+    print('Module not executable.')

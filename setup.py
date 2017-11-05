@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='sphobjinv',
-    version='1.0',
+    version='2.0.dev1',
     packages=['sphobjinv'],
     url='https://www.github.com/bskinn/sphobjinv',
     license='MIT License',
@@ -32,7 +32,7 @@ setup(
                  'Development Status :: 5 - Production/Stable'],
     entry_points={
         'console_scripts': [
-            'sphobjinv = sphobjinv.sphobjinv:main'
+            'sphobjinv = sphobjinv.cmdline:main'
                            ]
                   }
 )

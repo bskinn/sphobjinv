@@ -99,7 +99,7 @@ def sphinx_load_test(testcase, path):
 
 def run_cmdline_test(testcase, arglist, expect=0):
     """Perform command line test."""
-    from sphobjinv.sphobjinv import main
+    from sphobjinv.cmdline import main
 
     # Assemble execution arguments
     runargs = ['sphobjinv']

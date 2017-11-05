@@ -1,11 +1,11 @@
 # ----------------------------------------------------------------------------
-# Name:        __init__
-# Purpose:     Package definition module for sphobjinv
+# Name:        error
+# Purpose:     Custom errors for sphobjinv
 #
 # Author:      Brian Skinn
 #                bskinn@alum.mit.edu
 #
-# Created:     17 May 2016
+# Created:     5 Nov 2017
 # Copyright:   (c) Brian Skinn 2016-2017
 # License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
@@ -17,21 +17,16 @@
 #
 # ----------------------------------------------------------------------------
 
-
-"""Definition file for root of sphobjinv."""
-
-
-from __future__ import absolute_import
-
-__all__ = ['readfile', 'writefile',
-           'encode', 'decode',
-           'p_comments', 'p_data',
-           'SphobjinvError', 'VersionError']
-
-from .error import SphobjinvError, VersionError
-from .fileops import readfile, writefile
-from .re import p_comments, p_data
-from .zlib import decode, encode
+"""Module defining errors for sphobjinv."""
 
 
-__version__ = '2.0.dev1'
+class SphobjinvError(Exception):
+    """Exception superclass for the project."""
+
+
+class VersionError(SphobjinvError):
+    """Attempting an operation on an unsupported version."""
+
+
+if __name__ == '__main__':    # pragma: no cover
+    print('Module not executable.')
