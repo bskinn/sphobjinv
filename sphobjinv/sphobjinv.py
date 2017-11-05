@@ -36,6 +36,7 @@ DECODE = 'decode'
 INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
+QUIET = 'quiet'
 
 BUFSIZE = 16*1024    # 16k chunks
 
@@ -47,6 +48,14 @@ DEF_INFILE = '.'
 
 HELP_DECODE_EXTS = "'.txt (.inv)'"
 HELP_ENCODE_FNAMES = "'./objects.inv(.txt)'"
+
+
+class SphobjinvError(Exception):
+    """Exception superclass for the project."""
+
+
+class VersionError(SphobjinvError):
+    """Attempting an operation on an unsupported version."""
 
 
 #: Bytestring regex pattern for comment lines in decoded
@@ -75,6 +84,7 @@ def _getparser():
     prs.add_argument(MODE,
                      help="Conversion mode",
                      choices=(ENCODE, DECODE))
+
     prs.add_argument(INFILE,
                      help="Path to file to be decoded (encoded). Defaults to "
                           + HELP_ENCODE_FNAMES + ". "
@@ -85,6 +95,7 @@ def _getparser():
                           "indicated path.",
                      nargs="?",
                      default=DEF_INFILE)
+
     prs.add_argument(OUTFILE,
                      help="Path to decoded (encoded) output file. "
                           "Defaults to same directory and main "
@@ -94,6 +105,10 @@ def _getparser():
                           "the default output file names.",
                      nargs="?",
                      default=None)
+
+    prs.add_argument('-' + QUIET[0], '--' + QUIET,
+                     help="Suppress printing of status messages",
+                     action='store_true')
 
     return prs
 
@@ -214,13 +229,11 @@ def decode(bstr):
 
     # Make stream and output string
     strm = io.BytesIO(bstr)
-    out_b = b''
 
     # Check to be sure it's v2
     out_b = strm.readline()
     if not out_b.endswith(b'2\n'):
-        print('\nOnly v2 objects.inv files currently supported')
-        sys.exit(1)
+        raise VersionError('Only v2 objects.inv files currently supported')
 
     # Pull name, version, and description lines
     for i in range(3):
@@ -287,6 +300,11 @@ def encode(bstr):
 
 def main():
     """Handle command line invocation."""
+    def selective_print(thing):
+        """Print `thing` only if not `QUIET`."""
+        if not params[QUIET]:
+            print(thing)
+
     # Parse commandline arguments
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
@@ -317,16 +335,23 @@ def main():
         in_path = os.path.join(in_fld, in_fname)
 
     # Open the file and read
-    bstr = readfile(in_path, True)
+    bstr = readfile(in_path, cmdline=True)
     if not bstr:
-        print("\nError when attempting input file read")
+        selective_print("\nError when attempting input file read")
         sys.exit(1)
 
-    # Encode or decode per 'mode'
-    if mode == DECODE:
-        result = decode(bstr)
-    else:
-        result = encode(bstr)
+    # Encode or decode per 'mode', catching and reporting
+    # any raised exception
+    try:
+        if mode == DECODE:
+            result = decode(bstr)
+        else:
+            result = encode(bstr)
+    except Exception as e:
+        selective_print("\nError while {0}ing '{1}':".format(mode[:-1],
+                                                             in_path))
+        selective_print("\n{0}".format(repr(e)))
+        sys.exit(1)
 
     # Work up the output location
     out_path = params[OUTFILE]
@@ -340,23 +365,29 @@ def main():
             # Split appropriately
             out_fld, out_fname = os.path.split(out_path)
 
+        # Output to same folder if unspecified
         if not out_fld:
             out_fld = in_fld
+
+        # Use same base filename if not specified
         if not out_fname:
             out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
+
+        # Composite the full output path
         out_path = os.path.join(out_fld, out_fname)
     else:
+        # No output location specified; use defaults
         out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
         out_path = os.path.join(in_fld, out_fname)
 
     # Write the output file
-    if not writefile(out_path, result, True):
-        print("\nError when attempting output file write")
+    if not writefile(out_path, result, cmdline=True):
+        selective_print("\nError when attempting output file write")
         sys.exit(1)
 
-    # Report success
-    print("\nConversion completed.\n"
-          "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
+    # Report success, if not QUIET
+    selective_print("\nConversion completed.\n"
+                    "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
 
     # Clean exit
     sys.exit(0)
