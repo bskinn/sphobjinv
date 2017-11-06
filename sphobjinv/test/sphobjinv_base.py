@@ -232,6 +232,34 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
         # Testing compare w/original file
         decomp_cmp_test(self, dest_fname)
 
+    def test_APIRegexDataCheck(self):
+        """Confirm the regex for loading data lines is working properly."""
+        import sphobjinv as soi
+
+        # Populate scratch with the decoded file
+        copy_dec()
+
+        # Read the file
+        b_str = soi.fileops.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
+
+        # Have to convert any DOS newlines
+        b_str = b_str.replace(b'\r\n', b'\n')
+
+        # A separate check shows 56 entries in the reference hive."""
+        with self.subTest('entries_count'):
+            self.assertEquals(56, len(soi.re.p_data.findall(b_str)))
+
+        # The first entry in the file is:
+        #  attr.Attribute py:class 1 api.html#$ -
+        # ids = [0, -3]
+        # names = ['attr.Attribute', 'slots']
+        # domains = ['py', 'std']
+        # roles = ['class', 'label']
+        # prios = ['1', '-1']
+        # uris = ['api.html#$', 'examples.html#$']
+        # dispnames = ['-', 'Slots']
+        # ###RESUME HERE
+
     def test_CmdlineDecodeNoArgs(self):
         """Confirm commandline decode exec with no args succeeds."""
         copy_enc()
