@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# Name:        regex
+# Name:        re
 # Purpose:     Helper regexes for sphobjinv
 #
 # Author:      Brian Skinn
@@ -19,13 +19,12 @@
 
 """Module with helper regexes for sphobjinv."""
 
-from collections import namedtuple
 from enum import Enum
 import re
 
 
 class DataFields(Enum):
-    """Enum for the fields of objects.inv data items."""
+    """Enum for the regex groups of objects.inv data items."""
 
     Name = 'name'
     Domain = 'domain'
@@ -35,17 +34,34 @@ class DataFields(Enum):
     DispName = 'dispname'
 
 
-DataObject = namedtuple('DataObject', [DataFields.Name.value,
-                                       DataFields.Domain.value,
-                                       DataFields.Role.value,
-                                       DataFields.Priority.value,
-                                       DataFields.URI.value,
-                                       DataFields.DispName.value])
+class HeaderFields(Enum):
+    """Enum for regex groups of objects.inv header data."""
+
+    Project = 'project'
+    Version = 'version'
 
 
 #: Bytestring regex pattern for comment lines in decoded
 #: ``objects.inv`` files
 p_comments = re.compile(b'^#.*$', re.M)
+
+#: Bytestring regex pattern for project line
+p_project = re.compile("""
+    ^                        # Start of line
+    [#][ ]Project:[ ]        # Preamble
+    (?P<{}>.+)               # Rest of line is the project name
+    $                        # EOL
+    """.format(HeaderFields.Project.value).encode(encoding='utf-8'),
+                       re.M | re.X)
+
+#: Bytestring regex pattern for version line
+p_version = re.compile("""
+    ^                        # Start of line
+    [#][ ]Version:[ ]        # Preamble
+    (?P<{}>.+)               # Rest of line is the version
+    $                        # EOL
+    """.format(HeaderFields.Version.value).encode(encoding='utf-8'),
+                       re.M | re.X)
 
 #: Bytestring regex pattern for data lines in decoded
 #: ``objects.inv`` files
@@ -68,7 +84,8 @@ p_data = re.compile("""\
                DataFields.Role.value,
                DataFields.Priority.value,
                DataFields.URI.value,
-               DataFields.DispName.value).encode(), re.M | re.X)
+               DataFields.DispName.value).encode(encoding='utf-8'),
+                    re.M | re.X)
 
 
 if __name__ == '__main__':    # pragma: no cover
