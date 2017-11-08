@@ -169,17 +169,7 @@ class SuperSphobjinv(object):
         clear_scratch()
 
 
-class SubTestMasker(object):
-    """Inheritance class to implement mocked version of .subTest."""
-
-    if sys.version_info.major == 3 and sys.version_info.minor < 4:
-        @contextmanager
-        def subTest(testcase, name):
-            """Mock TestCase.subTest for Python versions <3.4."""
-            yield
-
-
-class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
+class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
     def test_APIEncodeSucceeds(self):
@@ -431,7 +421,7 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
                         sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
 
 
-class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
+class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
     def test_APINoInputFile(self):
