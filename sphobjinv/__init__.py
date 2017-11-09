@@ -26,8 +26,10 @@ from __future__ import absolute_import
 __all__ = ['readfile', 'writefile',
            'encode', 'decode',
            'p_comments', 'p_data',
-           'SphobjinvError', 'VersionError']
+           'SphobjinvError', 'VersionError',
+           'DataObjStr', 'DataObjBytes']
 
+from .data import DataObjStr, DataObjBytes
 from .error import SphobjinvError, VersionError
 from .fileops import readfile, writefile
 from .re import p_comments, p_data
