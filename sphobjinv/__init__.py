@@ -25,14 +25,15 @@ from __future__ import absolute_import
 
 __all__ = ['readfile', 'writefile',
            'encode', 'decode',
-           'p_comments', 'p_data',
+           'pb_comments', 'pb_data', 'pb_version', 'pb_project',
+           'DataFields',
            'SphobjinvError', 'VersionError',
            'DataObjStr', 'DataObjBytes']
 
 from .data import DataObjStr, DataObjBytes
 from .error import SphobjinvError, VersionError
 from .fileops import readfile, writefile
-from .re import p_comments, p_data
+from .re import pb_comments, pb_data, pb_version, pb_project, DataFields
 from .zlib import decode, encode
 
 

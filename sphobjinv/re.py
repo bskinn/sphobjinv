@@ -43,10 +43,10 @@ class HeaderFields(Enum):
 
 #: Bytestring regex pattern for comment lines in decoded
 #: ``objects.inv`` files
-p_comments = re.compile(b'^#.*$', re.M)
+pb_comments = re.compile(b'^#.*$', re.M)
 
 #: Bytestring regex pattern for project line
-p_project = re.compile("""
+pb_project = re.compile("""
     ^                        # Start of line
     [#][ ]Project:[ ]        # Preamble
     (?P<{}>.+)               # Rest of line is the project name
@@ -55,7 +55,7 @@ p_project = re.compile("""
                        re.M | re.X)
 
 #: Bytestring regex pattern for version line
-p_version = re.compile("""
+pb_version = re.compile("""
     ^                        # Start of line
     [#][ ]Version:[ ]        # Preamble
     (?P<{}>.+)               # Rest of line is the version
@@ -65,7 +65,7 @@ p_version = re.compile("""
 
 #: Bytestring regex pattern for data lines in decoded
 #: ``objects.inv`` files
-p_data = re.compile("""\
+pb_data = re.compile("""\
     ^                        # Start of line
     (?P<{0}>[^#]\\S+)        # --> Name
     \\s+                     # Dividing space

@@ -169,7 +169,7 @@ class SuperSphobjinv(object):
         clear_scratch()
 
 
-class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
+class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
     def test_APIEncodeSucceeds(self):
@@ -237,18 +237,35 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase):
 
         # A separate check shows 56 entries in the reference hive."""
         with self.subTest('entries_count'):
-            self.assertEquals(56, len(soi.re.p_data.findall(b_str)))
+            self.assertEquals(56, len(soi.re.pb_data.findall(b_str)))
 
         # The first entry in the file is:
         #  attr.Attribute py:class 1 api.html#$ -
-        # ids = [0, -3]
-        # names = ['attr.Attribute', 'slots']
-        # domains = ['py', 'std']
-        # roles = ['class', 'label']
-        # prios = ['1', '-1']
-        # uris = ['api.html#$', 'examples.html#$']
-        # dispnames = ['-', 'Slots']
-        # ###RESUME HERE
+        # The third entry from the end is:
+        #  slots std:label -1 examples.html#$ Slots
+        elements = [0, -3]
+        testdata = {soi.DataFields.Name: [b'attr.Attribute', b'slots'],
+                    soi.DataFields.Domain: [b'py', b'std'],
+                    soi.DataFields.Role: [b'class', b'label'],
+                    soi.DataFields.Priority: [b'1', b'-1'],
+                    soi.DataFields.URI: [b'api.html#$', b'examples.html#$'],
+                    soi.DataFields.DispName: [b'-', b'Slots']}
+
+        mchs = list(soi.re.pb_data.finditer(b_str))
+
+        for i, e in enumerate(elements):
+            for df in soi.DataFields:
+                with self.subTest('{0}_{1}'.format(df.value, e)):
+                    self.assertEquals(mchs[e].group(df.value),
+                                      testdata[df][i])
+
+    def test_APIDataObjCheck(self):
+        """Confirm the DataObj... types function correctly."""
+        pass
+
+
+class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
+    """Testing code accuracy under good params & expected behavior."""
 
     def test_CmdlineDecodeNoArgs(self):
         """Confirm commandline decode exec with no args succeeds."""
@@ -477,7 +494,8 @@ def suite_expect_good():
     """Create and return the test suite for expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
+                tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGood)])
 
     return s
 

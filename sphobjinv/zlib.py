@@ -112,14 +112,14 @@ def encode(bstr):
         content.
 
     """
-    from .re import p_comments, p_data
+    from .re import pb_comments, pb_data
 
     # Preconvert any DOS newlines to Unix
     s = bstr.replace(b'\r\n', b'\n')
 
     # Pull all of the lines
-    m_comments = p_comments.findall(s)
-    m_data = p_data.finditer(s)
+    m_comments = pb_comments.findall(s)
+    m_data = pb_data.finditer(s)
 
     # Helper generator to retrive the text, not the match object
     def gen_data():
