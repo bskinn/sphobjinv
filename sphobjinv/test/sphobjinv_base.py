@@ -251,17 +251,91 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                     soi.DataFields.URI: [b'api.html#$', b'examples.html#$'],
                     soi.DataFields.DispName: [b'-', b'Slots']}
 
+        # Materialize the list of data line matches
         mchs = list(soi.re.pb_data.finditer(b_str))
 
+        # Test each of the id-ed data lines
         for i, e in enumerate(elements):
             for df in soi.DataFields:
                 with self.subTest('{0}_{1}'.format(df.value, e)):
                     self.assertEquals(mchs[e].group(df.value),
                                       testdata[df][i])
 
-    def test_APIDataObjCheck(self):
-        """Confirm the DataObj... types function correctly."""
-        pass
+    def test_APIDataObjBytesInitCheck(self):
+        """Confirm the DataObjBytes type functions correctly."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
+                     for _ in b_mchdict}
+
+        # Confirm DataObjBytes instantiates w/bytes
+        with self.subTest('inst_bytes'):
+            try:
+                b_dob = soi.DataObjBytes(**b_mchdict)
+            except Exception:
+                self.fail('bytes instantiation failed')
+
+        # Confirm DataObjBytes instantiates w/str
+        with self.subTest('inst_str'):
+            try:
+                s_dob = soi.DataObjBytes(**s_mchdict)
+            except Exception:
+                self.fail('str instantiation failed')
+
+        # Confirm members match
+        for _ in b_mchdict:
+            with self.subTest('match_' + _):
+                self.assertEquals(getattr(b_dob, _),
+                                  getattr(s_dob, _))
+
+        # Confirm str-equivalents match
+        for _ in b_mchdict:
+            with self.subTest('str_equiv_' + _):
+                self.assertEquals(getattr(b_dob, _),
+                                  getattr(b_dob.as_str, _)
+                                  .encode(encoding='utf-8'))
+
+    def test_APIDataObjStrInitCheck(self):
+        """Confirm the DataObjStr type functions correctly."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
+                     for _ in b_mchdict}
+
+        # Confirm DataObjStr instantiates w/bytes
+        with self.subTest('inst_bytes'):
+            try:
+                b_dos = soi.DataObjStr(**b_mchdict)
+            except Exception:
+                self.fail('bytes instantiation failed')
+
+        # Confirm DataObjStr instantiates w/str
+        with self.subTest('inst_str'):
+            try:
+                s_dos = soi.DataObjStr(**s_mchdict)
+            except Exception:
+                self.fail('str instantiation failed')
+
+        # Confirm members match
+        for _ in s_mchdict:
+            with self.subTest('match_' + _):
+                self.assertEquals(getattr(b_dos, _),
+                                  getattr(s_dos, _))
+
+        # Confirm bytes-equivalents match
+        for _ in s_mchdict:
+            with self.subTest('str_equiv_' + _):
+                self.assertEquals(getattr(s_dos, _),
+                                  getattr(s_dos.as_bytes, _)
+                                  .decode(encoding='utf-8'))
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
@@ -461,6 +535,18 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
 
         with self.assertRaises(OSError):
             soi.writefile(INVALID_FNAME, b_str)
+
+    def test_APIBadDataObjInitTypes(self):
+        """Confirm error raised when init-ed w/wrong types."""
+        import sphobjinv as soi
+
+        with self.subTest('bytes'):
+            with self.assertRaises(TypeError):
+                soi.DataObjBytes(*range(6))
+
+        with self.subTest('str'):
+            with self.assertRaises(TypeError):
+                soi.DataObjStr(*range(6))
 
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
