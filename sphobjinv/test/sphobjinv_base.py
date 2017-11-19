@@ -172,7 +172,7 @@ class SuperSphobjinv(object):
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
-    def test_APIEncodeSucceeds(self):
+    def test_API_EncodeSucceeds(self):
         """Check that an encode attempt via API throws no errors."""
         import sphobjinv as soi
 
@@ -197,7 +197,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Seeing if sphinx actually likes the file
         sphinx_load_test(self, dest_fname)
 
-    def test_APIDecodeSucceeds(self):
+    def test_API_DecodeSucceeds(self):
         """Check that a decode attempt via API throws no errors."""
         import sphobjinv as soi
 
@@ -222,7 +222,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Testing compare w/original file
         decomp_cmp_test(self, dest_fname)
 
-    def test_APIRegexDataCheck(self):
+    def test_API_RegexDataCheck(self):
         """Confirm the regex for loading data lines is working properly."""
         import sphobjinv as soi
 
@@ -261,7 +261,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                     self.assertEquals(mchs[e].group(df.value),
                                       testdata[df][i])
 
-    def test_APIDataObjBytesInitCheck(self):
+    def test_API_DataObjBytes_InitCheck(self):
         """Confirm the DataObjBytes type functions correctly."""
         import sphobjinv as soi
 
@@ -299,7 +299,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                                   getattr(b_dob.as_str, _)
                                   .encode(encoding='utf-8'))
 
-    def test_APIDataObjStrInitCheck(self):
+    def test_API_DataObjStr_InitCheck(self):
         """Confirm the DataObjStr type functions correctly."""
         import sphobjinv as soi
 
@@ -336,6 +336,130 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertEquals(getattr(s_dos, _),
                                   getattr(s_dos.as_bytes, _)
                                   .decode(encoding='utf-8'))
+
+    def test_API_DataObjBytes_FlatDictFxn(self):
+        """Confirm that flat dict generating function works."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjBytes
+        # instance, and extract the flat_dict
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        b_flatdict = soi.DataObjBytes(**b_mchdict).flat_dict()
+
+        # Check matchingness
+        for _ in b_mchdict:
+            with self.subTest(_):
+                self.assertEquals(b_mchdict[_], b_flatdict[_])
+
+    def test_API_DataObjStr_FlatDictFxn(self):
+        """Confirm that flat dict generating function works."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjStr
+        # instance, and extract the flat_dict
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_flatdict = soi.DataObjStr(**b_mchdict).flat_dict()
+
+        # Check matchingness
+        for _ in b_mchdict:
+            with self.subTest(_):
+                self.assertEquals(b_mchdict[_].decode(encoding='utf-8'),
+                                  s_flatdict[_])
+
+    def test_API_DataObjBytes_StructDictFxn(self):
+        """Confirm that structured dict updating function works."""
+        import sphobjinv as soi
+        from sphobjinv import DataFields as DF
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjBytes
+        # instance, and update a new dict with the structured
+        # data
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        newdict = {}
+        soi.DataObjBytes(**b_mchdict).update_struct_dict(newdict)
+
+        # Check top-level is domain
+        with self.subTest('domain'):
+            self.assertEquals(list(newdict.keys())[0],
+                              b_mchdict[DF.Domain.value])
+
+        # Check next level is role
+        subdict = newdict[b_mchdict[DF.Domain.value]]
+        with self.subTest('role'):
+            self.assertEquals(list(subdict.keys())[0],
+                              b_mchdict[DF.Role.value])
+
+        # Check next level is name
+        subdict = subdict[b_mchdict[DF.Role.value]]
+        with self.subTest('name'):
+            self.assertEquals(list(subdict.keys())[0],
+                              b_mchdict[DF.Name.value])
+
+        # Check priority, URI and dispname
+        subdict = subdict[b_mchdict[DF.Name.value]]
+        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
+            with self.subTest(_):
+                # Assert key found
+                self.assertIn(_, subdict.keys())
+
+                # Assert value match
+                self.assertEquals(subdict[_], b_mchdict[_])
+
+    def test_API_DataObjStr_StructDictFxn(self):
+        """Confirm that structured dict updating function works."""
+        import sphobjinv as soi
+        from sphobjinv import DataFields as DF
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, convert to str,
+        # stuff into a DataObjBytes instance,
+        # and update a new dict with the structured data
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode('utf-8') for _ in b_mchdict}
+        newdict = {}
+        soi.DataObjStr(**b_mchdict).update_struct_dict(newdict)
+
+        # Check top-level is domain
+        with self.subTest('domain'):
+            self.assertEquals(list(newdict.keys())[0],
+                              s_mchdict[DF.Domain.value])
+
+        # Check next level is role
+        subdict = newdict[s_mchdict[DF.Domain.value]]
+        with self.subTest('role'):
+            self.assertEquals(list(subdict.keys())[0],
+                              s_mchdict[DF.Role.value])
+
+        # Check next level is name
+        subdict = subdict[s_mchdict[DF.Role.value]]
+        with self.subTest('name'):
+            self.assertEquals(list(subdict.keys())[0],
+                              s_mchdict[DF.Name.value])
+
+        # Check priority, URI and dispname
+        subdict = subdict[s_mchdict[DF.Name.value]]
+        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
+            with self.subTest(_):
+                # Assert key found
+                self.assertIn(_, subdict.keys())
+
+                # Assert value match
+                self.assertEquals(subdict[_], s_mchdict[_])
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
