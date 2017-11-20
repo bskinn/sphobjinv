@@ -44,8 +44,55 @@ def _utf8_encode(s):
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
+class SuperDataObj(object):
+    """Superclass defining common DataObj methods &c."""
+
+    def flat_dict(self):
+        """Return the object data formatted as a flat dict."""
+        return {_: getattr(self, _)
+                for _ in (__.value for __ in DataFields)}
+
+    def update_struct_dict(self, d):
+        """Update structured dict 'd' with the object data."""
+        # Create a new dict with the leaf values
+        new_d = dict({})
+        new_d.update({DataFields.Priority.value: self.priority,
+                      DataFields.URI.value: self.uri,
+                      DataFields.DispName.value: self.dispname})
+
+        # Retrieve any existing domain dictionary, or create a new
+        # empty dict
+        d_domain = d.get(self.domain, dict({}))
+
+        if len(d_domain) > 0:
+            # The domain already exists in d
+            # Retrieve any existing role dict, or create a new
+            # empty dict
+            d_role = d_domain.get(self.role, dict({}))
+
+            # Either way, add the leaf data under the object name
+            d_role.update({self.name: new_d})
+
+            # If only one item now exists, must update the domain
+            # dict with the newly created role dict
+            if len(d_role) == 1:
+                d_domain.update({self.role: d_role})
+        else:
+            # The domain doesn't exist in d
+            # A role dict of necessity must be created new
+            d_role = {self.name: new_d}
+
+            # Add the new role dict to the new-empty domain dict
+            d_domain.update({self.role: d_role})
+
+            # Add the new domain dict to the input dict
+            d.update({self.domain: d_domain})
+
+        # No return
+
+
 @attr.s(slots=True, frozen=True)
-class DataObjStr(object):
+class DataObjStr(SuperDataObj):
     """Container for string versions of objects.inv data."""
 
     name = attr.ib(convert=_utf8_decode)
@@ -67,52 +114,9 @@ class DataObjStr(object):
                             dispname=self.dispname,
                             as_str=None)
 
-    def flat_dict(self):
-        """Return the object data formatted as a flat dict."""
-        return {_: getattr(self, _)
-                for _ in (__.value for __ in DataFields)}
-
-    def update_struct_dict(self, d):
-        """Update structured dict 'd' with the object data."""
-        # Create a new dict with the leaf values
-        new_d = dict({})
-        new_d.update({DataFields.Priority.value: self.priority,
-                      DataFields.URI.value: self.uri,
-                      DataFields.DispName.value: self.dispname})
-
-        # Retrieve any existing domain dictionary, or create a new
-        # empty dict
-        d_domain = d.get(self.domain, dict({}))
-
-        if len(d_domain) > 0:
-            # The domain already exists in d
-            # Retrieve any existing role dict, or create a new
-            # empty dict
-            d_role = d_domain.get(self.role, dict({}))
-
-            # Either way, add the leaf data under the object name
-            d_role.update({self.name: new_d})
-
-            # If only one item now exists, must update the domain
-            # dict with the newly created role dict
-            if len(d_role) == 1:
-                d_domain.update({self.role: d_role})
-        else:
-            # The domain doesn't exist in d
-            # A role dict of necessity must be created new
-            d_role = {self.name: new_d}
-
-            # Add the new role dict to the new-empty domain dict
-            d_domain.update({self.role: d_role})
-
-            # Add the new domain dict to the input dict
-            d.update({self.domain: d_domain})
-
-        # No return
-
 
 @attr.s(slots=True, frozen=True)
-class DataObjBytes(object):
+class DataObjBytes(SuperDataObj):
     """Container for the data for an objects.inv entry."""
 
     name = attr.ib(convert=_utf8_encode)
@@ -133,49 +137,6 @@ class DataObjBytes(object):
                           uri=self.uri,
                           dispname=self.dispname,
                           as_bytes=None)
-
-    def flat_dict(self):
-        """Return the object data formatted as a flat dict."""
-        return {_: getattr(self, _)
-                for _ in (__.value for __ in DataFields)}
-
-    def update_struct_dict(self, d):
-        """Update structured dict 'd' with the object data."""
-        # Create a new dict with the leaf values
-        new_d = dict({})
-        new_d.update({DataFields.Priority.value: self.priority,
-                      DataFields.URI.value: self.uri,
-                      DataFields.DispName.value: self.dispname})
-
-        # Retrieve any existing domain dictionary, or create a new
-        # empty dict
-        d_domain = d.get(self.domain, dict({}))
-
-        if len(d_domain) > 0:
-            # The domain already exists in d
-            # Retrieve any existing role dict, or create a new
-            # empty dict
-            d_role = d_domain.get(self.role, dict({}))
-
-            # Either way, add the leaf data under the object name
-            d_role.update({self.name: new_d})
-
-            # If only one item now exists, must update the domain
-            # dict with the newly created role dict
-            if len(d_role) == 1:
-                d_domain.update({self.role: d_role})
-        else:
-            # The domain doesn't exist in d
-            # A role dict of necessity must be created new
-            d_role = {self.name: new_d}
-
-            # Add the new role dict to the new-empty domain dict
-            d_domain.update({self.role: d_role})
-
-            # Add the new domain dict to the input dict
-            d.update({self.domain: d_domain})
-
-        # No return
 
 
 if __name__ == '__main__':    # pragma: no cover
