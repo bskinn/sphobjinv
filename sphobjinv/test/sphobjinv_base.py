@@ -33,6 +33,12 @@ ENC_EXT = '.inv'
 DEC_EXT = '.txt'
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
+B_LINES_0 = {False:
+             b'attr.Attribute py:class 1 api.html#$ -',
+             True:
+             b'attr.Attribute py:class 1 api.html#attr.Attribute '
+             b'attr.Attribute'}
+S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
 
 
 # Useful functions
@@ -461,6 +467,61 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 # Assert value match
                 self.assertEquals(subdict[_], s_mchdict[_])
 
+    def test_API_DataObjBytes_DataLineFxn_StartContracted(self):
+        """Confirm that data line formatting function works."""
+        import sphobjinv as soi
+
+        b_str = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        m0 = soi.pb_data.search(b_str)
+        dob = soi.DataObjBytes(**m0.groupdict())
+
+        # Generate and check data line as bytes, both expanded
+        # and condensed
+        for _ in B_LINES_0:
+            b_dl = dob.data_line(expand=_)
+            with self.subTest('expand_' + str(_)):
+                self.assertEquals(b_dl, B_LINES_0[_])
+
+    def test_API_DataObjStr_DataLineFxn_StartContracted(self):
+        """Confirm that data line formatting function works."""
+        import sphobjinv as soi
+
+        b_str = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        m0 = soi.pb_data.search(b_str)
+        dos = soi.DataObjStr(**m0.groupdict())
+
+        # Generate and check data line as bytes, both expanded
+        # and condensed
+        for _ in S_LINES_0:
+            s_dl = dos.data_line(expand=_)
+            with self.subTest('expand_' + str(_)):
+                self.assertEquals(s_dl, S_LINES_0[_])
+
+    def test_API_DataObjBytes_DataLineFxn_StartExpanded(self):
+        """Confirm data line fxn works starting w/expanded entry."""
+        import sphobjinv as soi
+
+        dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[True])
+                               .groupdict())
+
+        for _ in B_LINES_0:
+            b_dl = dob.data_line(contract=_)
+            with self.subTest('contract_' + str(_)):
+                self.assertEquals(b_dl, B_LINES_0[not _])
+
+    def test_API_DataObjStr_DataLineFxn_StartExpanded(self):
+        """Confirm data line fxn works starting w/expanded entry."""
+        import sphobjinv as soi
+
+        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
+                               .groupdict())
+
+        for _ in S_LINES_0:
+            s_dl = dos.data_line(contract=_)
+            with self.subTest('contract_' + str(_)):
+                self.assertEquals(s_dl, S_LINES_0[not _])
+
+
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
@@ -671,6 +732,14 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
         with self.subTest('str'):
             with self.assertRaises(TypeError):
                 soi.DataObjStr(*range(6))
+
+    def test_API_DataLine_BothArgsTrue(self):
+        import sphobjinv as soi
+
+        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
+                             .groupdict())
+        with self.assertRaises(RuntimeError):
+            dos.data_line(expand=True, contract=True)
 
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""

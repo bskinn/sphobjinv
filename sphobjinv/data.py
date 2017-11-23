@@ -19,9 +19,27 @@
 
 """Module for manipulation of objects.inv data."""
 
+from enum import Enum
+
 import attr
 
-from .re import DataFields
+
+class DataFields(Enum):
+    """Enum for the regex groups of objects.inv data items."""
+
+    Name = 'name'
+    Domain = 'domain'
+    Role = 'role'
+    Priority = 'priority'
+    URI = 'uri'
+    DispName = 'dispname'
+
+
+class HeaderFields(Enum):
+    """Enum for regex groups of objects.inv header data."""
+
+    Project = 'project'
+    Version = 'version'
 
 
 def _utf8_decode(b):
@@ -46,6 +64,10 @@ def _utf8_encode(s):
 
 class SuperDataObj(object):
     """Superclass defining common DataObj methods &c."""
+
+    # These names must match the str values of the DataFields enum
+    data_line_fmt = ('{name} {domain}:{role} {priority} '
+                     '{uri} {dispname}')
 
     def flat_dict(self):
         """Return the object data formatted as a flat dict."""
@@ -90,6 +112,30 @@ class SuperDataObj(object):
 
         # No return
 
+    def data_line(self, *, expand=False):
+        """Compose objects.txt data line from instance contents."""
+        fmt_d = self.as_str.flat_dict()
+
+        if expand:
+            fmt_name = fmt_d[DataFields.Name.value]
+            fmt_uri = fmt_d[DataFields.URI.value]
+            fmt_dispname = fmt_d[DataFields.DispName.value]
+
+            if fmt_uri.endswith('$'):
+                fmt_d.update({DataFields.URI.value:
+                              fmt_uri[:-1] + fmt_name})
+
+            if fmt_dispname == '-':
+                fmt_d.update({DataFields.DispName.value:
+                              fmt_name})
+
+        retval = self.data_line_fmt.format(**fmt_d)
+
+        if isinstance(self, DataObjBytes):
+            return retval.encode(encoding='utf-8')
+        else:
+            return retval
+
 
 @attr.s(slots=True, frozen=True)
 class DataObjStr(SuperDataObj):
@@ -112,7 +158,13 @@ class DataObjStr(SuperDataObj):
                             priority=self.priority,
                             uri=self.uri,
                             dispname=self.dispname,
-                            as_str=None)
+                            as_str=self)
+
+    as_str = attr.ib(repr=False)
+
+    @as_str.default
+    def _as_str_default(self):
+        return self
 
 
 @attr.s(slots=True, frozen=True)
@@ -136,7 +188,13 @@ class DataObjBytes(SuperDataObj):
                           priority=self.priority,
                           uri=self.uri,
                           dispname=self.dispname,
-                          as_bytes=None)
+                          as_bytes=self)
+
+    as_bytes = attr.ib(repr=False)
+
+    @as_bytes.default
+    def _as_bytes_default(self):
+        return self
 
 
 if __name__ == '__main__':    # pragma: no cover

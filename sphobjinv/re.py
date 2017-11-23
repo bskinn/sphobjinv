@@ -19,26 +19,9 @@
 
 """Module with helper regexes for sphobjinv."""
 
-from enum import Enum
 import re
 
-
-class DataFields(Enum):
-    """Enum for the regex groups of objects.inv data items."""
-
-    Name = 'name'
-    Domain = 'domain'
-    Role = 'role'
-    Priority = 'priority'
-    URI = 'uri'
-    DispName = 'dispname'
-
-
-class HeaderFields(Enum):
-    """Enum for regex groups of objects.inv header data."""
-
-    Project = 'project'
-    Version = 'version'
+from .data import DataFields, HeaderFields
 
 
 #: Bytestring regex pattern for comment lines in decoded
