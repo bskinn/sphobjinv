@@ -696,7 +696,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                         sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
 
 
-class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
+class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
     def test_APINoInputFile(self):
@@ -741,6 +741,10 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
         with self.assertRaises(ValueError):
             dos.data_line(expand=True, contract=True)
 
+
+class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
+    """Testing that code raises expected errors when invoked improperly."""
+
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
@@ -769,21 +773,38 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
                          expect=1)
 
 
-def suite_expect_good():
-    """Create and return the test suite for expect-good cases."""
+def suite_cli_expect_good():
+    """Create and return the test suite for CLI expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
-                tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGood)])
 
     return s
 
 
-def suite_expect_fail():
-    """Create and return the test suite for expect-fail cases."""
+def suite_api_expect_good():
+    """Create and return the test suite for API expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvExpectFail)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood)])
+
+    return s
+
+
+def suite_cli_expect_fail():
+    """Create and return the test suite for CLI expect-fail cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFail)])
+
+    return s
+
+
+def suite_api_expect_fail():
+    """Create and return the test suite for API expect-fail cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectFail)])
 
     return s
 

@@ -69,6 +69,7 @@ class SuperDataObj(object):
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
 
+    @property
     def uri_contracted(self):
         """Return contracted URI."""
         if self.uri.endswith(self.name):
@@ -76,6 +77,7 @@ class SuperDataObj(object):
         else:
             return self.uri
 
+    @property
     def uri_expanded(self):
         """Return expanded URI."""
         if self.uri.endswith(self.uri_abbrev):
@@ -83,6 +85,7 @@ class SuperDataObj(object):
         else:
             return self.uri
 
+    @property
     def dispname_contracted(self):
         """Return contracted display name."""
         if self.dispname == self.name:
@@ -90,6 +93,7 @@ class SuperDataObj(object):
         else:
             return self.dispname
 
+    @property
     def dispname_expanded(self):
         """Return expanded display name."""
         if self.dispname == self.dispname_abbrev:
@@ -106,12 +110,12 @@ class SuperDataObj(object):
         d = {_: getattr(self, _) for _ in (__.value for __ in DataFields)}
 
         if expand:
-            d.update({DataFields.URI.value: self.uri_expanded(),
-                      DataFields.DispName.value: self.dispname_expanded()})
+            d.update({DataFields.URI.value: self.uri_expanded,
+                      DataFields.DispName.value: self.dispname_expanded})
 
         if contract:
-            d.update({DataFields.URI.value: self.uri_contracted(),
-                      DataFields.DispName.value: self.dispname_contracted()})
+            d.update({DataFields.URI.value: self.uri_contracted,
+                      DataFields.DispName.value: self.dispname_contracted})
 
         return d
 
@@ -156,6 +160,7 @@ class SuperDataObj(object):
 
     def data_line(self, *, expand=False, contract=False):
         """Compose objects.txt data line from instance contents."""
+        # Rely on .flat_dict to check for invalid expand == contract == True
         fmt_d = self.as_str.flat_dict(expand=expand, contract=contract)
 
         retval = self.data_line_fmt.format(**fmt_d)
