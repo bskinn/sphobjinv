@@ -69,10 +69,51 @@ class SuperDataObj(object):
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
 
-    def flat_dict(self):
+    def uri_contracted(self):
+        """Return contracted URI."""
+        if self.uri.endswith(self.name):
+            return self.uri[:-len(self.name)] + self.uri_abbrev
+        else:
+            return self.uri
+
+    def uri_expanded(self):
+        """Return expanded URI."""
+        if self.uri.endswith(self.uri_abbrev):
+            return self.uri[:-len(self.uri_abbrev)] + self.name
+        else:
+            return self.uri
+
+    def dispname_contracted(self):
+        """Return contracted display name."""
+        if self.dispname == self.name:
+            return self.dispname_abbrev
+        else:
+            return self.dispname
+
+    def dispname_expanded(self):
+        """Return expanded display name."""
+        if self.dispname == self.dispname_abbrev:
+            return self.name
+        else:
+            return self.dispname
+
+    def flat_dict(self, *, expand=False, contract=False):
         """Return the object data formatted as a flat dict."""
-        return {_: getattr(self, _)
-                for _ in (__.value for __ in DataFields)}
+        if expand and contract:
+            raise ValueError("'expand' and 'contract' cannot "
+                             "both be true.")
+
+        d = {_: getattr(self, _) for _ in (__.value for __ in DataFields)}
+
+        if expand:
+            d.update({DataFields.URI.value: self.uri_expanded(),
+                      DataFields.DispName.value: self.dispname_expanded()})
+
+        if contract:
+            d.update({DataFields.URI.value: self.uri_contracted(),
+                      DataFields.DispName.value: self.dispname_contracted()})
+
+        return d
 
     def update_struct_dict(self, d):
         """Update structured dict 'd' with the object data."""
@@ -99,6 +140,7 @@ class SuperDataObj(object):
             # dict with the newly created role dict
             if len(d_role) == 1:
                 d_domain.update({self.role: d_role})
+
         else:
             # The domain doesn't exist in d
             # A role dict of necessity must be created new
@@ -112,34 +154,21 @@ class SuperDataObj(object):
 
         # No return
 
-    def data_line(self, *, expand=False):
+    def data_line(self, *, expand=False, contract=False):
         """Compose objects.txt data line from instance contents."""
-        fmt_d = self.as_str.flat_dict()
-
-        if expand:
-            fmt_name = fmt_d[DataFields.Name.value]
-            fmt_uri = fmt_d[DataFields.URI.value]
-            fmt_dispname = fmt_d[DataFields.DispName.value]
-
-            if fmt_uri.endswith('$'):
-                fmt_d.update({DataFields.URI.value:
-                              fmt_uri[:-1] + fmt_name})
-
-            if fmt_dispname == '-':
-                fmt_d.update({DataFields.DispName.value:
-                              fmt_name})
+        fmt_d = self.as_str.flat_dict(expand=expand, contract=contract)
 
         retval = self.data_line_fmt.format(**fmt_d)
 
-        if isinstance(self, DataObjBytes):
-            return retval.encode(encoding='utf-8')
-        else:
-            return retval
+        return self._data_line_postprocess(retval)
 
 
 @attr.s(slots=True, frozen=True)
 class DataObjStr(SuperDataObj):
     """Container for string versions of objects.inv data."""
+
+    uri_abbrev = '$'
+    dispname_abbrev = '-'
 
     name = attr.ib(convert=_utf8_decode)
     domain = attr.ib(convert=_utf8_decode)
@@ -166,10 +195,17 @@ class DataObjStr(SuperDataObj):
     def _as_str_default(self):
         return self
 
+    def _data_line_postprocess(self, s):
+        """Perform no postprocessing."""
+        return s
+
 
 @attr.s(slots=True, frozen=True)
 class DataObjBytes(SuperDataObj):
     """Container for the data for an objects.inv entry."""
+
+    uri_abbrev = b'$'
+    dispname_abbrev = b'-'
 
     name = attr.ib(convert=_utf8_encode)
     domain = attr.ib(convert=_utf8_encode)
@@ -195,6 +231,10 @@ class DataObjBytes(SuperDataObj):
     @as_bytes.default
     def _as_bytes_default(self):
         return self
+
+    def _data_line_postprocess(self, s):
+        """Encode to bytes."""
+        return s.encode('utf-8')
 
 
 if __name__ == '__main__':    # pragma: no cover
