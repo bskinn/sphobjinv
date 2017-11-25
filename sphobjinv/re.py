@@ -46,9 +46,8 @@ pb_version = re.compile("""
     """.format(HeaderFields.Version.value).encode(encoding='utf-8'),
                        re.M | re.X)
 
-#: Bytestring regex pattern for data lines in decoded
-#: ``objects.inv`` files
-pb_data = re.compile("""\
+#: Regex pattern for compilation into str and bytes re patterns
+ptn_data = """\
     ^                        # Start of line
     (?P<{0}>[^#]\\S+)        # --> Name
     \\s+                     # Dividing space
@@ -60,16 +59,22 @@ pb_data = re.compile("""\
     \\s+                     # Dividing space
     (?P<{4}>\\S+)            # --> URI
     \\s+                     # Dividing space
-    (?P<{5}>.+)              # --> Display name
-    $                        # Possible space to end of line
+    (?P<{5}>.+?)             # --> Display name, lazy b/c possible CR
+    \\r?$                    # Ignore possible CR at EOL
     """.format(DataFields.Name.value,
                DataFields.Domain.value,
                DataFields.Role.value,
                DataFields.Priority.value,
                DataFields.URI.value,
-               DataFields.DispName.value).encode(encoding='utf-8'),
-                    re.M | re.X)
+               DataFields.DispName.value)
 
+#: Bytestring regex pattern for bytes data lines in decoded
+#: ``objects.inv`` files
+pb_data = re.compile(ptn_data.encode(encoding='utf-8'), re.M | re.X)
+
+#: str regex pattern for str data lines in decoded
+#: ``objects.inv`` files
+p_data = re.compile(ptn_data, re.M | re.X)
 
 if __name__ == '__main__':    # pragma: no cover
     print('Module not executable.')

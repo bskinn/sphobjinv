@@ -26,6 +26,7 @@ from __future__ import absolute_import
 __all__ = ['readfile', 'writefile',
            'encode', 'decode',
            'pb_comments', 'pb_data', 'pb_version', 'pb_project',
+           'p_data',
            'DataFields', 'HeaderFields',
            'SphobjinvError', 'VersionError',
            'DataObjStr', 'DataObjBytes']
@@ -35,6 +36,7 @@ from .data import DataFields, HeaderFields
 from .error import SphobjinvError, VersionError
 from .fileops import readfile, writefile
 from .re import pb_comments, pb_data, pb_version, pb_project
+from .re import p_data
 from .zlib import decode, encode
 
 
