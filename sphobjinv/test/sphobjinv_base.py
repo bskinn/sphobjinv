@@ -514,13 +514,12 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
-                               .groupdict())
+                             .groupdict())
 
         for _ in S_LINES_0:
             s_dl = dos.data_line(contract=_)
             with self.subTest('contract_' + str(_)):
                 self.assertEquals(s_dl, S_LINES_0[not _])
-
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
@@ -734,11 +733,12 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase):
                 soi.DataObjStr(*range(6))
 
     def test_API_DataLine_BothArgsTrue(self):
+        """Confirm error raised when both expand and contract are True."""
         import sphobjinv as soi
 
         dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
                              .groupdict())
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             dos.data_line(expand=True, contract=True)
 
     def test_CmdlineDecodeWrongFileType(self):
