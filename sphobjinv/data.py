@@ -160,10 +160,7 @@ class SuperDataObj(object):
 
         retval = self.data_line_fmt.format(**fmt_d)
 
-        if isinstance(self, DataObjBytes):
-            return retval.encode(encoding='utf-8')
-        else:
-            return retval
+        return self._data_line_postprocess(retval)
 
 
 @attr.s(slots=True, frozen=True)
@@ -198,6 +195,10 @@ class DataObjStr(SuperDataObj):
     def _as_str_default(self):
         return self
 
+    def _data_line_postprocess(self, s):
+        """Perform no postprocessing."""
+        return s
+
 
 @attr.s(slots=True, frozen=True)
 class DataObjBytes(SuperDataObj):
@@ -230,6 +231,10 @@ class DataObjBytes(SuperDataObj):
     @as_bytes.default
     def _as_bytes_default(self):
         return self
+
+    def _data_line_postprocess(self, s):
+        """Encode to bytes."""
+        return s.encode('utf-8')
 
 
 if __name__ == '__main__':    # pragma: no cover
