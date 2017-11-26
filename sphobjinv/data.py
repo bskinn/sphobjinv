@@ -19,6 +19,7 @@
 
 """Module for manipulation of objects.inv data."""
 
+from abc import ABCMeta, abstractmethod
 from enum import Enum
 
 import attr
@@ -62,12 +63,77 @@ def _utf8_encode(s):
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
-class SuperDataObj(object):
+class SuperDataObj(object, metaclass=ABCMeta):
     """Superclass defining common DataObj methods &c."""
 
     # These names must match the str values of the DataFields enum
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
+
+    @property
+    @abstractmethod
+    def name(self):
+        """Return object name."""
+        pass
+
+    @property
+    @abstractmethod
+    def domain(self):
+        """Return object domain."""
+        pass
+
+    @property
+    @abstractmethod
+    def role(self):
+        """Return object role."""
+        pass
+
+    @property
+    @abstractmethod
+    def priority(self):
+        """Return object search priority."""
+        pass
+
+    @property
+    @abstractmethod
+    def uri(self):
+        """Return object URI."""
+        pass
+
+    @property
+    @abstractmethod
+    def dispname(self):
+        """Return object display name."""
+        pass
+
+    @property
+    @abstractmethod
+    def uri_abbrev(self):
+        """Return char(s) for abbreviating URI tail."""
+        pass
+
+    @property
+    @abstractmethod
+    def dispname_abbrev(self):
+        """Return char(s) for abbreviating display name."""
+        pass
+
+    @property
+    @abstractmethod
+    def as_str(self, s):
+        """Return DataObjStr version of DataObj instance."""
+        pass
+
+    @property
+    @abstractmethod
+    def as_bytes(self, s):
+        """Return DataObjBytes version of DataObj instance."""
+        pass
+
+    @abstractmethod
+    def _data_line_postprocess(self, s):
+        """Post-process the data_line chars output."""
+        pass
 
     @property
     def uri_contracted(self):
@@ -238,7 +304,7 @@ class DataObjBytes(SuperDataObj):
         return self
 
     def _data_line_postprocess(self, s):
-        """Encode to bytes."""
+        """Encode to bytes before data_line return."""
         return s.encode('utf-8')
 
 
