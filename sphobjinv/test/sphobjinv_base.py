@@ -467,6 +467,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 # Assert value match
                 self.assertEquals(subdict[_], s_mchdict[_])
 
+    # These methods testing data_line also implicitly test flat_dict
     def test_API_DataObjBytes_DataLineFxn_StartContracted(self):
         """Confirm that data line formatting function works."""
         import sphobjinv as soi

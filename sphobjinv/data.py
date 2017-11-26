@@ -185,23 +185,25 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         return d
 
-    def update_struct_dict(self, d):
+    def update_struct_dict(self, d, *, expand=False, contract=False):
         """Update structured dict 'd' with the object data."""
-        # Create a new dict with the leaf values
-        new_d = dict({})
-        new_d.update({DataFields.Priority.value: self.priority,
-                      DataFields.URI.value: self.uri,
-                      DataFields.DispName.value: self.dispname})
+        # Create a new dict with the leaf values. Invalid case of
+        # expand == contract == True handled by flat_dict
+        flat_d = self.flat_dict(expand=expand, contract=contract)
+        new_d = {_: flat_d[_] for _ in
+                 [DataFields.Priority.value,
+                  DataFields.URI.value,
+                  DataFields.DispName.value]}
 
         # Retrieve any existing domain dictionary, or create a new
         # empty dict
-        d_domain = d.get(self.domain, dict({}))
+        d_domain = d.get(self.domain, {})
 
         if len(d_domain) > 0:
             # The domain already exists in d
             # Retrieve any existing role dict, or create a new
             # empty dict
-            d_role = d_domain.get(self.role, dict({}))
+            d_role = d_domain.get(self.role, {})
 
             # Either way, add the leaf data under the object name
             d_role.update({self.name: new_d})
