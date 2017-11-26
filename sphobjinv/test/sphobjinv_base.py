@@ -472,9 +472,8 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm that data line formatting function works."""
         import sphobjinv as soi
 
-        b_str = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
-        m0 = soi.pb_data.search(b_str)
-        dob = soi.DataObjBytes(**m0.groupdict())
+        dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[False])
+                               .groupdict())
 
         # Generate and check data line as bytes, both expanded
         # and condensed
@@ -487,9 +486,8 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm that data line formatting function works."""
         import sphobjinv as soi
 
-        b_str = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
-        m0 = soi.pb_data.search(b_str)
-        dos = soi.DataObjStr(**m0.groupdict())
+        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[False])
+                               .groupdict())
 
         # Generate and check data line as bytes, both expanded
         # and condensed
