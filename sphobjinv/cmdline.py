@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------------
-# Name:        sphobjinv
-# Purpose:     Core module for encoding/decoding Sphinx objects.inv files
+# Name:        cmdline
+# Purpose:     CLI module for sphobjinv
 #
 # Author:      Brian Skinn
 #                bskinn@alum.mit.edu
@@ -17,19 +17,11 @@
 #
 # ----------------------------------------------------------------------------
 
-"""Core module for sphobjinv.
-
-Encodes/decodes objects.inv files used by intersphinx for
-cross-references across different projects.
-
-"""
+"""CLI module for sphobjinv."""
 
 import argparse as ap
 import os
-import zlib
 import sys
-import re
-import io
 
 ENCODE = 'encode'
 DECODE = 'decode'
@@ -37,8 +29,6 @@ INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
-
-BUFSIZE = 16*1024    # 16k chunks
 
 DEF_OUT_EXT = {ENCODE: '.inv', DECODE: '.txt'}
 DEF_INP_EXT = {ENCODE: '.txt', DECODE: '.inv'}
@@ -50,25 +40,8 @@ HELP_DECODE_EXTS = "'.txt (.inv)'"
 HELP_ENCODE_FNAMES = "'./objects.inv(.txt)'"
 
 
-class SphobjinvError(Exception):
-    """Exception superclass for the project."""
-
-
-class VersionError(SphobjinvError):
-    """Attempting an operation on an unsupported version."""
-
-
-#: Bytestring regex pattern for comment lines in decoded
-#: ``objects.inv`` files
-p_comments = re.compile(b'^#.*$', re.M)
-
-#: Bytestring regex pattern for data lines in decoded
-#: ``objects.inv`` files
-p_data = re.compile(b'^[^#].*$', re.M)
-
-
 def _getparser():
-    """Generate argumwnt parser.
+    """Generate argument parser.
 
     Returns
     -------
@@ -113,193 +86,11 @@ def _getparser():
     return prs
 
 
-def readfile(path, cmdline=False):
-    """Read file contents and return as binary string.
-
-    Parameters
-    ----------
-    path
-
-        |str| -- Path to file to be opened.
-
-    cmdline
-
-        |bool| -- If |False|, exceptions are raised as normal.
-        If |True|, on raise of any subclass of :class:`Exception`,
-        the function returns |None|.
-
-    Returns
-    -------
-    b
-
-        |bytes| -- Binary contents of the indicated file.
-
-    """
-    # Open the file and read
-    try:
-        with open(path, 'rb') as f:
-            b = f.read()
-    except Exception:
-        if cmdline:
-            b = None
-        else:
-            raise
-
-    # Return the result
-    return b
-
-
-def writefile(path, contents, cmdline=False):
-    """Write indicated file contents (with clobber).
-
-    Parameters
-    ----------
-    path
-
-        |str| -- Path to file to be written.
-
-    contents
-
-        |bytes| -- Binary string of data to be written to file.
-
-    cmdline
-
-        |bool| -- If |False|, exceptions are raised as normal.
-        If |True|, on raise of any subclass of :class:`Exception`,
-        the function returns |None|.
-
-    Returns
-    -------
-    p
-
-        |str| -- If write is successful, echo of the `path` input |str| is
-        returned.  If any :class:`Exception` is raised and `cmdline` is
-        |True|, |None| is returned.
-
-    """
-    # Write the decoded file
-    try:
-        with open(path, 'wb') as f:
-            f.write(contents)
-    except Exception:
-        if cmdline:
-            return None
-        else:
-            raise
-
-    return path
-
-
-def decode(bstr):
-    """Decode a version 2 |isphx| ``objects.inv`` bytestring.
-
-    The `#`-prefixed comment lines are left unchanged, whereas the
-    :mod:`zlib`-compressed data lines are decompressed to plaintext.
-
-    Parameters
-    ----------
-    bstr
-
-        |bytes| -- Binary string containing an encoded ``objects.inv``
-        file.
-
-    Returns
-    -------
-    out_b
-
-        |bytes| -- Decoded binary string containing the plaintext
-        ``objects.inv`` content.
-
-    """
-    def decompress_chunks(bstrm):
-        """Handle chunk-wise zlib decompression.
-
-        Internal function pulled from intersphinx.py@v1.4.1:
-        https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
-          ext/intersphinx.py#L79-L124.
-        BUFSIZE taken as the default value from intersphinx signature
-        Modified slightly to take the stream as a parameter,
-        rather than assuming one from the parent namespace.
-
-        """
-        decompressor = zlib.decompressobj()
-        for chunk in iter(lambda: bstrm.read(BUFSIZE), b''):
-            yield decompressor.decompress(chunk)
-        yield decompressor.flush()
-
-    # Make stream and output string
-    strm = io.BytesIO(bstr)
-
-    # Check to be sure it's v2
-    out_b = strm.readline()
-    if not out_b.endswith(b'2\n'):
-        raise VersionError('Only v2 objects.inv files currently supported')
-
-    # Pull name, version, and description lines
-    for i in range(3):
-        out_b += strm.readline()
-
-    # Decompress chunks and append
-    for chunk in decompress_chunks(strm):
-        out_b += chunk
-
-    # Replace newlines with the OS-local newlines
-    out_b = out_b.replace(b'\n', os.linesep.encode())
-
-    # Return the newline-composited result
-    return out_b
-
-
-def encode(bstr):
-    """Encode a version 2 |isphx| ``objects.inv`` bytestring.
-
-    The `#`-prefixed comment lines are left unchanged, whereas the
-    plaintext data lines are compressed with :mod:`zlib`.
-
-    Parameters
-    ----------
-    bstr
-
-        |bytes| -- Binary string containing the decoded contents of an
-        ``objects.inv`` file.
-
-    Returns
-    -------
-    out_b
-
-        |bytes| -- Binary string containing the encoded ``objects.inv``
-        content.
-
-    """
-    # Preconvert any DOS newlines to Unix
-    s = bstr.replace(b'\r\n', b'\n')
-
-    # Pull all of the lines
-    m_comments = p_comments.findall(s)
-    m_data = p_data.finditer(s)
-
-    # Helper generator to retrive the text, not the match object
-    def gen_data():
-        yield next(m_data).group(0)
-
-    # Assemble the binary header comments and data
-    # Comments and data blocks must end in newlines
-    hb = b'\n'.join(m_comments) + b'\n'
-    db = b'\n'.join(gen_data()) + b'\n'
-
-    # Compress the data block
-    # Compression level nine is to match that specified in
-    #  sphinx html builder:
-    # https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
-    #    builders/html.py#L843
-    dbc = zlib.compress(db, 9)
-
-    # Return the composited bytestring
-    return hb + dbc
-
-
 def main():
     """Handle command line invocation."""
+    from .fileops import readfile, writefile
+    from .zlib import encode, decode
+
     def selective_print(thing):
         """Print `thing` only if not `QUIET`."""
         if not params[QUIET]:
@@ -393,5 +184,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    # pragma: no cover
     main()

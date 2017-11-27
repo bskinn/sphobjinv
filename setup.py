@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='sphobjinv',
-    version='1.0',
+    version='2.0.dev1',
     packages=['sphobjinv'],
     url='https://www.github.com/bskinn/sphobjinv',
     license='MIT License',
@@ -23,7 +23,6 @@ setup(
                  'Intended Audience :: Developers',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python :: 3 :: Only',
-                 'Programming Language :: Python :: 3.3',
                  'Programming Language :: Python :: 3.4',
                  'Programming Language :: Python :: 3.5',
                  'Programming Language :: Python :: 3.6',
@@ -32,7 +31,7 @@ setup(
                  'Development Status :: 5 - Production/Stable'],
     entry_points={
         'console_scripts': [
-            'sphobjinv = sphobjinv.sphobjinv:main'
+            'sphobjinv = sphobjinv.cmdline:main'
                            ]
                   }
 )

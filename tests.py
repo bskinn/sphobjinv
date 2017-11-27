@@ -24,6 +24,14 @@ class AP(object):
     GOOD = 'good'
     FAIL = 'fail'
 
+    CLI = 'cli'
+    CLI_GOOD = 'cli_good'
+    CLI_FAIL = 'cli_fail'
+
+    API = 'api'
+    API_GOOD = 'api_good'
+    API_FAIL = 'api_fail'
+
     PFX = "--{0}"
 
 
@@ -31,7 +39,7 @@ def get_parser():
     import argparse
 
     # Create the parser
-    prs = argparse.ArgumentParser(description="Run tests for tempvars")
+    prs = argparse.ArgumentParser(description="Run tests for sphobjinv")
 
     # Verbosity argument
     prs.add_argument('-v', action='store_true',
@@ -41,7 +49,11 @@ def get_parser():
     prs.add_argument('-w', action='store_true',
                      help="Display warnings emitted during tests")
 
-    # Groups without subgroups
+    # Test subgroups
+    gp_cli = prs.add_argument_group(title="CLI Tests")
+    gp_api = prs.add_argument_group(title="API Tests")
+
+    # Options without subgroups
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
                      help="Run all tests (overrides any other selections)")
@@ -51,6 +63,28 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
                      action='store_true',
                      help="Run all expect-fail tests")
+
+    # CLI group
+    gp_cli.add_argument(AP.PFX.format(AP.CLI),
+                        action='store_true',
+                        help="Run all CLI tests")
+    gp_cli.add_argument(AP.PFX.format(AP.CLI_GOOD),
+                        action='store_true',
+                        help="Run expect-good CLI tests")
+    gp_cli.add_argument(AP.PFX.format(AP.CLI_FAIL),
+                        action='store_true',
+                        help="Run expect-fail CLI tests")
+
+    # API group
+    gp_api.add_argument(AP.PFX.format(AP.API),
+                        action='store_true',
+                        help="Run all API tests")
+    gp_api.add_argument(AP.PFX.format(AP.API_GOOD),
+                        action='store_true',
+                        help="Run expect-good API tests")
+    gp_api.add_argument(AP.PFX.format(AP.API_FAIL),
+                        action='store_true',
+                        help="Run expect-fail API tests")
 
     # Return the parser
     return prs
@@ -84,11 +118,16 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_expect_good(),
-               [AP.ALL, AP.GOOD])
+    addsuiteif(sphobjinv.test.sphobjinv_base.suite_cli_expect_good(),
+               [AP.ALL, AP.GOOD, AP.CLI, AP.CLI_GOOD])
+    addsuiteif(sphobjinv.test.sphobjinv_base.suite_api_expect_good(),
+               [AP.ALL, AP.GOOD, AP.API, AP.API_GOOD])
+
     # Expect-fail tests
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_expect_fail(),
-               [AP.ALL, AP.FAIL])
+    addsuiteif(sphobjinv.test.sphobjinv_base.suite_cli_expect_fail(),
+               [AP.ALL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
+    addsuiteif(sphobjinv.test.sphobjinv_base.suite_api_expect_fail(),
+               [AP.ALL, AP.FAIL, AP.API, AP.API_FAIL])
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,

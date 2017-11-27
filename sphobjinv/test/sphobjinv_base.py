@@ -32,6 +32,13 @@ MOD_FNAME_BASE = 'objects_mod'
 ENC_EXT = '.inv'
 DEC_EXT = '.txt'
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
+INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
+B_LINES_0 = {False:
+             b'attr.Attribute py:class 1 api.html#$ -',
+             True:
+             b'attr.Attribute py:class 1 api.html#attr.Attribute '
+             b'attr.Attribute'}
+S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
 
 
 # Useful functions
@@ -98,7 +105,7 @@ def sphinx_load_test(testcase, path):
 
 def run_cmdline_test(testcase, arglist, expect=0):
     """Perform command line test."""
-    from sphobjinv.sphobjinv import main
+    from sphobjinv.cmdline import main
 
     # Assemble execution arguments
     runargs = ['sphobjinv']
@@ -168,20 +175,10 @@ class SuperSphobjinv(object):
         clear_scratch()
 
 
-class SubTestMasker(object):
-    """Inheritance class to implement mocked version of .subTest."""
-
-    if sys.version_info.major == 3 and sys.version_info.minor < 4:
-        @contextmanager
-        def subTest(testcase, name):
-            """Mock TestCase.subTest for Python versions <3.4."""
-            yield
-
-
-class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
+class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
-    def test_APIEncodeSucceeds(self):
+    def test_API_EncodeSucceeds(self):
         """Check that an encode attempt via API throws no errors."""
         import sphobjinv as soi
 
@@ -206,7 +203,7 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
         # Seeing if sphinx actually likes the file
         sphinx_load_test(self, dest_fname)
 
-    def test_APIDecodeSucceeds(self):
+    def test_API_DecodeSucceeds(self):
         """Check that a decode attempt via API throws no errors."""
         import sphobjinv as soi
 
@@ -230,6 +227,284 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
 
         # Testing compare w/original file
         decomp_cmp_test(self, dest_fname)
+
+    def test_API_RegexDataCheck(self):
+        """Confirm the regex for loading data lines is working properly."""
+        import sphobjinv as soi
+
+        # Populate scratch with the decoded file
+        copy_dec()
+
+        # Read the file
+        b_str = soi.fileops.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
+
+        # Have to convert any DOS newlines
+        b_str = b_str.replace(b'\r\n', b'\n')
+
+        # A separate check shows 56 entries in the reference hive."""
+        with self.subTest('entries_count'):
+            self.assertEquals(56, len(soi.re.pb_data.findall(b_str)))
+
+        # The first entry in the file is:
+        #  attr.Attribute py:class 1 api.html#$ -
+        # The third entry from the end is:
+        #  slots std:label -1 examples.html#$ Slots
+        elements = [0, -3]
+        testdata = {soi.DataFields.Name: [b'attr.Attribute', b'slots'],
+                    soi.DataFields.Domain: [b'py', b'std'],
+                    soi.DataFields.Role: [b'class', b'label'],
+                    soi.DataFields.Priority: [b'1', b'-1'],
+                    soi.DataFields.URI: [b'api.html#$', b'examples.html#$'],
+                    soi.DataFields.DispName: [b'-', b'Slots']}
+
+        # Materialize the list of data line matches
+        mchs = list(soi.re.pb_data.finditer(b_str))
+
+        # Test each of the id-ed data lines
+        for i, e in enumerate(elements):
+            for df in soi.DataFields:
+                with self.subTest('{0}_{1}'.format(df.value, e)):
+                    self.assertEquals(mchs[e].group(df.value),
+                                      testdata[df][i])
+
+    def test_API_DataObjBytes_InitCheck(self):
+        """Confirm the DataObjBytes type functions correctly."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
+                     for _ in b_mchdict}
+
+        # Confirm DataObjBytes instantiates w/bytes
+        with self.subTest('inst_bytes'):
+            try:
+                b_dob = soi.DataObjBytes(**b_mchdict)
+            except Exception:
+                self.fail('bytes instantiation failed')
+
+        # Confirm DataObjBytes instantiates w/str
+        with self.subTest('inst_str'):
+            try:
+                s_dob = soi.DataObjBytes(**s_mchdict)
+            except Exception:
+                self.fail('str instantiation failed')
+
+        # Confirm members match
+        for _ in b_mchdict:
+            with self.subTest('match_' + _):
+                self.assertEquals(getattr(b_dob, _),
+                                  getattr(s_dob, _))
+
+        # Confirm str-equivalents match
+        for _ in b_mchdict:
+            with self.subTest('str_equiv_' + _):
+                self.assertEquals(getattr(b_dob, _),
+                                  getattr(b_dob.as_str, _)
+                                  .encode(encoding='utf-8'))
+
+    def test_API_DataObjStr_InitCheck(self):
+        """Confirm the DataObjStr type functions correctly."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
+                     for _ in b_mchdict}
+
+        # Confirm DataObjStr instantiates w/bytes
+        with self.subTest('inst_bytes'):
+            try:
+                b_dos = soi.DataObjStr(**b_mchdict)
+            except Exception:
+                self.fail('bytes instantiation failed')
+
+        # Confirm DataObjStr instantiates w/str
+        with self.subTest('inst_str'):
+            try:
+                s_dos = soi.DataObjStr(**s_mchdict)
+            except Exception:
+                self.fail('str instantiation failed')
+
+        # Confirm members match
+        for _ in s_mchdict:
+            with self.subTest('match_' + _):
+                self.assertEquals(getattr(b_dos, _),
+                                  getattr(s_dos, _))
+
+        # Confirm bytes-equivalents match
+        for _ in s_mchdict:
+            with self.subTest('str_equiv_' + _):
+                self.assertEquals(getattr(s_dos, _),
+                                  getattr(s_dos.as_bytes, _)
+                                  .decode(encoding='utf-8'))
+
+    def test_API_DataObjBytes_FlatDictFxn(self):
+        """Confirm that flat dict generating function works."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjBytes
+        # instance, and extract the flat_dict
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        b_flatdict = soi.DataObjBytes(**b_mchdict).flat_dict()
+
+        # Check matchingness
+        for _ in b_mchdict:
+            with self.subTest(_):
+                self.assertEquals(b_mchdict[_], b_flatdict[_])
+
+    def test_API_DataObjStr_FlatDictFxn(self):
+        """Confirm that flat dict generating function works."""
+        import sphobjinv as soi
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjStr
+        # instance, and extract the flat_dict
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_flatdict = soi.DataObjStr(**b_mchdict).flat_dict()
+
+        # Check matchingness
+        for _ in b_mchdict:
+            with self.subTest(_):
+                self.assertEquals(b_mchdict[_].decode(encoding='utf-8'),
+                                  s_flatdict[_])
+
+    def test_API_DataObjBytes_StructDictFxn(self):
+        """Confirm that structured dict updating function works."""
+        import sphobjinv as soi
+        from sphobjinv import DataFields as DF
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, stuff into a DataObjBytes
+        # instance, and update a new dict with the structured
+        # data
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        newdict = {}
+        soi.DataObjBytes(**b_mchdict).update_struct_dict(newdict)
+
+        # Check top-level is domain
+        with self.subTest('domain'):
+            self.assertEquals(list(newdict.keys())[0],
+                              b_mchdict[DF.Domain.value])
+
+        # Check next level is role
+        subdict = newdict[b_mchdict[DF.Domain.value]]
+        with self.subTest('role'):
+            self.assertEquals(list(subdict.keys())[0],
+                              b_mchdict[DF.Role.value])
+
+        # Check next level is name
+        subdict = subdict[b_mchdict[DF.Role.value]]
+        with self.subTest('name'):
+            self.assertEquals(list(subdict.keys())[0],
+                              b_mchdict[DF.Name.value])
+
+        # Check priority, URI and dispname
+        subdict = subdict[b_mchdict[DF.Name.value]]
+        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
+            with self.subTest(_):
+                # Assert key found
+                self.assertIn(_, subdict.keys())
+
+                # Assert value match
+                self.assertEquals(subdict[_], b_mchdict[_])
+
+    def test_API_DataObjStr_StructDictFxn(self):
+        """Confirm that structured dict updating function works."""
+        import sphobjinv as soi
+        from sphobjinv import DataFields as DF
+
+        # Pull .txt file and match first data line
+        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        mch = soi.pb_data.search(b_dec)
+
+        # Extract the match information, convert to str,
+        # stuff into a DataObjBytes instance,
+        # and update a new dict with the structured data
+        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+        s_mchdict = {_: b_mchdict[_].decode('utf-8') for _ in b_mchdict}
+        newdict = {}
+        soi.DataObjStr(**s_mchdict).update_struct_dict(newdict)
+
+        # Check top-level is domain
+        with self.subTest('domain'):
+            self.assertEquals(list(newdict.keys())[0],
+                              s_mchdict[DF.Domain.value])
+
+        # Check next level is role
+        subdict = newdict[s_mchdict[DF.Domain.value]]
+        with self.subTest('role'):
+            self.assertEquals(list(subdict.keys())[0],
+                              s_mchdict[DF.Role.value])
+
+        # Check next level is name
+        subdict = subdict[s_mchdict[DF.Role.value]]
+        with self.subTest('name'):
+            self.assertEquals(list(subdict.keys())[0],
+                              s_mchdict[DF.Name.value])
+
+        # Check priority, URI and dispname
+        subdict = subdict[s_mchdict[DF.Name.value]]
+        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
+            with self.subTest(_):
+                # Assert key found
+                self.assertIn(_, subdict.keys())
+
+                # Assert value match
+                self.assertEquals(subdict[_], s_mchdict[_])
+
+    # These methods testing data_line also implicitly test flat_dict
+    def test_API_DataObjBytes_DataLineFxn(self):
+        """Confirm that data line formatting function works."""
+        from itertools import product
+
+        import sphobjinv as soi
+
+        # Generate and check data line as bytes, both expanded
+        # and contracted, with both expanded/contracted flag
+        for _, __ in product(B_LINES_0, repeat=2):  # True/False product
+            dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[_])
+                                   .groupdict())
+            b_dl = dob.data_line(expand=__)
+            with self.subTest(str(_) + '_expand_' + str(__)):
+                self.assertEquals(b_dl, B_LINES_0[_ or __])
+
+            b_dl = dob.data_line(contract=__)
+            with self.subTest(str(_) + '_contract_' + str(__)):
+                self.assertEquals(b_dl, B_LINES_0[_ and not __])
+
+    def test_API_DataObjStr_DataLineFxn(self):
+        """Confirm that data line formatting function works."""
+        from itertools import product
+
+        import sphobjinv as soi
+
+        # Generate and check data line as str, both expanded
+        # and contracted, with both expanded/contracted flag
+        for _, __ in product(S_LINES_0, repeat=2):  # True/False product
+            dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[_])
+                                 .groupdict())
+            s_dl = dos.data_line(expand=__)
+            with self.subTest(str(_) + '_expand_' + str(__)):
+                self.assertEquals(s_dl, S_LINES_0[_ or __])
+
+
+class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
+    """Testing code accuracy under good params & expected behavior."""
 
     def test_CmdlineDecodeNoArgs(self):
         """Confirm commandline decode exec with no args succeeds."""
@@ -373,8 +648,36 @@ class TestSphobjinvExpectGood(SuperSphobjinv, ut.TestCase, SubTestMasker):
 
                         sphinx_load_test(self, dest_path)
 
+    def test_CmdlineDecodeTgtBarePath(self):
+        """Confirm decode to target as bare path."""
+        copy_enc()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['decode', os.pardir, '.'])
 
-class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
+                        file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
+
+                        decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
+
+    def test_CmdlineEncodeTgtBarePath(self):
+        """Confirm encode to target as bare path."""
+        copy_dec()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    with dir_change('tempy'):
+                        run_cmdline_test(self,
+                                         ['encode', os.pardir, '.'])
+
+                        file_exists_test(self, INIT_FNAME_BASE + ENC_EXT)
+
+                        sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
+
+
+class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
     def test_APINoInputFile(self):
@@ -389,6 +692,40 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
             with self.assertRaises(FileNotFoundError):
                 soi.readfile(INIT_FNAME_BASE + ENC_EXT)
 
+    def test_APIBadOutputFile(self):
+        """Confirm OSError raised on bad filename (example of read error)."""
+        import sphobjinv as soi
+
+        b_str = b'This is a binary string!'
+
+        with self.assertRaises(OSError):
+            soi.writefile(INVALID_FNAME, b_str)
+
+    def test_APIBadDataObjInitTypes(self):
+        """Confirm error raised when init-ed w/wrong types."""
+        import sphobjinv as soi
+
+        with self.subTest('bytes'):
+            with self.assertRaises(TypeError):
+                soi.DataObjBytes(*range(6))
+
+        with self.subTest('str'):
+            with self.assertRaises(TypeError):
+                soi.DataObjStr(*range(6))
+
+    def test_API_DataLine_BothArgsTrue(self):
+        """Confirm error raised when both expand and contract are True."""
+        import sphobjinv as soi
+
+        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
+                             .groupdict())
+        with self.assertRaises(ValueError):
+            dos.data_line(expand=True, contract=True)
+
+
+class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
+    """Testing that code raises expected errors when invoked improperly."""
+
     def test_CmdlineDecodeWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
@@ -402,21 +739,53 @@ class TestSphobjinvExpectFail(SuperSphobjinv, ut.TestCase, SubTestMasker):
                                      ['decode', fname],
                                      expect=1)
 
+    def test_CmdlineDecodeMissingFile(self):
+        """Confirm exit code 1 with nonexistent file specified."""
+        run_cmdline_test(self, ['decode', 'thisfileshouldbeabsent.txt'],
+                         expect=1)
 
-def suite_expect_good():
-    """Create and return the test suite for expect-good cases."""
+    def test_CmdlineDecodeBadOutputFilename(self):
+        """Confirm exit code 1 with invalid output file name."""
+        copy_enc()
+        run_cmdline_test(self,
+                         ['decode',
+                          scr_path(INIT_FNAME_BASE + ENC_EXT),
+                          INVALID_FNAME],
+                         expect=1)
+
+
+def suite_cli_expect_good():
+    """Create and return the test suite for CLI expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGood)])
 
     return s
 
 
-def suite_expect_fail():
-    """Create and return the test suite for expect-fail cases."""
+def suite_api_expect_good():
+    """Create and return the test suite for API expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvExpectFail)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood)])
+
+    return s
+
+
+def suite_cli_expect_fail():
+    """Create and return the test suite for CLI expect-fail cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFail)])
+
+    return s
+
+
+def suite_api_expect_fail():
+    """Create and return the test suite for API expect-fail cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectFail)])
 
     return s
 
