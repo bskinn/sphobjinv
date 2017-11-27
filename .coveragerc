@@ -6,3 +6,8 @@ omit =
 
     # Don't cover code in the env (Termux only?)
     env/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    ^\s*pass\s*$

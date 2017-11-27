@@ -438,7 +438,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
         s_mchdict = {_: b_mchdict[_].decode('utf-8') for _ in b_mchdict}
         newdict = {}
-        soi.DataObjStr(**b_mchdict).update_struct_dict(newdict)
+        soi.DataObjStr(**s_mchdict).update_struct_dict(newdict)
 
         # Check top-level is domain
         with self.subTest('domain'):
@@ -468,57 +468,39 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertEquals(subdict[_], s_mchdict[_])
 
     # These methods testing data_line also implicitly test flat_dict
-    def test_API_DataObjBytes_DataLineFxn_StartContracted(self):
+    def test_API_DataObjBytes_DataLineFxn(self):
         """Confirm that data line formatting function works."""
-        import sphobjinv as soi
+        from itertools import product
 
-        dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[False])
-                               .groupdict())
+        import sphobjinv as soi
 
         # Generate and check data line as bytes, both expanded
-        # and condensed
-        for _ in B_LINES_0:
-            b_dl = dob.data_line(expand=_)
-            with self.subTest('expand_' + str(_)):
-                self.assertEquals(b_dl, B_LINES_0[_])
+        # and contracted, with both expanded/contracted flag
+        for _, __ in product(B_LINES_0, repeat=2):  # True/False product
+            dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[_])
+                                   .groupdict())
+            b_dl = dob.data_line(expand=__)
+            with self.subTest(str(_) + '_expand_' + str(__)):
+                self.assertEquals(b_dl, B_LINES_0[_ or __])
 
-    def test_API_DataObjStr_DataLineFxn_StartContracted(self):
+            b_dl = dob.data_line(contract=__)
+            with self.subTest(str(_) + '_contract_' + str(__)):
+                self.assertEquals(b_dl, B_LINES_0[_ and not __])
+
+    def test_API_DataObjStr_DataLineFxn(self):
         """Confirm that data line formatting function works."""
+        from itertools import product
+
         import sphobjinv as soi
 
-        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[False])
-                               .groupdict())
-
-        # Generate and check data line as bytes, both expanded
-        # and condensed
-        for _ in S_LINES_0:
-            s_dl = dos.data_line(expand=_)
-            with self.subTest('expand_' + str(_)):
-                self.assertEquals(s_dl, S_LINES_0[_])
-
-    def test_API_DataObjBytes_DataLineFxn_StartExpanded(self):
-        """Confirm data line fxn works starting w/expanded entry."""
-        import sphobjinv as soi
-
-        dob = soi.DataObjBytes(**soi.pb_data.search(B_LINES_0[True])
-                               .groupdict())
-
-        for _ in B_LINES_0:
-            b_dl = dob.data_line(contract=_)
-            with self.subTest('contract_' + str(_)):
-                self.assertEquals(b_dl, B_LINES_0[not _])
-
-    def test_API_DataObjStr_DataLineFxn_StartExpanded(self):
-        """Confirm data line fxn works starting w/expanded entry."""
-        import sphobjinv as soi
-
-        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True])
-                             .groupdict())
-
-        for _ in S_LINES_0:
-            s_dl = dos.data_line(contract=_)
-            with self.subTest('contract_' + str(_)):
-                self.assertEquals(s_dl, S_LINES_0[not _])
+        # Generate and check data line as str, both expanded
+        # and contracted, with both expanded/contracted flag
+        for _, __ in product(S_LINES_0, repeat=2):  # True/False product
+            dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[_])
+                                 .groupdict())
+            s_dl = dos.data_line(expand=__)
+            with self.subTest(str(_) + '_expand_' + str(__)):
+                self.assertEquals(s_dl, S_LINES_0[_ or __])
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
