@@ -1,6 +1,23 @@
 Sphinx Objects.inv Encoder/Decoder
 ==================================
 
+.. image:: https://travis-ci.org/bskinn/sphobjinv.svg?branch=dev
+    :target: https://travis-ci.org/bskinn/sphobjinv
+
+.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/dev/graph/badge.svg
+    :target: https://codecov.io/gh/bskinn/sphobjinv
+
+.. image:: https://img.shields.io/readthedocs/sphinx-objectsinv-encoderdecoder/latest.svg
+    :target: http://sphinx-objectsinv-encoderdecoder.readthedocs.io/en/latest/
+
+.. image:: https://img.shields.io/pypi/v/sphobjinv.svg
+    :target: https://pypi.org/project/sphobjinv
+
+.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg
+
+.. image:: https://img.shields.io/github/license/mashape/apistatus.svg
+    :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
+
 Encode/decode command-line tool and Python package for
 intersphinx ``objects.inv`` files.
 
