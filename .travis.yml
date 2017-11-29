@@ -6,8 +6,10 @@ python:
  - 3.5
  - 3.6
 script:
- - python tests.py -a
+ - coverage run tests.py -a
  - flake8 sphobjinv
  - cd doc
  - make doctest
+ - cd ..
+ - echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.5' && codecov || echo "No codecov."
 
