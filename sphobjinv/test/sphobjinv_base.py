@@ -385,43 +385,48 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
         from sphobjinv import DataFields as DF
 
-        # Pull .txt file and match first data line
+        # Pull .txt file and retrieve all matches
         b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
+        mchs = list(soi.pb_data.finditer(b_dec))
+        # mchs = mchs[:3] + mchs[-2:]
 
-        # Extract the match information, stuff into a DataObjBytes
+        # Extract each match's information, stuff into a DataObjBytes
         # instance, and update a new dict with the structured
         # data
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
         newdict = {}
-        soi.DataObjBytes(**b_mchdict).update_struct_dict(newdict)
+        b_mchdicts = []
+        for mch in mchs:
+            b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+            b_mchdicts.append(b_mchdict)
+            soi.DataObjBytes(**b_mchdict).update_struct_dict(newdict)
 
-        # Check top-level is domain
-        with self.subTest('domain'):
-            self.assertEquals(list(newdict.keys())[0],
-                              b_mchdict[DF.Domain.value])
+        # Run through all the matches and confirm all is consistent
+        for i, b_mchdict in enumerate(b_mchdicts):
+            s_i = str(i)
 
-        # Check next level is role
-        subdict = newdict[b_mchdict[DF.Domain.value]]
-        with self.subTest('role'):
-            self.assertEquals(list(subdict.keys())[0],
-                              b_mchdict[DF.Role.value])
+            # Check top-level is domain
+            with self.subTest('domain_' + s_i):
+                self.assertIn(b_mchdict[DF.Domain.value], newdict.keys())
 
-        # Check next level is name
-        subdict = subdict[b_mchdict[DF.Role.value]]
-        with self.subTest('name'):
-            self.assertEquals(list(subdict.keys())[0],
-                              b_mchdict[DF.Name.value])
+            # Check next level is role
+            subdict = newdict[b_mchdict[DF.Domain.value]]
+            with self.subTest('role_' + s_i):
+                self.assertIn(b_mchdict[DF.Role.value], subdict.keys())
 
-        # Check priority, URI and dispname
-        subdict = subdict[b_mchdict[DF.Name.value]]
-        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
-            with self.subTest(_):
-                # Assert key found
-                self.assertIn(_, subdict.keys())
+            # Check next level is name
+            subdict = subdict[b_mchdict[DF.Role.value]]
+            with self.subTest('name_' + s_i):
+                self.assertIn(b_mchdict[DF.Name.value], subdict.keys())
 
-                # Assert value match
-                self.assertEquals(subdict[_], b_mchdict[_])
+            # Check priority, URI and dispname
+            subdict = subdict[b_mchdict[DF.Name.value]]
+            for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
+                with self.subTest(_ + '_' + s_i):
+                    # Assert key found
+                    self.assertIn(_, subdict.keys())
+
+                    # Assert value match
+                    self.assertEquals(subdict[_], b_mchdict[_])
 
     def test_API_DataObjStr_StructDictFxn(self):
         """Confirm that structured dict updating function works."""
