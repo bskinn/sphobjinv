@@ -29,10 +29,12 @@ __all__ = ['readfile', 'writefile',
            'p_data',
            'DataFields', 'HeaderFields',
            'SphobjinvError', 'VersionError',
-           'DataObjStr', 'DataObjBytes']
+           'DataObjStr', 'DataObjBytes',
+           'Inventory']
 
 from .data import DataObjStr, DataObjBytes
 from .data import DataFields, HeaderFields
+from .data import Inventory
 from .error import SphobjinvError, VersionError
 from .fileops import readfile, writefile
 from .re import pb_comments, pb_data, pb_version, pb_project

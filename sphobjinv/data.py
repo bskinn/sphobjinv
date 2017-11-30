@@ -41,6 +41,8 @@ class HeaderFields(Enum):
 
     Project = 'project'
     Version = 'version'
+    Count = 'count'
+    Objects = 'objects'
 
 
 def _utf8_decode(b):
@@ -308,6 +310,76 @@ class DataObjBytes(SuperDataObj):
     def _data_line_postprocess(self, s):
         """Encode to bytes before data_line return."""
         return s.encode('utf-8')
+
+
+@attr.s(slots=True, cmp=False)
+class Inventory(object):
+    """Entire contents of an objects.inv inventory.
+
+    All information stored within as str, even if imported
+    from a bytes source.
+
+    """
+
+    from copy import deepcopy as _deepcopy
+
+    _source = attr.ib(repr=False, convert=_deepcopy)
+    project = attr.ib(init=False, default=None)
+    version = attr.ib(init=False, default=None)
+    objects = attr.ib(init=False, default=attr.Factory(list))
+
+    @property
+    def count(self):
+        """Return the number of objects currently in inventory."""
+        return len(self.objects)
+
+    def __str__(self):
+        """Return concise, readable description of contents."""
+        return "<Inventory: {0} v{1}, {2} objects>".format(self.project,
+                                                           self.version,
+                                                           self.count)
+
+    def __attrs_post_init__(self):
+        """Construct the inventory from the indicated source."""
+        # Leave uninitialized if _source is None
+        if self._source is None:
+            return
+
+        # Attempt series of import types
+        if self._try_import(self._import_plaintext_bytes, TypeError):
+            return
+
+        # Nothing worked, complain.
+        raise TypeError('Invalid Inventory source type')
+
+    def _try_import(self, import_fxn, exc):
+        """Attempt the indicated import method.
+
+        Returns True on success.
+
+        """
+        try:
+            import_fxn(self._source)
+        except exc:
+            return False
+
+        return True
+
+    def _import_plaintext_bytes(self, b_str):
+        """Import an inventory from plaintext bytes."""
+        from .re import pb_data, pb_project, pb_version
+
+        b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
+        self.project = b_res.decode('utf-8')
+
+        b_res = pb_version.search(b_str).group(HeaderFields.Version.value)
+        self.version = b_res.decode('utf-8')
+
+        def gen_dataobjs():
+            for mch in pb_data.finditer(b_str):
+                yield DataObjStr(**mch.groupdict())
+
+        list(map(self.objects.append, gen_dataobjs()))
 
 
 if __name__ == '__main__':    # pragma: no cover
