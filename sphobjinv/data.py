@@ -54,6 +54,7 @@ class SourceTypes(Enum):
 
     """
 
+    Manual = 'manual'
     BytesPlaintext = 'bytes_plain'
     BytesZlib = 'bytes_zlib'
     FnamePlaintext = 'fname_plain'
@@ -341,7 +342,7 @@ class Inventory(object):
     _source = attr.ib(repr=False, convert=_deepcopy)
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
-    objects = attr.ib(init=False, default=None)
+    objects = attr.ib(init=False, default=attr.Factory(list))
     source_type = attr.ib(init=False, default=None)
 
     @property
@@ -349,7 +350,7 @@ class Inventory(object):
         """Return the number of objects currently in inventory."""
         return len(self.objects)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
         ret_str = "<Inventory ({0}): {1} v{2}, {3} objects>"
 
@@ -375,12 +376,16 @@ class Inventory(object):
                                                  ZlibError),
                          }
 
-        # Leave uninitialized if _source is None
+        # Leave uninitialized ("manual" init) if _source is None
         if self._source is None:
+            self.source_type = SourceTypes.Manual
             return
 
         # Attempt series of import approaches
         for st in SourceTypes:  # Enum keys are ordered
+            if st == SourceTypes.Manual:
+                continue
+
             if self._try_import(importers[st], import_errors[st]):
                 self.source_type = st
                 return

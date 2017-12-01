@@ -32,8 +32,8 @@ pb_comments = re.compile(b'^#.*$', re.M)
 pb_project = re.compile("""
     ^                        # Start of line
     [#][ ]Project:[ ]        # Preamble
-    (?P<{}>.+)               # Rest of line is the project name
-    $                        # EOL
+    (?P<{}>.+?)              # Lazy rest of line is the project name
+    \\r?$                    # Ignore possible CR at EOL
     """.format(HeaderFields.Project.value).encode(encoding='utf-8'),
                        re.M | re.X)
 
@@ -41,8 +41,8 @@ pb_project = re.compile("""
 pb_version = re.compile("""
     ^                        # Start of line
     [#][ ]Version:[ ]        # Preamble
-    (?P<{}>.+)               # Rest of line is the version
-    $                        # EOL
+    (?P<{}>.+?)              # Lazy rest of line is the version
+    \\r?$                    # Ignore possible CR at EOL
     """.format(HeaderFields.Version.value).encode(encoding='utf-8'),
                        re.M | re.X)
 

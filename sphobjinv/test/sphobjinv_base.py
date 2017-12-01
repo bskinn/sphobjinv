@@ -507,6 +507,58 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest(str(_) + '_expand_' + str(__)):
                 self.assertEquals(s_dl, S_LINES_0[_ or __])
 
+    def test_API_Inventory_NoneInstantiation(self):
+        """Confirm 'manual' instantiation with None."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(None)
+
+        with self.subTest('project'):
+            self.assertEquals(inv.project, None)
+
+        with self.subTest('version'):
+            self.assertEquals(inv.version, None)
+
+        with self.subTest('count'):
+            self.assertEquals(inv.count, 0)
+
+        with self.subTest('source_type'):
+            self.assertEquals(inv.source_type, soi.SourceTypes.Manual)
+
+    def check_attrs_inventory(self, inv, st):
+        """Encapsulate high-level consistency tests for Inventory objects."""
+        with self.subTest('{0}_project'.format(st.value)):
+            self.assertEquals(inv.project, 'attrs')
+
+        with self.subTest('{0}_version'.format(st.value)):
+            self.assertEquals(inv.version, '17.2')
+
+        with self.subTest('{0}_count'.format(st.value)):
+            self.assertEquals(inv.count, 56)
+
+        with self.subTest('{0}_source_type'.format(st.value)):
+            self.assertEquals(inv.source_type, st)
+
+    def test_API_Inventory_OverallImport(self):
+        """Check all high-level modes for Inventory instantiation."""
+        from sphobjinv import readfile, Inventory as Inv, SourceTypes as ST
+
+        sources = {ST.BytesPlaintext:
+                   readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
+                   ST.BytesZlib:
+                   readfile(res_path(RES_FNAME_BASE + ENC_EXT)),
+                   ST.FnamePlaintext:
+                   res_path(RES_FNAME_BASE + DEC_EXT),
+                   ST.FnameZlib:
+                   res_path(RES_FNAME_BASE + ENC_EXT),
+                   }
+
+        for st in ST:
+            if st == ST.Manual:
+                continue
+
+            self.check_attrs_inventory(Inv(sources[st]), st)
+
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
@@ -726,6 +778,13 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
                              .groupdict())
         with self.assertRaises(ValueError):
             dos.data_line(expand=True, contract=True)
+
+    def test_API_Inventory_InvalidSource(self):
+        """Confirm error raised when invalid source provided."""
+        import sphobjinv as soi
+
+        with self.assertRaises(TypeError):
+            soi.Inventory('abcdefg')
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
