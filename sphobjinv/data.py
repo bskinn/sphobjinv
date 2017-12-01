@@ -45,6 +45,21 @@ class HeaderFields(Enum):
     Objects = 'objects'
 
 
+class SourceTypes(Enum):
+    """Enum for the import mode used in instantiating an Inventory.
+
+    Since Enum keys remain ordered in definition sequence, the
+    definition order here defines the order in which Inventory
+    objects attempt to parse source objects passed to __init__().
+
+    """
+
+    BytesPlaintext = 'bytes_plain'
+    BytesZlib = 'bytes_zlib'
+    FnamePlaintext = 'fname_plain'
+    FnameZlib = 'fname_zlib'
+
+
 def _utf8_decode(b):
     """Decode (if needed) to str."""
     if type(b) is bytes:
@@ -326,7 +341,8 @@ class Inventory(object):
     _source = attr.ib(repr=False, convert=_deepcopy)
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
-    objects = attr.ib(init=False, default=attr.Factory(list))
+    objects = attr.ib(init=False, default=None)
+    source_type = attr.ib(init=False, default=None)
 
     @property
     def count(self):
@@ -335,19 +351,39 @@ class Inventory(object):
 
     def __str__(self):
         """Return concise, readable description of contents."""
-        return "<Inventory: {0} v{1}, {2} objects>".format(self.project,
-                                                           self.version,
-                                                           self.count)
+        ret_str = "<Inventory ({0}): {1} v{2}, {3} objects>"
+
+        return ret_str.format(self.source_type.value, self.project,
+                              self.version, self.count)
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
+        from zlib import error as ZlibError
+
+        # Lookups for method names and expected import-failure errors
+        importers = {SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
+                     SourceTypes.BytesZlib: self._import_zlib_bytes,
+                     SourceTypes.FnamePlaintext: self._import_plaintext_fname,
+                     SourceTypes.FnameZlib: self._import_zlib_fname,
+                     }
+        import_errors = {SourceTypes.BytesPlaintext: TypeError,
+                         SourceTypes.BytesZlib: (ZlibError, TypeError),
+                         SourceTypes.FnamePlaintext: (FileNotFoundError,
+                                                      TypeError),
+                         SourceTypes.FnameZlib: (FileNotFoundError,
+                                                 TypeError,
+                                                 ZlibError),
+                         }
+
         # Leave uninitialized if _source is None
         if self._source is None:
             return
 
-        # Attempt series of import types
-        if self._try_import(self._import_plaintext_bytes, TypeError):
-            return
+        # Attempt series of import approaches
+        for st in SourceTypes:  # Enum keys are ordered
+            if self._try_import(importers[st], import_errors[st]):
+                self.source_type = st
+                return
 
         # Nothing worked, complain.
         raise TypeError('Invalid Inventory source type')
@@ -359,9 +395,13 @@ class Inventory(object):
 
         """
         try:
-            import_fxn(self._source)
+            p, v, o = import_fxn(self._source)
         except exc:
             return False
+
+        self.project = p
+        self.version = v
+        self.objects = o
 
         return True
 
@@ -370,16 +410,46 @@ class Inventory(object):
         from .re import pb_data, pb_project, pb_version
 
         b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
-        self.project = b_res.decode('utf-8')
+        project = b_res.decode('utf-8')
 
         b_res = pb_version.search(b_str).group(HeaderFields.Version.value)
-        self.version = b_res.decode('utf-8')
+        version = b_res.decode('utf-8')
 
         def gen_dataobjs():
             for mch in pb_data.finditer(b_str):
                 yield DataObjStr(**mch.groupdict())
 
-        list(map(self.objects.append, gen_dataobjs()))
+        objects = []
+        list(map(objects.append, gen_dataobjs()))
+
+        if len(objects) == 0:
+            raise TypeError  # Wrong bytes file contents
+
+        return project, version, objects
+
+    def _import_zlib_bytes(self, b_str):
+        """Import a zlib-compressed inventory."""
+        from .zlib import decode
+
+        b_plain = decode(b_str)
+        p, v, o = self._import_plaintext_bytes(b_plain)
+
+        return p, v, o
+
+    def _import_plaintext_fname(self, fn):
+        """Import a plaintext inventory file."""
+        from .fileops import readfile
+
+        b_plain = readfile(fn)
+
+        return self._import_plaintext_bytes(b_plain)
+
+    def _import_zlib_fname(self, fn):
+        from .fileops import readfile
+
+        b_zlib = readfile(fn)
+
+        return self._import_zlib_bytes(b_zlib)
 
 
 if __name__ == '__main__':    # pragma: no cover
