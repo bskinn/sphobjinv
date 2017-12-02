@@ -61,6 +61,32 @@ class SourceTypes(Enum):
     FnameZlib = 'fname_zlib'
 
 
+# For jsonschema
+subschema_flat = {DataFields.Name.value: {'type': 'string'},
+                  DataFields.Domain.value: {'type': 'string'},
+                  DataFields.Role.value: {'type': 'string'},
+                  DataFields.Priority.value: {'type': 'string'},
+                  DataFields.URI.value: {'type': 'string'},
+                  DataFields.DispName.value: {'type': 'string'}
+                  }
+
+schema_flat = {'$schema': "http://json-schema.org/schema#",
+               'type': 'object',
+               'properties': {'project': {'type': 'string'},
+                              'version': {'type': 'string'},
+                              'count': {'type': 'integer'}
+                              },
+               'patternProperties': {'^\\d+': {'type': 'object',
+                                               'properties': subschema_flat,
+                                               'additionalProperties': False,
+                                               'required': list(subschema_flat)
+                                               }
+                                     },
+               'additionalProperties': False,
+               'required': ['project', 'version', 'count']
+               }
+
+
 def _utf8_decode(b):
     """Decode (if needed) to str."""
     if type(b) is bytes:
@@ -349,6 +375,42 @@ class Inventory(object):
     def count(self):
         """Return the number of objects currently in inventory."""
         return len(self.objects)
+
+    @property
+    def flat_dict(self):
+        """Generate a flat dict representation of the inventory as-is."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for i, o in enumerate(self.objects):
+            d.update({str(i): o.flat_dict()})
+
+        return d
+
+    @property
+    def flat_dict_expanded(self):
+        """Generate an expanded flat dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for i, o in enumerate(self.objects):
+            d.update({str(i): o.flat_dict(expand=True)})
+
+        return d
+
+    @property
+    def flat_dict_contracted(self):
+        """Generate a contracted flat dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for i, o in enumerate(self.objects):
+            d.update({str(i): o.flat_dict(contract=True)})
+
+        return d
 
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
