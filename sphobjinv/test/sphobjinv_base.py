@@ -178,6 +178,23 @@ class SuperSphobjinv(object):
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
+    def test_API_SourceTypes_IterationCheck(self):
+        """Confirm that SourceTypes iterates in the expected order."""
+        import itertools as itt
+
+        import sphobjinv as soi
+
+        items = [soi.SourceTypes.Manual,
+                 soi.SourceTypes.BytesPlaintext,
+                 soi.SourceTypes.BytesZlib,
+                 soi.SourceTypes.FnamePlaintext,
+                 soi.SourceTypes.FnameZlib,
+                 ]
+
+        for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
+            with self.subTest(en.value if en else it.value):
+                self.assertEquals(it, en)
+
     def test_API_EncodeSucceeds(self):
         """Check that an encode attempt via API throws no errors."""
         import sphobjinv as soi
@@ -507,6 +524,10 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest(str(_) + '_expand_' + str(__)):
                 self.assertEquals(s_dl, S_LINES_0[_ or __])
 
+
+class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
+    """Testing Inventory code accuracy w/good params & expected behavior."""
+
     def test_API_Inventory_NoneInstantiation(self):
         """Confirm 'manual' instantiation with None."""
         import sphobjinv as soi
@@ -558,6 +579,27 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 continue
 
             self.check_attrs_inventory(Inv(sources[st]), st)
+
+    def test_API_Inventory_FlatDictJSONValidate(self):
+        """Confirm that the flat_dict properties generated valid JSON."""
+        import jsonschema
+
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+        v = jsonschema.Draft4Validator(soi.data.schema_flat)
+
+        for prop in ['flat_dict', 'flat_dict_expanded',
+                     'flat_dict_contracted']:
+            with self.subTest(prop):
+                try:
+                    v.validate(getattr(inv, prop))
+                except jsonschema.ValidationError:
+                    self.fail("'{0}' JSON invalid".format(prop))
+
+    @ut.skip('Test not implemented yet')
+    def test_API_Inventory_FlatDictReimport(self):
+        """Confirm re-import of a generated flat_dict."""
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
@@ -831,7 +873,8 @@ def suite_api_expect_good():
     """Create and return the test suite for API expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
+                tl.loadTestsFromTestCase(TestSphobjinvAPIInventoryExpectGood)])
 
     return s
 

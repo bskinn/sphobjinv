@@ -61,7 +61,8 @@ class SourceTypes(Enum):
     FnameZlib = 'fname_zlib'
 
 
-# For jsonschema
+# For jsonschema Draft 4.
+# Presume will relocate once inventory development is done.
 subschema_flat = {DataFields.Name.value: {'type': 'string'},
                   DataFields.Domain.value: {'type': 'string'},
                   DataFields.Role.value: {'type': 'string'},
@@ -74,7 +75,8 @@ schema_flat = {'$schema': "http://json-schema.org/schema#",
                'type': 'object',
                'properties': {'project': {'type': 'string'},
                               'version': {'type': 'string'},
-                              'count': {'type': 'integer'}
+                              'count': {'type': 'integer'},
+                              'metadata': {'type': 'object'}
                               },
                'patternProperties': {'^\\d+': {'type': 'object',
                                                'properties': subschema_flat,
