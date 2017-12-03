@@ -115,6 +115,14 @@ class SuperDataObj(object, metaclass=ABCMeta):
     # These names must match the str values of the DataFields enum
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
+    rst_fmt = ':{domain}:{role}:`{name}`'
+
+    def __str__(self):  # pragma: no cover
+        """Return pretty string representation."""
+        fmt_str = '<{0}:: :{1}:{2}:`{3}`>'
+
+        return fmt_str.format(type(self).__name__, self.domain,
+                              self.role, self.name)
 
     @property
     @abstractmethod
@@ -414,12 +422,18 @@ class Inventory(object):
 
         return d
 
+    @property
+    def objects_rst(self):
+        """Generate a list of the objects in a reST representation."""
+        return list(self.objects[0].rst_fmt.format(**_.flat_dict())
+                    for _ in self.objects)
+
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
-        ret_str = "<Inventory ({0}): {1} v{2}, {3} objects>"
+        ret_str = "<{0} ({1}): {2} v{3}, {4} objects>"
 
-        return ret_str.format(self.source_type.value, self.project,
-                              self.version, self.count)
+        return ret_str.format(type(self).__name__, self.source_type.value,
+                              self.project, self.version, self.count)
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
@@ -519,6 +533,18 @@ class Inventory(object):
         b_zlib = readfile(fn)
 
         return self._import_zlib_bytes(b_zlib)
+
+    def suggest(self, name, *, thresh=75):
+        """Suggest objects in the inventory to match a name."""
+        import warnings
+
+        from fuzzywuzzy import process as fwp
+
+        # Suppress any UserWarning about the speed issue
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            return list(_ for _ in fwp.extract(name, self.objects_rst,
+                                               limit=None) if _[1] > thresh)
 
 
 if __name__ == '__main__':    # pragma: no cover

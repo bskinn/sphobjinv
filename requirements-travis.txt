@@ -6,3 +6,4 @@ sphinx-rtd-theme==0.2.4
 coverage
 codecov
 jsonschema==2.6
+fuzzywuzzy>=0.3

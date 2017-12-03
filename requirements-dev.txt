@@ -6,3 +6,4 @@ flake8==3.4.1
 flake8-docstrings==1.1.0
 coverage
 jsonschema==2.6
+fuzzywuzzy>=0.3

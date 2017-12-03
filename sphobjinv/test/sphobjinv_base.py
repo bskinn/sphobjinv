@@ -601,6 +601,16 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     def test_API_Inventory_FlatDictReimport(self):
         """Confirm re-import of a generated flat_dict."""
 
+    def test_API_Inventory_NameSuggest(self):
+        """Confirm object name suggestion is nominally working."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+
+        rec = inv.suggest('evolve')
+
+        self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
