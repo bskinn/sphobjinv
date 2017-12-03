@@ -538,13 +538,13 @@ class Inventory(object):
         """Suggest objects in the inventory to match a name."""
         import warnings
 
-        from fuzzywuzzy import process as fwp
-
         # Suppress any UserWarning about the speed issue
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            return list(_ for _ in fwp.extract(name, self.objects_rst,
-                                               limit=None) if _[1] > thresh)
+            from fuzzywuzzy import process as fwp
+
+        return list(_ for _ in fwp.extract(name, self.objects_rst,
+                                           limit=None) if _[1] > thresh)
 
 
 if __name__ == '__main__':    # pragma: no cover

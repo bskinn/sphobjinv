@@ -611,6 +611,28 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
 
+    def test_API_FuzzyWuzzy_WarningIdentity(self):
+        """Confirm only the Levenshtein warning is raised, if any are."""
+        import warnings
+
+        with warnings.catch_warnings(record=True) as wc:
+            from fuzzywuzzy import process
+
+        with self.subTest('has_extract'):
+            try:
+                # Don't call it, just retrieve it
+                # This is mainly to stop flake8 from complaining
+                process.extract
+            except NameError:
+                self.fail("fuzzywuzzy.process oddly has no 'extract' member")
+
+        with self.subTest('count'):
+            self.assertEquals(len(wc), 1)
+
+        with self.subTest('identity'):
+            # The 'message' member will be a Warning instance, thus 'args[0]'
+            self.assertIn('levenshtein', wc[0].message.args[0].lower())
+
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
