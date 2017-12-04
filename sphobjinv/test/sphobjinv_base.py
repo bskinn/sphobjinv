@@ -528,11 +528,11 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing Inventory code accuracy w/good params & expected behavior."""
 
-    def test_API_Inventory_NoneInstantiation(self):
+    def test_API_Inventory_DefaultNoneInstantiation(self):
         """Confirm 'manual' instantiation with None."""
         import sphobjinv as soi
 
-        inv = soi.Inventory(None)
+        inv = soi.Inventory()
 
         with self.subTest('project'):
             self.assertEquals(inv.project, None)

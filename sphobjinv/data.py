@@ -375,7 +375,7 @@ class Inventory(object):
 
     from copy import deepcopy as _deepcopy
 
-    _source = attr.ib(repr=False, convert=_deepcopy)
+    _source = attr.ib(repr=False, convert=_deepcopy, default=None)
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
     objects = attr.ib(init=False, default=attr.Factory(list))
