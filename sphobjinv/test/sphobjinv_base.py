@@ -189,6 +189,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                  soi.SourceTypes.BytesZlib,
                  soi.SourceTypes.FnamePlaintext,
                  soi.SourceTypes.FnameZlib,
+                 soi.SourceTypes.DictFlat
                  ]
 
         for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
@@ -575,7 +576,10 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                    }
 
         for st in ST:
-            if st == ST.Manual:
+            if st in [ST.Manual, ST.DictFlat]:
+                # Manual isn't tested
+                # DictFlat is tested independently, to avoid crashing this
+                #  test if something goes wrong in the generation & reimport
                 continue
 
             self.check_attrs_inventory(Inv(sources[st]), st)
@@ -585,9 +589,10 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import jsonschema
 
         import sphobjinv as soi
+        import sphobjinv.schema as soi_schema
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
-        v = jsonschema.Draft4Validator(soi.data.schema_flat)
+        v = jsonschema.Draft4Validator(soi_schema.schema_flat)
 
         for prop in ['flat_dict', 'flat_dict_expanded',
                      'flat_dict_contracted']:
@@ -597,9 +602,14 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 except jsonschema.ValidationError:
                     self.fail("'{0}' JSON invalid".format(prop))
 
-    @ut.skip('Test not implemented yet')
     def test_API_Inventory_FlatDictReimport(self):
         """Confirm re-import of a generated flat_dict."""
+        from sphobjinv import Inventory, SourceTypes
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        inv = Inventory(inv.flat_dict)
+
+        self.check_attrs_inventory(inv, SourceTypes.DictFlat)
 
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
@@ -859,6 +869,26 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
 
         with self.assertRaises(TypeError):
             soi.Inventory('abcdefg')
+
+    def test_API_Inventory_TooSmallFlatDictImport(self):
+        """Confirm error raised when flat dict passed w/too few objects."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.pop('12')
+
+        self.assertRaises(ValueError, soi.Inventory, d)
+
+    def test_API_Inventory_TooBigFlatDictImport(self):
+        """Confirm error raised when flat dict passed w/too many objects."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.update({'112': 'foobarbazquux'})
+
+        self.assertRaises(ValueError, soi.Inventory, d)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):

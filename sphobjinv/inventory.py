@@ -2,8 +2,6 @@
 Module defining the Inventory object for holding entire Sphinx inventories.
 
 Name:        inventory.py
-Purpose:     Objects.inv complete inventory management
-
 Exposes:     SourceTypes (Enum) -- Types of source objects intelligible
                                    to an Inventory
              Inventory (class)  -- Object providing methods for parsing,
@@ -45,6 +43,7 @@ class SourceTypes(Enum):
     BytesZlib = 'bytes_zlib'
     FnamePlaintext = 'fname_plain'
     FnameZlib = 'fname_zlib'
+    DictFlat = 'dict_flat'
 
 
 @attr.s(slots=True, cmp=False)
@@ -127,6 +126,7 @@ class Inventory(object):
                      SourceTypes.BytesZlib: self._import_zlib_bytes,
                      SourceTypes.FnamePlaintext: self._import_plaintext_fname,
                      SourceTypes.FnameZlib: self._import_zlib_fname,
+                     SourceTypes.DictFlat: self._import_flat_dict,
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
@@ -135,6 +135,7 @@ class Inventory(object):
                          SourceTypes.FnameZlib: (FileNotFoundError,
                                                  TypeError,
                                                  ZlibError),
+                         SourceTypes.DictFlat: TypeError,
                          }
 
         # Leave uninitialized ("manual" init) if _source is None
@@ -143,7 +144,7 @@ class Inventory(object):
             return
 
         # Attempt series of import approaches
-        for st in SourceTypes:  # Enum keys are ordered
+        for st in SourceTypes:  # Enum keys are ordered, so iteration is too.
             if st == SourceTypes.Manual:
                 continue
 
@@ -216,6 +217,39 @@ class Inventory(object):
         b_zlib = readfile(fn)
 
         return self._import_zlib_bytes(b_zlib)
+
+    def _import_flat_dict(self, d):
+        from copy import copy
+
+        from .data import DataObjStr
+
+        # Attempting to pull these first, so that if it's not a dict,
+        # the TypeError will get raised before the below shallow-copy.
+        project = d[HeaderFields.Project.value]
+        version = d[HeaderFields.Version.value]
+        count = d[HeaderFields.Count.value]
+
+        # Going to destructively process d, so shallow-copy it first
+        d = copy(d)
+
+        # Expecting the dict to be indexed by string integers
+        objects = []
+        for i in range(count):
+            try:
+                objects.append(DataObjStr(**d.pop(str(i))))
+            except KeyError as e:
+                err_str = ("Too few objects found in dict "
+                           "(halt at {0}, expect {1})".format(i, count))
+                raise ValueError(err_str) from e
+
+        # Complain if len of remaining dict is other than 3
+        if len(d) != 3:  # project, version, count
+            err_str = ("Too many objects in dict "
+                       "({0}, expect {1})".format(count + len(d) - 3, count))
+            raise ValueError(err_str)
+
+        # Should be good to return
+        return project, version, objects
 
     def suggest(self, name, *, thresh=75):
         """Suggest objects in the inventory to match a name."""
