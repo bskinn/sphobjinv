@@ -626,6 +626,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import warnings
 
         with warnings.catch_warnings(record=True) as wc:
+            warnings.simplefilter("always")
             from fuzzywuzzy import process
 
         with self.subTest('has_extract'):
@@ -636,12 +637,25 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
             except NameError:
                 self.fail("fuzzywuzzy.process oddly has no 'extract' member")
 
-        with self.subTest('count'):
-            self.assertEquals(len(wc), 1)
+        # Try to import, and adjust tests accordingly
+        try:
+            import Levenshtein
+        except ImportError:
+            lev_present = False
+        else:
+            lev_present = True
 
-        with self.subTest('identity'):
-            # The 'message' member will be a Warning instance, thus 'args[0]'
-            self.assertIn('levenshtein', wc[0].message.args[0].lower())
+        if lev_present:
+            with self.subTest('count_Lev_present'):  # pragma: no cover
+                self.assertEquals(len(wc), 0)
+
+        else:
+            with self.subTest('count_Lev_absent'):
+                self.assertEquals(len(wc), 1)
+
+            with self.subTest('identity_Lev_absent'):
+                # The 'message' member will be a Warning instance, thus 'args[0]'
+                self.assertIn('levenshtein', wc[0].message.args[0].lower())
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
