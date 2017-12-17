@@ -196,7 +196,11 @@ class SuperDataObj(object, metaclass=ABCMeta):
         return d
 
     def update_struct_dict(self, d, *, expand=False, contract=False):
-        """Update structured dict 'd' with the object data."""
+        """Update structured dict 'd' with the object data.
+
+        Does NOT alter any `count` field at the base of ``d``.
+
+        """
         # Create a new dict with the leaf values. Invalid case of
         # expand == contract == True handled by flat_dict
         flat_d = self.flat_dict(expand=expand, contract=contract)

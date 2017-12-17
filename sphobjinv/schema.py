@@ -25,6 +25,8 @@ http://www.github.com/bskinn/sphobjinv
 # For jsonschema Draft 4.
 # Schemas are defined with static field names as a versioning
 # guarantee, instead of basing them dynamically on DataFields, etc.
+
+# Flat dict schema
 subschema_flat = {'name': {'type': 'string'},
                   'domain': {'type': 'string'},
                   'role': {'type': 'string'},
@@ -49,3 +51,52 @@ schema_flat = {'$schema': "http://json-schema.org/schema#",
                'additionalProperties': False,
                'required': ['project', 'version', 'count']
                }
+
+
+# Struct dict schema
+# Does not proof that the value of the 'count' property is correct.
+# Also does not check that 'domain', 'role', or 'name' property names
+# are sane. For the most part, purely a structural check.
+
+# Fields associated with each name
+subschema_struct_leaf = {'type': 'object',
+                         'properties': {'priority': {'type': 'string'},
+                                        'uri': {'type': 'string'},
+                                        'dispname': {'type': 'string'}
+                                        },
+                         'additionalProperties': False,
+                         'required': ['priority', 'uri', 'dispname']
+                         }
+
+# First-level branch, property names are to be object 'name' values
+subschema_struct_branch_1 = {'type': 'object',
+                             'patternProperties': {'.+':
+                                                   subschema_struct_leaf},
+                             'additionalProperties': False
+                             }
+
+# Second-level branch, property names are to be object 'role' values
+subschema_struct_branch_2 = {'type': 'object',
+                             'patternProperties': {'.+':
+                                                   subschema_struct_branch_1},
+                             'additionalProperties': False
+                             }
+
+# Base schema. Patterned properties have to explicitly exclude the
+# core named properties in order for the jsonschema Draft 4 validator
+# not to attempt to match the core named properties against the
+# pattern.
+# Patterned properties are the domain names.
+schema_struct = {'$schema': "http://json-schema.org/schema#",
+                 'type': 'object',
+                 'properties': {'project': {'type': 'string'},
+                                'version': {'type': 'string'},
+                                'count': {'type': 'integer'},
+                                'metadata': {'type': 'object'}
+                                },
+                 'patternProperties': {('^(?!project$)(?!version$)(?!count$)'
+                                        '(?!metadata$).+'):
+                                       subschema_struct_branch_2},
+                 'additionalProperties': False,
+                 'required': ['project', 'version', 'count']
+                 }
