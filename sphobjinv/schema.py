@@ -21,16 +21,16 @@ http://www.github.com/bskinn/sphobjinv
 
 """
 
-from .data import DataFields
 
 # For jsonschema Draft 4.
-# Presume will relocate once inventory development is done.
-subschema_flat = {DataFields.Name.value: {'type': 'string'},
-                  DataFields.Domain.value: {'type': 'string'},
-                  DataFields.Role.value: {'type': 'string'},
-                  DataFields.Priority.value: {'type': 'string'},
-                  DataFields.URI.value: {'type': 'string'},
-                  DataFields.DispName.value: {'type': 'string'}
+# Schemas are defined with static field names as a versioning
+# guarantee, instead of basing them dynamically on DataFields, etc.
+subschema_flat = {'name': {'type': 'string'},
+                  'domain': {'type': 'string'},
+                  'role': {'type': 'string'},
+                  'priority': {'type': 'string'},
+                  'uri': {'type': 'string'},
+                  'dispname': {'type': 'string'}
                   }
 
 schema_flat = {'$schema': "http://json-schema.org/schema#",

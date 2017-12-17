@@ -640,6 +640,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         # Try to import, and adjust tests accordingly
         try:
             import Levenshtein
+            Levenshtein.__doc__  # Stop flake8 complaint
         except ImportError:
             lev_present = False
         else:
@@ -654,7 +655,8 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertEquals(len(wc), 1)
 
             with self.subTest('identity_Lev_absent'):
-                # The 'message' member will be a Warning instance, thus 'args[0]'
+                # 'message' will be a Warning instance, thus 'args[0]'
+                # to retrieve the warning message as str.
                 self.assertIn('levenshtein', wc[0].message.args[0].lower())
 
 
