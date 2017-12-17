@@ -178,6 +178,24 @@ class SuperSphobjinv(object):
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
+    def test_API_SourceTypes_IterationCheck(self):
+        """Confirm that SourceTypes iterates in the expected order."""
+        import itertools as itt
+
+        import sphobjinv as soi
+
+        items = [soi.SourceTypes.Manual,
+                 soi.SourceTypes.BytesPlaintext,
+                 soi.SourceTypes.BytesZlib,
+                 soi.SourceTypes.FnamePlaintext,
+                 soi.SourceTypes.FnameZlib,
+                 soi.SourceTypes.DictFlat
+                 ]
+
+        for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
+            with self.subTest(en.value if en else it.value):
+                self.assertEquals(it, en)
+
     def test_API_EncodeSucceeds(self):
         """Check that an encode attempt via API throws no errors."""
         import sphobjinv as soi
@@ -508,6 +526,140 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertEquals(s_dl, S_LINES_0[_ or __])
 
 
+class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
+    """Testing Inventory code accuracy w/good params & expected behavior."""
+
+    def test_API_Inventory_DefaultNoneInstantiation(self):
+        """Confirm 'manual' instantiation with None."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory()
+
+        with self.subTest('project'):
+            self.assertEquals(inv.project, None)
+
+        with self.subTest('version'):
+            self.assertEquals(inv.version, None)
+
+        with self.subTest('count'):
+            self.assertEquals(inv.count, 0)
+
+        with self.subTest('source_type'):
+            self.assertEquals(inv.source_type, soi.SourceTypes.Manual)
+
+    def check_attrs_inventory(self, inv, st):
+        """Encapsulate high-level consistency tests for Inventory objects."""
+        with self.subTest('{0}_project'.format(st.value)):
+            self.assertEquals(inv.project, 'attrs')
+
+        with self.subTest('{0}_version'.format(st.value)):
+            self.assertEquals(inv.version, '17.2')
+
+        with self.subTest('{0}_count'.format(st.value)):
+            self.assertEquals(inv.count, 56)
+
+        with self.subTest('{0}_source_type'.format(st.value)):
+            self.assertEquals(inv.source_type, st)
+
+    def test_API_Inventory_OverallImport(self):
+        """Check all high-level modes for Inventory instantiation."""
+        from sphobjinv import readfile, Inventory as Inv, SourceTypes as ST
+
+        sources = {ST.BytesPlaintext:
+                   readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
+                   ST.BytesZlib:
+                   readfile(res_path(RES_FNAME_BASE + ENC_EXT)),
+                   ST.FnamePlaintext:
+                   res_path(RES_FNAME_BASE + DEC_EXT),
+                   ST.FnameZlib:
+                   res_path(RES_FNAME_BASE + ENC_EXT),
+                   }
+
+        for st in ST:
+            if st in [ST.Manual, ST.DictFlat]:
+                # Manual isn't tested
+                # DictFlat is tested independently, to avoid crashing this
+                #  test if something goes wrong in the generation & reimport
+                continue
+
+            self.check_attrs_inventory(Inv(sources[st]), st)
+
+    def test_API_Inventory_FlatDictJSONValidate(self):
+        """Confirm that the flat_dict properties generated valid JSON."""
+        import jsonschema
+
+        import sphobjinv as soi
+        import sphobjinv.schema as soi_schema
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+        v = jsonschema.Draft4Validator(soi_schema.schema_flat)
+
+        for prop in ['flat_dict', 'flat_dict_expanded',
+                     'flat_dict_contracted']:
+            with self.subTest(prop):
+                try:
+                    v.validate(getattr(inv, prop))
+                except jsonschema.ValidationError:
+                    self.fail("'{0}' JSON invalid".format(prop))
+
+    def test_API_Inventory_FlatDictReimport(self):
+        """Confirm re-import of a generated flat_dict."""
+        from sphobjinv import Inventory, SourceTypes
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        inv = Inventory(inv.flat_dict)
+
+        self.check_attrs_inventory(inv, SourceTypes.DictFlat)
+
+    def test_API_Inventory_NameSuggest(self):
+        """Confirm object name suggestion is nominally working."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+
+        rec = inv.suggest('evolve')
+
+        self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+
+    def test_API_FuzzyWuzzy_WarningIdentity(self):
+        """Confirm only the Levenshtein warning is raised, if any are."""
+        import warnings
+
+        with warnings.catch_warnings(record=True) as wc:
+            warnings.simplefilter("always")
+            from fuzzywuzzy import process
+
+        with self.subTest('has_extract'):
+            try:
+                # Don't call it, just retrieve it
+                # This is mainly to stop flake8 from complaining
+                process.extract
+            except NameError:
+                self.fail("fuzzywuzzy.process oddly has no 'extract' member")
+
+        # Try to import, and adjust tests accordingly
+        try:
+            import Levenshtein
+            Levenshtein.__doc__  # Stop flake8 complaint
+        except ImportError:
+            lev_present = False
+        else:
+            lev_present = True
+
+        if lev_present:
+            with self.subTest('count_Lev_present'):  # pragma: no cover
+                self.assertEquals(len(wc), 0)
+
+        else:
+            with self.subTest('count_Lev_absent'):
+                self.assertEquals(len(wc), 1)
+
+            with self.subTest('identity_Lev_absent'):
+                # 'message' will be a Warning instance, thus 'args[0]'
+                # to retrieve the warning message as str.
+                self.assertIn('levenshtein', wc[0].message.args[0].lower())
+
+
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
@@ -727,6 +879,33 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         with self.assertRaises(ValueError):
             dos.data_line(expand=True, contract=True)
 
+    def test_API_Inventory_InvalidSource(self):
+        """Confirm error raised when invalid source provided."""
+        import sphobjinv as soi
+
+        with self.assertRaises(TypeError):
+            soi.Inventory('abcdefg')
+
+    def test_API_Inventory_TooSmallFlatDictImport(self):
+        """Confirm error raised when flat dict passed w/too few objects."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.pop('12')
+
+        self.assertRaises(ValueError, soi.Inventory, d)
+
+    def test_API_Inventory_TooBigFlatDictImport(self):
+        """Confirm error raised when flat dict passed w/too many objects."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.update({'112': 'foobarbazquux'})
+
+        self.assertRaises(ValueError, soi.Inventory, d)
+
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
@@ -772,7 +951,8 @@ def suite_api_expect_good():
     """Create and return the test suite for API expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
+                tl.loadTestsFromTestCase(TestSphobjinvAPIInventoryExpectGood)])
 
     return s
 

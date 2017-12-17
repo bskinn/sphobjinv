@@ -41,6 +41,8 @@ class HeaderFields(Enum):
 
     Project = 'project'
     Version = 'version'
+    Count = 'count'
+    Objects = 'objects'
 
 
 def _utf8_decode(b):
@@ -69,6 +71,14 @@ class SuperDataObj(object, metaclass=ABCMeta):
     # These names must match the str values of the DataFields enum
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
+    rst_fmt = ':{domain}:{role}:`{name}`'
+
+    def __str__(self):  # pragma: no cover
+        """Return pretty string representation."""
+        fmt_str = '<{0}:: :{1}:{2}:`{3}`>'
+
+        return fmt_str.format(type(self).__name__, self.domain,
+                              self.role, self.name)
 
     @property
     @abstractmethod
@@ -186,7 +196,11 @@ class SuperDataObj(object, metaclass=ABCMeta):
         return d
 
     def update_struct_dict(self, d, *, expand=False, contract=False):
-        """Update structured dict 'd' with the object data."""
+        """Update structured dict 'd' with the object data.
+
+        Does NOT alter any `count` field at the base of ``d``.
+
+        """
         # Create a new dict with the leaf values. Invalid case of
         # expand == contract == True handled by flat_dict
         flat_d = self.flat_dict(expand=expand, contract=contract)
