@@ -105,6 +105,42 @@ class Inventory(object):
         return d
 
     @property
+    def struct_dict(self):
+        """Generate a structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d)
+
+        return d
+
+    @property
+    def struct_dict_expanded(self):
+        """Generate an expanded structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d, expand=True)
+
+        return d
+
+    @property
+    def struct_dict_contracted(self):
+        """Generate a contracted structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d, contract=True)
+
+        return d
+
+    @property
     def objects_rst(self):
         """Generate a list of the objects in a reST-like representation."""
         return list(self.objects[0].rst_fmt.format(**_.flat_dict())
