@@ -177,6 +177,11 @@ class SuperDataObj(object, metaclass=ABCMeta):
         else:
             return self.dispname
 
+    @property
+    def as_rst(self):
+        """Return reST reference-like object representation."""
+        return self.rst_fmt.format(**self.flat_dict())
+
     def flat_dict(self, *, expand=False, contract=False):
         """Return the object data formatted as a flat dict."""
         if expand and contract:

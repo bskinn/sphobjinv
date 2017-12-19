@@ -143,8 +143,7 @@ class Inventory(object):
     @property
     def objects_rst(self):
         """Generate a list of the objects in a reST-like representation."""
-        return list(self.objects[0].rst_fmt.format(**_.flat_dict())
-                    for _ in self.objects)
+        return list(_.as_rst for _ in self.objects)
 
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
