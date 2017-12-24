@@ -19,11 +19,11 @@ import os
 import os.path as osp
 import unittest as ut
 
-from .sphobjinv_base import DEC_EXT, ENC_EXT
+from .sphobjinv_base import DEC_EXT, CMP_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import INVALID_FNAME
 from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_enc, scr_path
+from .sphobjinv_base import copy_dec, copy_cmp, scr_path
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
 from .sphobjinv_base import dir_change
@@ -32,181 +32,181 @@ from .sphobjinv_base import dir_change
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
-    def test_CmdlineDecodeNoArgs(self):
-        """Confirm commandline decode exec with no args succeeds."""
-        copy_enc()
+    def test_CmdlineDecompressNoArgs(self):
+        """Confirm commandline decompress exec with no args succeeds."""
+        copy_cmp()
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    run_cmdline_test(self, ['decode'])
+                    run_cmdline_test(self, ['decomp'])
 
                     file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
 
                     decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
-    def test_CmdlineEncodeNoArgs(self):
-        """Confirm commandline encode exec with no args succeeds."""
+    def test_CmdlineCompressNoArgs(self):
+        """Confirm commandline compress exec with no args succeeds."""
         copy_dec()
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    run_cmdline_test(self, ['encode'])
+                    run_cmdline_test(self, ['comp'])
 
-                    file_exists_test(self, INIT_FNAME_BASE + ENC_EXT)
+                    file_exists_test(self, INIT_FNAME_BASE + CMP_EXT)
 
-                    sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
+                    sphinx_load_test(self, INIT_FNAME_BASE + CMP_EXT)
 
-    def test_CmdlineDecodeSrcFile(self):
-        """Confirm cmdline decode with input file arg."""
-        copy_enc()
+    def test_CmdlineDecompressSrcFile(self):
+        """Confirm cmdline decompress with input file arg."""
+        copy_cmp()
         dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(self, ['decode',
-                                scr_path(INIT_FNAME_BASE + ENC_EXT)])
+        run_cmdline_test(self, ['decomp',
+                                scr_path(INIT_FNAME_BASE + CMP_EXT)])
 
         file_exists_test(self, dest_path)
 
         decomp_cmp_test(self, dest_path)
 
-    def test_CmdlineEncodeSrcFile(self):
-        """Confirm cmdline encode with input file arg."""
+    def test_CmdlineCompressSrcFile(self):
+        """Confirm cmdline compress with input file arg."""
         copy_dec()
-        dest_path = scr_path(INIT_FNAME_BASE + ENC_EXT)
-        run_cmdline_test(self, ['encode',
+        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+        run_cmdline_test(self, ['comp',
                                 scr_path(INIT_FNAME_BASE + DEC_EXT)])
 
         file_exists_test(self, dest_path)
 
         sphinx_load_test(self, dest_path)
 
-    def test_CmdlineDecodeSrcPath(self):
-        """Confirm cmdline decode with input directory arg."""
-        copy_enc()
+    def test_CmdlineDecompressSrcPath(self):
+        """Confirm cmdline decompress with input directory arg."""
+        copy_cmp()
         dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(self, ['decode', scr_path()])
+        run_cmdline_test(self, ['decomp', scr_path()])
 
         file_exists_test(self, dest_path)
 
         decomp_cmp_test(self, dest_path)
 
-    def test_CmdlineEncodeSrcPath(self):
-        """Confirm cmdline encode with input directory arg."""
+    def test_CmdlineCompressSrcPath(self):
+        """Confirm cmdline compress with input directory arg."""
         copy_dec()
-        dest_path = scr_path(INIT_FNAME_BASE + ENC_EXT)
-        run_cmdline_test(self, ['encode', scr_path()])
+        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+        run_cmdline_test(self, ['comp', scr_path()])
 
         file_exists_test(self, dest_path)
 
         sphinx_load_test(self, dest_path)
 
-    def test_CmdlineDecodeTgtNewName(self):
-        """Confirm cmdline decode to custom target name in same dir."""
-        copy_enc()
+    def test_CmdlineDecompressTgtNewName(self):
+        """Confirm cmdline decompress to custom target name in same dir."""
+        copy_cmp()
         dest_fname = MOD_FNAME_BASE + DEC_EXT
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    run_cmdline_test(self, ['decode', '-', dest_fname])
+                    run_cmdline_test(self, ['decomp', '-', dest_fname])
 
                     file_exists_test(self, dest_fname)
 
                     decomp_cmp_test(self, dest_fname)
 
-    def test_CmdlineEncodeTgtNewName(self):
-        """Confirm cmdline encode to custom target name in same dir."""
+    def test_CmdlineCompressTgtNewName(self):
+        """Confirm cmdline compress to custom target name in same dir."""
         copy_dec()
-        dest_fname = MOD_FNAME_BASE + ENC_EXT
+        dest_fname = MOD_FNAME_BASE + CMP_EXT
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    run_cmdline_test(self, ['encode', '.', dest_fname])
+                    run_cmdline_test(self, ['comp', '.', dest_fname])
 
                     file_exists_test(self, dest_fname)
 
                     sphinx_load_test(self, dest_fname)
 
-    def test_CmdlineDecodeDiffSrcPathNewNameThere(self):
-        """Confirm decode in other path outputs there if only name passed."""
-        copy_enc()
+    def test_CmdlineDecompDiffSrcPathNewNameThere(self):
+        """Confirm decomp in other path outputs there if only name passed."""
+        copy_cmp()
         dest_fname = MOD_FNAME_BASE + DEC_EXT
-        run_cmdline_test(self, ['decode', scr_path(), dest_fname])
+        run_cmdline_test(self, ['decomp', scr_path(), dest_fname])
 
         file_exists_test(self, scr_path(dest_fname))
 
         decomp_cmp_test(self, scr_path(dest_fname))
 
-    def test_CmdlineEncodeDiffSrcPathNewNameThere(self):
-        """Confirm encode in other path outputs there if only name passed."""
+    def test_CmdlineCompressDiffSrcPathNewNameThere(self):
+        """Confirm compress in other path outputs there if only name passed."""
         copy_dec()
-        dest_fname = MOD_FNAME_BASE + ENC_EXT
-        run_cmdline_test(self, ['encode', scr_path(), dest_fname])
+        dest_fname = MOD_FNAME_BASE + CMP_EXT
+        run_cmdline_test(self, ['comp', scr_path(), dest_fname])
 
         file_exists_test(self, scr_path(dest_fname))
 
         sphinx_load_test(self, scr_path(dest_fname))
 
-    def test_CmdlineDecodeDiffSrcTgtPaths(self):
-        """Confirm decode from other path to new path."""
-        copy_enc()
+    def test_CmdlineDecompressDiffSrcTgtPaths(self):
+        """Confirm decompress from other path to new path."""
+        copy_cmp()
         dest_path = osp.join(os.curdir, MOD_FNAME_BASE + DEC_EXT)
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['decode', os.pardir, dest_path])
+                                         ['decomp', os.pardir, dest_path])
 
                         file_exists_test(self, dest_path)
 
                         decomp_cmp_test(self, dest_path)
 
-    def test_CmdlineEncodeDiffSrcTgtPaths(self):
-        """Confirm encode from other path to new path."""
+    def test_CmdlineCompressDiffSrcTgtPaths(self):
+        """Confirm compress from other path to new path."""
         copy_dec()
-        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + ENC_EXT)
+        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + CMP_EXT)
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['encode', os.pardir, dest_path])
+                                         ['comp', os.pardir, dest_path])
 
                         file_exists_test(self, dest_path)
 
                         sphinx_load_test(self, dest_path)
 
-    def test_CmdlineDecodeTgtBarePath(self):
-        """Confirm decode to target as bare path."""
-        copy_enc()
+    def test_CmdlineDecompressTgtBarePath(self):
+        """Confirm decompress to target as bare path."""
+        copy_cmp()
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['decode', os.pardir, '.'])
+                                         ['decomp', os.pardir, '.'])
 
                         file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
 
                         decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
-    def test_CmdlineEncodeTgtBarePath(self):
-        """Confirm encode to target as bare path."""
+    def test_CmdlineCompressTgtBarePath(self):
+        """Confirm compress to target as bare path."""
         copy_dec()
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['encode', os.pardir, '.'])
+                                         ['comp', os.pardir, '.'])
 
-                        file_exists_test(self, INIT_FNAME_BASE + ENC_EXT)
+                        file_exists_test(self, INIT_FNAME_BASE + CMP_EXT)
 
-                        sphinx_load_test(self, INIT_FNAME_BASE + ENC_EXT)
+                        sphinx_load_test(self, INIT_FNAME_BASE + CMP_EXT)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
-    def test_CmdlineDecodeWrongFileType(self):
+    def test_CmdlineDecompressWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
             with dir_change('test'):
@@ -216,20 +216,20 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                         f.write(b'this is not objects.inv\n')
 
                     run_cmdline_test(self,
-                                     ['decode', fname],
+                                     ['decomp', fname],
                                      expect=1)
 
-    def test_CmdlineDecodeMissingFile(self):
+    def test_CmdlineDecompressMissingFile(self):
         """Confirm exit code 1 with nonexistent file specified."""
-        run_cmdline_test(self, ['decode', 'thisfileshouldbeabsent.txt'],
+        run_cmdline_test(self, ['decomp', 'thisfileshouldbeabsent.txt'],
                          expect=1)
 
-    def test_CmdlineDecodeBadOutputFilename(self):
+    def test_CmdlineDecompressBadOutputFilename(self):
         """Confirm exit code 1 with invalid output file name."""
-        copy_enc()
+        copy_cmp()
         run_cmdline_test(self,
-                         ['decode',
-                          scr_path(INIT_FNAME_BASE + ENC_EXT),
+                         ['decomp',
+                          scr_path(INIT_FNAME_BASE + CMP_EXT),
                           INVALID_FNAME],
                          expect=1)
 

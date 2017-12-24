@@ -232,9 +232,9 @@ class Inventory(object):
 
     def _import_zlib_bytes(self, b_str):
         """Import a zlib-compressed inventory."""
-        from .zlib import decode
+        from .zlib import decompress
 
-        b_plain = decode(b_str)
+        b_plain = decompress(b_str)
         p, v, o = self._import_plaintext_bytes(b_plain)
 
         return p, v, o

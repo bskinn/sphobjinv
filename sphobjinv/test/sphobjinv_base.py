@@ -28,7 +28,7 @@ import sys
 RES_FNAME_BASE = 'objects_attrs'
 INIT_FNAME_BASE = 'objects'
 MOD_FNAME_BASE = 'objects_mod'
-ENC_EXT = '.inv'
+CMP_EXT = '.inv'
 DEC_EXT = '.txt'
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
@@ -69,14 +69,14 @@ def clear_scratch():
             os.remove(scr_path(fn))
 
 
-def copy_enc():
-    """Copy the encoded example file into scratch."""
-    sh.copy(res_path(RES_FNAME_BASE + ENC_EXT),
-            scr_path(INIT_FNAME_BASE + ENC_EXT))
+def copy_cmp():
+    """Copy the compressed example file into scratch."""
+    sh.copy(res_path(RES_FNAME_BASE + CMP_EXT),
+            scr_path(INIT_FNAME_BASE + CMP_EXT))
 
 
 def copy_dec():
-    """Copy the decoded example file into scratch."""
+    """Copy the decompressed example file into scratch."""
     sh.copy(res_path(RES_FNAME_BASE + DEC_EXT),
             scr_path(INIT_FNAME_BASE + DEC_EXT))
 
@@ -86,17 +86,11 @@ def sphinx_load_test(testcase, path):
     # Easier to have the file open the whole time
     with open(path, 'rb') as f:
 
-        # Have to handle it differently for Python 3.3 compared to the rest
-        if sys.version_info.major == 3 and sys.version_info.minor < 4:
-            from sphinx.ext.intersphinx import read_inventory_v2 as readfunc
-            f.readline()    # read_inventory_v2 expects to start on 2nd line
-        else:
-            from sphinx.util.inventory import InventoryFile as IFile
-            readfunc = IFile.load
+        from sphinx.util.inventory import InventoryFile as IFile
 
         # Attempt the load operation
         try:
-            readfunc(f, '', osp.join)
+            IFile.load(f, '', osp.join)
         except Exception:
             with testcase.subTest('sphinx_load_ok'):
                 testcase.fail()
@@ -134,7 +128,7 @@ def file_exists_test(testcase, path):
 
 
 def decomp_cmp_test(testcase, path):
-    """Confirm that indicated decoded file compares identical to resource."""
+    """Confirm that indicated decompressed file is identical to resource."""
     with testcase.subTest('decomp_cmp'):
         testcase.assertTrue(cmp(RES_DECOMP_PATH, path, shallow=False))
 

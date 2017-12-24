@@ -18,11 +18,11 @@
 import unittest as ut
 
 from .sphobjinv_base import B_LINES_0, S_LINES_0
-from .sphobjinv_base import DEC_EXT, ENC_EXT
+from .sphobjinv_base import DEC_EXT, CMP_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
 from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_enc, scr_path, res_path
+from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import sphinx_load_test
 
@@ -49,51 +49,51 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest(en.value if en else it.value):
                 self.assertEquals(it, en)
 
-    def test_API_EncodeSucceeds(self):
-        """Check that an encode attempt via API throws no errors."""
+    def test_API_CompressSucceeds(self):
+        """Check that a compress attempt via API throws no errors."""
         import sphobjinv as soi
 
-        # Populate scratch with the decoded ref file
+        # Populate scratch with the decompressed ref file
         copy_dec()
 
         # Store dest filename for reuse
-        dest_fname = scr_path(MOD_FNAME_BASE + ENC_EXT)
+        dest_fname = scr_path(MOD_FNAME_BASE + CMP_EXT)
 
         # See if it makes it all the way through the process without error
         with self.subTest('error_in_process'):
             try:
                 b_dec = soi.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
-                b_enc = soi.encode(b_dec)
-                soi.writefile(dest_fname, b_enc)
+                b_cmp = soi.compress(b_dec)
+                soi.writefile(dest_fname, b_cmp)
             except Exception:
-                self.fail(msg='objects.txt encoding failed.')
+                self.fail(msg='objects.txt compression failed.')
 
-        # Simple assertion that encoded file now exists
+        # Simple assertion that compressed file now exists
         file_exists_test(self, dest_fname)
 
         # Seeing if sphinx actually likes the file
         sphinx_load_test(self, dest_fname)
 
-    def test_API_DecodeSucceeds(self):
-        """Check that a decode attempt via API throws no errors."""
+    def test_API_DecompressSucceeds(self):
+        """Check that a decomp attempt via API throws no errors."""
         import sphobjinv as soi
 
-        # Populate scratch with encoded ref file
-        copy_enc()
+        # Populate scratch with compressed ref file
+        copy_cmp()
 
         # Store target filename for reuse
         dest_fname = scr_path(MOD_FNAME_BASE + DEC_EXT)
 
-        # See if the encode operation completes without error
+        # See if the compress operation completes without error
         with self.subTest('error_in_process'):
             try:
-                b_enc = soi.readfile(scr_path(INIT_FNAME_BASE + ENC_EXT))
-                b_dec = soi.decode(b_enc)
+                b_cmp = soi.readfile(scr_path(INIT_FNAME_BASE + CMP_EXT))
+                b_dec = soi.decompress(b_cmp)
                 soi.writefile(dest_fname, b_dec)
             except Exception:
-                self.fail(msg='objects.inv decoding failed.')
+                self.fail(msg='objects.inv decompression failed.')
 
-        # Simple assertion of the existence of the decoded file
+        # Simple assertion of the existence of the decompressed file
         file_exists_test(self, dest_fname)
 
         # Testing compare w/original file
@@ -103,13 +103,13 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm the regex for loading data lines is working properly."""
         import sphobjinv as soi
 
-        # Populate scratch with the decoded file
+        # Populate scratch with the decompressed file
         copy_dec()
 
         # Read the file
         b_str = soi.fileops.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
 
-        # Have to convert any DOS newlines
+        # Have to convert any DOS newlines REMOVE THIS
         b_str = b_str.replace(b'\r\n', b'\n')
 
         # A separate check shows 56 entries in the reference hive."""
@@ -421,11 +421,11 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         sources = {ST.BytesPlaintext:
                    readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
                    ST.BytesZlib:
-                   readfile(res_path(RES_FNAME_BASE + ENC_EXT)),
+                   readfile(res_path(RES_FNAME_BASE + CMP_EXT)),
                    ST.FnamePlaintext:
                    res_path(RES_FNAME_BASE + DEC_EXT),
                    ST.FnameZlib:
-                   res_path(RES_FNAME_BASE + ENC_EXT),
+                   res_path(RES_FNAME_BASE + CMP_EXT),
                    }
 
         for st in ST:
@@ -445,7 +445,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
         import sphobjinv.schema as soi_schema
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
         v = jsonschema.Draft4Validator(soi_schema.schema_flat)
 
         for prop in ['flat_dict', 'flat_dict_expanded',
@@ -463,7 +463,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
         import sphobjinv.schema as soi_schema
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
         v = jsonschema.Draft4Validator(soi_schema.schema_struct)
 
         for prop in ['struct_dict', 'struct_dict_expanded',
@@ -500,7 +500,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm object name suggestion is nominally working."""
         import sphobjinv as soi
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + ENC_EXT))
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
 
         rec = inv.suggest('evolve')
 
@@ -546,13 +546,13 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         """Confirm that appropriate exceptions are raised w/no input file."""
         import sphobjinv as soi
 
-        with self.subTest('decoded_input_file'):
+        with self.subTest('decomp_input_file'):
             with self.assertRaises(FileNotFoundError):
                 soi.readfile(INIT_FNAME_BASE + DEC_EXT)
 
-        with self.subTest('encoded_input_file'):
+        with self.subTest('comp_input_file'):
             with self.assertRaises(FileNotFoundError):
-                soi.readfile(INIT_FNAME_BASE + ENC_EXT)
+                soi.readfile(INIT_FNAME_BASE + CMP_EXT)
 
     def test_APIBadOutputFile(self):
         """Confirm OSError raised on bad filename (example of read error)."""
