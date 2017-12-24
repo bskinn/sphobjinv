@@ -20,5 +20,5 @@ from __future__ import absolute_import
 __all__ = ['suite_cli_expect_good', 'suite_cli_expect_fail',
            'suite_api_expect_good', 'suite_api_expect_fail']
 
-from .sphobjinv_base import suite_cli_expect_good, suite_cli_expect_fail
-from .sphobjinv_base import suite_api_expect_good, suite_api_expect_fail
+from .sphobjinv_cli import suite_cli_expect_good, suite_cli_expect_fail
+from .sphobjinv_api import suite_api_expect_good, suite_api_expect_fail

@@ -43,6 +43,7 @@ class HeaderFields(Enum):
     Version = 'version'
     Count = 'count'
     Objects = 'objects'
+    Metadata = 'metadata'
 
 
 def _utf8_decode(b):
@@ -176,6 +177,11 @@ class SuperDataObj(object, metaclass=ABCMeta):
             return self.name
         else:
             return self.dispname
+
+    @property
+    def as_rst(self):
+        """Return reST reference-like object representation."""
+        return self.rst_fmt.format(**self.flat_dict())
 
     def flat_dict(self, *, expand=False, contract=False):
         """Return the object data formatted as a flat dict."""

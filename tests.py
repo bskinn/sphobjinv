@@ -118,15 +118,15 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_cli_expect_good(),
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good(),
                [AP.ALL, AP.GOOD, AP.CLI, AP.CLI_GOOD])
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_api_expect_good(),
+    addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good(),
                [AP.ALL, AP.GOOD, AP.API, AP.API_GOOD])
 
     # Expect-fail tests
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_cli_expect_fail(),
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail(),
                [AP.ALL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
-    addsuiteif(sphobjinv.test.sphobjinv_base.suite_api_expect_fail(),
+    addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_fail(),
                [AP.ALL, AP.FAIL, AP.API, AP.API_FAIL])
 
     # Create the test runner and execute

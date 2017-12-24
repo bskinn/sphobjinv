@@ -44,6 +44,7 @@ class SourceTypes(Enum):
     FnamePlaintext = 'fname_plain'
     FnameZlib = 'fname_zlib'
     DictFlat = 'dict_flat'
+    DictStruct = 'dict_struct'
 
 
 @attr.s(slots=True, cmp=False)
@@ -105,10 +106,45 @@ class Inventory(object):
         return d
 
     @property
+    def struct_dict(self):
+        """Generate a structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d)
+
+        return d
+
+    @property
+    def struct_dict_expanded(self):
+        """Generate an expanded structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d, expand=True)
+
+        return d
+
+    @property
+    def struct_dict_contracted(self):
+        """Generate a contracted structured dict representation."""
+        d = {HeaderFields.Project.value: self.project,
+             HeaderFields.Version.value: self.version,
+             HeaderFields.Count.value: self.count}
+
+        for o in self.objects:
+            o.update_struct_dict(d, contract=True)
+
+        return d
+
+    @property
     def objects_rst(self):
         """Generate a list of the objects in a reST-like representation."""
-        return list(self.objects[0].rst_fmt.format(**_.flat_dict())
-                    for _ in self.objects)
+        return list(_.as_rst for _ in self.objects)
 
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
@@ -127,6 +163,7 @@ class Inventory(object):
                      SourceTypes.FnamePlaintext: self._import_plaintext_fname,
                      SourceTypes.FnameZlib: self._import_zlib_fname,
                      SourceTypes.DictFlat: self._import_flat_dict,
+                     SourceTypes.DictStruct: self._import_struct_dict,
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
@@ -136,6 +173,7 @@ class Inventory(object):
                                                  TypeError,
                                                  ZlibError),
                          SourceTypes.DictFlat: TypeError,
+                         SourceTypes.DictStruct: TypeError,
                          }
 
         # Leave uninitialized ("manual" init) if _source is None
@@ -212,6 +250,7 @@ class Inventory(object):
         return self._import_plaintext_bytes(b_plain)
 
     def _import_zlib_fname(self, fn):
+        """Import a zlib-compressed inventory file."""
         from .fileops import readfile
 
         b_zlib = readfile(fn)
@@ -219,6 +258,7 @@ class Inventory(object):
         return self._import_zlib_bytes(b_zlib)
 
     def _import_flat_dict(self, d):
+        """Import flat-dict composited data."""
         from copy import copy
 
         from .data import DataObjStr
@@ -228,6 +268,11 @@ class Inventory(object):
         project = d[HeaderFields.Project.value]
         version = d[HeaderFields.Version.value]
         count = d[HeaderFields.Count.value]
+
+        # If not even '1' is in the dict, assume invalid type due to
+        # it being a struct_dict format.
+        if '1' not in d:
+            raise TypeError('No str(int)-indexed data object items found.')
 
         # Going to destructively process d, so shallow-copy it first
         d = copy(d)
@@ -249,6 +294,51 @@ class Inventory(object):
             raise ValueError(err_str)
 
         # Should be good to return
+        return project, version, objects
+
+    def _import_struct_dict(self, d):
+        """Import struct-dict composited data."""
+        from .data import DataObjStr
+
+        # Attempting to pull these first, so that if it's not a dict,
+        # the TypeError will get raised before the below extensive
+        # parsing.
+        project = d[HeaderFields.Project.value]
+        version = d[HeaderFields.Version.value]
+        count = d[HeaderFields.Count.value]
+
+        # Init 'objects' for later filling
+        objects = []
+
+        # Loop over everything that's not a known struct-dict
+        # header field. These will be domains.
+        for domain in d:
+            if domain in (HeaderFields.Project.value,
+                          HeaderFields.Version.value,
+                          HeaderFields.Count.value,
+                          HeaderFields.Metadata.value):
+                continue
+
+            domain_dict = d[domain]
+
+            # Next level in will be roles
+            for role in domain_dict:
+                role_dict = domain_dict[role]
+
+                # Final level is names
+                for name in role_dict:
+                    name_dict = role_dict[name]
+
+                    # Create DataObj and add to .objects
+                    objects.append(DataObjStr(domain=domain, role=role,
+                                              name=name, **name_dict))
+
+        # Confirm count
+        if count != len(objects):
+            raise ValueError('{0} objects found '.format(len(objects)) +
+                             '(expect {0})'.format(count))
+
+        # Return info
         return project, version, objects
 
     def suggest(self, name, *, thresh=75):
