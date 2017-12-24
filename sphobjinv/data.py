@@ -43,6 +43,7 @@ class HeaderFields(Enum):
     Version = 'version'
     Count = 'count'
     Objects = 'objects'
+    Metadata = 'metadata'
 
 
 def _utf8_decode(b):

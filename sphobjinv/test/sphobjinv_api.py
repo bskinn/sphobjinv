@@ -41,7 +41,8 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                  soi.SourceTypes.BytesZlib,
                  soi.SourceTypes.FnamePlaintext,
                  soi.SourceTypes.FnameZlib,
-                 soi.SourceTypes.DictFlat
+                 soi.SourceTypes.DictFlat,
+                 soi.SourceTypes.DictStruct,
                  ]
 
         for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
@@ -428,10 +429,11 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                    }
 
         for st in ST:
-            if st in [ST.Manual, ST.DictFlat]:
+            if st in [ST.Manual, ST.DictFlat, ST.DictStruct]:
                 # Manual isn't tested
                 # DictFlat is tested independently, to avoid crashing this
-                #  test if something goes wrong in the generation & reimport
+                #  test if something goes wrong in the generation & reimport.
+                # DictStruct tested separately for similar reasons.
                 continue
 
             self.check_attrs_inventory(Inv(sources[st]), st)
@@ -481,7 +483,6 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         self.check_attrs_inventory(inv, SourceTypes.DictFlat)
 
-    @ut.skip('Not yet implemented')
     def test_API_Inventory_StructDictReimport(self):
         """Confirm re-import of a generated struct_dict."""
         from sphobjinv import Inventory, SourceTypes
@@ -609,6 +610,37 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         d.update({'112': 'foobarbazquux'})
 
         self.assertRaises(ValueError, soi.Inventory, d)
+
+    def test_API_Inventory_TooBigStructDictImport(self):
+        """Confirm error raised from a too-big struct_dict."""
+        from sphobjinv import Inventory
+        from sphobjinv import DataFields as DF
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.struct_dict
+
+        d['py']['function'].update({'testname':
+                                    {DF.Priority.value: '1',
+                                     DF.URI.value: 'foo',
+                                     DF.DispName.value: '-'
+                                     }
+                                    })
+
+        # Try reimport, expecting error
+        self.assertRaises(ValueError, Inventory, d)
+
+    def test_API_Inventory_TooSmallStructDictImport(self):
+        """Confirm error raised from a too-small struct_dict."""
+        from sphobjinv import Inventory
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.struct_dict
+
+        # Hack out a chunk of the dict
+        d['std'].pop('label')
+
+        # Try reimport, expecting error
+        self.assertRaises(ValueError, Inventory, d)
 
 
 def suite_api_expect_good():
