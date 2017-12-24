@@ -591,6 +591,16 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         with self.assertRaises(TypeError):
             soi.Inventory('abcdefg')
 
+    def test_API_Inventory_NoItemsFlatDict(self):
+        """Confirm TypeError with no-items dict passed to flat_dict."""
+        import sphobjinv as soi
+
+        d = {soi.HeaderFields.Project.value: 'proj',
+             soi.HeaderFields.Version.value: 'v3.3',
+             soi.HeaderFields.Count.value: 5}
+
+        self.assertRaises(TypeError, soi.Inventory._import_flat_dict, d)
+
     def test_API_Inventory_TooSmallFlatDictImport(self):
         """Confirm error raised when flat dict passed w/too few objects."""
         import sphobjinv as soi
