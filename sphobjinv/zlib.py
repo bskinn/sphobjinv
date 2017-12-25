@@ -27,8 +27,8 @@ import zlib
 BUFSIZE = 16*1024    # 16k chunks
 
 
-def decode(bstr):
-    """Decode a version 2 |isphx| ``objects.inv`` bytestring.
+def decompress(bstr):
+    """Decompress a version 2 |isphx| ``objects.inv`` bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
     :mod:`zlib`-compressed data lines are decompressed to plaintext.
@@ -91,8 +91,8 @@ def decode(bstr):
     return out_b
 
 
-def encode(bstr):
-    """Encode a version 2 |isphx| ``objects.inv`` bytestring.
+def compress(bstr):
+    """Compress a version 2 |isphx| ``objects.inv`` bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
     plaintext data lines are compressed with :mod:`zlib`.

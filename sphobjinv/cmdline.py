@@ -23,21 +23,23 @@ import argparse as ap
 import os
 import sys
 
-ENCODE = 'encode'
-DECODE = 'decode'
+COMP = 'comp'
+DECOMP = 'decomp'
 INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
 
-DEF_OUT_EXT = {ENCODE: '.inv', DECODE: '.txt'}
-DEF_INP_EXT = {ENCODE: '.txt', DECODE: '.inv'}
+MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress'}
+
+DEF_OUT_EXT = {COMP: '.inv', DECOMP: '.txt'}
+DEF_INP_EXT = {COMP: '.txt', DECOMP: '.inv'}
 DEF_NAME = 'objects'
 
 DEF_INFILE = '.'
 
-HELP_DECODE_EXTS = "'.txt (.inv)'"
-HELP_ENCODE_FNAMES = "'./objects.inv(.txt)'"
+HELP_DECOMP_EXTS = "'.txt (.inv)'"
+HELP_COMP_FNAMES = "'./objects.inv(.txt)'"
 
 
 def _getparser():
@@ -56,11 +58,11 @@ def _getparser():
 
     prs.add_argument(MODE,
                      help="Conversion mode",
-                     choices=(ENCODE, DECODE))
+                     choices=(COMP, DECOMP))
 
     prs.add_argument(INFILE,
                      help="Path to file to be decoded (encoded). Defaults to "
-                          + HELP_ENCODE_FNAMES + ". "
+                          + HELP_COMP_FNAMES + ". "
                           "'-' is a synonym for these defaults. "
                           "Bare paths are accepted, in which case the "
                           "preceding "
@@ -73,7 +75,7 @@ def _getparser():
                      help="Path to decoded (encoded) output file. "
                           "Defaults to same directory and main "
                           "file name as input file but with extension "
-                          + HELP_DECODE_EXTS + ". "
+                          + HELP_DECOMP_EXTS + ". "
                           "Bare paths are accepted here as well, using "
                           "the default output file names.",
                      nargs="?",
@@ -89,7 +91,7 @@ def _getparser():
 def main():
     """Handle command line invocation."""
     from .fileops import readfile, writefile
-    from .zlib import encode, decode
+    from .zlib import compress, decompress
 
     def selective_print(thing):
         """Print `thing` only if not `QUIET`."""
@@ -131,15 +133,15 @@ def main():
         selective_print("\nError when attempting input file read")
         sys.exit(1)
 
-    # Encode or decode per 'mode', catching and reporting
+    # (De)compress per 'mode', catching and reporting
     # any raised exception
     try:
-        if mode == DECODE:
-            result = decode(bstr)
+        if mode == DECOMP:
+            result = decompress(bstr)
         else:
-            result = encode(bstr)
+            result = compress(bstr)
     except Exception as e:
-        selective_print("\nError while {0}ing '{1}':".format(mode[:-1],
+        selective_print("\nError while {0}ing '{1}':".format(MODE_NAMES[mode],
                                                              in_path))
         selective_print("\n{0}".format(repr(e)))
         sys.exit(1)
@@ -178,7 +180,8 @@ def main():
 
     # Report success, if not QUIET
     selective_print("\nConversion completed.\n"
-                    "'{0}' {1}d to '{2}'.".format(in_path, mode, out_path))
+                    "'{0}' {1}ed to '{2}'.".format(in_path, MODE_NAMES[mode],
+                                                   out_path))
 
     # Clean exit
     sys.exit(0)

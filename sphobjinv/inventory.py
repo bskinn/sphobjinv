@@ -56,9 +56,7 @@ class Inventory(object):
 
     """
 
-    from copy import deepcopy as _deepcopy
-
-    _source = attr.ib(repr=False, convert=_deepcopy, default=None)
+    _source = attr.ib(repr=False, default=None)
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
     objects = attr.ib(init=False, default=attr.Factory(list))
@@ -234,9 +232,9 @@ class Inventory(object):
 
     def _import_zlib_bytes(self, b_str):
         """Import a zlib-compressed inventory."""
-        from .zlib import decode
+        from .zlib import decompress
 
-        b_plain = decode(b_str)
+        b_plain = decompress(b_str)
         p, v, o = self._import_plaintext_bytes(b_plain)
 
         return p, v, o
