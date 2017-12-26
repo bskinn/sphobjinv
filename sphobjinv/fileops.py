@@ -84,7 +84,7 @@ def writefile(path, contents, cmdline=False):
         |True|, |None| is returned.
 
     """
-    # Write the decoded file
+    # Open the file and write
     try:
         with open(path, 'wb') as f:
             f.write(contents)

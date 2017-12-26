@@ -37,14 +37,14 @@ def decompress(bstr):
     ----------
     bstr
 
-        |bytes| -- Binary string containing an encoded ``objects.inv``
+        |bytes| -- Binary string containing a compressed ``objects.inv``
         file.
 
     Returns
     -------
     out_b
 
-        |bytes| -- Decoded binary string containing the plaintext
+        |bytes| -- Decompressed binary string containing the plaintext
         ``objects.inv`` content.
 
     """
@@ -85,7 +85,7 @@ def decompress(bstr):
         out_b += chunk
 
     # Replace newlines with the OS-local newlines
-    out_b = out_b.replace(b'\n', os.linesep.encode())
+    out_b = out_b.replace(b'\n', os.linesep.encode('utf-8'))
 
     # Return the newline-composited result
     return out_b
@@ -101,14 +101,14 @@ def compress(bstr):
     ----------
     bstr
 
-        |bytes| -- Binary string containing the decoded contents of an
+        |bytes| -- Binary string containing the decompressed contents of an
         ``objects.inv`` file.
 
     Returns
     -------
     out_b
 
-        |bytes| -- Binary string containing the encoded ``objects.inv``
+        |bytes| -- Binary string containing the compressed ``objects.inv``
         content.
 
     """
