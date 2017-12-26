@@ -57,6 +57,10 @@ class Inventory(object):
     """
 
     _source = attr.ib(repr=False, default=None)
+
+    _count_error = attr.ib(repr=False, default=True,
+                           validator=attr.validators.instance_of(bool))
+
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
     objects = attr.ib(init=False, default=attr.Factory(list))
@@ -270,7 +274,8 @@ class Inventory(object):
         # If not even '1' is in the dict, assume invalid type due to
         # it being a struct_dict format.
         if '1' not in d:
-            raise TypeError('No str(int)-indexed data object items found.')
+            raise TypeError('No base-1 str(int)-indexed data '
+                            'object items found.')
 
         # Going to destructively process d, so shallow-copy it first
         d = copy(d)
@@ -281,12 +286,13 @@ class Inventory(object):
             try:
                 objects.append(DataObjStr(**d.pop(str(i))))
             except KeyError as e:
-                err_str = ("Too few objects found in dict "
-                           "(halt at {0}, expect {1})".format(i, count))
-                raise ValueError(err_str) from e
+                if self._count_error:
+                    err_str = ("Too few objects found in dict "
+                               "(halt at {0}, expect {1})".format(i, count))
+                    raise ValueError(err_str) from e
 
         # Complain if len of remaining dict is other than 3
-        if len(d) != 3:  # project, version, count
+        if len(d) != 3 and self._count_error:  # project, version, count
             err_str = ("Too many objects in dict "
                        "({0}, expect {1})".format(count + len(d) - 3, count))
             raise ValueError(err_str)
@@ -332,7 +338,7 @@ class Inventory(object):
                                               name=name, **name_dict))
 
         # Confirm count
-        if count != len(objects):
+        if count != len(objects) and self._count_error:
             raise ValueError('{0} objects found '.format(len(objects)) +
                              '(expect {0})'.format(count))
 

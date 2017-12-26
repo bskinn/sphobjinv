@@ -483,6 +483,19 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         self.check_attrs_inventory(inv, SourceTypes.DictFlat)
 
+    def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
+        """Confirm no error when flat dict passed w/too few objs w/ignore."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.pop('12')
+
+        inv2 = soi.Inventory(d, count_error=False)
+
+        # 55 b/c the loop continues past missing elements
+        self.assertEquals(inv2.count, 55)
+
     def test_API_Inventory_StructDictReimport(self):
         """Confirm re-import of a generated struct_dict."""
         from sphobjinv import Inventory, SourceTypes
@@ -495,6 +508,20 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         for obj in inv2.objects:
             with self.subTest(obj.as_rst):
                 self.assertIn(obj.as_rst, inv.objects_rst)
+
+    def test_API_Inventory_TooSmallStructDictImportButIgnore(self):
+        """Confirm no error raised on too-small struct_dict w/flag."""
+        from sphobjinv import Inventory
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.struct_dict
+
+        # Hack out a chunk of the dict
+        d['std'].pop('label')
+
+        # Reimport with flag; check expected count
+        inv2 = Inventory(d, count_error=False)
+        self.assertEquals(inv2.count, 37)
 
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
