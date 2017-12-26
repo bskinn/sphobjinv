@@ -400,23 +400,24 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         with self.subTest('source_type'):
             self.assertEquals(inv.source_type, soi.SourceTypes.Manual)
 
-    def check_attrs_inventory(self, inv, st):
+    def check_attrs_inventory(self, inv, st, subtest_id):
         """Encapsulate high-level consistency tests for Inventory objects."""
-        with self.subTest('{0}_project'.format(st.value)):
+        with self.subTest('{0}_{1}_project'.format(subtest_id, st.value)):
             self.assertEquals(inv.project, 'attrs')
 
-        with self.subTest('{0}_version'.format(st.value)):
+        with self.subTest('{0}_{1}_version'.format(subtest_id, st.value)):
             self.assertEquals(inv.version, '17.2')
 
-        with self.subTest('{0}_count'.format(st.value)):
+        with self.subTest('{0}_{1}_count'.format(subtest_id, st.value)):
             self.assertEquals(inv.count, 56)
 
-        with self.subTest('{0}_source_type'.format(st.value)):
+        with self.subTest('{0}_{1}_source_type'.format(subtest_id, st.value)):
             self.assertEquals(inv.source_type, st)
 
-    def test_API_Inventory_OverallImport(self):
+    def test_API_Inventory_TestMostImports(self):
         """Check all high-level modes for Inventory instantiation."""
         from sphobjinv import readfile, Inventory as Inv, SourceTypes as ST
+        from sphobjinv.data import _utf8_decode
 
         sources = {ST.BytesPlaintext:
                    readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
@@ -436,7 +437,14 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 # DictStruct tested separately for similar reasons.
                 continue
 
-            self.check_attrs_inventory(Inv(sources[st]), st)
+            self.check_attrs_inventory(Inv(sources[st]), st, 'general')
+
+            if st == ST.BytesPlaintext:
+                inv = Inv(plaintext=sources[st])
+                self.check_attrs_inventory(inv, st, 'plaintext_bytes')
+
+                inv = Inv(plaintext=_utf8_decode(sources[st]))
+                self.check_attrs_inventory(inv, st, 'plaintext_str')
 
     def test_API_Inventory_FlatDictJSONValidate(self):
         """Confirm that the flat_dict properties generated valid JSON."""
@@ -481,7 +489,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
         inv = Inventory(inv.flat_dict)
 
-        self.check_attrs_inventory(inv, SourceTypes.DictFlat)
+        self.check_attrs_inventory(inv, SourceTypes.DictFlat, 'general')
 
     def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
         """Confirm no error when flat dict passed w/too few objs w/ignore."""
@@ -503,7 +511,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
         inv2 = Inventory(inv.struct_dict)
 
-        self.check_attrs_inventory(inv2, SourceTypes.DictStruct)
+        self.check_attrs_inventory(inv2, SourceTypes.DictStruct, 'general')
 
         for obj in inv2.objects:
             with self.subTest(obj.as_rst):

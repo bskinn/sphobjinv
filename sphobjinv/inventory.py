@@ -56,11 +56,26 @@ class Inventory(object):
 
     """
 
+    # General source for try-most-types import
     _source = attr.ib(repr=False, default=None)
 
+    # Stringlike types (both accept str & bytes)
+    _plaintext = attr.ib(repr=False, default=None)
+    _zlib = attr.ib(repr=False, default=None)
+
+    # Filename types (must be str)
+    _fname_plain = attr.ib(repr=False, default=None)
+    _fname_zlib = attr.ib(repr=False, default=None)
+
+    # dict types
+    _dict_flat = attr.ib(repr=False, default=None)
+    _dict_struct = attr.ib(repr=False, default=None)
+
+    # Flag for whether to raise error on object count mismatch
     _count_error = attr.ib(repr=False, default=True,
                            validator=attr.validators.instance_of(bool))
 
+    # Actual regular attributes
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
     objects = attr.ib(init=False, default=attr.Factory(list))
@@ -157,6 +172,40 @@ class Inventory(object):
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
+        from .data import _utf8_encode
+
+        # List of sources
+        src_list = (self._source, self._plaintext, self._zlib,
+                    self._fname_plain, self._fname_zlib,
+                    self._dict_flat, self._dict_struct)
+        src_count = sum(1 for _ in src_list if _ is not None)
+
+        # Complain if multiple sources provided
+        if src_count > 1:
+            raise RuntimeError('At most one data source can '
+                               'be specified.')
+
+        # Leave uninitialized ("manual" init) if no source provided
+        if src_count == 0:
+            self.source_type = SourceTypes.Manual
+            return
+
+        # If general ._source was provided, run the generalized import
+        if self._source is not None:
+            self._general_import()
+
+        # For all of these, '()' is passed as 'exc' argument since
+        # desire _try_import not to handle any exception types
+
+        # Plaintext str or bytes
+        if self._plaintext is not None:
+            self._try_import(self._import_plaintext_bytes,
+                             _utf8_encode(self._plaintext),
+                             ())
+            self.source_type = SourceTypes.BytesPlaintext
+
+    def _general_import(self):
+        """Attempt sequence of all imports."""
         from zlib import error as ZlibError
 
         # Lookups for method names and expected import-failure errors
@@ -178,31 +227,29 @@ class Inventory(object):
                          SourceTypes.DictStruct: TypeError,
                          }
 
-        # Leave uninitialized ("manual" init) if _source is None
-        if self._source is None:
-            self.source_type = SourceTypes.Manual
-            return
-
         # Attempt series of import approaches
-        for st in SourceTypes:  # Enum keys are ordered, so iteration is too.
-            if st == SourceTypes.Manual:
+        # Enum keys are ordered, so iteration is too.
+        for st in SourceTypes:
+            if st not in importers:
+                # No action for source types w/o a handler function defined.
                 continue
 
-            if self._try_import(importers[st], import_errors[st]):
+            if self._try_import(importers[st], self._source,
+                                import_errors[st]):
                 self.source_type = st
                 return
 
         # Nothing worked, complain.
         raise TypeError('Invalid Inventory source type')
 
-    def _try_import(self, import_fxn, exc):
-        """Attempt the indicated import method.
+    def _try_import(self, import_fxn, src, exc):
+        """Attempt the indicated import method on the indicated source.
 
         Returns True on success.
 
         """
         try:
-            p, v, o = import_fxn(self._source)
+            p, v, o = import_fxn(src)
         except exc:
             return False
 
