@@ -441,10 +441,30 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
             if st == ST.BytesPlaintext:
                 inv = Inv(plaintext=sources[st])
-                self.check_attrs_inventory(inv, st, 'plaintext_bytes')
+                self.check_attrs_inventory(inv, st, st.value)
 
                 inv = Inv(plaintext=_utf8_decode(sources[st]))
-                self.check_attrs_inventory(inv, st, 'plaintext_str')
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.BytesZlib:
+                inv = Inv(zlib=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.FnamePlaintext:
+                inv = Inv(fname_plain=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.FnameZlib:
+                inv = Inv(fname_zlib=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.DictFlat:
+                inv = Inv(dict_flat=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.DictStruct:
+                inv = Inv(dict_struct=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
 
     def test_API_Inventory_FlatDictJSONValidate(self):
         """Confirm that the flat_dict properties generated valid JSON."""
@@ -686,6 +706,13 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
 
         # Try reimport, expecting error
         self.assertRaises(ValueError, Inventory, d)
+
+    def test_API_Inventory_TooManyInitSrcArgs(self):
+        """Confirm error if >1 sources passed."""
+        from sphobjinv import Inventory
+
+        self.assertRaises(RuntimeError, Inventory,
+                          source='foo', plaintext='bar')
 
 
 def suite_api_expect_good():

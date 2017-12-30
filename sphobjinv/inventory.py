@@ -57,6 +57,7 @@ class Inventory(object):
     """
 
     # General source for try-most-types import
+    # Needs to be first so it absorbs a positional arg
     _source = attr.ib(repr=False, default=None)
 
     # Stringlike types (both accept str & bytes)
@@ -70,6 +71,9 @@ class Inventory(object):
     # dict types
     _dict_flat = attr.ib(repr=False, default=None)
     _dict_struct = attr.ib(repr=False, default=None)
+
+    # URL for remote retrieval of objects.inv/.txt
+    _url = attr.ib(repr=False, default=None)
 
     # Flag for whether to raise error on object count mismatch
     _count_error = attr.ib(repr=False, default=True,
@@ -177,7 +181,8 @@ class Inventory(object):
         # List of sources
         src_list = (self._source, self._plaintext, self._zlib,
                     self._fname_plain, self._fname_zlib,
-                    self._dict_flat, self._dict_struct)
+                    self._dict_flat, self._dict_struct,
+                    self._url)
         src_count = sum(1 for _ in src_list if _ is not None)
 
         # Complain if multiple sources provided
@@ -193,16 +198,39 @@ class Inventory(object):
         # If general ._source was provided, run the generalized import
         if self._source is not None:
             self._general_import()
+            return
 
-        # For all of these, '()' is passed as 'exc' argument since
+        # For all of these below, '()' is passed as 'exc' argument since
         # desire _try_import not to handle any exception types
 
         # Plaintext str or bytes
+        # Special case, since preconverting input.
         if self._plaintext is not None:
             self._try_import(self._import_plaintext_bytes,
                              _utf8_encode(self._plaintext),
                              ())
             self.source_type = SourceTypes.BytesPlaintext
+            return
+
+        # Remainder are iterable
+        for src, fxn, st in zip((self._zlib, self._fname_plain,
+                                 self._fname_zlib, self._dict_flat,
+                                 self._dict_struct),
+                                (self._import_zlib_bytes,
+                                 self._import_plaintext_fname,
+                                 self._import_zlib_fname,
+                                 self._import_flat_dict,
+                                 self._import_struct_dict),
+                                (SourceTypes.BytesZlib,
+                                 SourceTypes.FnamePlaintext,
+                                 SourceTypes.FnameZlib,
+                                 SourceTypes.DictFlat,
+                                 SourceTypes.DictStruct)
+                                ):
+            if src is not None:
+                self._try_import(fxn, src, ())
+                self.source_type = st
+                return
 
     def _general_import(self):
         """Attempt sequence of all imports."""
