@@ -45,6 +45,7 @@ class SourceTypes(Enum):
     FnameZlib = 'fname_zlib'
     DictFlat = 'dict_flat'
     DictStruct = 'dict_struct'
+    URL = 'url'
 
 
 @attr.s(slots=True, cmp=False)
@@ -215,17 +216,19 @@ class Inventory(object):
         # Remainder are iterable
         for src, fxn, st in zip((self._zlib, self._fname_plain,
                                  self._fname_zlib, self._dict_flat,
-                                 self._dict_struct),
+                                 self._dict_struct, self._url),
                                 (self._import_zlib_bytes,
                                  self._import_plaintext_fname,
                                  self._import_zlib_fname,
                                  self._import_flat_dict,
-                                 self._import_struct_dict),
+                                 self._import_struct_dict,
+                                 self._import_url),
                                 (SourceTypes.BytesZlib,
                                  SourceTypes.FnamePlaintext,
                                  SourceTypes.FnameZlib,
                                  SourceTypes.DictFlat,
-                                 SourceTypes.DictStruct)
+                                 SourceTypes.DictStruct,
+                                 SourceTypes.URL)
                                 ):
             if src is not None:
                 self._try_import(fxn, src, ())
@@ -333,6 +336,26 @@ class Inventory(object):
         b_zlib = readfile(fn)
 
         return self._import_zlib_bytes(b_zlib)
+
+    def _import_url(self, url):
+        """Import a file from a remote URL."""
+        import urllib.request as urlrq
+
+        from .re import pb_data
+
+        # Caller's responsibility to ensure URL points
+        # someplace safe/sane!
+        resp = urlrq.urlopen(url)
+        b_str = resp.peek()
+
+        # Regex search for data lines as proxy indicator of
+        # file (de)compressed state
+        if pb_data.search(b_str) is None:
+            # Assume compressed
+            return self._import_zlib_bytes(b_str)
+        else:
+            # Assume plaintext
+            return self._import_plaintext_bytes(b_str)
 
     def _import_flat_dict(self, d):
         """Import flat-dict composited data."""
