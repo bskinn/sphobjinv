@@ -341,8 +341,6 @@ class Inventory(object):
         """Import a file from a remote URL."""
         import urllib.request as urlrq
 
-        from .re import pb_data
-
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
         resp = urlrq.urlopen(url)
