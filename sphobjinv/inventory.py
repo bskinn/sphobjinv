@@ -346,7 +346,7 @@ class Inventory(object):
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
         resp = urlrq.urlopen(url)
-        b_str = resp.peek()
+        b_str = resp.read()
 
         # Regex search for data lines as proxy indicator of
         # file (de)compressed state
