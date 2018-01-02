@@ -21,6 +21,7 @@ from .sphobjinv_base import B_LINES_0, S_LINES_0
 from .sphobjinv_base import DEC_EXT, CMP_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
+from .sphobjinv_base import REMOTE_URL
 from .sphobjinv_base import SuperSphobjinv
 from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
@@ -43,6 +44,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                  soi.SourceTypes.FnameZlib,
                  soi.SourceTypes.DictFlat,
                  soi.SourceTypes.DictStruct,
+                 soi.SourceTypes.URL,
                  ]
 
         for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
@@ -430,11 +432,13 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                    }
 
         for st in ST:
-            if st in [ST.Manual, ST.DictFlat, ST.DictStruct]:
+            if st in [ST.Manual, ST.DictFlat, ST.DictStruct, ST.URL]:
                 # Manual isn't tested
                 # DictFlat is tested independently, to avoid crashing this
                 #  test if something goes wrong in the generation & reimport.
                 # DictStruct tested separately for similar reasons.
+                # URL is its own beast, tested in the separate Nonlocal
+                #  class, below.
                 continue
 
             self.check_attrs_inventory(Inv(sources[st]), st, 'general')
@@ -594,6 +598,34 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertIn('levenshtein', wc[0].message.args[0].lower())
 
 
+class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
+    """Testing Inventory URL download import method.
+
+    The test in this class is SLOW. For routine testing work, invoke tests.py
+    with '--local', rather than '--all', to avoid running it.
+
+    """
+
+    def test_API_Inventory_ManyURLImports(self):
+        """Confirm a plethora of .inv files downloads properly via url arg."""
+        import os
+        import re
+
+        from sphobjinv import Inventory as Inv
+
+        p_inv = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
+
+        for fn in os.listdir(res_path()):
+            mch = p_inv.match(fn)
+            if mch is not None:
+                name = mch.group(1)
+                inv1 = Inv(res_path(fn))
+                inv2 = Inv(url=REMOTE_URL.format(name))
+                with self.subTest(name):
+                    self.assertEquals(inv1.project, inv2.project)
+                    # Need to actually put the rest of the test stuff here
+
+
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
@@ -721,6 +753,15 @@ def suite_api_expect_good():
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
                 tl.loadTestsFromTestCase(TestSphobjinvAPIInventoryExpectGood)])
+
+    return s
+
+
+def suite_api_expect_good_nonlocal():
+    """Create and return the test suite for nonlocal API expect-good cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIInvGoodNonlocal)])
 
     return s
 

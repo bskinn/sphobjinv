@@ -39,6 +39,10 @@ B_LINES_0 = {False:
              b'attr.Attribute'}
 S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
 
+# Constant mainly for the many-inventory URL testing
+REMOTE_URL = ('https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/'
+              'test/resource/objects_{0}.inv')
+
 
 # Useful functions
 def res_path(fname=''):
