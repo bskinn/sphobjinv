@@ -11,7 +11,7 @@ Exposes:     SourceTypes (Enum) -- Types of source objects intelligible
 Author:      Brian Skinn (bskinn@alum.mit.edu)
 
 Created:     7 Dec 2017
-Copyright:   (c) Brian Skinn 2016-2017
+Copyright:   (c) Brian Skinn 2016-2018
 License:     The MIT License; see "LICENSE.txt" for full license terms
              and contributor agreement.
 

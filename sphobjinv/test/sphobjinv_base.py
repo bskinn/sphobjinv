@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     29 Oct 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #            https://www.github.com/bskinn/sphobjinv
