@@ -348,14 +348,8 @@ class Inventory(object):
         resp = urlrq.urlopen(url)
         b_str = resp.read()
 
-        # Regex search for data lines as proxy indicator of
-        # file (de)compressed state
-        if pb_data.search(b_str) is None:
-            # Assume compressed
-            return self._import_zlib_bytes(b_str)
-        else:
-            # Assume plaintext
-            return self._import_plaintext_bytes(b_str)
+        # Plaintext URL D/L is unreliable; zlib only
+        return self._import_zlib_bytes(b_str)
 
     def _import_flat_dict(self, d):
         """Import flat-dict composited data."""

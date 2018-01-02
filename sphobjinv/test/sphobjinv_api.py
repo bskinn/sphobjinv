@@ -621,9 +621,30 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
                 name = mch.group(1)
                 inv1 = Inv(res_path(fn))
                 inv2 = Inv(url=REMOTE_URL.format(name))
-                with self.subTest(name):
+                with self.subTest(name + '_project'):
                     self.assertEquals(inv1.project, inv2.project)
-                    # Need to actually put the rest of the test stuff here
+                with self.subTest(name + '_version'):
+                    self.assertEquals(inv1.version, inv2.version)
+                with self.subTest(name + '_count'):
+                    self.assertEquals(inv1.count, inv2.count)
+
+                # Only check objects if counts match
+                if inv1.count == inv2.count:
+                    for i, objs in enumerate(zip(inv1.objects,
+                                                 inv2.objects)):
+                        with self.subTest(name + '_obj' + str(i)):
+                            self.assertEquals(objs[0].name,
+                                              objs[1].name)
+                            self.assertEquals(objs[0].domain,
+                                              objs[1].domain)
+                            self.assertEquals(objs[0].role,
+                                              objs[1].role)
+                            self.assertEquals(objs[0].uri,
+                                              objs[1].uri)
+                            self.assertEquals(objs[0].priority,
+                                              objs[1].priority)
+                            self.assertEquals(objs[0].dispname,
+                                              objs[1].dispname)
 
 
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
