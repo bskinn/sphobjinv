@@ -563,7 +563,16 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         rec = inv.suggest('evolve')
 
-        self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+        # No test on the exact fuzzywuzzy match score here since
+        # it could change as fw continues development
+        with self.subTest('no_index'):
+            self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+
+        rec = inv.suggest('evolve', with_index=True)
+
+        with self.subTest('with_index'):
+            self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+            self.assertEquals(rec[0][2], 6)
 
     def test_API_FuzzyWuzzy_WarningCheck(self):
         """Confirm only the Levenshtein warning is raised, if any are."""
