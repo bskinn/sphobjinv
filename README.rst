@@ -31,7 +31,7 @@ and feature requests are welcomed at the
 Documentation at
 `Read The Docs <http://sphinx-objectsinv-encoderdecoder.readthedocs.io/en/latest/>`__.
 
-Copyright (c) Brian Skinn 2016-2017
+Copyright (c) Brian Skinn 2016-2018
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
 for full license terms.

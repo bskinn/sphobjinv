@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     29 Oct 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #            https://www.github.com/bskinn/sphobjinv
@@ -38,6 +38,10 @@ B_LINES_0 = {False:
              b'attr.Attribute py:class 1 api.html#attr.Attribute '
              b'attr.Attribute'}
 S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
+
+# Constant mainly for the many-inventory URL testing
+REMOTE_URL = ('https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/'
+              'test/resource/objects_{0}.inv')
 
 
 # Useful functions

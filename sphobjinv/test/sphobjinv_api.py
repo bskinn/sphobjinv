@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     18 Dec 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #            https://www.github.com/bskinn/sphobjinv
@@ -21,6 +21,7 @@ from .sphobjinv_base import B_LINES_0, S_LINES_0
 from .sphobjinv_base import DEC_EXT, CMP_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
+from .sphobjinv_base import REMOTE_URL
 from .sphobjinv_base import SuperSphobjinv
 from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
@@ -43,6 +44,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                  soi.SourceTypes.FnameZlib,
                  soi.SourceTypes.DictFlat,
                  soi.SourceTypes.DictStruct,
+                 soi.SourceTypes.URL,
                  ]
 
         for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
@@ -400,23 +402,24 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         with self.subTest('source_type'):
             self.assertEquals(inv.source_type, soi.SourceTypes.Manual)
 
-    def check_attrs_inventory(self, inv, st):
+    def check_attrs_inventory(self, inv, st, subtest_id):
         """Encapsulate high-level consistency tests for Inventory objects."""
-        with self.subTest('{0}_project'.format(st.value)):
+        with self.subTest('{0}_{1}_project'.format(subtest_id, st.value)):
             self.assertEquals(inv.project, 'attrs')
 
-        with self.subTest('{0}_version'.format(st.value)):
+        with self.subTest('{0}_{1}_version'.format(subtest_id, st.value)):
             self.assertEquals(inv.version, '17.2')
 
-        with self.subTest('{0}_count'.format(st.value)):
+        with self.subTest('{0}_{1}_count'.format(subtest_id, st.value)):
             self.assertEquals(inv.count, 56)
 
-        with self.subTest('{0}_source_type'.format(st.value)):
+        with self.subTest('{0}_{1}_source_type'.format(subtest_id, st.value)):
             self.assertEquals(inv.source_type, st)
 
-    def test_API_Inventory_OverallImport(self):
+    def test_API_Inventory_TestMostImports(self):
         """Check all high-level modes for Inventory instantiation."""
         from sphobjinv import readfile, Inventory as Inv, SourceTypes as ST
+        from sphobjinv.data import _utf8_decode
 
         sources = {ST.BytesPlaintext:
                    readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
@@ -429,14 +432,43 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                    }
 
         for st in ST:
-            if st in [ST.Manual, ST.DictFlat, ST.DictStruct]:
+            if st in [ST.Manual, ST.DictFlat, ST.DictStruct, ST.URL]:
                 # Manual isn't tested
                 # DictFlat is tested independently, to avoid crashing this
                 #  test if something goes wrong in the generation & reimport.
                 # DictStruct tested separately for similar reasons.
+                # URL is its own beast, tested in the separate Nonlocal
+                #  class, below.
                 continue
 
-            self.check_attrs_inventory(Inv(sources[st]), st)
+            self.check_attrs_inventory(Inv(sources[st]), st, 'general')
+
+            if st == ST.BytesPlaintext:
+                inv = Inv(plaintext=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+                inv = Inv(plaintext=_utf8_decode(sources[st]))
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.BytesZlib:
+                inv = Inv(zlib=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.FnamePlaintext:
+                inv = Inv(fname_plain=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.FnameZlib:
+                inv = Inv(fname_zlib=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.DictFlat:
+                inv = Inv(dict_flat=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
+
+            if st == ST.DictStruct:
+                inv = Inv(dict_struct=sources[st])
+                self.check_attrs_inventory(inv, st, st.value)
 
     def test_API_Inventory_FlatDictJSONValidate(self):
         """Confirm that the flat_dict properties generated valid JSON."""
@@ -481,7 +513,20 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
         inv = Inventory(inv.flat_dict)
 
-        self.check_attrs_inventory(inv, SourceTypes.DictFlat)
+        self.check_attrs_inventory(inv, SourceTypes.DictFlat, 'general')
+
+    def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
+        """Confirm no error when flat dict passed w/too few objs w/ignore."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.flat_dict
+        d.pop('12')
+
+        inv2 = soi.Inventory(d, count_error=False)
+
+        # 55 b/c the loop continues past missing elements
+        self.assertEquals(inv2.count, 55)
 
     def test_API_Inventory_StructDictReimport(self):
         """Confirm re-import of a generated struct_dict."""
@@ -490,21 +535,62 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
         inv2 = Inventory(inv.struct_dict)
 
-        self.check_attrs_inventory(inv2, SourceTypes.DictStruct)
+        self.check_attrs_inventory(inv2, SourceTypes.DictStruct, 'general')
 
         for obj in inv2.objects:
             with self.subTest(obj.as_rst):
                 self.assertIn(obj.as_rst, inv.objects_rst)
 
+    def test_API_Inventory_TooSmallStructDictImportButIgnore(self):
+        """Confirm no error raised on too-small struct_dict w/flag."""
+        from sphobjinv import Inventory
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.struct_dict
+
+        # Hack out a chunk of the dict
+        d['std'].pop('label')
+
+        # Reimport with flag; check expected count
+        inv2 = Inventory(d, count_error=False)
+        self.assertEquals(inv2.count, 37)
+
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
+        from numbers import Number
+
         import sphobjinv as soi
+
+        rst = ':py:function:`attr.evolve`'
+        idx = 6
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
 
+        # No test on the exact fuzzywuzzy match score in these since
+        # it could change as fw continues development
         rec = inv.suggest('evolve')
 
-        self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+        with self.subTest('plain'):
+            self.assertEquals(rec[0], rst)
+
+        rec = inv.suggest('evolve', with_index=True)
+
+        with self.subTest('with_index'):
+            self.assertEquals(rec[0][0], rst)
+            self.assertEquals(rec[0][1], idx)
+
+        rec = inv.suggest('evolve', with_score=True)
+
+        with self.subTest('with_score'):
+            self.assertEquals(rec[0][0], rst)
+            self.assertIsInstance(rec[0][1], Number)
+
+        rec = inv.suggest('evolve', with_index=True, with_score=True)
+
+        with self.subTest('with_both'):
+            self.assertEquals(rec[0][0], rst)
+            self.assertIsInstance(rec[0][1], Number)
+            self.assertEquals(rec[0][2], idx)
 
     def test_API_FuzzyWuzzy_WarningCheck(self):
         """Confirm only the Levenshtein warning is raised, if any are."""
@@ -537,6 +623,55 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 # 'message' will be a Warning instance, thus 'args[0]'
                 # to retrieve the warning message as str.
                 self.assertIn('levenshtein', wc[0].message.args[0].lower())
+
+
+class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
+    """Testing Inventory URL download import method.
+
+    The test in this class is SLOW. For routine testing work, invoke tests.py
+    with '--local', rather than '--all', to avoid running it.
+
+    """
+
+    def test_API_Inventory_ManyURLImports(self):
+        """Confirm a plethora of .inv files downloads properly via url arg."""
+        import os
+        import re
+
+        from sphobjinv import Inventory as Inv
+
+        p_inv = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
+
+        for fn in os.listdir(res_path()):
+            mch = p_inv.match(fn)
+            if mch is not None:
+                name = mch.group(1)
+                inv1 = Inv(res_path(fn))
+                inv2 = Inv(url=REMOTE_URL.format(name))
+                with self.subTest(name + '_project'):
+                    self.assertEquals(inv1.project, inv2.project)
+                with self.subTest(name + '_version'):
+                    self.assertEquals(inv1.version, inv2.version)
+                with self.subTest(name + '_count'):
+                    self.assertEquals(inv1.count, inv2.count)
+
+                # Only check objects if counts match
+                if inv1.count == inv2.count:
+                    for i, objs in enumerate(zip(inv1.objects,
+                                                 inv2.objects)):
+                        with self.subTest(name + '_obj' + str(i)):
+                            self.assertEquals(objs[0].name,
+                                              objs[1].name)
+                            self.assertEquals(objs[0].domain,
+                                              objs[1].domain)
+                            self.assertEquals(objs[0].role,
+                                              objs[1].role)
+                            self.assertEquals(objs[0].uri,
+                                              objs[1].uri)
+                            self.assertEquals(objs[0].priority,
+                                              objs[1].priority)
+                            self.assertEquals(objs[0].dispname,
+                                              objs[1].dispname)
 
 
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
@@ -652,6 +787,13 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         # Try reimport, expecting error
         self.assertRaises(ValueError, Inventory, d)
 
+    def test_API_Inventory_TooManyInitSrcArgs(self):
+        """Confirm error if >1 sources passed."""
+        from sphobjinv import Inventory
+
+        self.assertRaises(RuntimeError, Inventory,
+                          source='foo', plaintext='bar')
+
 
 def suite_api_expect_good():
     """Create and return the test suite for API expect-good cases."""
@@ -659,6 +801,15 @@ def suite_api_expect_good():
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
                 tl.loadTestsFromTestCase(TestSphobjinvAPIInventoryExpectGood)])
+
+    return s
+
+
+def suite_api_expect_good_nonlocal():
+    """Create and return the test suite for nonlocal API expect-good cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIInvGoodNonlocal)])
 
     return s
 

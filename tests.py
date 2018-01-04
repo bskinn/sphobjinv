@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     29 Oct 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #           http://www.github.com/bskinn/sphobjinv
@@ -21,7 +21,9 @@ class AP(object):
 
     """
     ALL = 'all'
+    LOCAL = 'local'
     GOOD = 'good'
+    GOOD_LOCAL = 'good_local'
     FAIL = 'fail'
 
     CLI = 'cli'
@@ -29,7 +31,9 @@ class AP(object):
     CLI_FAIL = 'cli_fail'
 
     API = 'api'
+    API_LOCAL = 'api_local'
     API_GOOD = 'api_good'
+    API_GOOD_LOCAL = 'api_good_local'
     API_FAIL = 'api_fail'
 
     PFX = "--{0}"
@@ -57,9 +61,16 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
                      help="Run all tests (overrides any other selections)")
+    prs.add_argument(AP.PFX.format(AP.LOCAL), '-l',
+                     action='store_true',
+                     help="Run all local tests (not requiring Internet "
+                          "access)")
     prs.add_argument(AP.PFX.format(AP.GOOD), '-g',
                      action='store_true',
                      help="Run all expect-good tests")
+    prs.add_argument(AP.PFX.format(AP.GOOD_LOCAL),
+                     action='store_true',
+                     help="Run all local expect-good tests")
     prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
                      action='store_true',
                      help="Run all expect-fail tests")
@@ -79,9 +90,15 @@ def get_parser():
     gp_api.add_argument(AP.PFX.format(AP.API),
                         action='store_true',
                         help="Run all API tests")
+    gp_api.add_argument(AP.PFX.format(AP.API_LOCAL),
+                        action='store_true',
+                        help="Run all local API tests")
     gp_api.add_argument(AP.PFX.format(AP.API_GOOD),
                         action='store_true',
                         help="Run expect-good API tests")
+    gp_api.add_argument(AP.PFX.format(AP.API_GOOD_LOCAL),
+                        action='store_true',
+                        help="Run local expect-good API tests")
     gp_api.add_argument(AP.PFX.format(AP.API_FAIL),
                         action='store_true',
                         help="Run expect-fail API tests")
@@ -119,15 +136,19 @@ def main():
     # Commandline tests per-group
     # Expect-good tests
     addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good(),
-               [AP.ALL, AP.GOOD, AP.CLI, AP.CLI_GOOD])
+               [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
+                AP.CLI, AP.CLI_GOOD])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good(),
+               [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
+                AP.API, AP.API_LOCAL, AP.API_GOOD, AP.API_GOOD_LOCAL])
+    addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good_nonlocal(),
                [AP.ALL, AP.GOOD, AP.API, AP.API_GOOD])
 
     # Expect-fail tests
     addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail(),
-               [AP.ALL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
+               [AP.ALL, AP.LOCAL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_fail(),
-               [AP.ALL, AP.FAIL, AP.API, AP.API_FAIL])
+               [AP.ALL, AP.LOCAL, AP.FAIL, AP.API, AP.API_LOCAL, AP.API_FAIL])
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,

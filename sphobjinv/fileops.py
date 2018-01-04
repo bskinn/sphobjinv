@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
 #
@@ -84,7 +84,7 @@ def writefile(path, contents, cmdline=False):
         |True|, |None| is returned.
 
     """
-    # Write the decoded file
+    # Open the file and write
     try:
         with open(path, 'wb') as f:
             f.write(contents)

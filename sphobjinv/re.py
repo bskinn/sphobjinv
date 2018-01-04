@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2017
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "LICENSE.txt" for full license terms
 #                   and contributor agreement.
 #
@@ -24,7 +24,7 @@ import re
 from .data import DataFields, HeaderFields
 
 
-#: Bytestring regex pattern for comment lines in decoded
+#: Bytestring regex pattern for comment lines in decompressed
 #: ``objects.inv`` files
 pb_comments = re.compile(b'^#.*$', re.M)
 
@@ -68,11 +68,11 @@ ptn_data = """\
                DataFields.URI.value,
                DataFields.DispName.value)
 
-#: Bytestring regex pattern for bytes data lines in decoded
+#: Bytestring regex pattern for bytes data lines in decompressed
 #: ``objects.inv`` files
 pb_data = re.compile(ptn_data.encode(encoding='utf-8'), re.M | re.X)
 
-#: str regex pattern for str data lines in decoded
+#: str regex pattern for str data lines in decompressed
 #: ``objects.inv`` files
 p_data = re.compile(ptn_data, re.M | re.X)
 

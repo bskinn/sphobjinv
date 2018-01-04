@@ -11,7 +11,7 @@ Exposes:     SourceTypes (Enum) -- Types of source objects intelligible
 Author:      Brian Skinn (bskinn@alum.mit.edu)
 
 Created:     7 Dec 2017
-Copyright:   (c) Brian Skinn 2016-2017
+Copyright:   (c) Brian Skinn 2016-2018
 License:     The MIT License; see "LICENSE.txt" for full license terms
              and contributor agreement.
 
@@ -45,6 +45,7 @@ class SourceTypes(Enum):
     FnameZlib = 'fname_zlib'
     DictFlat = 'dict_flat'
     DictStruct = 'dict_struct'
+    URL = 'url'
 
 
 @attr.s(slots=True, cmp=False)
@@ -56,7 +57,30 @@ class Inventory(object):
 
     """
 
+    # General source for try-most-types import
+    # Needs to be first so it absorbs a positional arg
     _source = attr.ib(repr=False, default=None)
+
+    # Stringlike types (both accept str & bytes)
+    _plaintext = attr.ib(repr=False, default=None)
+    _zlib = attr.ib(repr=False, default=None)
+
+    # Filename types (must be str)
+    _fname_plain = attr.ib(repr=False, default=None)
+    _fname_zlib = attr.ib(repr=False, default=None)
+
+    # dict types
+    _dict_flat = attr.ib(repr=False, default=None)
+    _dict_struct = attr.ib(repr=False, default=None)
+
+    # URL for remote retrieval of objects.inv/.txt
+    _url = attr.ib(repr=False, default=None)
+
+    # Flag for whether to raise error on object count mismatch
+    _count_error = attr.ib(repr=False, default=True,
+                           validator=attr.validators.instance_of(bool))
+
+    # Actual regular attributes
     project = attr.ib(init=False, default=None)
     version = attr.ib(init=False, default=None)
     objects = attr.ib(init=False, default=attr.Factory(list))
@@ -153,6 +177,66 @@ class Inventory(object):
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
+        from .data import _utf8_encode
+
+        # List of sources
+        src_list = (self._source, self._plaintext, self._zlib,
+                    self._fname_plain, self._fname_zlib,
+                    self._dict_flat, self._dict_struct,
+                    self._url)
+        src_count = sum(1 for _ in src_list if _ is not None)
+
+        # Complain if multiple sources provided
+        if src_count > 1:
+            raise RuntimeError('At most one data source can '
+                               'be specified.')
+
+        # Leave uninitialized ("manual" init) if no source provided
+        if src_count == 0:
+            self.source_type = SourceTypes.Manual
+            return
+
+        # If general ._source was provided, run the generalized import
+        if self._source is not None:
+            self._general_import()
+            return
+
+        # For all of these below, '()' is passed as 'exc' argument since
+        # desire _try_import not to handle any exception types
+
+        # Plaintext str or bytes
+        # Special case, since preconverting input.
+        if self._plaintext is not None:
+            self._try_import(self._import_plaintext_bytes,
+                             _utf8_encode(self._plaintext),
+                             ())
+            self.source_type = SourceTypes.BytesPlaintext
+            return
+
+        # Remainder are iterable
+        for src, fxn, st in zip((self._zlib, self._fname_plain,
+                                 self._fname_zlib, self._dict_flat,
+                                 self._dict_struct, self._url),
+                                (self._import_zlib_bytes,
+                                 self._import_plaintext_fname,
+                                 self._import_zlib_fname,
+                                 self._import_flat_dict,
+                                 self._import_struct_dict,
+                                 self._import_url),
+                                (SourceTypes.BytesZlib,
+                                 SourceTypes.FnamePlaintext,
+                                 SourceTypes.FnameZlib,
+                                 SourceTypes.DictFlat,
+                                 SourceTypes.DictStruct,
+                                 SourceTypes.URL)
+                                ):
+            if src is not None:
+                self._try_import(fxn, src, ())
+                self.source_type = st
+                return
+
+    def _general_import(self):
+        """Attempt sequence of all imports."""
         from zlib import error as ZlibError
 
         # Lookups for method names and expected import-failure errors
@@ -174,31 +258,29 @@ class Inventory(object):
                          SourceTypes.DictStruct: TypeError,
                          }
 
-        # Leave uninitialized ("manual" init) if _source is None
-        if self._source is None:
-            self.source_type = SourceTypes.Manual
-            return
-
         # Attempt series of import approaches
-        for st in SourceTypes:  # Enum keys are ordered, so iteration is too.
-            if st == SourceTypes.Manual:
+        # Enum keys are ordered, so iteration is too.
+        for st in SourceTypes:
+            if st not in importers:
+                # No action for source types w/o a handler function defined.
                 continue
 
-            if self._try_import(importers[st], import_errors[st]):
+            if self._try_import(importers[st], self._source,
+                                import_errors[st]):
                 self.source_type = st
                 return
 
         # Nothing worked, complain.
         raise TypeError('Invalid Inventory source type')
 
-    def _try_import(self, import_fxn, exc):
-        """Attempt the indicated import method.
+    def _try_import(self, import_fxn, src, exc):
+        """Attempt the indicated import method on the indicated source.
 
         Returns True on success.
 
         """
         try:
-            p, v, o = import_fxn(self._source)
+            p, v, o = import_fxn(src)
         except exc:
             return False
 
@@ -255,6 +337,18 @@ class Inventory(object):
 
         return self._import_zlib_bytes(b_zlib)
 
+    def _import_url(self, url):
+        """Import a file from a remote URL."""
+        import urllib.request as urlrq
+
+        # Caller's responsibility to ensure URL points
+        # someplace safe/sane!
+        resp = urlrq.urlopen(url)
+        b_str = resp.read()
+
+        # Plaintext URL D/L is unreliable; zlib only
+        return self._import_zlib_bytes(b_str)
+
     def _import_flat_dict(self, d):
         """Import flat-dict composited data."""
         from copy import copy
@@ -270,7 +364,8 @@ class Inventory(object):
         # If not even '1' is in the dict, assume invalid type due to
         # it being a struct_dict format.
         if '1' not in d:
-            raise TypeError('No str(int)-indexed data object items found.')
+            raise TypeError('No base-1 str(int)-indexed data '
+                            'object items found.')
 
         # Going to destructively process d, so shallow-copy it first
         d = copy(d)
@@ -281,12 +376,13 @@ class Inventory(object):
             try:
                 objects.append(DataObjStr(**d.pop(str(i))))
             except KeyError as e:
-                err_str = ("Too few objects found in dict "
-                           "(halt at {0}, expect {1})".format(i, count))
-                raise ValueError(err_str) from e
+                if self._count_error:
+                    err_str = ("Too few objects found in dict "
+                               "(halt at {0}, expect {1})".format(i, count))
+                    raise ValueError(err_str) from e
 
         # Complain if len of remaining dict is other than 3
-        if len(d) != 3:  # project, version, count
+        if len(d) != 3 and self._count_error:  # project, version, count
             err_str = ("Too many objects in dict "
                        "({0}, expect {1})".format(count + len(d) - 3, count))
             raise ValueError(err_str)
@@ -332,15 +428,17 @@ class Inventory(object):
                                               name=name, **name_dict))
 
         # Confirm count
-        if count != len(objects):
+        if count != len(objects) and self._count_error:
             raise ValueError('{0} objects found '.format(len(objects)) +
                              '(expect {0})'.format(count))
 
         # Return info
         return project, version, objects
 
-    def suggest(self, name, *, thresh=75):
+    def suggest(self, name, *, thresh=50, with_index=False,
+                with_score=False):
         """Suggest objects in the inventory to match a name."""
+        import re
         import warnings
 
         # Suppress any UserWarning about the speed issue
@@ -348,5 +446,33 @@ class Inventory(object):
             warnings.simplefilter('ignore')
             from fuzzywuzzy import process as fwp
 
-        return list(_ for _ in fwp.extract(name, self.objects_rst,
-                                           limit=None) if _[1] > thresh)
+        # Must propagate list index to include in output
+        # Search vals are rst prepended with list index
+        srch_list = list('{0} {1}'.format(i, o) for i, o in
+                         enumerate(self.objects_rst))
+
+        # Composite each string result extracted by fuzzywuzzy
+        # and its match score into a single string. The match
+        # and score are returned together in a tuple.
+        results = list('{0} {1}'.format(*_) for _ in
+                       fwp.extract(name, srch_list, limit=None)
+                       if _[1] > thresh)
+
+        # Define regex for splitting the three components, and
+        # use it to convert composite result string to tuple:
+        # (rst, score, index)
+        p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
+        results = list((m.group(2), int(m.group(3)), int(m.group(1)))
+                       for m in map(p_idx.match, results))
+
+        # Return based on flags
+        if with_score:
+            if with_index:
+                return results
+            else:
+                return list(tup[:2] for tup in results)
+        else:
+            if with_index:
+                return list(tup[::2] for tup in results)
+            else:
+                return list(tup[0] for tup in results)
