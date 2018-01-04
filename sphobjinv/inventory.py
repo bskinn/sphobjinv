@@ -435,7 +435,8 @@ class Inventory(object):
         # Return info
         return project, version, objects
 
-    def suggest(self, name, *, thresh=50, with_index=False):
+    def suggest(self, name, *, thresh=50, with_index=False,
+                with_score=False):
         """Suggest objects in the inventory to match a name."""
         import re
         import warnings
@@ -445,31 +446,33 @@ class Inventory(object):
             warnings.simplefilter('ignore')
             from fuzzywuzzy import process as fwp
 
-        if with_index:
-            # Must propagate list index to include in output
-            # Search vals are rst prepended with list index
-            srch_list = list('{0} {1}'.format(i, o) for i, o in
-                             enumerate(self.objects_rst))
+        # Must propagate list index to include in output
+        # Search vals are rst prepended with list index
+        srch_list = list('{0} {1}'.format(i, o) for i, o in
+                         enumerate(self.objects_rst))
 
-            # Composite each string result extracted by fuzzywuzzy
-            # and its match score into a single string. The match
-            # and score are returned together in a tuple.
-            results = list('{0} {1}'.format(*_) for _ in
-                           fwp.extract(name, srch_list, limit=None)
-                           if _[1] > thresh)
+        # Composite each string result extracted by fuzzywuzzy
+        # and its match score into a single string. The match
+        # and score are returned together in a tuple.
+        results = list('{0} {1}'.format(*_) for _ in
+                       fwp.extract(name, srch_list, limit=None)
+                       if _[1] > thresh)
 
-            # Define regex for splitting the three components, and
-            # use it to convert composite result string to tuple:
-            # (rst, score, index)
-            p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
-            results = list((m.group(2), int(m.group(3)), int(m.group(1)))
-                           for m in map(p_idx.match, results))
+        # Define regex for splitting the three components, and
+        # use it to convert composite result string to tuple:
+        # (rst, score, index)
+        p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
+        results = list((m.group(2), int(m.group(3)), int(m.group(1)))
+                       for m in map(p_idx.match, results))
 
+        # Return based on flags
+        if with_score:
+            if with_index:
+                return results
+            else:
+                return list(tup[:2] for tup in results)
         else:
-            # Don't include list index
-            results = list(_ for _ in
-                           fwp.extract(name, self.objects_rst, limit=None)
-                           if _[1] > thresh)
-
-        # Either way, the results are composited now; return
-        return results
+            if with_index:
+                return list(tup[::2] for tup in results)
+            else:
+                return list(tup[0] for tup in results)

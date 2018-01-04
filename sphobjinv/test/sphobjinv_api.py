@@ -557,22 +557,40 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
+        from numbers import Number
+
         import sphobjinv as soi
+
+        rst = ':py:function:`attr.evolve`'
+        idx = 6
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
 
+        # No test on the exact fuzzywuzzy match score in these since
+        # it could change as fw continues development
         rec = inv.suggest('evolve')
 
-        # No test on the exact fuzzywuzzy match score here since
-        # it could change as fw continues development
-        with self.subTest('no_index'):
-            self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
+        with self.subTest('plain'):
+            self.assertEquals(rec[0], rst)
 
         rec = inv.suggest('evolve', with_index=True)
 
         with self.subTest('with_index'):
-            self.assertEquals(rec[0][0], ':py:function:`attr.evolve`')
-            self.assertEquals(rec[0][2], 6)
+            self.assertEquals(rec[0][0], rst)
+            self.assertEquals(rec[0][1], idx)
+
+        rec = inv.suggest('evolve', with_score=True)
+
+        with self.subTest('with_score'):
+            self.assertEquals(rec[0][0], rst)
+            self.assertIsInstance(rec[0][1], Number)
+
+        rec = inv.suggest('evolve', with_index=True, with_score=True)
+
+        with self.subTest('with_both'):
+            self.assertEquals(rec[0][0], rst)
+            self.assertIsInstance(rec[0][1], Number)
+            self.assertEquals(rec[0][2], idx)
 
     def test_API_FuzzyWuzzy_WarningCheck(self):
         """Confirm only the Levenshtein warning is raised, if any are."""
