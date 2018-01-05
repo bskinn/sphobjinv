@@ -605,6 +605,32 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                             self.assertEquals(objs[0].dispname,
                                               objs[1].dispname)
 
+    def test_API_Inventory_DataFileGenAndSphinxLoad(self):
+        """Confirm Sphinx likes generated inventory files."""
+        import os
+
+        import sphobjinv as soi
+
+        for fn in os.listdir(res_path()):
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+
+            if fn.startswith('objects_') and fn.endswith('.inv'):
+                # Make Inventory
+                mch = P_INV.match(fn)
+                proj = mch.group(1)
+                inv1 = soi.Inventory(res_path(fn))
+
+                # Generate new zlib file
+                data = inv1.data_file()
+                cmp_data = soi.compress(data)
+                soi.writefile(scr_path(fn), cmp_data)
+
+                # Test the Sphinx load process
+                sphinx_load_test(self, scr_path(fn))
+
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
         from numbers import Number
