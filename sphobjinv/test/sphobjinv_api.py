@@ -629,7 +629,8 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 soi.writefile(scr_path(fn), cmp_data)
 
                 # Test the Sphinx load process
-                sphinx_load_test(self, scr_path(fn))
+                with self.subTest(proj):
+                    sphinx_load_test(self, scr_path(fn))
 
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
