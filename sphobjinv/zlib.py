@@ -121,14 +121,10 @@ def compress(bstr):
     m_comments = pb_comments.findall(s)
     m_data = pb_data.finditer(s)
 
-    # Helper generator to retrive the text, not the match object
-    def gen_data():
-        yield next(m_data).group(0)
-
     # Assemble the binary header comments and data
     # Comments and data blocks must end in newlines
     hb = b'\n'.join(m_comments) + b'\n'
-    db = b'\n'.join(gen_data()) + b'\n'
+    db = b'\n'.join(_.group(0) for _ in m_data) + b'\n'
 
     # Compress the data block
     # Compression level nine is to match that specified in
