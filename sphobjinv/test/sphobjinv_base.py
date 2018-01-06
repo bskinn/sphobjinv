@@ -20,6 +20,7 @@ from contextlib import contextmanager
 from filecmp import cmp
 import os
 import os.path as osp
+import re
 import shutil as sh
 import sys
 
@@ -42,6 +43,14 @@ S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
 # Constant mainly for the many-inventory URL testing
 REMOTE_URL = ('https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/'
               'test/resource/objects_{0}.inv')
+
+
+# Regex pattern for objects.inv files
+P_INV = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
+
+
+# Environ flag for testing all or not
+TESTALL = 'TESTALL'
 
 
 # Useful functions

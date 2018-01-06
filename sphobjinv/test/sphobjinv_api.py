@@ -21,7 +21,7 @@ from .sphobjinv_base import B_LINES_0, S_LINES_0
 from .sphobjinv_base import DEC_EXT, CMP_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
-from .sphobjinv_base import REMOTE_URL
+from .sphobjinv_base import REMOTE_URL, P_INV, TESTALL
 from .sphobjinv_base import SuperSphobjinv
 from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
@@ -555,6 +555,83 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv2 = Inventory(d, count_error=False)
         self.assertEquals(inv2.count, 37)
 
+    def test_API_Inventory_DataFileGenAndReimport(self):
+        """Confirm integrated data_file export/import behavior."""
+        import os
+
+        import sphobjinv as soi
+
+        for fn in os.listdir(res_path()):
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+
+            if fn.startswith('objects_') and fn.endswith('.inv'):
+                # Make Inventory
+                mch = P_INV.match(fn)
+                proj = mch.group(1)
+                inv1 = soi.Inventory(res_path(fn))
+
+                # Generate new zlib file and reimport
+                data = inv1.data_file()
+                cmp_data = soi.compress(data)
+                soi.writefile(scr_path(fn), cmp_data)
+                inv2 = soi.Inventory(scr_path(fn))
+
+                # Test the things
+                with self.subTest(proj + '_project'):
+                    self.assertEquals(inv1.project, inv2.project)
+                with self.subTest(proj + '_version'):
+                    self.assertEquals(inv1.version, inv2.version)
+                with self.subTest(proj + '_count'):
+                    self.assertEquals(inv1.count, inv2.count)
+
+                # Only check objects if counts match
+                if inv1.count == inv2.count:
+                    for i, objs in enumerate(zip(inv1.objects,
+                                                 inv2.objects)):
+                        with self.subTest(proj + '_obj' + str(i)):
+                            self.assertEquals(objs[0].name,
+                                              objs[1].name)
+                            self.assertEquals(objs[0].domain,
+                                              objs[1].domain)
+                            self.assertEquals(objs[0].role,
+                                              objs[1].role)
+                            self.assertEquals(objs[0].uri,
+                                              objs[1].uri)
+                            self.assertEquals(objs[0].priority,
+                                              objs[1].priority)
+                            self.assertEquals(objs[0].dispname,
+                                              objs[1].dispname)
+
+    def test_API_Inventory_DataFileGenAndSphinxLoad(self):
+        """Confirm Sphinx likes generated inventory files."""
+        import os
+
+        import sphobjinv as soi
+
+        for fn in os.listdir(res_path()):
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+
+            if fn.startswith('objects_') and fn.endswith('.inv'):
+                # Make Inventory
+                mch = P_INV.match(fn)
+                proj = mch.group(1)
+                inv1 = soi.Inventory(res_path(fn))
+
+                # Generate new zlib file
+                data = inv1.data_file()
+                cmp_data = soi.compress(data)
+                soi.writefile(scr_path(fn), cmp_data)
+
+                # Test the Sphinx load process
+                with self.subTest(proj):
+                    sphinx_load_test(self, scr_path(fn))
+
     def test_API_Inventory_NameSuggest(self):
         """Confirm object name suggestion is nominally working."""
         from numbers import Number
@@ -636,14 +713,16 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
     def test_API_Inventory_ManyURLImports(self):
         """Confirm a plethora of .inv files downloads properly via url arg."""
         import os
-        import re
 
         from sphobjinv import Inventory as Inv
 
-        p_inv = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
-
         for fn in os.listdir(res_path()):
-            mch = p_inv.match(fn)
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+
+            mch = P_INV.match(fn)
             if mch is not None:
                 name = mch.group(1)
                 inv1 = Inv(res_path(fn))

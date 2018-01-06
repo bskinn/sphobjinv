@@ -6,7 +6,7 @@ python:
  - 3.5
  - 3.6
 script:
- - coverage run tests.py -a
+ - coverage run tests.py -a --testall
  - flake8 sphobjinv
  - cd doc
  - make doctest
