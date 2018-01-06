@@ -88,28 +88,8 @@ def _getparser():
     return prs
 
 
-def main():
-    """Handle command line invocation."""
-    from .fileops import readfile, writefile
-    from .zlib import compress, decompress
-
-    def selective_print(thing):
-        """Print `thing` only if not `QUIET`."""
-        if not params[QUIET]:
-            print(thing)
-
-    # Parse commandline arguments
-    prs = _getparser()
-    ns, args_left = prs.parse_known_args()
-    params = vars(ns)
-
-    # Conversion mode
-    mode = params[MODE]
-
-    # Infile path and name. If not specified, use current
-    #  directory, per default set in parser
-    in_path = params[INFILE]
-
+def resolve_inpath(in_path, mode):
+    """Resolve the input file, handling mode-specific defaults."""
     # If the input is a hyphen, replace with the default
     if in_path == "-":
         in_path = DEF_INFILE
@@ -127,27 +107,11 @@ def main():
         in_fname = DEF_NAME + DEF_INP_EXT[mode]
         in_path = os.path.join(in_fld, in_fname)
 
-    # Open the file and read
-    bstr = readfile(in_path, cmdline=True)
-    if not bstr:
-        selective_print("\nError when attempting input file read")
-        sys.exit(1)
+    return in_path, in_fname, in_fld
 
-    # (De)compress per 'mode', catching and reporting
-    # any raised exception
-    try:
-        if mode == DECOMP:
-            result = decompress(bstr)
-        else:
-            result = compress(bstr)
-    except Exception as e:
-        selective_print("\nError while {0}ing '{1}':".format(MODE_NAMES[mode],
-                                                             in_path))
-        selective_print("\n{0}".format(repr(e)))
-        sys.exit(1)
 
-    # Work up the output location
-    out_path = params[OUTFILE]
+def resolve_outpath(out_path, in_fname, in_fld, mode):
+    """Resolve the output file, handling mode-specific defaults."""
     if out_path:
         # Must check if the path entered is a folder
         if os.path.isdir(out_path):
@@ -172,6 +136,54 @@ def main():
         # No output location specified; use defaults
         out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
         out_path = os.path.join(in_fld, out_fname)
+
+    return out_path
+
+
+def main():
+    """Handle command line invocation."""
+    from .fileops import readfile, writefile
+    from .zlib import compress, decompress
+
+    def selective_print(thing):
+        """Print `thing` only if not `QUIET`."""
+        if not params[QUIET]:
+            print(thing)
+
+    # Parse commandline arguments
+    prs = _getparser()
+    ns, args_left = prs.parse_known_args()
+    params = vars(ns)
+
+    # Conversion mode
+    mode = params[MODE]
+
+    # Infile path and name. If not specified, use current
+    # directory, per default set in parser. Resolve any
+    # shorthand.
+    in_path, in_fname, in_fld = resolve_inpath(params[INFILE], mode)
+
+    # Open the file and read
+    bstr = readfile(in_path, cmdline=True)
+    if not bstr:
+        selective_print("\nError when attempting input file read")
+        sys.exit(1)
+
+    # (De)compress per 'mode', catching and reporting
+    # any raised exception
+    try:
+        if mode == DECOMP:
+            result = decompress(bstr)
+        else:
+            result = compress(bstr)
+    except Exception as e:
+        selective_print("\nError while {0}ing '{1}':".format(MODE_NAMES[mode],
+                                                             in_path))
+        selective_print("\n{0}".format(repr(e)))
+        sys.exit(1)
+
+    # Work up the output location
+    out_path = resolve_outpath(params[OUTFILE], in_fname, in_fld, mode)
 
     # Write the output file
     if not writefile(out_path, result, cmdline=True):
