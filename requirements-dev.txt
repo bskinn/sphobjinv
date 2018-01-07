@@ -8,3 +8,4 @@ coverage
 jsonschema==2.6
 fuzzywuzzy>=0.3
 ipython
+certifi

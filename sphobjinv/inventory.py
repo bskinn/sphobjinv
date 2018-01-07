@@ -410,9 +410,11 @@ class Inventory(object):
         """Import a file from a remote URL."""
         import urllib.request as urlrq
 
+        import certifi
+
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        resp = urlrq.urlopen(url)
+        resp = urlrq.urlopen(url, cafile=certifi.where())
         b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
