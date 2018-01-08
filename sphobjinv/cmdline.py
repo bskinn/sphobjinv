@@ -31,6 +31,8 @@ JSON_STRUCT = 'struct'
 EXPAND = 'expand'
 CONTRACT = 'contract'
 
+OVERWRITE = 'overwrite'
+
 CONVERT = 'convert'
 SUGGEST = 'suggest'
 
@@ -39,8 +41,8 @@ OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
 
-HELP_CO_PARSER = ("Convert intersphinx inventory to zlib_compressed, "
-                  "plaintext, or flat and/or structured JSON.")
+HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
+                  "plaintext, flat JSON, or structured JSON formats.")
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
@@ -63,7 +65,7 @@ def selective_print(thing, params):
 
 def err_format(exc):
     """Pretty-format an exception."""
-    return '{0}: {1}'.format(type(exc).__name__, str(e))
+    return '{0}: {1}'.format(type(exc).__name__, str(exc))
 
 
 def _getparser():
@@ -130,9 +132,15 @@ def _getparser():
                                   "abbreviations",
                              action='store_true')
 
+    # Clobber argument
+    spr_convert.add_argument('-' + OVERWRITE[0], '--' + OVERWRITE,
+                     help="Overwrite output files without prompting",
+                     action='store_true')
+
     # stdout suppressor option (e.g., for scripting)
     spr_convert.add_argument('-' + QUIET[0], '--' + QUIET,
-                     help="Suppress printing of status messages",
+                     help="Suppress printing of status messages "
+                          "and overwrite output files without prompting",
                      action='store_true')
 
     # ### Args for suggest subparser
@@ -198,7 +206,8 @@ def import_infile(in_path):
 
     # Maybe it's JSON
     try:
-        dict_json = json.load(in_path)
+        with open(in_path) as f:
+            dict_json = json.load(f)
         inv = Inv(dict_json)
     except Exception:
         return None
@@ -211,7 +220,7 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
     from .fileops import writefile
 
     b_str = inv.data_file(expand=expand, contract=contract)
-    writefile(path, b_str)
+    writefile(path, b_str.replace(b'\n', os.linesep.encode('utf-8')))
 
 
 def write_zlib(inv, path, *, expand=False, contract=False):
@@ -265,7 +274,7 @@ def do_convert(inv, in_path, mode, params):
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
-    if os.path.isfile(out_path) and not params[QUIET]:
+    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = ''
         while not (resp.lower() == 'n' or resp.lower() == 'y'):
             resp = input('File exists. Overwrite (Y/N)? ')

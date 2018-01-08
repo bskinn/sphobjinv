@@ -29,8 +29,12 @@ import sys
 RES_FNAME_BASE = 'objects_attrs'
 INIT_FNAME_BASE = 'objects'
 MOD_FNAME_BASE = 'objects_mod'
+
 CMP_EXT = '.inv'
 DEC_EXT = '.txt'
+FLAT_EXT = '.flatjson'
+STRUCT_EXT = '.structjson'
+
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
 B_LINES_0 = {False:
@@ -92,6 +96,18 @@ def copy_dec():
     """Copy the decompressed example file into scratch."""
     sh.copy(res_path(RES_FNAME_BASE + DEC_EXT),
             scr_path(INIT_FNAME_BASE + DEC_EXT))
+
+
+def copy_flat():
+    """Copy the flat-JSON example file into scratch."""
+    sh.copy(res_path(RES_FNAME_BASE + FLAT_EXT),
+            scr_path(INIT_FNAME_BASE + FLAT_EXT))
+
+
+def copy_struct():
+    """Copy the struct-JSON example file into scratch."""
+    sh.copy(res_path(RES_FNAME_BASE + STRUCT_EXT),
+            scr_path(INIT_FNAME_BASE + STRUCT_EXT))
 
 
 def sphinx_load_test(testcase, path):
