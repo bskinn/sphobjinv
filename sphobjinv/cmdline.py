@@ -23,23 +23,34 @@ import argparse as ap
 import os
 import sys
 
-COMP = 'comp'
-DECOMP = 'decomp'
+ZLIB = 'zlib'
+PLAIN = 'plain'
+JSON_FLAT = 'json'
+JSON_STRUCT = 'struct'
+
+EXPAND = 'expand'
+CONTRACT = 'contract'
+
+CONVERT = 'convert'
+SUGGEST = 'suggest'
+
 INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
 
-MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress'}
+HELP_CO_PARSER = ("Convert intersphinx inventory to zlib_compressed, "
+                  "plaintext, or flat and/or structured JSON.")
+HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
+                  "for desired object(s).")
 
-DEF_OUT_EXT = {COMP: '.inv', DECOMP: '.txt'}
-DEF_INP_EXT = {COMP: '.txt', DECOMP: '.inv'}
-DEF_NAME = 'objects'
+# MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress',
+#               JSON_FLAT: 'convert', JSON_STRUCT: 'convert'}
 
-DEF_INFILE = '.'
+DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt',
+        JSON_FLAT: '.json', JSON_STRUCT: '.json'}
 
-HELP_DECOMP_EXTS = "'.txt (.inv)'"
-HELP_COMP_FNAMES = "'./objects.inv(.txt)'"
+HELP_CONV_EXTS = "'.txt/.inv/.json'"
 
 
 def _getparser():
@@ -53,35 +64,61 @@ def _getparser():
         of ``sphobjinv``
 
     """
-    prs = ap.ArgumentParser(description="Decode/encode intersphinx "
+    prs = ap.ArgumentParser(description="Format conversion for "
+                                        "and introspection of "
+                                        "intersphinx "
                                         "'objects.inv' files.")
+    sprs = prs.add_subparsers(title='Subcommands',
+                              metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
+                              help="Execution mode. Type "
+                                   "'sphobjinv [mode] -h' "
+                                   "for more information "
+                                   "on available options. "
+                                   "Mode names can be abbreviated "
+                                   "to their first two letters.")
+    spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
+                                  help=HELP_CO_PARSER,
+                                  description=HELP_CO_PARSER)
+    spr_suggest = sprs.add_parser(SUGGEST, aliases=[SUGGEST[:2]],
+                                  help=HELP_SU_PARSER,
+                                  description=HELP_SU_PARSER)
 
-    prs.add_argument(MODE,
-                     help="Conversion mode",
-                     choices=(COMP, DECOMP))
+    # Args for conversion subparser
+    spr_convert.add_argument(MODE,
+                     help="Conversion output format",
+                     choices=(ZLIB, PLAIN, JSON_FLAT, JSON_STRUCT))
 
-    prs.add_argument(INFILE,
-                     help="Path to file to be decoded (encoded). Defaults to "
-                          + HELP_COMP_FNAMES + ". "
-                          "'-' is a synonym for these defaults. "
-                          "Bare paths are accepted, in which case the "
-                          "preceding "
-                          "default file names are used in the "
-                          "indicated path.",
-                     nargs="?",
-                     default=DEF_INFILE)
+    spr_convert.add_argument(INFILE,
+                     help="Path to file to be converted",
+                     nargs=1)
 
-    prs.add_argument(OUTFILE,
-                     help="Path to decoded (encoded) output file. "
+    spr_convert.add_argument(OUTFILE,
+                     help="Path to desired output file. "
                           "Defaults to same directory and main "
                           "file name as input file but with extension "
-                          + HELP_DECOMP_EXTS + ". "
-                          "Bare paths are accepted here as well, using "
-                          "the default output file names.",
+                          + HELP_CONV_EXTS +
+                          ", as appropriate for the output format. "
+                          "Bare paths are accepted here as well, "
+                          "using the default output file names.",
                      nargs="?",
                      default=None)
 
-    prs.add_argument('-' + QUIET[0], '--' + QUIET,
+    # Mutually exclusive group for --expand/--contract
+    gp_expcont = spr_convert.add_argument_group(title="URI/display name "
+                                                      "conversions")
+    meg_expcont = gp_expcont.add_mutually_exclusive_group()
+    meg_expcont.add_argument('-e', '--' + EXPAND,
+                             help="Expand all URI and display name "
+                                  "abbreviations",
+                             action='store_true')
+
+    meg_expcont.add_argument('-c', '--' + CONTRACT,
+                             help="Contract all URI and display name "
+                                  "abbreviations",
+                             action='store_true')
+
+    # stdout suppressor option (e.g., for scripting)
+    spr_convert.add_argument('-' + QUIET[0], '--' + QUIET,
                      help="Suppress printing of status messages",
                      action='store_true')
 
@@ -140,6 +177,66 @@ def resolve_outpath(out_path, in_fname, in_fld, mode):
     return out_path
 
 
+def import_infile(in_path):
+    """Attempt import of indicated file."""
+    import json
+
+    from .inventory import Inventory as Inv
+
+    # Try general import, for zlib or plaintext files
+    try:
+        inv = Inv(in_path)
+    except Exception:
+        pass  # Punt to JSON attempt
+    else:
+        return inv
+
+    # Maybe it's JSON
+    try:
+        dict_json = json.load(in_path)
+        inv = Inv(dict_json)
+    except Exception:
+        return None
+    else:
+        return inv
+
+
+def _write_plaintext(inv, path, *, expand=False, contract=False):
+    """Write plaintext from Inventory."""
+    from .fileops import writefile
+
+    b_str = inv.data_file(expand=expand, contract=contract)
+    writefile(path, b_str)
+
+
+def _write_zlib(inv, path, *, expand=False, contract=False):
+    """Write zlib from Inventory."""
+    from .fileops import writefile
+    from .zlib import compress
+
+    b_str = inv.data_file(expand=expand, contract=contract)
+    bz_str = compress(b_str)
+    writefile(path, bz_str)
+
+
+def _write_flat_json(inv, path, *, expand=False, contract=False):
+    """Write flat-dict JSON from Inventory."""
+    import json
+
+    flat_dict = inv.flat_dict(expand=expand, contract=contract)
+    with open(path, 'w') as f:
+        json.dump(flat_dict, f)
+
+
+def _write_struct_json(inv, path, *, expand=False, contract=False):
+    """Write flat-dict JSON from Inventory."""
+    import json
+
+    struct_dict = inv.struct_dict(expand=expand, contract=contract)
+    with open(path, 'w') as f:
+        json.dump(struct_dict, f)
+
+
 def main():
     """Handle command line invocation."""
     from .fileops import readfile, writefile
@@ -161,33 +258,33 @@ def main():
     # Infile path and name. If not specified, use current
     # directory, per default set in parser. Resolve any
     # shorthand.
-    in_path, in_fname, in_fld = resolve_inpath(params[INFILE], mode)
-
-    # Open the file and read
-    bstr = readfile(in_path, cmdline=True)
-    if not bstr:
-        selective_print("\nError when attempting input file read")
+    try:
+        in_path, in_fname, in_fld = resolve_inpath(params[INFILE], mode)
+    except Exception:
+        selective_print("\nError while parsing input file path")
         sys.exit(1)
 
-    # (De)compress per 'mode', catching and reporting
-    # any raised exception
-    try:
-        if mode == DECOMP:
-            result = decompress(bstr)
-        else:
-            result = compress(bstr)
-    except Exception as e:
-        selective_print("\nError while {0}ing '{1}':".format(MODE_NAMES[mode],
-                                                             in_path))
-        selective_print("\n{0}".format(repr(e)))
+    # Attempt import
+    inv = import_infile(in_path)
+    if inv is None:
+        selective_print("\nError: Unrecognized file format")
         sys.exit(1)
 
     # Work up the output location
-    out_path = resolve_outpath(params[OUTFILE], in_fname, in_fld, mode)
+    try:
+        out_path = resolve_outpath(params[OUTFILE], in_fname, in_fld, mode)
+    except Exception:
+        selective_print("\nError while parsing input file path")
+        sys.exit(1)
 
     # Write the output file
-    if not writefile(out_path, result, cmdline=True):
-        selective_print("\nError when attempting output file write")
+    try:
+        if mode[0] == ZLIB[0]:
+            _write_zlib(inv, out_path)
+        if mode[0] == PLAIN[0]:
+            _write_plaintext(inv, out_path)
+    except Exception:
+        selective_print("\nError during write of output file")
         sys.exit(1)
 
     # Report success, if not QUIET
