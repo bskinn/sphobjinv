@@ -44,13 +44,26 @@ HELP_CO_PARSER = ("Convert intersphinx inventory to zlib_compressed, "
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
+SUBPARSER_NAME = 'sprs_name'
+
 # MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress',
 #               JSON_FLAT: 'convert', JSON_STRUCT: 'convert'}
 
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt',
         JSON_FLAT: '.json', JSON_STRUCT: '.json'}
 
-HELP_CONV_EXTS = "'.txt/.inv/.json'"
+HELP_CONV_EXTS = "'.inv/.txt/.json'"
+
+
+def selective_print(thing, params):
+    """Print `thing` only if not `QUIET`."""
+    if not params[QUIET]:
+        print(thing)
+
+
+def err_format(exc):
+    """Pretty-format an exception."""
+    return '{0}: {1}'.format(type(exc).__name__, str(e))
 
 
 def _getparser():
@@ -69,6 +82,7 @@ def _getparser():
                                         "intersphinx "
                                         "'objects.inv' files.")
     sprs = prs.add_subparsers(title='Subcommands',
+                              dest=SUBPARSER_NAME,
                               metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
                               help="Execution mode. Type "
                                    "'sphobjinv [mode] -h' "
@@ -83,14 +97,13 @@ def _getparser():
                                   help=HELP_SU_PARSER,
                                   description=HELP_SU_PARSER)
 
-    # Args for conversion subparser
+    # ### Args for conversion subparser
     spr_convert.add_argument(MODE,
                      help="Conversion output format",
                      choices=(ZLIB, PLAIN, JSON_FLAT, JSON_STRUCT))
 
     spr_convert.add_argument(INFILE,
-                     help="Path to file to be converted",
-                     nargs=1)
+                     help="Path to file to be converted")
 
     spr_convert.add_argument(OUTFILE,
                      help="Path to desired output file. "
@@ -122,33 +135,25 @@ def _getparser():
                      help="Suppress printing of status messages",
                      action='store_true')
 
+    # ### Args for suggest subparser
+
     return prs
 
 
-def resolve_inpath(in_path, mode):
-    """Resolve the input file, handling mode-specific defaults."""
-    # If the input is a hyphen, replace with the default
-    if in_path == "-":
-        in_path = DEF_INFILE
+def resolve_inpath(in_path):
+    """Resolve the input file, handling invalid values."""
+    # Path MUST be to a file
+    if not os.path.isfile(in_path):
+        raise FileNotFoundError('Indicated path is not a valid file')
 
-    # If filename is actually a directory, treat as such and
-    #  use the default filename. Otherwise, split accordingly
-    if os.path.isdir(in_path):
-        in_fld = in_path
-        in_fname = None
-    else:
-        in_fld, in_fname = os.path.split(in_path)
-
-    # Default filename is 'objects.xxx'
-    if not in_fname:
-        in_fname = DEF_NAME + DEF_INP_EXT[mode]
-        in_path = os.path.join(in_fld, in_fname)
-
-    return in_path, in_fname, in_fld
+    # Return the path as absolute
+    return os.path.abspath(in_path)
 
 
-def resolve_outpath(out_path, in_fname, in_fld, mode):
+def resolve_outpath(out_path, in_path, mode):
     """Resolve the output file, handling mode-specific defaults."""
+    in_fld, in_fname = os.path.split(in_path)
+
     if out_path:
         # Must check if the path entered is a folder
         if os.path.isdir(out_path):
@@ -201,7 +206,7 @@ def import_infile(in_path):
         return inv
 
 
-def _write_plaintext(inv, path, *, expand=False, contract=False):
+def write_plaintext(inv, path, *, expand=False, contract=False):
     """Write plaintext from Inventory."""
     from .fileops import writefile
 
@@ -209,7 +214,7 @@ def _write_plaintext(inv, path, *, expand=False, contract=False):
     writefile(path, b_str)
 
 
-def _write_zlib(inv, path, *, expand=False, contract=False):
+def write_zlib(inv, path, *, expand=False, contract=False):
     """Write zlib from Inventory."""
     from .fileops import writefile
     from .zlib import compress
@@ -219,33 +224,82 @@ def _write_zlib(inv, path, *, expand=False, contract=False):
     writefile(path, bz_str)
 
 
-def _write_flat_json(inv, path, *, expand=False, contract=False):
+def write_json_flat(inv, path, *, expand=False, contract=False):
     """Write flat-dict JSON from Inventory."""
     import json
 
-    flat_dict = inv.flat_dict(expand=expand, contract=contract)
+    if expand:
+        flat_dict = inv.flat_dict_expanded
+    elif contract:
+        flat_dict = inv.flat_dict_contracted
+    else:
+        flat_dict = inv.flat_dict
+
     with open(path, 'w') as f:
         json.dump(flat_dict, f)
 
 
-def _write_struct_json(inv, path, *, expand=False, contract=False):
+def write_json_struct(inv, path, *, expand=False, contract=False):
     """Write flat-dict JSON from Inventory."""
     import json
 
-    struct_dict = inv.struct_dict(expand=expand, contract=contract)
+    if expand:
+        struct_dict = inv.struct_dict_expanded
+    elif contract:
+        struct_dict = inv.struct_dict_contracted
+    else:
+        struct_dict = inv.struct_dict
+
     with open(path, 'w') as f:
         json.dump(struct_dict, f)
+
+
+def do_convert(inv, in_path, mode, params):
+    """Carry out the conversion operation."""
+    # Work up the output location
+    try:
+        out_path = resolve_outpath(params[OUTFILE], in_path, mode)
+    except Exception as e:
+        selective_print("\nError while constructing output file path:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    # If exists, confirm overwrite; clobber if QUIET
+    if os.path.isfile(out_path) and not params[QUIET]:
+        resp = ''
+        while not (resp.lower() == 'n' or resp.lower() == 'y'):
+            resp = input('File exists. Overwrite (Y/N)? ')
+        if resp.lower() == 'n':
+            print('\nExiting...')
+            sys.exit(0)
+
+    # Write the output file
+    try:
+        if mode == ZLIB:
+            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+        if mode == PLAIN:
+            write_plaintext(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+        if mode == JSON_FLAT:
+            write_json_flat(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+        if mode == JSON_STRUCT:
+            write_json_struct(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+    except Exception as e:
+        selective_print("\nError during write of output file:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    # Report success, if not QUIET
+    selective_print("\nConversion completed.\n"
+                    "'{0}' converted to '{1}' ({2}).".format(in_path,
+                                                             out_path,
+                                                             mode),
+                    params)
 
 
 def main():
     """Handle command line invocation."""
     from .fileops import readfile, writefile
     from .zlib import compress, decompress
-
-    def selective_print(thing):
-        """Print `thing` only if not `QUIET`."""
-        if not params[QUIET]:
-            print(thing)
 
     # Parse commandline arguments
     prs = _getparser()
@@ -255,42 +309,23 @@ def main():
     # Conversion mode
     mode = params[MODE]
 
-    # Infile path and name. If not specified, use current
-    # directory, per default set in parser. Resolve any
-    # shorthand.
+    # Resolve input file path
     try:
-        in_path, in_fname, in_fld = resolve_inpath(params[INFILE], mode)
-    except Exception:
-        selective_print("\nError while parsing input file path")
+        in_path = resolve_inpath(params[INFILE])
+    except Exception as e:
+        selective_print("\nError while parsing input file path:", params)
+        selective_print(err_format(e), params)
         sys.exit(1)
 
     # Attempt import
     inv = import_infile(in_path)
     if inv is None:
-        selective_print("\nError: Unrecognized file format")
+        selective_print("\nError: Unrecognized file format", params)
         sys.exit(1)
 
-    # Work up the output location
-    try:
-        out_path = resolve_outpath(params[OUTFILE], in_fname, in_fld, mode)
-    except Exception:
-        selective_print("\nError while parsing input file path")
-        sys.exit(1)
-
-    # Write the output file
-    try:
-        if mode[0] == ZLIB[0]:
-            _write_zlib(inv, out_path)
-        if mode[0] == PLAIN[0]:
-            _write_plaintext(inv, out_path)
-    except Exception:
-        selective_print("\nError during write of output file")
-        sys.exit(1)
-
-    # Report success, if not QUIET
-    selective_print("\nConversion completed.\n"
-                    "'{0}' {1}ed to '{2}'.".format(in_path, MODE_NAMES[mode],
-                                                   out_path))
+    # Perform action based upon mode
+    if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
+        do_convert(inv, in_path, mode, params)
 
     # Clean exit
     sys.exit(0)
