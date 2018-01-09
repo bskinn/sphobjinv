@@ -21,9 +21,9 @@ import unittest as ut
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, FLAT_EXT, STRUCT_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import INVALID_FNAME
+from .sphobjinv_base import INVALID_FNAME, TESTALL
 from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path
+from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import copy_flat, copy_struct
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
@@ -85,6 +85,51 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                     file_exists_test(self, dest_fname)
 
                     decomp_cmp_test(self, dest_fname)
+
+    def test_CmdlineCycleConvert(self):
+        """Confirm conversion in a loop, reading all formats."""
+        import re
+
+        src_fname = res_path('objects_{0}.inv')
+        plain_fname = scr_path('objects_{0}.txt')
+        json_fname = scr_path('objects_{0}.flatjson')
+        struct_fname = scr_path('objects_{0}.structjson')
+        zlib_fname = scr_path('objects_{0}.inv')
+
+        for fn in os.listdir(res_path()):
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+            
+            # Only .inv
+            if not fn.endswith('.inv'):
+                continue
+
+            proj = re.match('^objects_(.+?)\\.inv$', fn).group(1)
+            sfx_fmt = '{0}_{1}'
+
+            run_cmdline_test(self,
+                             ['convert', 'plain',
+                              src_fname.format(proj),
+                              plain_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'plain'))
+
+            run_cmdline_test(self,
+                             ['convert', 'json',
+                              plain_fname.format(proj),
+                              json_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'json'))
+
+            run_cmdline_test(self,
+                             ['convert', 'struct',
+                              json_fname.format(proj),
+                              struct_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'struct'))
+            # Resume implementing conversion cycle
 
 
 class inactiveGoodTests(object):

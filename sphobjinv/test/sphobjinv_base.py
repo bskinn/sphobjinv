@@ -125,7 +125,7 @@ def sphinx_load_test(testcase, path):
                 testcase.fail()
 
 
-def run_cmdline_test(testcase, arglist, expect=0):
+def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
     """Perform command line test."""
     from sphobjinv.cmdline import main
 
@@ -146,13 +146,13 @@ def run_cmdline_test(testcase, arglist, expect=0):
         sys.argv = stored_sys_argv
 
     # Test that execution completed w/o error
-    with testcase.subTest('exit_code'):
+    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
         testcase.assertEquals(expect, retcode)
 
 
-def file_exists_test(testcase, path):
+def file_exists_test(testcase, path, suffix=None):
     """Confirm indicated filespec exists."""
-    with testcase.subTest('file_exists'):
+    with testcase.subTest('file_exists' + ('_' + suffix if suffix else '')):
         testcase.assertTrue(osp.isfile(path))
 
 
