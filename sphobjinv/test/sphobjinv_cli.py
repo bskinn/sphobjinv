@@ -121,22 +121,21 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                               ],
                              suffix=sfx_fmt.format(proj, 'zlib'))
 
-            # Reimport all and check metadata
+            # Reimport all and check header info
             invs = {}
+            invs.update({'orig': Inv(src_fname.format(proj))})
             invs.update({'plain': Inv(plain_fname.format(proj))})
             invs.update({'zlib': Inv(zlib_fname.format(proj))})
             with open(json_fname.format(proj)) as f:
                 invs.update({'json': Inv(json.load(f))})
 
-            for t, a in product(('zlib', 'json'),
+            for t, a in product(('plain', 'zlib', 'json'),
                                 (HF.Project.value, HF.Version.value,
                                  HF.Count.value)):
                 with self.subTest(sfx_fmt.format(t, a)):
                         self.assertEquals(getattr(invs[t], a),
-                                          getattr(invs['plain'], a))
+                                          getattr(invs['orig'], a))
 
-            # Check that number of lines in each plaintext is four
-            # more than the Inventory.count (header lines)
 
 class inactiveGoodTests(object):
 
