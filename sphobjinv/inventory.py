@@ -53,8 +53,7 @@ class SourceTypes(Enum):
     BytesZlib = 'bytes_zlib'
     FnamePlaintext = 'fname_plain'
     FnameZlib = 'fname_zlib'
-    DictFlat = 'dict_flat'
-    DictStruct = 'dict_struct'
+    DictJSON = 'dict_json'
     URL = 'url'
 
 
@@ -81,7 +80,6 @@ class Inventory(object):
 
     # dict types
     _dict_flat = attr.ib(repr=False, default=None)
-    _dict_struct = attr.ib(repr=False, default=None)
 
     # URL for remote retrieval of objects.inv/.txt
     _url = attr.ib(repr=False, default=None)
@@ -108,74 +106,38 @@ class Inventory(object):
         return len(self.objects)
 
     @property
-    def flat_dict(self):
+    def json_dict(self):
         """Generate a flat dict representation of the inventory as-is."""
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict()})
+            d.update({str(i): o.json_dict()})
 
         return d
 
     @property
-    def flat_dict_expanded(self):
+    def json_dict_expanded(self):
         """Generate an expanded flat dict representation."""
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict(expand=True)})
+            d.update({str(i): o.json_dict(expand=True)})
 
         return d
 
     @property
-    def flat_dict_contracted(self):
+    def json_dict_contracted(self):
         """Generate a contracted flat dict representation."""
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict(contract=True)})
-
-        return d
-
-    @property
-    def struct_dict(self):
-        """Generate a structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d)
-
-        return d
-
-    @property
-    def struct_dict_expanded(self):
-        """Generate an expanded structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d, expand=True)
-
-        return d
-
-    @property
-    def struct_dict_contracted(self):
-        """Generate a contracted structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d, contract=True)
+            d.update({str(i): o.json_dict(contract=True)})
 
         return d
 
@@ -198,8 +160,7 @@ class Inventory(object):
         # List of sources
         src_list = (self._source, self._plaintext, self._zlib,
                     self._fname_plain, self._fname_zlib,
-                    self._dict_flat, self._dict_struct,
-                    self._url)
+                    self._dict_flat, self._url)
         src_count = sum(1 for _ in src_list if _ is not None)
 
         # Complain if multiple sources provided
@@ -232,18 +193,16 @@ class Inventory(object):
         # Remainder are iterable
         for src, fxn, st in zip((self._zlib, self._fname_plain,
                                  self._fname_zlib, self._dict_flat,
-                                 self._dict_struct, self._url),
+                                 self._url),
                                 (self._import_zlib_bytes,
                                  self._import_plaintext_fname,
                                  self._import_zlib_fname,
-                                 self._import_flat_dict,
-                                 self._import_struct_dict,
+                                 self._import_json_dict,
                                  self._import_url),
                                 (SourceTypes.BytesZlib,
                                  SourceTypes.FnamePlaintext,
                                  SourceTypes.FnameZlib,
-                                 SourceTypes.DictFlat,
-                                 SourceTypes.DictStruct,
+                                 SourceTypes.DictJSON,
                                  SourceTypes.URL)
                                 ):
             if src is not None:
@@ -323,8 +282,7 @@ class Inventory(object):
                      SourceTypes.BytesZlib: self._import_zlib_bytes,
                      SourceTypes.FnamePlaintext: self._import_plaintext_fname,
                      SourceTypes.FnameZlib: self._import_zlib_fname,
-                     SourceTypes.DictFlat: self._import_flat_dict,
-                     SourceTypes.DictStruct: self._import_struct_dict,
+                     SourceTypes.DictJSON: self._import_json_dict,
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
@@ -333,8 +291,7 @@ class Inventory(object):
                          SourceTypes.FnameZlib: (FileNotFoundError,
                                                  TypeError,
                                                  ZlibError),
-                         SourceTypes.DictFlat: TypeError,
-                         SourceTypes.DictStruct: TypeError,
+                         SourceTypes.DictJSON: TypeError,
                          }
 
         # Attempt series of import approaches
@@ -430,7 +387,7 @@ class Inventory(object):
         # Plaintext URL D/L is unreliable; zlib only
         return self._import_zlib_bytes(b_str)
 
-    def _import_flat_dict(self, d):
+    def _import_json_dict(self, d):
         """Import flat-dict composited data."""
         from copy import copy
 
@@ -469,49 +426,4 @@ class Inventory(object):
             raise ValueError(err_str)
 
         # Should be good to return
-        return project, version, objects
-
-    def _import_struct_dict(self, d):
-        """Import struct-dict composited data."""
-        from .data import DataObjStr
-
-        # Attempting to pull these first, so that if it's not a dict,
-        # the TypeError will get raised before the below extensive
-        # parsing.
-        project = d[HeaderFields.Project.value]
-        version = d[HeaderFields.Version.value]
-        count = d[HeaderFields.Count.value]
-
-        # Init 'objects' for later filling
-        objects = []
-
-        # Loop over everything that's not a known struct-dict
-        # header field. These will be domains.
-        for domain in d:
-            if domain in (HeaderFields.Project.value,
-                          HeaderFields.Version.value,
-                          HeaderFields.Count.value,
-                          HeaderFields.Metadata.value):
-                continue
-
-            domain_dict = d[domain]
-
-            # Next level in will be roles
-            for role in domain_dict:
-                role_dict = domain_dict[role]
-
-                # Final level is names
-                for name in role_dict:
-                    name_dict = role_dict[name]
-
-                    # Create DataObj and add to .objects
-                    objects.append(DataObjStr(domain=domain, role=role,
-                                              name=name, **name_dict))
-
-        # Confirm count
-        if count != len(objects) and self._count_error:
-            raise ValueError('{0} objects found '.format(len(objects)) +
-                             '(expect {0})'.format(count))
-
-        # Return info
         return project, version, objects

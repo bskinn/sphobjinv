@@ -42,8 +42,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                  soi.SourceTypes.BytesZlib,
                  soi.SourceTypes.FnamePlaintext,
                  soi.SourceTypes.FnameZlib,
-                 soi.SourceTypes.DictFlat,
-                 soi.SourceTypes.DictStruct,
+                 soi.SourceTypes.DictJSON,
                  soi.SourceTypes.URL,
                  ]
 
@@ -227,12 +226,12 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Extract the match information, stuff into a DataObjBytes
         # instance, and extract the flat_dict
         b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        b_flatdict = soi.DataObjBytes(**b_mchdict).flat_dict()
+        b_jsondict = soi.DataObjBytes(**b_mchdict).json_dict()
 
         # Check matchingness
         for _ in b_mchdict:
             with self.subTest(_):
-                self.assertEquals(b_mchdict[_], b_flatdict[_])
+                self.assertEquals(b_mchdict[_], b_jsondict[_])
 
     def test_API_DataObjStr_FlatDictFxn(self):
         """Confirm that flat dict generating function works."""
@@ -245,105 +244,13 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Extract the match information, stuff into a DataObjStr
         # instance, and extract the flat_dict
         b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        s_flatdict = soi.DataObjStr(**b_mchdict).flat_dict()
+        s_jsondict = soi.DataObjStr(**b_mchdict).json_dict()
 
         # Check matchingness
         for _ in b_mchdict:
             with self.subTest(_):
                 self.assertEquals(b_mchdict[_].decode(encoding='utf-8'),
-                                  s_flatdict[_])
-
-    def test_API_DataObjBytes_StructDictFxn(self):
-        """Confirm that structured dict updating function works."""
-        import sphobjinv as soi
-        from sphobjinv import DataFields as DF
-
-        # Pull .txt file and retrieve all matches
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
-        mchs = list(soi.pb_data.finditer(b_dec))
-        # mchs = mchs[:3] + mchs[-2:]
-
-        # Extract each match's information, stuff into a DataObjBytes
-        # instance, and update a new dict with the structured
-        # data
-        newdict = {}
-        b_mchdicts = []
-        for mch in mchs:
-            b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-            b_mchdicts.append(b_mchdict)
-            soi.DataObjBytes(**b_mchdict).update_struct_dict(newdict)
-
-        # Run through all the matches and confirm all is consistent
-        for i, b_mchdict in enumerate(b_mchdicts):
-            s_i = str(i)
-
-            # Check top-level is domain
-            with self.subTest('domain_' + s_i):
-                self.assertIn(b_mchdict[DF.Domain.value], newdict.keys())
-
-            # Check next level is role
-            subdict = newdict[b_mchdict[DF.Domain.value]]
-            with self.subTest('role_' + s_i):
-                self.assertIn(b_mchdict[DF.Role.value], subdict.keys())
-
-            # Check next level is name
-            subdict = subdict[b_mchdict[DF.Role.value]]
-            with self.subTest('name_' + s_i):
-                self.assertIn(b_mchdict[DF.Name.value], subdict.keys())
-
-            # Check priority, URI and dispname
-            subdict = subdict[b_mchdict[DF.Name.value]]
-            for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
-                with self.subTest(_ + '_' + s_i):
-                    # Assert key found
-                    self.assertIn(_, subdict.keys())
-
-                    # Assert value match
-                    self.assertEquals(subdict[_], b_mchdict[_])
-
-    def test_API_DataObjStr_StructDictFxn(self):
-        """Confirm that structured dict updating function works."""
-        import sphobjinv as soi
-        from sphobjinv import DataFields as DF
-
-        # Pull .txt file and match first data line
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
-
-        # Extract the match information, convert to str,
-        # stuff into a DataObjBytes instance,
-        # and update a new dict with the structured data
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        s_mchdict = {_: b_mchdict[_].decode('utf-8') for _ in b_mchdict}
-        newdict = {}
-        soi.DataObjStr(**s_mchdict).update_struct_dict(newdict)
-
-        # Check top-level is domain
-        with self.subTest('domain'):
-            self.assertEquals(list(newdict.keys())[0],
-                              s_mchdict[DF.Domain.value])
-
-        # Check next level is role
-        subdict = newdict[s_mchdict[DF.Domain.value]]
-        with self.subTest('role'):
-            self.assertEquals(list(subdict.keys())[0],
-                              s_mchdict[DF.Role.value])
-
-        # Check next level is name
-        subdict = subdict[s_mchdict[DF.Role.value]]
-        with self.subTest('name'):
-            self.assertEquals(list(subdict.keys())[0],
-                              s_mchdict[DF.Name.value])
-
-        # Check priority, URI and dispname
-        subdict = subdict[s_mchdict[DF.Name.value]]
-        for _ in [DF.Priority.value, DF.URI.value, DF.DispName.value]:
-            with self.subTest(_):
-                # Assert key found
-                self.assertIn(_, subdict.keys())
-
-                # Assert value match
-                self.assertEquals(subdict[_], s_mchdict[_])
+                                  s_jsondict[_])
 
     # These methods testing data_line also implicitly test flat_dict
     def test_API_DataObjBytes_DataLineFxn(self):
@@ -432,11 +339,10 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                    }
 
         for st in ST:
-            if st in [ST.Manual, ST.DictFlat, ST.DictStruct, ST.URL]:
+            if st in [ST.Manual, ST.DictJSON, ST.URL]:
                 # Manual isn't tested
-                # DictFlat is tested independently, to avoid crashing this
+                # DictJSON is tested independently, to avoid crashing this
                 #  test if something goes wrong in the generation & reimport.
-                # DictStruct tested separately for similar reasons.
                 # URL is its own beast, tested in the separate Nonlocal
                 #  class, below.
                 continue
@@ -462,14 +368,6 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 inv = Inv(fname_zlib=sources[st])
                 self.check_attrs_inventory(inv, st, st.value)
 
-            if st == ST.DictFlat:
-                inv = Inv(dict_flat=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
-            if st == ST.DictStruct:
-                inv = Inv(dict_struct=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
     def test_API_Inventory_FlatDictJSONValidate(self):
         """Confirm that the flat_dict properties generated valid JSON."""
         import jsonschema
@@ -480,26 +378,8 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
         v = jsonschema.Draft4Validator(soi_schema.schema_flat)
 
-        for prop in ['flat_dict', 'flat_dict_expanded',
-                     'flat_dict_contracted']:
-            with self.subTest(prop):
-                try:
-                    v.validate(getattr(inv, prop))
-                except jsonschema.ValidationError:
-                    self.fail("'{0}' JSON invalid".format(prop))
-
-    def test_API_Inventory_StructDictJSONValidate(self):
-        """Confirm that the flat_dict properties generated valid JSON."""
-        import jsonschema
-
-        import sphobjinv as soi
-        import sphobjinv.schema as soi_schema
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
-        v = jsonschema.Draft4Validator(soi_schema.schema_struct)
-
-        for prop in ['struct_dict', 'struct_dict_expanded',
-                     'struct_dict_contracted']:
+        for prop in ['json_dict', 'json_dict_expanded',
+                     'json_dict_contracted']:
             with self.subTest(prop):
                 try:
                     v.validate(getattr(inv, prop))
@@ -511,49 +391,22 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         from sphobjinv import Inventory, SourceTypes
 
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        inv = Inventory(inv.flat_dict)
+        inv = Inventory(inv.json_dict)
 
-        self.check_attrs_inventory(inv, SourceTypes.DictFlat, 'general')
+        self.check_attrs_inventory(inv, SourceTypes.DictJSON, 'general')
 
     def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
         """Confirm no error when flat dict passed w/too few objs w/ignore."""
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.flat_dict
+        d = inv.json_dict
         d.pop('12')
 
         inv2 = soi.Inventory(d, count_error=False)
 
         # 55 b/c the loop continues past missing elements
         self.assertEquals(inv2.count, 55)
-
-    def test_API_Inventory_StructDictReimport(self):
-        """Confirm re-import of a generated struct_dict."""
-        from sphobjinv import Inventory, SourceTypes
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        inv2 = Inventory(inv.struct_dict)
-
-        self.check_attrs_inventory(inv2, SourceTypes.DictStruct, 'general')
-
-        for obj in inv2.objects:
-            with self.subTest(obj.as_rst):
-                self.assertIn(obj.as_rst, inv.objects_rst)
-
-    def test_API_Inventory_TooSmallStructDictImportButIgnore(self):
-        """Confirm no error raised on too-small struct_dict w/flag."""
-        from sphobjinv import Inventory
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.struct_dict
-
-        # Hack out a chunk of the dict
-        d['std'].pop('label')
-
-        # Reimport with flag; check expected count
-        inv2 = Inventory(d, count_error=False)
-        self.assertEquals(inv2.count, 37)
 
     def test_API_Inventory_DataFileGenAndReimport(self):
         """Confirm integrated data_file export/import behavior."""
@@ -806,21 +659,21 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
             soi.Inventory('abcdefg')
 
     def test_API_Inventory_NoItemsFlatDict(self):
-        """Confirm TypeError with no-items dict passed to flat_dict."""
+        """Confirm TypeError with no-items dict passed to json_dict."""
         import sphobjinv as soi
 
         d = {soi.HeaderFields.Project.value: 'proj',
              soi.HeaderFields.Version.value: 'v3.3',
              soi.HeaderFields.Count.value: 5}
 
-        self.assertRaises(TypeError, soi.Inventory._import_flat_dict, d)
+        self.assertRaises(TypeError, soi.Inventory._import_json_dict, d)
 
     def test_API_Inventory_TooSmallFlatDictImport(self):
         """Confirm error raised when flat dict passed w/too few objects."""
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.flat_dict
+        d = inv.json_dict
         d.pop('12')
 
         self.assertRaises(ValueError, soi.Inventory, d)
@@ -830,41 +683,10 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.flat_dict
+        d = inv.json_dict
         d.update({'112': 'foobarbazquux'})
 
         self.assertRaises(ValueError, soi.Inventory, d)
-
-    def test_API_Inventory_TooBigStructDictImport(self):
-        """Confirm error raised from a too-big struct_dict."""
-        from sphobjinv import Inventory
-        from sphobjinv import DataFields as DF
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.struct_dict
-
-        d['py']['function'].update({'testname':
-                                    {DF.Priority.value: '1',
-                                     DF.URI.value: 'foo',
-                                     DF.DispName.value: '-'
-                                     }
-                                    })
-
-        # Try reimport, expecting error
-        self.assertRaises(ValueError, Inventory, d)
-
-    def test_API_Inventory_TooSmallStructDictImport(self):
-        """Confirm error raised from a too-small struct_dict."""
-        from sphobjinv import Inventory
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.struct_dict
-
-        # Hack out a chunk of the dict
-        d['std'].pop('label')
-
-        # Try reimport, expecting error
-        self.assertRaises(ValueError, Inventory, d)
 
     def test_API_Inventory_TooManyInitSrcArgs(self):
         """Confirm error if >1 sources passed."""

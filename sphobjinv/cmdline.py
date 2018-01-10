@@ -25,8 +25,7 @@ import sys
 
 ZLIB = 'zlib'
 PLAIN = 'plain'
-JSON_FLAT = 'json'
-JSON_STRUCT = 'struct'
+JSON = 'json'
 
 EXPAND = 'expand'
 CONTRACT = 'contract'
@@ -42,17 +41,13 @@ MODE = 'mode'
 QUIET = 'quiet'
 
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
-                  "plaintext, flat JSON, or structured JSON formats.")
+                  "plaintext, or JSON formats.")
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
 SUBPARSER_NAME = 'sprs_name'
 
-# MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress',
-#               JSON_FLAT: 'convert', JSON_STRUCT: 'convert'}
-
-DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt',
-        JSON_FLAT: '.json', JSON_STRUCT: '.json'}
+DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
@@ -102,7 +97,7 @@ def _getparser():
     # ### Args for conversion subparser
     spr_convert.add_argument(MODE,
                      help="Conversion output format",
-                     choices=(ZLIB, PLAIN, JSON_FLAT, JSON_STRUCT))
+                     choices=(ZLIB, PLAIN, JSON))
 
     spr_convert.add_argument(INFILE,
                      help="Path to file to be converted")
@@ -233,34 +228,19 @@ def write_zlib(inv, path, *, expand=False, contract=False):
     writefile(path, bz_str)
 
 
-def write_json_flat(inv, path, *, expand=False, contract=False):
-    """Write flat-dict JSON from Inventory."""
+def write_json(inv, path, *, expand=False, contract=False):
+    """Write JSON from Inventory."""
     import json
 
     if expand:
-        flat_dict = inv.flat_dict_expanded
+        json_dict = inv.json_dict_expanded
     elif contract:
-        flat_dict = inv.flat_dict_contracted
+        json_dict = inv.json_dict_contracted
     else:
-        flat_dict = inv.flat_dict
+        json_dict = inv.json_dict
 
     with open(path, 'w') as f:
-        json.dump(flat_dict, f)
-
-
-def write_json_struct(inv, path, *, expand=False, contract=False):
-    """Write flat-dict JSON from Inventory."""
-    import json
-
-    if expand:
-        struct_dict = inv.struct_dict_expanded
-    elif contract:
-        struct_dict = inv.struct_dict_contracted
-    else:
-        struct_dict = inv.struct_dict
-
-    with open(path, 'w') as f:
-        json.dump(struct_dict, f)
+        json.dump(json_dict, f)
 
 
 def do_convert(inv, in_path, mode, params):
@@ -288,10 +268,8 @@ def do_convert(inv, in_path, mode, params):
             write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
         if mode == PLAIN:
             write_plaintext(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
-        if mode == JSON_FLAT:
-            write_json_flat(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
-        if mode == JSON_STRUCT:
-            write_json_struct(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+        if mode == JSON:
+            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)

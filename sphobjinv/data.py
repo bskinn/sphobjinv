@@ -171,9 +171,9 @@ class SuperDataObj(object, metaclass=ABCMeta):
     @property
     def as_rst(self):
         """Return reST reference-like object representation."""
-        return self.rst_fmt.format(**self.flat_dict())
+        return self.rst_fmt.format(**self.json_dict())
 
-    def flat_dict(self, *, expand=False, contract=False):
+    def json_dict(self, *, expand=False, contract=False):
         """Return the object data formatted as a flat dict."""
         if expand and contract:
             raise ValueError("'expand' and 'contract' cannot "
@@ -191,55 +191,10 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         return d
 
-    def update_struct_dict(self, d, *, expand=False, contract=False):
-        """Update structured dict 'd' with the object data.
-
-        Does NOT alter any `count` field at the base of ``d``.
-
-        """
-        # Create a new dict with the leaf values. Invalid case of
-        # expand == contract == True handled by flat_dict
-        flat_d = self.flat_dict(expand=expand, contract=contract)
-        new_d = {_: flat_d[_] for _ in
-                 [DataFields.Priority.value,
-                  DataFields.URI.value,
-                  DataFields.DispName.value]}
-
-        # Retrieve any existing domain dictionary, or create a new
-        # empty dict
-        d_domain = d.get(self.domain, {})
-
-        if len(d_domain) > 0:
-            # The domain already exists in d
-            # Retrieve any existing role dict, or create a new
-            # empty dict
-            d_role = d_domain.get(self.role, {})
-
-            # Either way, add the leaf data under the object name
-            d_role.update({self.name: new_d})
-
-            # If only one item now exists, must update the domain
-            # dict with the newly created role dict
-            if len(d_role) == 1:
-                d_domain.update({self.role: d_role})
-
-        else:
-            # The domain doesn't exist in d
-            # A role dict of necessity must be created new
-            d_role = {self.name: new_d}
-
-            # Add the new role dict to the new-empty domain dict
-            d_domain.update({self.role: d_role})
-
-            # Add the new domain dict to the input dict
-            d.update({self.domain: d_domain})
-
-        # No return
-
     def data_line(self, *, expand=False, contract=False):
         """Compose objects.txt data line from instance contents."""
-        # Rely on .flat_dict to check for invalid expand == contract == True
-        fmt_d = self.as_str.flat_dict(expand=expand, contract=contract)
+        # Rely on .json_dict to check for invalid expand == contract == True
+        fmt_d = self.as_str.json_dict(expand=expand, contract=contract)
 
         retval = self.data_line_fmt.format(**fmt_d)
 
