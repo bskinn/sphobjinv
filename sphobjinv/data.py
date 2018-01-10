@@ -36,16 +36,6 @@ class DataFields(Enum):
     DispName = 'dispname'
 
 
-class HeaderFields(Enum):
-    """Enum for regex groups of objects.inv header data."""
-
-    Project = 'project'
-    Version = 'version'
-    Count = 'count'
-    Objects = 'objects'
-    Metadata = 'metadata'
-
-
 def _utf8_decode(b):
     """Decode (if needed) to str."""
     if type(b) is bytes:

@@ -88,13 +88,20 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
     def test_CmdlineCycleConvert(self):
         """Confirm conversion in a loop, reading all formats."""
+        from itertools import product
+        import json
         import re
+
+        from sphobjinv import Inventory as Inv
+        from sphobjinv import HeaderFields as HF
 
         src_fname = res_path('objects_{0}.inv')
         plain_fname = scr_path('objects_{0}.txt')
         json_fname = scr_path('objects_{0}.flatjson')
         struct_fname = scr_path('objects_{0}.structjson')
         zlib_fname = scr_path('objects_{0}.inv')
+        
+        sfx_fmt = '{0}_{1}'
 
         for fn in os.listdir(res_path()):
             # Drop unless testall
@@ -107,7 +114,6 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 continue
 
             proj = re.match('^objects_(.+?)\\.inv$', fn).group(1)
-            sfx_fmt = '{0}_{1}'
 
             run_cmdline_test(self,
                              ['convert', 'plain',
@@ -129,7 +135,29 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                               struct_fname.format(proj),
                               ],
                              suffix=sfx_fmt.format(proj, 'struct'))
-            # Resume implementing conversion cycle
+
+            run_cmdline_test(self,
+                             ['convert', 'zlib',
+                              struct_fname.format(proj),
+                              zlib_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'zlib'))
+
+            # Reimport all and check metadata
+            invs = {}
+            invs.update({'plain': Inv(plain_fname.format(proj))})
+            invs.update({'zlib': Inv(zlib_fname.format(proj))})
+            with open(json_fname.format(proj)) as f:
+                invs.update({'json': Inv(json.load(f))})
+            with open(struct_fname.format(proj)) as f:
+                invs.update({'struct': Inv(json.load(f))})
+
+            for t, a in product(('zlib', 'json', 'struct'),
+                                (HF.Project.value, HF.Version.value,
+                                 HF.Count.value)):
+                with self.subTest(sfx_fmt.format(t, a)):
+                        self.assertEquals(getattr(invs[t], a),
+                                          getattr(invs['plain'], a))
 
 
 class inactiveGoodTests(object):

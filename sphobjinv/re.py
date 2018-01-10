@@ -21,7 +21,8 @@
 
 import re
 
-from .data import DataFields, HeaderFields
+from .data import DataFields
+from .inventory import HeaderFields
 
 
 #: Bytestring regex pattern for comment lines in decompressed

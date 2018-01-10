@@ -26,7 +26,17 @@ from enum import Enum
 
 import attr
 
-from .data import DataObjStr, HeaderFields
+from .data import DataObjStr
+
+
+class HeaderFields(Enum):
+    """Enum for regex groups of objects.inv header data."""
+
+    Project = 'project'
+    Version = 'version'
+    Count = 'count'
+    Objects = 'objects'
+    Metadata = 'metadata'
 
 
 class SourceTypes(Enum):
