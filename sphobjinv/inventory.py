@@ -341,7 +341,7 @@ class Inventory(object):
                 yield DataObjStr(**mch.groupdict())
 
         objects = []
-        list(map(objects.append, gen_dataobjs()))
+        objects.extend(gen_dataobjs())
 
         if len(objects) == 0:
             raise TypeError  # Wrong bytes file contents

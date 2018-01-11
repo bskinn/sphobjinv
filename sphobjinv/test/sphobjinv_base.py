@@ -124,7 +124,7 @@ def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
 
     # Assemble execution arguments
     runargs = ['sphobjinv']
-    list(map(runargs.append, arglist))
+    runargs.extend(arglist)
 
     # Mock sys.argv, run main, and restore sys.argv
     stored_sys_argv = sys.argv
