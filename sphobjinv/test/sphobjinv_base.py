@@ -140,7 +140,7 @@ def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
 
     # Test that execution completed w/o error
     with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
-        testcase.assertEquals(expect, retcode)
+        testcase.assertEqual(expect, retcode)
 
 
 def file_exists_test(testcase, path, suffix=None):

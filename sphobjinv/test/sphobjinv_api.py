@@ -48,7 +48,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
 
         for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
             with self.subTest(en.value if en else it.value):
-                self.assertEquals(it, en)
+                self.assertEqual(it, en)
 
     def test_API_CompressSucceeds(self):
         """Check that a compress attempt via API throws no errors."""
@@ -115,7 +115,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
 
         # A separate check shows 56 entries in the reference hive."""
         with self.subTest('entries_count'):
-            self.assertEquals(56, len(soi.re.pb_data.findall(b_str)))
+            self.assertEqual(56, len(soi.re.pb_data.findall(b_str)))
 
         # The first entry in the file is:
         #  attr.Attribute py:class 1 api.html#$ -
@@ -136,8 +136,8 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         for i, e in enumerate(elements):
             for df in soi.DataFields:
                 with self.subTest('{0}_{1}'.format(df.value, e)):
-                    self.assertEquals(mchs[e].group(df.value),
-                                      testdata[df][i])
+                    self.assertEqual(mchs[e].group(df.value),
+                                     testdata[df][i])
 
     def test_API_DataObjBytes_InitCheck(self):
         """Confirm the DataObjBytes type functions correctly."""
@@ -167,15 +167,15 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Confirm members match
         for _ in b_mchdict:
             with self.subTest('match_' + _):
-                self.assertEquals(getattr(b_dob, _),
-                                  getattr(s_dob, _))
+                self.assertEqual(getattr(b_dob, _),
+                                 getattr(s_dob, _))
 
         # Confirm str-equivalents match
         for _ in b_mchdict:
             with self.subTest('str_equiv_' + _):
-                self.assertEquals(getattr(b_dob, _),
-                                  getattr(b_dob.as_str, _)
-                                  .encode(encoding='utf-8'))
+                self.assertEqual(getattr(b_dob, _),
+                                 getattr(b_dob.as_str, _)
+                                 .encode(encoding='utf-8'))
 
     def test_API_DataObjStr_InitCheck(self):
         """Confirm the DataObjStr type functions correctly."""
@@ -205,15 +205,15 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Confirm members match
         for _ in s_mchdict:
             with self.subTest('match_' + _):
-                self.assertEquals(getattr(b_dos, _),
-                                  getattr(s_dos, _))
+                self.assertEqual(getattr(b_dos, _),
+                                 getattr(s_dos, _))
 
         # Confirm bytes-equivalents match
         for _ in s_mchdict:
             with self.subTest('str_equiv_' + _):
-                self.assertEquals(getattr(s_dos, _),
-                                  getattr(s_dos.as_bytes, _)
-                                  .decode(encoding='utf-8'))
+                self.assertEqual(getattr(s_dos, _),
+                                 getattr(s_dos.as_bytes, _)
+                                 .decode(encoding='utf-8'))
 
     def test_API_DataObjBytes_FlatDictFxn(self):
         """Confirm that flat dict generating function works."""
@@ -231,7 +231,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Check matchingness
         for _ in b_mchdict:
             with self.subTest(_):
-                self.assertEquals(b_mchdict[_], b_jsondict[_])
+                self.assertEqual(b_mchdict[_], b_jsondict[_])
 
     def test_API_DataObjStr_FlatDictFxn(self):
         """Confirm that flat dict generating function works."""
@@ -249,8 +249,8 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # Check matchingness
         for _ in b_mchdict:
             with self.subTest(_):
-                self.assertEquals(b_mchdict[_].decode(encoding='utf-8'),
-                                  s_jsondict[_])
+                self.assertEqual(b_mchdict[_].decode(encoding='utf-8'),
+                                 s_jsondict[_])
 
     # These methods testing data_line also implicitly test flat_dict
     def test_API_DataObjBytes_DataLineFxn(self):
@@ -266,11 +266,11 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                                    .groupdict())
             b_dl = dob.data_line(expand=__)
             with self.subTest(str(_) + '_expand_' + str(__)):
-                self.assertEquals(b_dl, B_LINES_0[_ or __])
+                self.assertEqual(b_dl, B_LINES_0[_ or __])
 
             b_dl = dob.data_line(contract=__)
             with self.subTest(str(_) + '_contract_' + str(__)):
-                self.assertEquals(b_dl, B_LINES_0[_ and not __])
+                self.assertEqual(b_dl, B_LINES_0[_ and not __])
 
     def test_API_DataObjStr_DataLineFxn(self):
         """Confirm that data line formatting function works."""
@@ -285,7 +285,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                                  .groupdict())
             s_dl = dos.data_line(expand=__)
             with self.subTest(str(_) + '_expand_' + str(__)):
-                self.assertEquals(s_dl, S_LINES_0[_ or __])
+                self.assertEqual(s_dl, S_LINES_0[_ or __])
 
 
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
@@ -298,30 +298,30 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = soi.Inventory()
 
         with self.subTest('project'):
-            self.assertEquals(inv.project, None)
+            self.assertEqual(inv.project, None)
 
         with self.subTest('version'):
-            self.assertEquals(inv.version, None)
+            self.assertEqual(inv.version, None)
 
         with self.subTest('count'):
-            self.assertEquals(inv.count, 0)
+            self.assertEqual(inv.count, 0)
 
         with self.subTest('source_type'):
-            self.assertEquals(inv.source_type, soi.SourceTypes.Manual)
+            self.assertEqual(inv.source_type, soi.SourceTypes.Manual)
 
     def check_attrs_inventory(self, inv, st, subtest_id):
         """Encapsulate high-level consistency tests for Inventory objects."""
         with self.subTest('{0}_{1}_project'.format(subtest_id, st.value)):
-            self.assertEquals(inv.project, 'attrs')
+            self.assertEqual(inv.project, 'attrs')
 
         with self.subTest('{0}_{1}_version'.format(subtest_id, st.value)):
-            self.assertEquals(inv.version, '17.2')
+            self.assertEqual(inv.version, '17.2')
 
         with self.subTest('{0}_{1}_count'.format(subtest_id, st.value)):
-            self.assertEquals(inv.count, 56)
+            self.assertEqual(inv.count, 56)
 
         with self.subTest('{0}_{1}_source_type'.format(subtest_id, st.value)):
-            self.assertEquals(inv.source_type, st)
+            self.assertEqual(inv.source_type, st)
 
     def test_API_Inventory_TestMostImports(self):
         """Check all high-level modes for Inventory instantiation."""
@@ -406,7 +406,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv2 = soi.Inventory(d, count_error=False)
 
         # 55 b/c the loop continues past missing elements
-        self.assertEquals(inv2.count, 55)
+        self.assertEqual(inv2.count, 55)
 
     def test_API_Inventory_DataFileGenAndReimport(self):
         """Confirm integrated data_file export/import behavior."""
@@ -434,29 +434,29 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
                 # Test the things
                 with self.subTest(proj + '_project'):
-                    self.assertEquals(inv1.project, inv2.project)
+                    self.assertEqual(inv1.project, inv2.project)
                 with self.subTest(proj + '_version'):
-                    self.assertEquals(inv1.version, inv2.version)
+                    self.assertEqual(inv1.version, inv2.version)
                 with self.subTest(proj + '_count'):
-                    self.assertEquals(inv1.count, inv2.count)
+                    self.assertEqual(inv1.count, inv2.count)
 
                 # Only check objects if counts match
                 if inv1.count == inv2.count:
                     for i, objs in enumerate(zip(inv1.objects,
                                                  inv2.objects)):
                         with self.subTest(proj + '_obj' + str(i)):
-                            self.assertEquals(objs[0].name,
-                                              objs[1].name)
-                            self.assertEquals(objs[0].domain,
-                                              objs[1].domain)
-                            self.assertEquals(objs[0].role,
-                                              objs[1].role)
-                            self.assertEquals(objs[0].uri,
-                                              objs[1].uri)
-                            self.assertEquals(objs[0].priority,
-                                              objs[1].priority)
-                            self.assertEquals(objs[0].dispname,
-                                              objs[1].dispname)
+                            self.assertEqual(objs[0].name,
+                                             objs[1].name)
+                            self.assertEqual(objs[0].domain,
+                                             objs[1].domain)
+                            self.assertEqual(objs[0].role,
+                                             objs[1].role)
+                            self.assertEqual(objs[0].uri,
+                                             objs[1].uri)
+                            self.assertEqual(objs[0].priority,
+                                             objs[1].priority)
+                            self.assertEqual(objs[0].dispname,
+                                             objs[1].dispname)
 
     def test_API_Inventory_DataFileGenAndSphinxLoad(self):
         """Confirm Sphinx likes generated inventory files."""
@@ -501,26 +501,26 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         rec = inv.suggest('evolve')
 
         with self.subTest('plain'):
-            self.assertEquals(rec[0], rst)
+            self.assertEqual(rec[0], rst)
 
         rec = inv.suggest('evolve', with_index=True)
 
         with self.subTest('with_index'):
-            self.assertEquals(rec[0][0], rst)
-            self.assertEquals(rec[0][1], idx)
+            self.assertEqual(rec[0][0], rst)
+            self.assertEqual(rec[0][1], idx)
 
         rec = inv.suggest('evolve', with_score=True)
 
         with self.subTest('with_score'):
-            self.assertEquals(rec[0][0], rst)
+            self.assertEqual(rec[0][0], rst)
             self.assertIsInstance(rec[0][1], Number)
 
         rec = inv.suggest('evolve', with_index=True, with_score=True)
 
         with self.subTest('with_both'):
-            self.assertEquals(rec[0][0], rst)
+            self.assertEqual(rec[0][0], rst)
             self.assertIsInstance(rec[0][1], Number)
-            self.assertEquals(rec[0][2], idx)
+            self.assertEqual(rec[0][2], idx)
 
     def test_API_FuzzyWuzzy_WarningCheck(self):
         """Confirm only the Levenshtein warning is raised, if any are."""
@@ -543,11 +543,11 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         if lev_present:
             with self.subTest('count_Lev_present'):  # pragma: no cover
-                self.assertEquals(len(wc), 0)
+                self.assertEqual(len(wc), 0)
 
         else:
             with self.subTest('count_Lev_absent'):
-                self.assertEquals(len(wc), 1)
+                self.assertEqual(len(wc), 1)
 
             with self.subTest('identity_Lev_absent'):
                 # 'message' will be a Warning instance, thus 'args[0]'
@@ -581,29 +581,29 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
                 inv1 = Inv(res_path(fn))
                 inv2 = Inv(url=REMOTE_URL.format(name))
                 with self.subTest(name + '_project'):
-                    self.assertEquals(inv1.project, inv2.project)
+                    self.assertEqual(inv1.project, inv2.project)
                 with self.subTest(name + '_version'):
-                    self.assertEquals(inv1.version, inv2.version)
+                    self.assertEqual(inv1.version, inv2.version)
                 with self.subTest(name + '_count'):
-                    self.assertEquals(inv1.count, inv2.count)
+                    self.assertEqual(inv1.count, inv2.count)
 
                 # Only check objects if counts match
                 if inv1.count == inv2.count:
                     for i, objs in enumerate(zip(inv1.objects,
                                                  inv2.objects)):
                         with self.subTest(name + '_obj' + str(i)):
-                            self.assertEquals(objs[0].name,
-                                              objs[1].name)
-                            self.assertEquals(objs[0].domain,
-                                              objs[1].domain)
-                            self.assertEquals(objs[0].role,
-                                              objs[1].role)
-                            self.assertEquals(objs[0].uri,
-                                              objs[1].uri)
-                            self.assertEquals(objs[0].priority,
-                                              objs[1].priority)
-                            self.assertEquals(objs[0].dispname,
-                                              objs[1].dispname)
+                            self.assertEqual(objs[0].name,
+                                             objs[1].name)
+                            self.assertEqual(objs[0].domain,
+                                             objs[1].domain)
+                            self.assertEqual(objs[0].role,
+                                             objs[1].role)
+                            self.assertEqual(objs[0].uri,
+                                             objs[1].uri)
+                            self.assertEqual(objs[0].priority,
+                                             objs[1].priority)
+                            self.assertEqual(objs[0].dispname,
+                                             objs[1].dispname)
 
 
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):

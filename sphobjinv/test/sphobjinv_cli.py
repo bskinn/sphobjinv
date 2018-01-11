@@ -133,8 +133,8 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                                 (HF.Project.value, HF.Version.value,
                                  HF.Count.value)):
                 with self.subTest(sfx_fmt.format(t, a)):
-                        self.assertEquals(getattr(invs[t], a),
-                                          getattr(invs['orig'], a))
+                        self.assertEqual(getattr(invs[t], a),
+                                         getattr(invs['orig'], a))
 
 
 class inactiveGoodTests(object):
