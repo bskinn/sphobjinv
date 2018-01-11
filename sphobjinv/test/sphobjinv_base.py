@@ -158,6 +158,8 @@ def decomp_cmp_test(testcase, path):
 @contextmanager
 def dir_change(subdir):
     """Context manager to change to sub-directory & drop back on exit."""
+    from time import sleep
+
     existed = osp.isdir(subdir)
 
     if not existed:
@@ -165,6 +167,9 @@ def dir_change(subdir):
 
     os.chdir(subdir)
     yield
+
+    # Wait briefly to ensure yielded-to operations are fully complete
+    sleep(0.02)
 
     if not existed:
         list(map(os.remove, os.listdir()))

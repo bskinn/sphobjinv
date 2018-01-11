@@ -96,22 +96,22 @@ def _getparser():
 
     # ### Args for conversion subparser
     spr_convert.add_argument(MODE,
-                     help="Conversion output format",
-                     choices=(ZLIB, PLAIN, JSON))
+                             help="Conversion output format",
+                             choices=(ZLIB, PLAIN, JSON))
 
     spr_convert.add_argument(INFILE,
-                     help="Path to file to be converted")
+                             help="Path to file to be converted")
 
     spr_convert.add_argument(OUTFILE,
-                     help="Path to desired output file. "
-                          "Defaults to same directory and main "
-                          "file name as input file but with extension "
-                          + HELP_CONV_EXTS +
-                          ", as appropriate for the output format. "
-                          "Bare paths are accepted here as well, "
-                          "using the default output file names.",
-                     nargs="?",
-                     default=None)
+                             help="Path to desired output file. "
+                                  "Defaults to same directory and main "
+                                  "file name as input file but with extension "
+                                  + HELP_CONV_EXTS +
+                                  ", as appropriate for the output format. "
+                                  "Bare paths are accepted here as well, "
+                                  "using the default output file names.",
+                             nargs="?",
+                             default=None)
 
     # Mutually exclusive group for --expand/--contract
     gp_expcont = spr_convert.add_argument_group(title="URI/display name "
@@ -129,16 +129,19 @@ def _getparser():
 
     # Clobber argument
     spr_convert.add_argument('-' + OVERWRITE[0], '--' + OVERWRITE,
-                     help="Overwrite output files without prompting",
-                     action='store_true')
+                             help="Overwrite output files without prompting",
+                             action='store_true')
 
     # stdout suppressor option (e.g., for scripting)
     spr_convert.add_argument('-' + QUIET[0], '--' + QUIET,
-                     help="Suppress printing of status messages "
-                          "and overwrite output files without prompting",
-                     action='store_true')
+                             help="Suppress printing of status messages "
+                                  "and overwrite output files "
+                                  "without prompting",
+                             action='store_true')
 
     # ### Args for suggest subparser
+    spr_suggest.add_argument(INFILE,
+                             help="Path to file to be searched")
 
     return prs
 
@@ -254,7 +257,8 @@ def do_convert(inv, in_path, mode, params):
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
-    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
+    if (os.path.isfile(out_path) and not params[QUIET]
+            and not params[OVERWRITE]):
         resp = ''
         while not (resp.lower() == 'n' or resp.lower() == 'y'):
             resp = input('File exists. Overwrite (Y/N)? ')
@@ -265,11 +269,14 @@ def do_convert(inv, in_path, mode, params):
     # Write the output file
     try:
         if mode == ZLIB:
-            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_zlib(inv, out_path, expand=params[EXPAND],
+                       contract=params[CONTRACT])
         if mode == PLAIN:
-            write_plaintext(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_plaintext(inv, out_path, expand=params[EXPAND],
+                            contract=params[CONTRACT])
         if mode == JSON:
-            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_json(inv, out_path, expand=params[EXPAND],
+                       contract=params[CONTRACT])
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)
@@ -285,9 +292,6 @@ def do_convert(inv, in_path, mode, params):
 
 def main():
     """Handle command line invocation."""
-    from .fileops import readfile, writefile
-    from .zlib import compress, decompress
-
     # Parse commandline arguments
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
