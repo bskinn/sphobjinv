@@ -373,10 +373,9 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import jsonschema
 
         import sphobjinv as soi
-        import sphobjinv.schema as soi_schema
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
-        v = jsonschema.Draft4Validator(soi_schema.schema_flat)
+        v = jsonschema.Draft4Validator(soi.json_schema)
 
         for prop in ['json_dict', 'json_dict_expanded',
                      'json_dict_contracted']:
@@ -609,7 +608,7 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
-    def test_APINoInputFile(self):
+    def test_API_NoInputFile(self):
         """Confirm that appropriate exceptions are raised w/no input file."""
         import sphobjinv as soi
 
@@ -621,7 +620,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
             with self.assertRaises(FileNotFoundError):
                 soi.readfile(INIT_FNAME_BASE + CMP_EXT)
 
-    def test_APIBadOutputFile(self):
+    def test_API_WritefileBadOutputFile(self):
         """Confirm OSError raised on bad filename (example of read error)."""
         import sphobjinv as soi
 
@@ -630,7 +629,21 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         with self.assertRaises(OSError):
             soi.writefile(INVALID_FNAME, b_str)
 
-    def test_APIBadDataObjInitTypes(self):
+    def test_API_ErrorDecompressingPlaintext(self):
+        """Confirm error raised on attempt to decompress plaintext."""
+        from zlib import error as ZlibError
+
+        import sphobjinv as soi
+
+        # OS-dependent. VersionError on Windows b/c bytes import of the
+        # text-file objects_attrs.txt has the first line ending with b'2\r\n',
+        # whereas *nix will pass the version check but choke in the zlib
+        # decompression process
+        self.assertRaises((ZlibError, soi.VersionError),
+                          soi.Inventory,
+                          fname_zlib=res_path(RES_FNAME_BASE + DEC_EXT))
+
+    def test_API_BadDataObjInitTypes(self):
         """Confirm error raised when init-ed w/wrong types."""
         import sphobjinv as soi
 
@@ -668,8 +681,8 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
 
         self.assertRaises(TypeError, soi.Inventory._import_json_dict, d)
 
-    def test_API_Inventory_TooSmallFlatDictImport(self):
-        """Confirm error raised when flat dict passed w/too few objects."""
+    def test_API_Inventory_TooSmallDictImport(self):
+        """Confirm error raised when JSON dict passed w/too few objects."""
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
@@ -678,13 +691,24 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
 
         self.assertRaises(ValueError, soi.Inventory, d)
 
-    def test_API_Inventory_TooBigFlatDictImport(self):
-        """Confirm error raised when flat dict passed w/too many objects."""
+    def test_API_Inventory_BadObjDictImport(self):
+        """Confirm error raised when JSON dict passed w/an invalid object."""
+        from jsonschema.exceptions import ValidationError
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
         d = inv.json_dict
         d.update({'112': 'foobarbazquux'})
+
+        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
+
+    def test_API_Inventory_TooBigJSONDictImport(self):
+        """Confirm error raised when JSON dict passed w/too many objects."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.json_dict
+        d.update({'57': d['23']})
 
         self.assertRaises(ValueError, soi.Inventory, d)
 

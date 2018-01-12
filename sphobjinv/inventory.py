@@ -79,7 +79,7 @@ class Inventory(object):
     _fname_zlib = attr.ib(repr=False, default=None)
 
     # dict types
-    _dict_flat = attr.ib(repr=False, default=None)
+    _dict_json = attr.ib(repr=False, default=None)
 
     # URL for remote retrieval of objects.inv/.txt
     _url = attr.ib(repr=False, default=None)
@@ -160,7 +160,7 @@ class Inventory(object):
         # List of sources
         src_list = (self._source, self._plaintext, self._zlib,
                     self._fname_plain, self._fname_zlib,
-                    self._dict_flat, self._url)
+                    self._dict_json, self._url)
         src_count = sum(1 for _ in src_list if _ is not None)
 
         # Complain if multiple sources provided
@@ -192,7 +192,7 @@ class Inventory(object):
 
         # Remainder are iterable
         for src, fxn, st in zip((self._zlib, self._fname_plain,
-                                 self._fname_zlib, self._dict_flat,
+                                 self._fname_zlib, self._dict_json,
                                  self._url),
                                 (self._import_zlib_bytes,
                                  self._import_plaintext_fname,
@@ -277,6 +277,8 @@ class Inventory(object):
         """Attempt sequence of all imports."""
         from zlib import error as ZlibError
 
+        from jsonschema.exceptions import ValidationError
+
         # Lookups for method names and expected import-failure errors
         importers = {SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
                      SourceTypes.BytesZlib: self._import_zlib_bytes,
@@ -291,7 +293,7 @@ class Inventory(object):
                          SourceTypes.FnameZlib: (FileNotFoundError,
                                                  TypeError,
                                                  ZlibError),
-                         SourceTypes.DictJSON: TypeError,
+                         SourceTypes.DictJSON: (ValidationError),
                          }
 
         # Attempt series of import approaches
@@ -389,24 +391,23 @@ class Inventory(object):
 
     def _import_json_dict(self, d):
         """Import flat-dict composited data."""
-        from copy import copy
+        import jsonschema
 
         from .data import DataObjStr
+        from .schema import json_schema
 
-        # Attempting to pull these first, so that if it's not a dict,
-        # the TypeError will get raised before the below shallow-copy.
+        # Validate the dict against the schema. Schema
+        # WILL allow an inventory with no objects here
+        val = jsonschema.Draft4Validator(json_schema)
+        val.validate(d)
+
+        # Pull header items first
         project = d[HeaderFields.Project.value]
         version = d[HeaderFields.Version.value]
         count = d[HeaderFields.Count.value]
 
-        # If not even '1' is in the dict, assume invalid type due to
-        # it being a struct_dict format.
-        if '1' not in d:
-            raise TypeError('No base-1 str(int)-indexed data '
-                            'object items found.')
-
         # Going to destructively process d, so shallow-copy it first
-        d = copy(d)
+        d = d.copy()
 
         # Expecting the dict to be indexed by string integers
         objects = []

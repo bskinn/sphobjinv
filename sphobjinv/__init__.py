@@ -31,7 +31,8 @@ __all__ = ['readfile', 'writefile',
            'SourceTypes',
            'SphobjinvError', 'VersionError',
            'DataObjStr', 'DataObjBytes',
-           'Inventory']
+           'Inventory',
+           'json_schema']
 
 from .data import DataObjStr, DataObjBytes, DataFields
 from .inventory import Inventory, SourceTypes, HeaderFields
@@ -39,6 +40,7 @@ from .error import SphobjinvError, VersionError
 from .fileops import readfile, writefile
 from .re import pb_comments, pb_data, pb_version, pb_project
 from .re import p_data
+from .schema import json_schema
 from .zlib import compress, decompress
 
 

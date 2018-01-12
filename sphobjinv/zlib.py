@@ -73,7 +73,7 @@ def decompress(bstr):
 
     # Check to be sure it's v2
     out_b = strm.readline()
-    if not out_b.endswith(b'2\n'):
+    if not out_b.endswith(b'2\n'):  # pragma: no cover
         raise VersionError('Only v2 objects.inv files currently supported')
 
     # Pull name, version, and description lines

@@ -36,7 +36,7 @@ http://www.github.com/bskinn/sphobjinv
 # guarantee, instead of basing them dynamically on DataFields, etc.
 
 # Flat dict schema
-subschema_flat = {'name': {'type': 'string'},
+subschema_json = {'name': {'type': 'string'},
                   'domain': {'type': 'string'},
                   'role': {'type': 'string'},
                   'priority': {'type': 'string'},
@@ -44,7 +44,7 @@ subschema_flat = {'name': {'type': 'string'},
                   'dispname': {'type': 'string'}
                   }
 
-schema_flat = {'$schema': "http://json-schema.org/schema#",
+json_schema = {'$schema': "http://json-schema.org/schema#",
                'type': 'object',
                'properties': {'project': {'type': 'string'},
                               'version': {'type': 'string'},
@@ -52,9 +52,9 @@ schema_flat = {'$schema': "http://json-schema.org/schema#",
                               'metadata': {'type': 'object'}
                               },
                'patternProperties': {'^\\d+': {'type': 'object',
-                                               'properties': subschema_flat,
+                                               'properties': subschema_json,
                                                'additionalProperties': False,
-                                               'required': list(subschema_flat)
+                                               'required': list(subschema_json)
                                                }
                                      },
                'additionalProperties': False,
