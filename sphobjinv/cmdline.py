@@ -235,12 +235,7 @@ def write_json(inv, path, *, expand=False, contract=False):
     """Write JSON from Inventory."""
     import json
 
-    if expand:
-        json_dict = inv.json_dict_expanded
-    elif contract:
-        json_dict = inv.json_dict_contracted
-    else:
-        json_dict = inv.json_dict
+    json_dict = inv.json_dict(expand=expand, contract=contract)
 
     with open(path, 'w') as f:
         json.dump(json_dict, f)
@@ -258,7 +253,7 @@ def do_convert(inv, in_path, mode, params):
 
     # If exists, confirm overwrite; clobber if QUIET
     if (os.path.isfile(out_path) and not params[QUIET]
-            and not params[OVERWRITE]):
+            and not params[OVERWRITE]):  # pragma: subprocess test
         resp = ''
         while not (resp.lower() == 'n' or resp.lower() == 'y'):
             resp = input('File exists. Overwrite (Y/N)? ')

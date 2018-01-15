@@ -80,9 +80,8 @@ def ensure_scratch():
 
 def clear_scratch():
     """Clear the scratch folder."""
-    for fn in os.listdir(scr_path()):
-        if osp.isfile(scr_path(fn)):
-            os.remove(scr_path(fn))
+    if osp.isdir(scr_path()):
+        sh.rmtree(scr_path())
 
 
 def copy_cmp():
@@ -138,7 +137,7 @@ def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
     finally:
         sys.argv = stored_sys_argv
 
-    # Test that execution completed w/o error
+    # Test that execution completed w/indicated exit code
     with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
         testcase.assertEqual(expect, retcode)
 
@@ -153,6 +152,48 @@ def decomp_cmp_test(testcase, path):
     """Confirm that indicated decompressed file is identical to resource."""
     with testcase.subTest('decomp_cmp'):
         testcase.assertTrue(cmp(RES_DECOMP_PATH, path, shallow=False))
+
+
+@contextmanager
+def cmdline_sarge(cmdlist):
+    """Bootstrap a sarge-governed cmdline exec."""
+    import sarge
+
+    arglist = ['python', '-m', 'sphobjinv.cmdline']
+    arglist.extend(cmdlist)
+
+    feeder = sarge.Feeder()
+    pipeline = sarge.run(arglist, async=True, input=feeder,
+                         stdout=sarge.Capture(buffer_size=1),
+                         stderr=sarge.Capture(buffer_size=1))
+
+    yield pipeline, feeder
+
+    if pipeline.commands[0].poll() is None:
+        pipeline.commands[0].terminate()
+
+
+def run_cmdline_sarge(testcase, arglist, *, expect=0, suffix=None,
+                      poll_intv=0.2, timeout=5.0):
+    """Perform command line test with sarge.
+
+    Can only be executed when cwd is the repo root, otherwise
+    sphobjinv is not on the package search path.
+
+    """
+    import time
+
+    with cmdline_sarge(arglist) as (pipe, feed):
+        start_time = time.time()
+
+        while pipe.commands[0].poll() is None:
+            time.sleep(poll_intv)
+            if time.time() - start_time > timeout:
+                testcase.fail('Execution timed out')
+
+    # Test that execution completed w/indicated exit code
+    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
+        testcase.assertEqual(expect, pipe.commands[0].returncode)
 
 
 @contextmanager
@@ -181,17 +222,16 @@ def dir_change(subdir):
 
 
 class SuperSphobjinv(object):
-    """Superclass with common setup code for all tests."""
-
-    @classmethod
-    def setUpClass(cls):
-        """Run the class-wide setup code."""
-        # Make sure the scratch directory exists.
-        ensure_scratch()
+    """Superclass with common setup/teardown code for all tests."""
 
     def setUp(self):
         """Run the per-test-method setup code."""
-        # Always want to clear the scratch?
+        # Ensure the scratch
+        ensure_scratch()
+
+    def tearDown(self):
+        """Run the per-test tear-down code."""
+        # Remove the scratch
         clear_scratch()
 
 

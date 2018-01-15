@@ -28,6 +28,10 @@ from .sphobjinv_base import copy_json
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
 from .sphobjinv_base import dir_change
+from .sphobjinv_base import cmdline_sarge, run_cmdline_sarge
+
+
+SARGE_WAIT = 5.0
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
@@ -220,6 +224,48 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 with self.subTest(sfx_fmt.format(t, a)):
                         self.assertEqual(getattr(invs[t], a),
                                          getattr(invs['orig'], a))
+
+    def test_Cmdline_OverwritePromptAndBehavior(self):
+        """Confirm overwrite prompt works properly."""
+        from sphobjinv import Inventory as Inv
+
+        src1 = res_path('objects_attrs.inv')
+        src2 = res_path('objects_sarge.inv')
+        dst = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        args = ['convert', 'plain', src1, dst]
+
+        # Initial decompress
+        run_cmdline_sarge(self, args)
+
+        # First overwrite, declining clobber
+        args[2] = src2
+        with cmdline_sarge(args) as (pipe, feed):
+            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('First, declined overwrite timed out')
+
+            feed.feed('N\n')
+            mch = pipe.stdout.expect('Exiting', timeout=SARGE_WAIT)
+
+        with self.subTest('no_clobber'):
+            self.assertEqual('attrs', Inv(dst).project)
+
+        # Second overwrite, with clobber
+        with cmdline_sarge(args) as (pipe, feed):
+            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('Second, confirmed overwrite timed out @ start')
+
+            feed.feed('Y\n')
+            mch = pipe.stdout.expect('(plain)', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('Second, confirmed overwrite timed out @ write')
+
+        with self.subTest('clobber'):
+            self.assertEqual('Sarge', Inv(dst).project)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):

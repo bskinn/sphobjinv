@@ -105,39 +105,15 @@ class Inventory(object):
         """Return the number of objects currently in inventory."""
         return len(self.objects)
 
-    @property
-    def json_dict(self):
-        """Generate a flat dict representation of the inventory as-is."""
+    def json_dict(self, expand=False, contract=False):
+        """Generate a flat dict representation of the inventory."""
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.json_dict()})
-
-        return d
-
-    @property
-    def json_dict_expanded(self):
-        """Generate an expanded flat dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for i, o in enumerate(self.objects):
-            d.update({str(i): o.json_dict(expand=True)})
-
-        return d
-
-    @property
-    def json_dict_contracted(self):
-        """Generate a contracted flat dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for i, o in enumerate(self.objects):
-            d.update({str(i): o.json_dict(contract=True)})
+            d.update({str(i): o.json_dict(expand=expand,
+                                          contract=contract)})
 
         return d
 

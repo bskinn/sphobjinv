@@ -377,11 +377,11 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
         v = jsonschema.Draft4Validator(soi.json_schema)
 
-        for prop in ['json_dict', 'json_dict_expanded',
-                     'json_dict_contracted']:
+        for prop in ['none', 'expand', 'contract']:
+            kwarg = {} if prop == 'none' else {prop: True}
             with self.subTest(prop):
                 try:
-                    v.validate(getattr(inv, prop))
+                    v.validate(inv.json_dict(**kwarg))
                 except jsonschema.ValidationError:
                     self.fail("'{0}' JSON invalid".format(prop))
 
@@ -390,7 +390,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         from sphobjinv import Inventory, SourceTypes
 
         inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        inv = Inventory(inv.json_dict)
+        inv = Inventory(inv.json_dict())
 
         self.check_attrs_inventory(inv, SourceTypes.DictJSON, 'general')
 
@@ -399,7 +399,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict
+        d = inv.json_dict()
         d.pop('12')
 
         inv2 = soi.Inventory(d, count_error=False)
@@ -686,7 +686,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict
+        d = inv.json_dict()
         d.pop('12')
 
         self.assertRaises(ValueError, soi.Inventory, d)
@@ -697,7 +697,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict
+        d = inv.json_dict()
         d.update({'112': 'foobarbazquux'})
 
         self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
@@ -707,7 +707,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict
+        d = inv.json_dict()
         d.update({'57': d['23']})
 
         self.assertRaises(ValueError, soi.Inventory, d)

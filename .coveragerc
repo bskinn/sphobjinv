@@ -10,4 +10,5 @@ omit =
 [report]
 exclude_lines =
     pragma: no cover
+    pragma: subprocess test
     ^\s*pass\s*$
