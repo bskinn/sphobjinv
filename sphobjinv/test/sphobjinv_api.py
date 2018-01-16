@@ -63,9 +63,9 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # See if it makes it all the way through the process without error
         with self.subTest('error_in_process'):
             try:
-                b_dec = soi.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
+                b_dec = soi.readbytes(scr_path(INIT_FNAME_BASE + DEC_EXT))
                 b_cmp = soi.compress(b_dec)
-                soi.writefile(dest_fname, b_cmp)
+                soi.writebytes(dest_fname, b_cmp)
             except Exception:
                 self.fail(msg='objects.txt compression failed.')
 
@@ -88,9 +88,9 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         # See if the compress operation completes without error
         with self.subTest('error_in_process'):
             try:
-                b_cmp = soi.readfile(scr_path(INIT_FNAME_BASE + CMP_EXT))
+                b_cmp = soi.readbytes(scr_path(INIT_FNAME_BASE + CMP_EXT))
                 b_dec = soi.decompress(b_cmp)
-                soi.writefile(dest_fname, b_dec)
+                soi.writebytes(dest_fname, b_dec)
             except Exception:
                 self.fail(msg='objects.inv decompression failed.')
 
@@ -108,7 +108,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         copy_dec()
 
         # Read the file
-        b_str = soi.fileops.readfile(scr_path(INIT_FNAME_BASE + DEC_EXT))
+        b_str = soi.fileops.readbytes(scr_path(INIT_FNAME_BASE + DEC_EXT))
 
         # Have to convert any DOS newlines REMOVE THIS
         b_str = b_str.replace(b'\r\n', b'\n')
@@ -144,7 +144,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         # Pull .txt file and match first data line
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
         mch = soi.pb_data.search(b_dec)
         b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
         s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
@@ -182,7 +182,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         # Pull .txt file and match first data line
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
         mch = soi.pb_data.search(b_dec)
         b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
         s_mchdict = {_: b_mchdict[_].decode(encoding='utf-8')
@@ -220,7 +220,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         # Pull .txt file and match first data line
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
         mch = soi.pb_data.search(b_dec)
 
         # Extract the match information, stuff into a DataObjBytes
@@ -238,7 +238,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
         import sphobjinv as soi
 
         # Pull .txt file and match first data line
-        b_dec = soi.readfile(res_path(RES_FNAME_BASE + DEC_EXT))
+        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
         mch = soi.pb_data.search(b_dec)
 
         # Extract the match information, stuff into a DataObjStr
@@ -325,13 +325,13 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
     def test_API_Inventory_TestMostImports(self):
         """Check all high-level modes for Inventory instantiation."""
-        from sphobjinv import readfile, Inventory as Inv, SourceTypes as ST
+        from sphobjinv import readbytes, Inventory as Inv, SourceTypes as ST
         from sphobjinv.data import _utf8_decode
 
         sources = {ST.BytesPlaintext:
-                   readfile(res_path(RES_FNAME_BASE + DEC_EXT)),
+                   readbytes(res_path(RES_FNAME_BASE + DEC_EXT)),
                    ST.BytesZlib:
-                   readfile(res_path(RES_FNAME_BASE + CMP_EXT)),
+                   readbytes(res_path(RES_FNAME_BASE + CMP_EXT)),
                    ST.FnamePlaintext:
                    res_path(RES_FNAME_BASE + DEC_EXT),
                    ST.FnameZlib:
@@ -428,7 +428,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 # Generate new zlib file and reimport
                 data = inv1.data_file()
                 cmp_data = soi.compress(data)
-                soi.writefile(scr_path(fn), cmp_data)
+                soi.writebytes(scr_path(fn), cmp_data)
                 inv2 = soi.Inventory(scr_path(fn))
 
                 # Test the things
@@ -478,7 +478,7 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 # Generate new zlib file
                 data = inv1.data_file()
                 cmp_data = soi.compress(data)
-                soi.writefile(scr_path(fn), cmp_data)
+                soi.writebytes(scr_path(fn), cmp_data)
 
                 # Test the Sphinx load process
                 with self.subTest(proj):
@@ -614,20 +614,20 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
 
         with self.subTest('decomp_input_file'):
             with self.assertRaises(FileNotFoundError):
-                soi.readfile(INIT_FNAME_BASE + DEC_EXT)
+                soi.readbytes(INIT_FNAME_BASE + DEC_EXT)
 
         with self.subTest('comp_input_file'):
             with self.assertRaises(FileNotFoundError):
-                soi.readfile(INIT_FNAME_BASE + CMP_EXT)
+                soi.readbytes(INIT_FNAME_BASE + CMP_EXT)
 
-    def test_API_WritefileBadOutputFile(self):
+    def test_API_WriteFileBadOutputFile(self):
         """Confirm OSError raised on bad filename (example of read error)."""
         import sphobjinv as soi
 
         b_str = b'This is a binary string!'
 
         with self.assertRaises(OSError):
-            soi.writefile(INVALID_FNAME, b_str)
+            soi.writebytes(INVALID_FNAME, b_str)
 
     def test_API_ErrorDecompressingPlaintext(self):
         """Confirm error raised on attempt to decompress plaintext."""

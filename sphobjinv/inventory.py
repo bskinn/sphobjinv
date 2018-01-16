@@ -337,17 +337,17 @@ class Inventory(object):
 
     def _import_plaintext_fname(self, fn):
         """Import a plaintext inventory file."""
-        from .fileops import readfile
+        from .fileops import readbytes
 
-        b_plain = readfile(fn)
+        b_plain = readbytes(fn)
 
         return self._import_plaintext_bytes(b_plain)
 
     def _import_zlib_fname(self, fn):
         """Import a zlib-compressed inventory file."""
-        from .fileops import readfile
+        from .fileops import readbytes
 
-        b_zlib = readfile(fn)
+        b_zlib = readbytes(fn)
 
         return self._import_zlib_bytes(b_zlib)
 

@@ -215,20 +215,20 @@ def import_infile(in_path):
 
 def write_plaintext(inv, path, *, expand=False, contract=False):
     """Write plaintext from Inventory."""
-    from .fileops import writefile
+    from .fileops import writebytes
 
     b_str = inv.data_file(expand=expand, contract=contract)
-    writefile(path, b_str.replace(b'\n', os.linesep.encode('utf-8')))
+    writebytes(path, b_str.replace(b'\n', os.linesep.encode('utf-8')))
 
 
 def write_zlib(inv, path, *, expand=False, contract=False):
     """Write zlib from Inventory."""
-    from .fileops import writefile
+    from .fileops import writebytes
     from .zlib import compress
 
     b_str = inv.data_file(expand=expand, contract=contract)
     bz_str = compress(b_str)
-    writefile(path, bz_str)
+    writebytes(path, bz_str)
 
 
 def write_json(inv, path, *, expand=False, contract=False):
@@ -246,7 +246,8 @@ def do_convert(inv, in_path, mode, params):
     # Work up the output location
     try:
         out_path = resolve_outpath(params[OUTFILE], in_path, mode)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
+        # This may not actually be reachable except in exceptional situations
         selective_print("\nError while constructing output file path:", params)
         selective_print(err_format(e), params)
         sys.exit(1)

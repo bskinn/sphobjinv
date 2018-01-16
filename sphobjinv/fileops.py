@@ -20,20 +20,14 @@
 """Disk I/O module for sphobjinv."""
 
 
-def readfile(path, cmdline=False):
-    """Read file contents and return as binary string.
+def readbytes(path):
+    """Read file contents and return as bytes.
 
     Parameters
     ----------
     path
 
         |str| -- Path to file to be opened.
-
-    cmdline
-
-        |bool| -- If |False|, exceptions are raised as normal.
-        If |True|, on raise of any subclass of :class:`Exception`,
-        the function returns |None|.
 
     Returns
     -------
@@ -43,20 +37,11 @@ def readfile(path, cmdline=False):
 
     """
     # Open the file and read
-    try:
-        with open(path, 'rb') as f:
-            b = f.read()
-    except Exception:
-        if cmdline:
-            b = None
-        else:
-            raise
-
-    # Return the result
-    return b
+    with open(path, 'rb') as f:
+        return f.read()
 
 
-def writefile(path, contents, cmdline=False):
+def writebytes(path, contents):
     """Write indicated file contents (with clobber).
 
     Parameters
@@ -69,32 +54,11 @@ def writefile(path, contents, cmdline=False):
 
         |bytes| -- Binary string of data to be written to file.
 
-    cmdline
-
-        |bool| -- If |False|, exceptions are raised as normal.
-        If |True|, on raise of any subclass of :class:`Exception`,
-        the function returns |None|.
-
-    Returns
-    -------
-    p
-
-        |str| -- If write is successful, echo of the `path` input |str| is
-        returned.  If any :class:`Exception` is raised and `cmdline` is
-        |True|, |None| is returned.
 
     """
     # Open the file and write
-    try:
-        with open(path, 'wb') as f:
-            f.write(contents)
-    except Exception:
-        if cmdline:
-            return None
-        else:
-            raise
-
-    return path
+    with open(path, 'wb') as f:
+        f.write(contents)
 
 
 if __name__ == '__main__':    # pragma: no cover

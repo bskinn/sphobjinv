@@ -21,6 +21,7 @@ import unittest as ut
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
+from .sphobjinv_base import RES_FNAME_BASE
 from .sphobjinv_base import INVALID_FNAME, TESTALL
 from .sphobjinv_base import SuperSphobjinv
 from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
@@ -305,6 +306,14 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                          ['convert', 'plain',
                           scr_path(INIT_FNAME_BASE + CMP_EXT),
                           INVALID_FNAME],
+                         expect=1)
+
+    def test_Cmdline_BadOutputDir(self):
+        """Confirm exit code 1 when output location can't be created."""
+        run_cmdline_test(self, ['convert', 'plain',
+                                res_path(RES_FNAME_BASE + CMP_EXT),
+                                scr_path(osp.join('nonexistent', 'folder',
+                                                  'obj.txt'))],
                          expect=1)
 
     def test_CmdlineZlibNoArgs(self):
