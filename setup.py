@@ -10,7 +10,7 @@ setup(
     name='sphobjinv',
     version='2.0.dev1',
     packages=['sphobjinv'],
-    install_requires=['attrs>=17', 'fuzzywuzzy>=0.3', 'jsonschema>=1.0',
+    install_requires=['attrs>=17', 'fuzzywuzzy>=0.3', 'jsonschema>=2.0',
                       'certifi'],
     url='https://www.github.com/bskinn/sphobjinv',
     license='MIT License',
