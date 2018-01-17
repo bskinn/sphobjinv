@@ -195,6 +195,8 @@ def run_cmdline_sarge(testcase, arglist, *, expect=0, suffix=None,
     with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
         testcase.assertEqual(expect, pipe.commands[0].returncode)
 
+    return pipe
+
 
 @contextmanager
 def dir_change(subdir):

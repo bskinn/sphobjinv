@@ -40,6 +40,9 @@ OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
 
+SEARCH = 'search'
+THRESH = 'thresh'
+
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
                   "plaintext, or JSON formats.")
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
@@ -142,6 +145,10 @@ def _getparser():
     # ### Args for suggest subparser
     spr_suggest.add_argument(INFILE,
                              help="Path to file to be searched")
+    spr_suggest.add_argument(SEARCH,
+                             help="Search term for object suggestions")
+    spr_suggest.add_argument('--' + THRESH, '-' + THRESH[0],
+                             help="Match quality threshold
 
     return prs
 
