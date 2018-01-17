@@ -23,35 +23,40 @@ import argparse as ap
 import os
 import sys
 
+# Subparser selectors
+CONVERT = 'convert'
+SUGGEST = 'suggest'
+SUBPARSER_NAME = 'sprs_name'
+
+# Convert subparser mode var and choices
+MODE = 'mode'
 ZLIB = 'zlib'
 PLAIN = 'plain'
 JSON = 'json'
 
-EXPAND = 'expand'
-CONTRACT = 'contract'
-
-OVERWRITE = 'overwrite'
-
-CONVERT = 'convert'
-SUGGEST = 'suggest'
-
+# Source/destination vars
 INFILE = 'infile'
 OUTFILE = 'outfile'
-MODE = 'mode'
-QUIET = 'quiet'
 
+# Convert subparser optionals
+QUIET = 'quiet'
+EXPAND = 'expand'
+CONTRACT = 'contract'
+OVERWRITE = 'overwrite'
+
+# Suggest subparser params
 SEARCH = 'search'
 THRESH = 'thresh'
+INDEX = 'index'
+SCORE = 'score'
 
+# Helper strings
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
                   "plaintext, or JSON formats.")
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
-SUBPARSER_NAME = 'sprs_name'
-
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
-
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
 
@@ -111,7 +116,7 @@ def _getparser():
                                   "file name as input file but with extension "
                                   + HELP_CONV_EXTS +
                                   ", as appropriate for the output format. "
-                                  "Bare paths are accepted here as well, "
+                                  "A bare path is accepted here, "
                                   "using the default output file names.",
                              nargs="?",
                              default=None)
@@ -144,11 +149,25 @@ def _getparser():
 
     # ### Args for suggest subparser
     spr_suggest.add_argument(INFILE,
-                             help="Path to file to be searched")
+                             help="Path to inventory file to be searched")
     spr_suggest.add_argument(SEARCH,
                              help="Search term for object suggestions")
-    spr_suggest.add_argument('--' + THRESH, '-' + THRESH[0],
-                             help="Match quality threshold
+    spr_suggest.add_argument('-' + INDEX[0], '--' + INDEX,
+                             help="Include Inventory.objects list indices "
+                                  "with the search results",
+                             action='store_true')
+    spr_suggest.add_argument('-' + SCORE[0], '--' + SCORE,
+                             help="Include fuzzywuzzy scores "
+                                  "with the search results",
+                             action='store_true')
+    spr_suggest.add_argument('-' + THRESH[0], '--' + THRESH,
+                             help="Match quality threshold, integer 0-100, "
+                                  "default 75. Default is suitable when "
+                                  "'search' is exactly a known object name. "
+                                  "A value of 30-50 gives better results "
+                                  "for approximate matches.",
+                             default=75, type=int, choices=range(101),
+                             metavar='{0-100}')
 
     return prs
 
@@ -248,8 +267,10 @@ def write_json(inv, path, *, expand=False, contract=False):
         json.dump(json_dict, f)
 
 
-def do_convert(inv, in_path, mode, params):
+def do_convert(inv, in_path, params):
     """Carry out the conversion operation."""
+    mode = params[MODE]
+
     # Work up the output location
     try:
         out_path = resolve_outpath(params[OUTFILE], in_path, mode)
@@ -293,6 +314,18 @@ def do_convert(inv, in_path, mode, params):
                     params)
 
 
+def do_suggest(inv, params):
+    """Perform the suggest call and output the results."""
+    results = inv.suggest(params[SEARCH], thresh=params[THRESH],
+                          with_index=params[INDEX],
+                          with_score=params[SCORE])
+
+    if len(results) == 0:
+        print('\nNo results found.')
+    else:
+        print('\n'.join(str(_) for _ in results))
+
+
 def main():
     """Handle command line invocation."""
     # Parse commandline arguments
@@ -301,7 +334,7 @@ def main():
     params = vars(ns)
 
     # Conversion mode
-    mode = params[MODE]
+#    mode = params[MODE]
 
     # Resolve input file path
     try:
@@ -319,7 +352,9 @@ def main():
 
     # Perform action based upon mode
     if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
-        do_convert(inv, in_path, mode, params)
+        do_convert(inv, in_path, params)
+    elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
+        do_suggest(inv, params)
 
     # Clean exit
     sys.exit(0)

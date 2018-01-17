@@ -228,7 +228,7 @@ class Inventory(object):
         # and score are returned together in a tuple.
         results = list('{0} {1}'.format(*_) for _ in
                        fwp.extract(name, srch_list, limit=None)
-                       if _[1] > thresh)
+                       if _[1] >= thresh)
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
