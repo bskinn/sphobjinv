@@ -23,23 +23,44 @@ import argparse as ap
 import os
 import sys
 
-COMP = 'comp'
-DECOMP = 'decomp'
+ZLIB = 'zlib'
+PLAIN = 'plain'
+JSON = 'json'
+
+EXPAND = 'expand'
+CONTRACT = 'contract'
+
+OVERWRITE = 'overwrite'
+
+CONVERT = 'convert'
+SUGGEST = 'suggest'
+
 INFILE = 'infile'
 OUTFILE = 'outfile'
 MODE = 'mode'
 QUIET = 'quiet'
 
-MODE_NAMES = {COMP: 'compress', DECOMP: 'decompress'}
+HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
+                  "plaintext, or JSON formats.")
+HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
+                  "for desired object(s).")
 
-DEF_OUT_EXT = {COMP: '.inv', DECOMP: '.txt'}
-DEF_INP_EXT = {COMP: '.txt', DECOMP: '.inv'}
-DEF_NAME = 'objects'
+SUBPARSER_NAME = 'sprs_name'
 
-DEF_INFILE = '.'
+DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 
-HELP_DECOMP_EXTS = "'.txt (.inv)'"
-HELP_COMP_FNAMES = "'./objects.inv(.txt)'"
+HELP_CONV_EXTS = "'.inv/.txt/.json'"
+
+
+def selective_print(thing, params):
+    """Print `thing` only if not `QUIET`."""
+    if not params[QUIET]:
+        print(thing)
+
+
+def err_format(exc):
+    """Pretty-format an exception."""
+    return '{0}: {1}'.format(type(exc).__name__, str(exc))
 
 
 def _getparser():
@@ -53,101 +74,92 @@ def _getparser():
         of ``sphobjinv``
 
     """
-    prs = ap.ArgumentParser(description="Decode/encode intersphinx "
+    prs = ap.ArgumentParser(description="Format conversion for "
+                                        "and introspection of "
+                                        "intersphinx "
                                         "'objects.inv' files.")
+    sprs = prs.add_subparsers(title='Subcommands',
+                              dest=SUBPARSER_NAME,
+                              metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
+                              help="Execution mode. Type "
+                                   "'sphobjinv [mode] -h' "
+                                   "for more information "
+                                   "on available options. "
+                                   "Mode names can be abbreviated "
+                                   "to their first two letters.")
+    spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
+                                  help=HELP_CO_PARSER,
+                                  description=HELP_CO_PARSER)
+    spr_suggest = sprs.add_parser(SUGGEST, aliases=[SUGGEST[:2]],
+                                  help=HELP_SU_PARSER,
+                                  description=HELP_SU_PARSER)
 
-    prs.add_argument(MODE,
-                     help="Conversion mode",
-                     choices=(COMP, DECOMP))
+    # ### Args for conversion subparser
+    spr_convert.add_argument(MODE,
+                             help="Conversion output format",
+                             choices=(ZLIB, PLAIN, JSON))
 
-    prs.add_argument(INFILE,
-                     help="Path to file to be decoded (encoded). Defaults to "
-                          + HELP_COMP_FNAMES + ". "
-                          "'-' is a synonym for these defaults. "
-                          "Bare paths are accepted, in which case the "
-                          "preceding "
-                          "default file names are used in the "
-                          "indicated path.",
-                     nargs="?",
-                     default=DEF_INFILE)
+    spr_convert.add_argument(INFILE,
+                             help="Path to file to be converted")
 
-    prs.add_argument(OUTFILE,
-                     help="Path to decoded (encoded) output file. "
-                          "Defaults to same directory and main "
-                          "file name as input file but with extension "
-                          + HELP_DECOMP_EXTS + ". "
-                          "Bare paths are accepted here as well, using "
-                          "the default output file names.",
-                     nargs="?",
-                     default=None)
+    spr_convert.add_argument(OUTFILE,
+                             help="Path to desired output file. "
+                                  "Defaults to same directory and main "
+                                  "file name as input file but with extension "
+                                  + HELP_CONV_EXTS +
+                                  ", as appropriate for the output format. "
+                                  "Bare paths are accepted here as well, "
+                                  "using the default output file names.",
+                             nargs="?",
+                             default=None)
 
-    prs.add_argument('-' + QUIET[0], '--' + QUIET,
-                     help="Suppress printing of status messages",
-                     action='store_true')
+    # Mutually exclusive group for --expand/--contract
+    gp_expcont = spr_convert.add_argument_group(title="URI/display name "
+                                                      "conversions")
+    meg_expcont = gp_expcont.add_mutually_exclusive_group()
+    meg_expcont.add_argument('-e', '--' + EXPAND,
+                             help="Expand all URI and display name "
+                                  "abbreviations",
+                             action='store_true')
+
+    meg_expcont.add_argument('-c', '--' + CONTRACT,
+                             help="Contract all URI and display name "
+                                  "abbreviations",
+                             action='store_true')
+
+    # Clobber argument
+    spr_convert.add_argument('-' + OVERWRITE[0], '--' + OVERWRITE,
+                             help="Overwrite output files without prompting",
+                             action='store_true')
+
+    # stdout suppressor option (e.g., for scripting)
+    spr_convert.add_argument('-' + QUIET[0], '--' + QUIET,
+                             help="Suppress printing of status messages "
+                                  "and overwrite output files "
+                                  "without prompting",
+                             action='store_true')
+
+    # ### Args for suggest subparser
+    spr_suggest.add_argument(INFILE,
+                             help="Path to file to be searched")
 
     return prs
 
 
-def main():
-    """Handle command line invocation."""
-    from .fileops import readfile, writefile
-    from .zlib import compress, decompress
+def resolve_inpath(in_path):
+    """Resolve the input file, handling invalid values."""
+    # Path MUST be to a file
+    if not os.path.isfile(in_path):
+        raise FileNotFoundError('Indicated path is not a valid file')
 
-    def selective_print(thing):
-        """Print `thing` only if not `QUIET`."""
-        if not params[QUIET]:
-            print(thing)
+    # Return the path as absolute
+    return os.path.abspath(in_path)
 
-    # Parse commandline arguments
-    prs = _getparser()
-    ns, args_left = prs.parse_known_args()
-    params = vars(ns)
 
-    # Conversion mode
-    mode = params[MODE]
+def resolve_outpath(out_path, in_path, mode):
+    """Resolve the output file, handling mode-specific defaults."""
+    in_fld, in_fname = os.path.split(in_path)
 
-    # Infile path and name. If not specified, use current
-    #  directory, per default set in parser
-    in_path = params[INFILE]
-
-    # If the input is a hyphen, replace with the default
-    if in_path == "-":
-        in_path = DEF_INFILE
-
-    # If filename is actually a directory, treat as such and
-    #  use the default filename. Otherwise, split accordingly
-    if os.path.isdir(in_path):
-        in_fld = in_path
-        in_fname = None
-    else:
-        in_fld, in_fname = os.path.split(in_path)
-
-    # Default filename is 'objects.xxx'
-    if not in_fname:
-        in_fname = DEF_NAME + DEF_INP_EXT[mode]
-        in_path = os.path.join(in_fld, in_fname)
-
-    # Open the file and read
-    bstr = readfile(in_path, cmdline=True)
-    if not bstr:
-        selective_print("\nError when attempting input file read")
-        sys.exit(1)
-
-    # (De)compress per 'mode', catching and reporting
-    # any raised exception
-    try:
-        if mode == DECOMP:
-            result = decompress(bstr)
-        else:
-            result = compress(bstr)
-    except Exception as e:
-        selective_print("\nError while {0}ing '{1}':".format(MODE_NAMES[mode],
-                                                             in_path))
-        selective_print("\n{0}".format(repr(e)))
-        sys.exit(1)
-
-    # Work up the output location
-    out_path = params[OUTFILE]
     if out_path:
         # Must check if the path entered is a folder
         if os.path.isdir(out_path):
@@ -173,15 +185,134 @@ def main():
         out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
         out_path = os.path.join(in_fld, out_fname)
 
+    return out_path
+
+
+def import_infile(in_path):
+    """Attempt import of indicated file."""
+    import json
+
+    from .inventory import Inventory as Inv
+
+    # Try general import, for zlib or plaintext files
+    try:
+        inv = Inv(in_path)
+    except Exception:
+        pass  # Punt to JSON attempt
+    else:
+        return inv
+
+    # Maybe it's JSON
+    try:
+        with open(in_path) as f:
+            dict_json = json.load(f)
+        inv = Inv(dict_json)
+    except Exception:
+        return None
+    else:
+        return inv
+
+
+def write_plaintext(inv, path, *, expand=False, contract=False):
+    """Write plaintext from Inventory."""
+    from .fileops import writebytes
+
+    b_str = inv.data_file(expand=expand, contract=contract)
+    writebytes(path, b_str.replace(b'\n', os.linesep.encode('utf-8')))
+
+
+def write_zlib(inv, path, *, expand=False, contract=False):
+    """Write zlib from Inventory."""
+    from .fileops import writebytes
+    from .zlib import compress
+
+    b_str = inv.data_file(expand=expand, contract=contract)
+    bz_str = compress(b_str)
+    writebytes(path, bz_str)
+
+
+def write_json(inv, path, *, expand=False, contract=False):
+    """Write JSON from Inventory."""
+    import json
+
+    json_dict = inv.json_dict(expand=expand, contract=contract)
+
+    with open(path, 'w') as f:
+        json.dump(json_dict, f)
+
+
+def do_convert(inv, in_path, mode, params):
+    """Carry out the conversion operation."""
+    # Work up the output location
+    try:
+        out_path = resolve_outpath(params[OUTFILE], in_path, mode)
+    except Exception as e:  # pragma: no cover
+        # This may not actually be reachable except in exceptional situations
+        selective_print("\nError while constructing output file path:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    # If exists, confirm overwrite; clobber if QUIET
+    if (os.path.isfile(out_path) and not params[QUIET]
+            and not params[OVERWRITE]):  # pragma: subprocess test
+        resp = ''
+        while not (resp.lower() == 'n' or resp.lower() == 'y'):
+            resp = input('File exists. Overwrite (Y/N)? ')
+        if resp.lower() == 'n':
+            print('\nExiting...')
+            sys.exit(0)
+
     # Write the output file
-    if not writefile(out_path, result, cmdline=True):
-        selective_print("\nError when attempting output file write")
+    try:
+        if mode == ZLIB:
+            write_zlib(inv, out_path, expand=params[EXPAND],
+                       contract=params[CONTRACT])
+        if mode == PLAIN:
+            write_plaintext(inv, out_path, expand=params[EXPAND],
+                            contract=params[CONTRACT])
+        if mode == JSON:
+            write_json(inv, out_path, expand=params[EXPAND],
+                       contract=params[CONTRACT])
+    except Exception as e:
+        selective_print("\nError during write of output file:", params)
+        selective_print(err_format(e), params)
         sys.exit(1)
 
     # Report success, if not QUIET
     selective_print("\nConversion completed.\n"
-                    "'{0}' {1}ed to '{2}'.".format(in_path, MODE_NAMES[mode],
-                                                   out_path))
+                    "'{0}' converted to '{1}' ({2}).".format(in_path,
+                                                             out_path,
+                                                             mode),
+                    params)
+
+
+def main():
+    """Handle command line invocation."""
+    # Parse commandline arguments
+    prs = _getparser()
+    ns, args_left = prs.parse_known_args()
+    params = vars(ns)
+
+    # Conversion mode
+    mode = params[MODE]
+
+    # Resolve input file path
+    try:
+        in_path = resolve_inpath(params[INFILE])
+    except Exception as e:
+        selective_print("\nError while parsing input file path:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    # Attempt import
+    inv = import_infile(in_path)
+    if inv is None:
+        selective_print("\nError: Unrecognized file format", params)
+        sys.exit(1)
+
+    # Perform action based upon mode
+    if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
+        do_convert(inv, in_path, mode, params)
 
     # Clean exit
     sys.exit(0)

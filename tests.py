@@ -26,6 +26,8 @@ class AP(object):
     GOOD_LOCAL = 'good_local'
     FAIL = 'fail'
 
+    TESTALL = 'testall'
+
     CLI = 'cli'
     CLI_GOOD = 'cli_good'
     CLI_FAIL = 'cli_fail'
@@ -54,6 +56,7 @@ def get_parser():
                      help="Display warnings emitted during tests")
 
     # Test subgroups
+    gp_testall = prs.add_argument_group(title="Test All Inventories")
     gp_cli = prs.add_argument_group(title="CLI Tests")
     gp_api = prs.add_argument_group(title="API Tests")
 
@@ -74,6 +77,11 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
                      action='store_true',
                      help="Run all expect-fail tests")
+
+    # TestAll group
+    gp_testall.add_argument(AP.PFX.format(AP.TESTALL),
+                            action='store_true',
+                            help="Test all .inv files in selected tests")
 
     # CLI group
     gp_cli.add_argument(AP.PFX.format(AP.CLI),
@@ -114,6 +122,7 @@ def main():
     import unittest as ut
 
     import sphobjinv.test
+    from sphobjinv.test.sphobjinv_base import TESTALL
 
     # Retrieve the parser
     prs = get_parser()
@@ -149,6 +158,9 @@ def main():
                [AP.ALL, AP.LOCAL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_fail(),
                [AP.ALL, AP.LOCAL, AP.FAIL, AP.API, AP.API_LOCAL, AP.API_FAIL])
+
+    # Enable testing all invs if indicated
+    os.environ.update({TESTALL: '1' if params[AP.TESTALL] else ''})
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,

@@ -23,7 +23,7 @@
 
 from __future__ import absolute_import
 
-__all__ = ['readfile', 'writefile',
+__all__ = ['readbytes', 'writebytes',
            'compress', 'decompress',
            'pb_comments', 'pb_data', 'pb_version', 'pb_project',
            'p_data',
@@ -31,15 +31,16 @@ __all__ = ['readfile', 'writefile',
            'SourceTypes',
            'SphobjinvError', 'VersionError',
            'DataObjStr', 'DataObjBytes',
-           'Inventory']
+           'Inventory',
+           'json_schema']
 
-from .data import DataObjStr, DataObjBytes
-from .data import DataFields, HeaderFields
-from .inventory import Inventory, SourceTypes
+from .data import DataObjStr, DataObjBytes, DataFields
+from .inventory import Inventory, SourceTypes, HeaderFields
 from .error import SphobjinvError, VersionError
-from .fileops import readfile, writefile
+from .fileops import readbytes, writebytes
 from .re import pb_comments, pb_data, pb_version, pb_project
 from .re import p_data
+from .schema import json_schema
 from .zlib import compress, decompress
 
 

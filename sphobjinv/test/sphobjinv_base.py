@@ -20,6 +20,7 @@ from contextlib import contextmanager
 from filecmp import cmp
 import os
 import os.path as osp
+import re
 import shutil as sh
 import sys
 
@@ -28,8 +29,11 @@ import sys
 RES_FNAME_BASE = 'objects_attrs'
 INIT_FNAME_BASE = 'objects'
 MOD_FNAME_BASE = 'objects_mod'
+
 CMP_EXT = '.inv'
 DEC_EXT = '.txt'
+JSON_EXT = '.json'
+
 SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
 INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
 B_LINES_0 = {False:
@@ -42,6 +46,14 @@ S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
 # Constant mainly for the many-inventory URL testing
 REMOTE_URL = ('https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/'
               'test/resource/objects_{0}.inv')
+
+
+# Regex pattern for objects.inv files
+P_INV = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
+
+
+# Environ flag for testing all or not
+TESTALL = 'TESTALL'
 
 
 # Useful functions
@@ -68,9 +80,8 @@ def ensure_scratch():
 
 def clear_scratch():
     """Clear the scratch folder."""
-    for fn in os.listdir(scr_path()):
-        if osp.isfile(scr_path(fn)):
-            os.remove(scr_path(fn))
+    if osp.isdir(scr_path()):
+        sh.rmtree(scr_path())
 
 
 def copy_cmp():
@@ -83,6 +94,12 @@ def copy_dec():
     """Copy the decompressed example file into scratch."""
     sh.copy(res_path(RES_FNAME_BASE + DEC_EXT),
             scr_path(INIT_FNAME_BASE + DEC_EXT))
+
+
+def copy_json():
+    """Copy the JSON example file into scratch."""
+    sh.copy(res_path(RES_FNAME_BASE + JSON_EXT),
+            scr_path(INIT_FNAME_BASE + JSON_EXT))
 
 
 def sphinx_load_test(testcase, path):
@@ -100,13 +117,13 @@ def sphinx_load_test(testcase, path):
                 testcase.fail()
 
 
-def run_cmdline_test(testcase, arglist, expect=0):
+def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
     """Perform command line test."""
     from sphobjinv.cmdline import main
 
     # Assemble execution arguments
     runargs = ['sphobjinv']
-    list(map(runargs.append, arglist))
+    runargs.extend(arglist)
 
     # Mock sys.argv, run main, and restore sys.argv
     stored_sys_argv = sys.argv
@@ -120,14 +137,14 @@ def run_cmdline_test(testcase, arglist, expect=0):
     finally:
         sys.argv = stored_sys_argv
 
-    # Test that execution completed w/o error
-    with testcase.subTest('exit_code'):
-        testcase.assertEquals(expect, retcode)
+    # Test that execution completed w/indicated exit code
+    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
+        testcase.assertEqual(expect, retcode)
 
 
-def file_exists_test(testcase, path):
+def file_exists_test(testcase, path, suffix=None):
     """Confirm indicated filespec exists."""
-    with testcase.subTest('file_exists'):
+    with testcase.subTest('file_exists' + ('_' + suffix if suffix else '')):
         testcase.assertTrue(osp.isfile(path))
 
 
@@ -138,8 +155,52 @@ def decomp_cmp_test(testcase, path):
 
 
 @contextmanager
+def cmdline_sarge(cmdlist):
+    """Bootstrap a sarge-governed cmdline exec."""
+    import sarge
+
+    arglist = ['python', '-m', 'sphobjinv.cmdline']
+    arglist.extend(cmdlist)
+
+    feeder = sarge.Feeder()
+    pipeline = sarge.run(arglist, async=True, input=feeder,
+                         stdout=sarge.Capture(buffer_size=1),
+                         stderr=sarge.Capture(buffer_size=1))
+
+    yield pipeline, feeder
+
+    if pipeline.commands[0].poll() is None:
+        pipeline.commands[0].terminate()
+
+
+def run_cmdline_sarge(testcase, arglist, *, expect=0, suffix=None,
+                      poll_intv=0.2, timeout=5.0):
+    """Perform command line test with sarge.
+
+    Can only be executed when cwd is the repo root, otherwise
+    sphobjinv is not on the package search path.
+
+    """
+    import time
+
+    with cmdline_sarge(arglist) as (pipe, feed):
+        start_time = time.time()
+
+        while pipe.commands[0].poll() is None:
+            time.sleep(poll_intv)
+            if time.time() - start_time > timeout:
+                testcase.fail('Execution timed out')
+
+    # Test that execution completed w/indicated exit code
+    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
+        testcase.assertEqual(expect, pipe.commands[0].returncode)
+
+
+@contextmanager
 def dir_change(subdir):
     """Context manager to change to sub-directory & drop back on exit."""
+    from time import sleep
+
     existed = osp.isdir(subdir)
 
     if not existed:
@@ -147,6 +208,9 @@ def dir_change(subdir):
 
     os.chdir(subdir)
     yield
+
+    # Wait briefly to ensure yielded-to operations are fully complete
+    sleep(0.02)
 
     if not existed:
         list(map(os.remove, os.listdir()))
@@ -158,17 +222,16 @@ def dir_change(subdir):
 
 
 class SuperSphobjinv(object):
-    """Superclass with common setup code for all tests."""
-
-    @classmethod
-    def setUpClass(cls):
-        """Run the class-wide setup code."""
-        # Make sure the scratch directory exists.
-        ensure_scratch()
+    """Superclass with common setup/teardown code for all tests."""
 
     def setUp(self):
         """Run the per-test-method setup code."""
-        # Always want to clear the scratch?
+        # Ensure the scratch
+        ensure_scratch()
+
+    def tearDown(self):
+        """Run the per-test tear-down code."""
+        # Remove the scratch
         clear_scratch()
 
 

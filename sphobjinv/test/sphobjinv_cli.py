@@ -19,130 +19,113 @@ import os
 import os.path as osp
 import unittest as ut
 
-from .sphobjinv_base import DEC_EXT, CMP_EXT
+from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import INVALID_FNAME
+from .sphobjinv_base import RES_FNAME_BASE
+from .sphobjinv_base import INVALID_FNAME, TESTALL
 from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path
+from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
+from .sphobjinv_base import copy_json
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
 from .sphobjinv_base import dir_change
+from .sphobjinv_base import cmdline_sarge, run_cmdline_sarge
+
+
+SARGE_WAIT = 5.0
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
-    def test_CmdlineDecompressNoArgs(self):
-        """Confirm commandline decompress exec with no args succeeds."""
-        copy_cmp()
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    run_cmdline_test(self, ['decomp'])
-
-                    file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
-
-                    decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
-
-    def test_CmdlineCompressNoArgs(self):
-        """Confirm commandline compress exec with no args succeeds."""
-        copy_dec()
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    run_cmdline_test(self, ['comp'])
-
-                    file_exists_test(self, INIT_FNAME_BASE + CMP_EXT)
-
-                    sphinx_load_test(self, INIT_FNAME_BASE + CMP_EXT)
-
-    def test_CmdlineDecompressSrcFile(self):
-        """Confirm cmdline decompress with input file arg."""
+    def test_CmdlineZlibToPlaintextSrcFileOnly(self):
+        """Confirm cmdline decompress of zlib with input file arg."""
         copy_cmp()
         dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(self, ['decomp',
+        run_cmdline_test(self, ['convert', 'plain',
                                 scr_path(INIT_FNAME_BASE + CMP_EXT)])
 
         file_exists_test(self, dest_path)
 
         decomp_cmp_test(self, dest_path)
 
-    def test_CmdlineCompressSrcFile(self):
-        """Confirm cmdline compress with input file arg."""
+    def test_CmdlineZlibToJSONSrcFileOnly(self):
+        """Confirm cmdline JSON convert of zlib with input file arg."""
+        copy_cmp()
+        dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
+        run_cmdline_test(self, ['convert', 'json',
+                                scr_path(INIT_FNAME_BASE + CMP_EXT)])
+
+        file_exists_test(self, dest_path)
+
+    def test_CmdlineJSONToPlaintextSrcFileOnly(self):
+        """Confirm cmdline convert of flat JSON with input file arg."""
+        copy_json()
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        run_cmdline_test(self, ['convert', 'plain',
+                                scr_path(INIT_FNAME_BASE + JSON_EXT)])
+
+        file_exists_test(self, dest_path)
+
+        decomp_cmp_test(self, dest_path)
+
+    def test_CmdlineJSONToZlibSrcFileOnly(self):
+        """Confirm cmdline convert of JSON to zlib with input file arg."""
+        copy_json()
+        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+        run_cmdline_test(self, ['convert', 'zlib',
+                                scr_path(INIT_FNAME_BASE + JSON_EXT)])
+
+        file_exists_test(self, dest_path)
+
+        sphinx_load_test(self, dest_path)
+
+    def test_CmdlinePlaintextToZlibSrcFileOnly(self):
+        """Confirm cmdline convert of plaintext to zlib with input file arg."""
         copy_dec()
         dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        run_cmdline_test(self, ['comp',
+        run_cmdline_test(self, ['convert', 'zlib',
                                 scr_path(INIT_FNAME_BASE + DEC_EXT)])
 
         file_exists_test(self, dest_path)
 
         sphinx_load_test(self, dest_path)
 
-    def test_CmdlineDecompressSrcPath(self):
-        """Confirm cmdline decompress with input directory arg."""
-        copy_cmp()
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(self, ['decomp', scr_path()])
-
-        file_exists_test(self, dest_path)
-
-        decomp_cmp_test(self, dest_path)
-
-    def test_CmdlineCompressSrcPath(self):
-        """Confirm cmdline compress with input directory arg."""
+    def test_CmdlinePlaintextToJSONSrcFileOnly(self):
+        """Confirm cmdline convert of plaintext to JSON with input file arg."""
         copy_dec()
-        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        run_cmdline_test(self, ['comp', scr_path()])
+        dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
+        run_cmdline_test(self, ['convert', 'json',
+                                scr_path(INIT_FNAME_BASE + DEC_EXT)])
 
         file_exists_test(self, dest_path)
 
-        sphinx_load_test(self, dest_path)
-
-    def test_CmdlineDecompressTgtNewName(self):
-        """Confirm cmdline decompress to custom target name in same dir."""
+    def test_CmdlinePlaintextTgtNewName(self):
+        """Confirm plaintext convert to custom target name in same dir."""
         copy_cmp()
         dest_fname = MOD_FNAME_BASE + DEC_EXT
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
-                    run_cmdline_test(self, ['decomp', '-', dest_fname])
+                    run_cmdline_test(self, ['convert', 'plain',
+                                            INIT_FNAME_BASE + CMP_EXT,
+                                            dest_fname])
 
                     file_exists_test(self, dest_fname)
 
                     decomp_cmp_test(self, dest_fname)
 
-    def test_CmdlineCompressTgtNewName(self):
-        """Confirm cmdline compress to custom target name in same dir."""
-        copy_dec()
-        dest_fname = MOD_FNAME_BASE + CMP_EXT
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    run_cmdline_test(self, ['comp', '.', dest_fname])
-
-                    file_exists_test(self, dest_fname)
-
-                    sphinx_load_test(self, dest_fname)
-
     def test_CmdlineDecompDiffSrcPathNewNameThere(self):
         """Confirm decomp in other path outputs there if only name passed."""
         copy_cmp()
         dest_fname = MOD_FNAME_BASE + DEC_EXT
-        run_cmdline_test(self, ['decomp', scr_path(), dest_fname])
+        run_cmdline_test(self, ['convert', 'plain',
+                                scr_path(INIT_FNAME_BASE + CMP_EXT),
+                                dest_fname])
 
         file_exists_test(self, scr_path(dest_fname))
 
         decomp_cmp_test(self, scr_path(dest_fname))
-
-    def test_CmdlineCompressDiffSrcPathNewNameThere(self):
-        """Confirm compress in other path outputs there if only name passed."""
-        copy_dec()
-        dest_fname = MOD_FNAME_BASE + CMP_EXT
-        run_cmdline_test(self, ['comp', scr_path(), dest_fname])
-
-        file_exists_test(self, scr_path(dest_fname))
-
-        sphinx_load_test(self, scr_path(dest_fname))
 
     def test_CmdlineDecompressDiffSrcTgtPaths(self):
         """Confirm decompress from other path to new path."""
@@ -153,60 +136,151 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['decomp', os.pardir, dest_path])
+                                         ['convert', 'plain',
+                                          osp.join(os.pardir,
+                                                   INIT_FNAME_BASE + CMP_EXT),
+                                          dest_path])
 
                         file_exists_test(self, dest_path)
 
                         decomp_cmp_test(self, dest_path)
 
-    def test_CmdlineCompressDiffSrcTgtPaths(self):
-        """Confirm compress from other path to new path."""
-        copy_dec()
-        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + CMP_EXT)
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    with dir_change('tempy'):
-                        run_cmdline_test(self,
-                                         ['comp', os.pardir, dest_path])
-
-                        file_exists_test(self, dest_path)
-
-                        sphinx_load_test(self, dest_path)
-
     def test_CmdlineDecompressTgtBarePath(self):
-        """Confirm decompress to target as bare path."""
+        """Confirm decompress to target as bare path (no filename)."""
         copy_cmp()
         with dir_change('sphobjinv'):
             with dir_change('test'):
                 with dir_change('scratch'):
                     with dir_change('tempy'):
                         run_cmdline_test(self,
-                                         ['decomp', os.pardir, '.'])
+                                         ['convert', 'plain',
+                                          osp.join(os.pardir,
+                                                   INIT_FNAME_BASE + CMP_EXT),
+                                          '.'])
 
                         file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
 
                         decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
-    def test_CmdlineCompressTgtBarePath(self):
-        """Confirm compress to target as bare path."""
-        copy_dec()
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    with dir_change('tempy'):
-                        run_cmdline_test(self,
-                                         ['comp', os.pardir, '.'])
+    def test_CmdlineCycleConvert(self):
+        """Confirm conversion in a loop, reading all formats."""
+        from itertools import product
+        import json
+        import re
 
-                        file_exists_test(self, INIT_FNAME_BASE + CMP_EXT)
+        from sphobjinv import Inventory as Inv
+        from sphobjinv import HeaderFields as HF
 
-                        sphinx_load_test(self, INIT_FNAME_BASE + CMP_EXT)
+        src_fname = res_path('objects_{0}.inv')
+        plain_fname = scr_path('objects_{0}.txt')
+        json_fname = scr_path('objects_{0}.json')
+        zlib_fname = scr_path('objects_{0}.inv')
+
+        sfx_fmt = '{0}_{1}'
+
+        for fn in os.listdir(res_path()):
+            # Drop unless testall
+            if (not os.environ.get(TESTALL, False) and
+                    fn != 'objects_attrs.inv'):
+                continue
+
+            # Only .inv
+            if not fn.endswith('.inv'):
+                continue
+
+            proj = re.match('^objects_(.+?)\\.inv$', fn).group(1)
+
+            run_cmdline_test(self,
+                             ['convert', 'plain',
+                              src_fname.format(proj),
+                              plain_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'plain'))
+
+            run_cmdline_test(self,
+                             ['convert', 'json',
+                              plain_fname.format(proj),
+                              json_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'json'))
+
+            run_cmdline_test(self,
+                             ['convert', 'zlib',
+                              json_fname.format(proj),
+                              zlib_fname.format(proj),
+                              ],
+                             suffix=sfx_fmt.format(proj, 'zlib'))
+
+            # Reimport all and check header info
+            invs = {}
+            invs.update({'orig': Inv(src_fname.format(proj))})
+            invs.update({'plain': Inv(plain_fname.format(proj))})
+            invs.update({'zlib': Inv(zlib_fname.format(proj))})
+            with open(json_fname.format(proj)) as f:
+                invs.update({'json': Inv(json.load(f))})
+
+            for t, a in product(('plain', 'zlib', 'json'),
+                                (HF.Project.value, HF.Version.value,
+                                 HF.Count.value)):
+                with self.subTest(sfx_fmt.format(t, a)):
+                        self.assertEqual(getattr(invs[t], a),
+                                         getattr(invs['orig'], a))
+
+    def test_Cmdline_OverwritePromptAndBehavior(self):
+        """Confirm overwrite prompt works properly."""
+        from sphobjinv import Inventory as Inv
+
+        src1 = res_path('objects_attrs.inv')
+        src2 = res_path('objects_sarge.inv')
+        dst = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        args = ['convert', 'plain', src1, dst]
+
+        # Initial decompress
+        run_cmdline_sarge(self, args)
+
+        # First overwrite, declining clobber
+        args[2] = src2
+        with cmdline_sarge(args) as (pipe, feed):
+            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('First, declined overwrite timed out')
+
+            feed.feed('N\n')
+            mch = pipe.stdout.expect('Exiting', timeout=SARGE_WAIT)
+
+        with self.subTest('no_clobber'):
+            self.assertEqual('attrs', Inv(dst).project)
+
+        # Second overwrite, with clobber
+        with cmdline_sarge(args) as (pipe, feed):
+            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('Second, confirmed overwrite timed out @ start')
+
+            feed.feed('Y\n')
+            mch = pipe.stdout.expect('(plain)', timeout=SARGE_WAIT)
+
+            if mch is None:
+                self.fail('Second, confirmed overwrite timed out @ write')
+
+        with self.subTest('clobber'):
+            self.assertEqual('Sarge', Inv(dst).project)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
-    def test_CmdlineDecompressWrongFileType(self):
+    def test_CmdlinePlaintextNoArgs(self):
+        """Confirm commandline plaintext convert w/no args fails."""
+        copy_cmp()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['convert', 'plain'], expect=2)
+
+    def test_CmdlinePlaintextWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
             with dir_change('test'):
@@ -216,22 +290,44 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                         f.write(b'this is not objects.inv\n')
 
                     run_cmdline_test(self,
-                                     ['decomp', fname],
+                                     ['convert', 'plain', fname],
                                      expect=1)
 
-    def test_CmdlineDecompressMissingFile(self):
+    def test_CmdlinePlaintextMissingFile(self):
         """Confirm exit code 1 with nonexistent file specified."""
-        run_cmdline_test(self, ['decomp', 'thisfileshouldbeabsent.txt'],
+        run_cmdline_test(self, ['convert', 'plain',
+                                'thisfileshouldbeabsent.txt'],
                          expect=1)
 
-    def test_CmdlineDecompressBadOutputFilename(self):
+    def test_CmdlinePlaintextBadOutputFilename(self):
         """Confirm exit code 1 with invalid output file name."""
         copy_cmp()
         run_cmdline_test(self,
-                         ['decomp',
+                         ['convert', 'plain',
                           scr_path(INIT_FNAME_BASE + CMP_EXT),
                           INVALID_FNAME],
                          expect=1)
+
+    def test_Cmdline_BadOutputDir(self):
+        """Confirm exit code 1 when output location can't be created."""
+        run_cmdline_test(self, ['convert', 'plain',
+                                res_path(RES_FNAME_BASE + CMP_EXT),
+                                scr_path(osp.join('nonexistent', 'folder',
+                                                  'obj.txt'))],
+                         expect=1)
+
+    def test_CmdlineZlibNoArgs(self):
+        """Confirm commandline zlib convert with no args fails."""
+        copy_dec()
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['convert', 'zlib'], expect=2)
+
+    def test_CmdlinePlaintextSrcPathOnly(self):
+        """Confirm cmdline plaintest convert with input directory arg fails."""
+        copy_cmp()
+        run_cmdline_test(self, ['convert', 'plain', scr_path()], expect=1)
 
 
 def suite_cli_expect_good():

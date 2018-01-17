@@ -1,9 +1,11 @@
 attrs>=17,<18
+certifi
+codecov
+coverage
+fuzzywuzzy>=0.3
+jsonschema==2.6
 flake8==3.4.1
 flake8-docstrings==1.1.0
+sarge==0.1.4
 sphinx==1.6.5
 sphinx-rtd-theme==0.2.4
-coverage
-codecov
-jsonschema==2.6
-fuzzywuzzy>=0.3

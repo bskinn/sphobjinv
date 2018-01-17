@@ -26,7 +26,17 @@ from enum import Enum
 
 import attr
 
-from .data import DataObjStr, HeaderFields
+from .data import DataObjStr
+
+
+class HeaderFields(Enum):
+    """Enum for regex groups of objects.inv header data."""
+
+    Project = 'project'
+    Version = 'version'
+    Count = 'count'
+    Objects = 'objects'
+    Metadata = 'metadata'
 
 
 class SourceTypes(Enum):
@@ -43,8 +53,7 @@ class SourceTypes(Enum):
     BytesZlib = 'bytes_zlib'
     FnamePlaintext = 'fname_plain'
     FnameZlib = 'fname_zlib'
-    DictFlat = 'dict_flat'
-    DictStruct = 'dict_struct'
+    DictJSON = 'dict_json'
     URL = 'url'
 
 
@@ -70,8 +79,7 @@ class Inventory(object):
     _fname_zlib = attr.ib(repr=False, default=None)
 
     # dict types
-    _dict_flat = attr.ib(repr=False, default=None)
-    _dict_struct = attr.ib(repr=False, default=None)
+    _dict_json = attr.ib(repr=False, default=None)
 
     # URL for remote retrieval of objects.inv/.txt
     _url = attr.ib(repr=False, default=None)
@@ -86,80 +94,26 @@ class Inventory(object):
     objects = attr.ib(init=False, default=attr.Factory(list))
     source_type = attr.ib(init=False, default=None)
 
+    # Helper strings for inventory datafile output
+    header_preamble = '# Sphinx inventory version 2'
+    header_project = '# Project: {project}'
+    header_version = '# Version: {version}'
+    header_zlib = '# The remainder of this file is compressed using zlib.'
+
     @property
     def count(self):
         """Return the number of objects currently in inventory."""
         return len(self.objects)
 
-    @property
-    def flat_dict(self):
-        """Generate a flat dict representation of the inventory as-is."""
+    def json_dict(self, expand=False, contract=False):
+        """Generate a flat dict representation of the inventory."""
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict()})
-
-        return d
-
-    @property
-    def flat_dict_expanded(self):
-        """Generate an expanded flat dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict(expand=True)})
-
-        return d
-
-    @property
-    def flat_dict_contracted(self):
-        """Generate a contracted flat dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for i, o in enumerate(self.objects):
-            d.update({str(i): o.flat_dict(contract=True)})
-
-        return d
-
-    @property
-    def struct_dict(self):
-        """Generate a structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d)
-
-        return d
-
-    @property
-    def struct_dict_expanded(self):
-        """Generate an expanded structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d, expand=True)
-
-        return d
-
-    @property
-    def struct_dict_contracted(self):
-        """Generate a contracted structured dict representation."""
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
-
-        for o in self.objects:
-            o.update_struct_dict(d, contract=True)
+            d.update({str(i): o.json_dict(expand=expand,
+                                          contract=contract)})
 
         return d
 
@@ -182,8 +136,7 @@ class Inventory(object):
         # List of sources
         src_list = (self._source, self._plaintext, self._zlib,
                     self._fname_plain, self._fname_zlib,
-                    self._dict_flat, self._dict_struct,
-                    self._url)
+                    self._dict_json, self._url)
         src_count = sum(1 for _ in src_list if _ is not None)
 
         # Complain if multiple sources provided
@@ -215,19 +168,17 @@ class Inventory(object):
 
         # Remainder are iterable
         for src, fxn, st in zip((self._zlib, self._fname_plain,
-                                 self._fname_zlib, self._dict_flat,
-                                 self._dict_struct, self._url),
+                                 self._fname_zlib, self._dict_json,
+                                 self._url),
                                 (self._import_zlib_bytes,
                                  self._import_plaintext_fname,
                                  self._import_zlib_fname,
-                                 self._import_flat_dict,
-                                 self._import_struct_dict,
+                                 self._import_json_dict,
                                  self._import_url),
                                 (SourceTypes.BytesZlib,
                                  SourceTypes.FnamePlaintext,
                                  SourceTypes.FnameZlib,
-                                 SourceTypes.DictFlat,
-                                 SourceTypes.DictStruct,
+                                 SourceTypes.DictJSON,
                                  SourceTypes.URL)
                                 ):
             if src is not None:
@@ -235,17 +186,81 @@ class Inventory(object):
                 self.source_type = st
                 return
 
+    def data_file(self, *, expand=False, contract=False):
+        """Generate a plaintext objects.txt as bytes."""
+        # Rely on SuperDataObj to proof expand/contract args
+        # Extra empty string at the end puts a newline at the end
+        # of the generated string, consistent with files
+        # generated by Sphinx.
+
+        # Can't *-expand as a mixed argument in python 3.4, so have
+        # to assemble the strings sequentially
+        from itertools import chain
+
+        striter = chain([self.header_preamble,
+                         self.header_project.format(project=self.project),
+                         self.header_version.format(version=self.version),
+                         self.header_zlib],
+                        (obj.data_line(expand=expand, contract=contract)
+                         for obj in self.objects),
+                        [''])
+
+        return '\n'.join(striter).encode('utf-8')
+
+    def suggest(self, name, *, thresh=50, with_index=False,
+                with_score=False):
+        """Suggest objects in the inventory to match a name."""
+        import re
+        import warnings
+
+        # Suppress any UserWarning about the speed issue
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            from fuzzywuzzy import process as fwp
+
+        # Must propagate list index to include in output
+        # Search vals are rst prepended with list index
+        srch_list = list('{0} {1}'.format(i, o) for i, o in
+                         enumerate(self.objects_rst))
+
+        # Composite each string result extracted by fuzzywuzzy
+        # and its match score into a single string. The match
+        # and score are returned together in a tuple.
+        results = list('{0} {1}'.format(*_) for _ in
+                       fwp.extract(name, srch_list, limit=None)
+                       if _[1] > thresh)
+
+        # Define regex for splitting the three components, and
+        # use it to convert composite result string to tuple:
+        # (rst, score, index)
+        p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
+        results = list((m.group(2), int(m.group(3)), int(m.group(1)))
+                       for m in map(p_idx.match, results))
+
+        # Return based on flags
+        if with_score:
+            if with_index:
+                return results
+            else:
+                return list(tup[:2] for tup in results)
+        else:
+            if with_index:
+                return list(tup[::2] for tup in results)
+            else:
+                return list(tup[0] for tup in results)
+
     def _general_import(self):
         """Attempt sequence of all imports."""
         from zlib import error as ZlibError
+
+        from jsonschema.exceptions import ValidationError
 
         # Lookups for method names and expected import-failure errors
         importers = {SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
                      SourceTypes.BytesZlib: self._import_zlib_bytes,
                      SourceTypes.FnamePlaintext: self._import_plaintext_fname,
                      SourceTypes.FnameZlib: self._import_zlib_fname,
-                     SourceTypes.DictFlat: self._import_flat_dict,
-                     SourceTypes.DictStruct: self._import_struct_dict,
+                     SourceTypes.DictJSON: self._import_json_dict,
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
@@ -254,8 +269,7 @@ class Inventory(object):
                          SourceTypes.FnameZlib: (FileNotFoundError,
                                                  TypeError,
                                                  ZlibError),
-                         SourceTypes.DictFlat: TypeError,
-                         SourceTypes.DictStruct: TypeError,
+                         SourceTypes.DictJSON: (ValidationError),
                          }
 
         # Attempt series of import approaches
@@ -305,7 +319,7 @@ class Inventory(object):
                 yield DataObjStr(**mch.groupdict())
 
         objects = []
-        list(map(objects.append, gen_dataobjs()))
+        objects.extend(gen_dataobjs())
 
         if len(objects) == 0:
             raise TypeError  # Wrong bytes file contents
@@ -323,17 +337,17 @@ class Inventory(object):
 
     def _import_plaintext_fname(self, fn):
         """Import a plaintext inventory file."""
-        from .fileops import readfile
+        from .fileops import readbytes
 
-        b_plain = readfile(fn)
+        b_plain = readbytes(fn)
 
         return self._import_plaintext_bytes(b_plain)
 
     def _import_zlib_fname(self, fn):
         """Import a zlib-compressed inventory file."""
-        from .fileops import readfile
+        from .fileops import readbytes
 
-        b_zlib = readfile(fn)
+        b_zlib = readbytes(fn)
 
         return self._import_zlib_bytes(b_zlib)
 
@@ -341,34 +355,35 @@ class Inventory(object):
         """Import a file from a remote URL."""
         import urllib.request as urlrq
 
+        import certifi
+
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        resp = urlrq.urlopen(url)
+        resp = urlrq.urlopen(url, cafile=certifi.where())
         b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
         return self._import_zlib_bytes(b_str)
 
-    def _import_flat_dict(self, d):
+    def _import_json_dict(self, d):
         """Import flat-dict composited data."""
-        from copy import copy
+        import jsonschema
 
         from .data import DataObjStr
+        from .schema import json_schema
 
-        # Attempting to pull these first, so that if it's not a dict,
-        # the TypeError will get raised before the below shallow-copy.
+        # Validate the dict against the schema. Schema
+        # WILL allow an inventory with no objects here
+        val = jsonschema.Draft4Validator(json_schema)
+        val.validate(d)
+
+        # Pull header items first
         project = d[HeaderFields.Project.value]
         version = d[HeaderFields.Version.value]
         count = d[HeaderFields.Count.value]
 
-        # If not even '1' is in the dict, assume invalid type due to
-        # it being a struct_dict format.
-        if '1' not in d:
-            raise TypeError('No base-1 str(int)-indexed data '
-                            'object items found.')
-
         # Going to destructively process d, so shallow-copy it first
-        d = copy(d)
+        d = d.copy()
 
         # Expecting the dict to be indexed by string integers
         objects = []
@@ -389,90 +404,3 @@ class Inventory(object):
 
         # Should be good to return
         return project, version, objects
-
-    def _import_struct_dict(self, d):
-        """Import struct-dict composited data."""
-        from .data import DataObjStr
-
-        # Attempting to pull these first, so that if it's not a dict,
-        # the TypeError will get raised before the below extensive
-        # parsing.
-        project = d[HeaderFields.Project.value]
-        version = d[HeaderFields.Version.value]
-        count = d[HeaderFields.Count.value]
-
-        # Init 'objects' for later filling
-        objects = []
-
-        # Loop over everything that's not a known struct-dict
-        # header field. These will be domains.
-        for domain in d:
-            if domain in (HeaderFields.Project.value,
-                          HeaderFields.Version.value,
-                          HeaderFields.Count.value,
-                          HeaderFields.Metadata.value):
-                continue
-
-            domain_dict = d[domain]
-
-            # Next level in will be roles
-            for role in domain_dict:
-                role_dict = domain_dict[role]
-
-                # Final level is names
-                for name in role_dict:
-                    name_dict = role_dict[name]
-
-                    # Create DataObj and add to .objects
-                    objects.append(DataObjStr(domain=domain, role=role,
-                                              name=name, **name_dict))
-
-        # Confirm count
-        if count != len(objects) and self._count_error:
-            raise ValueError('{0} objects found '.format(len(objects)) +
-                             '(expect {0})'.format(count))
-
-        # Return info
-        return project, version, objects
-
-    def suggest(self, name, *, thresh=50, with_index=False,
-                with_score=False):
-        """Suggest objects in the inventory to match a name."""
-        import re
-        import warnings
-
-        # Suppress any UserWarning about the speed issue
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
-            from fuzzywuzzy import process as fwp
-
-        # Must propagate list index to include in output
-        # Search vals are rst prepended with list index
-        srch_list = list('{0} {1}'.format(i, o) for i, o in
-                         enumerate(self.objects_rst))
-
-        # Composite each string result extracted by fuzzywuzzy
-        # and its match score into a single string. The match
-        # and score are returned together in a tuple.
-        results = list('{0} {1}'.format(*_) for _ in
-                       fwp.extract(name, srch_list, limit=None)
-                       if _[1] > thresh)
-
-        # Define regex for splitting the three components, and
-        # use it to convert composite result string to tuple:
-        # (rst, score, index)
-        p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
-        results = list((m.group(2), int(m.group(3)), int(m.group(1)))
-                       for m in map(p_idx.match, results))
-
-        # Return based on flags
-        if with_score:
-            if with_index:
-                return results
-            else:
-                return list(tup[:2] for tup in results)
-        else:
-            if with_index:
-                return list(tup[::2] for tup in results)
-            else:
-                return list(tup[0] for tup in results)
