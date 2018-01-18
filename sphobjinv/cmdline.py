@@ -49,6 +49,7 @@ SEARCH = 'search'
 THRESH = 'thresh'
 INDEX = 'index'
 SCORE = 'score'
+ALL = 'all'
 
 # Helper strings
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
@@ -58,6 +59,9 @@ HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
 
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
+
+# Suggest list length above which to prompt for confirmation
+SUGGEST_CONFIRM_LENGTH = 30
 
 
 def selective_print(thing, params):
@@ -69,6 +73,14 @@ def selective_print(thing, params):
 def err_format(exc):
     """Pretty-format an exception."""
     return '{0}: {1}'.format(type(exc).__name__, str(exc))
+
+
+def yesno_prompt(prompt):
+    """Query user for yes/no confirmation."""
+    resp = ''
+    while not (resp.lower() == 'n' or resp.lower() == 'y'):
+        resp = input(prompt)
+    return resp
 
 
 def _getparser():
@@ -168,6 +180,11 @@ def _getparser():
                                   "for approximate matches.",
                              default=75, type=int, choices=range(101),
                              metavar='{0-100}')
+    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
+                             help="Display all results "
+                                  "regardless of the number returned "
+                                  "without prompting for confirmation.",
+                             action='store_true')
 
     return prs
 
@@ -283,9 +300,7 @@ def do_convert(inv, in_path, params):
     # If exists, confirm overwrite; clobber if QUIET
     if (os.path.isfile(out_path) and not params[QUIET]
             and not params[OVERWRITE]):  # pragma: subprocess test
-        resp = ''
-        while not (resp.lower() == 'n' or resp.lower() == 'y'):
-            resp = input('File exists. Overwrite (Y/N)? ')
+        resp = yesno_prompt('File exists. Overwrite (Y/N)? ')
         if resp.lower() == 'n':
             print('\nExiting...')
             sys.exit(0)
@@ -316,14 +331,59 @@ def do_convert(inv, in_path, params):
 
 def do_suggest(inv, params):
     """Perform the suggest call and output the results."""
+    with_index = params[INDEX]
+    with_score = params[SCORE]
     results = inv.suggest(params[SEARCH], thresh=params[THRESH],
-                          with_index=params[INDEX],
-                          with_score=params[SCORE])
+                          with_index=with_index,
+                          with_score=with_score)
 
     if len(results) == 0:
         print('\nNo results found.')
+        return
+
+    if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
+        resp = yesno_prompt("Display all {0} results ".format(len(results)) +
+                            "(Y/N)? ")
+        if resp.lower() == 'n':
+            print('\nExiting...')
+            sys.exit(0)
+
+    # Field widths in output
+    SCORE_WIDTH = 7
+    INDEX_WIDTH = 7
+
+    if with_index or with_score:
+        RST_WIDTH = max(len(_[0]) for _ in results)
     else:
-        print('\n'.join(str(_) for _ in results))
+        RST_WIDTH = max(len(_) for _ in results)
+
+    RST_WIDTH += 2
+
+    if with_index:
+        if with_score:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}'.format(RST_WIDTH,
+                                                                 SCORE_WIDTH,
+                                                                 INDEX_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Score', 'Index'))
+            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH,
+                             '-' * INDEX_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+        else:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, INDEX_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Index'))
+            print(fmt.format('-' * RST_WIDTH, '-' * INDEX_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+    else:
+        if with_score:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, SCORE_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Score'))
+            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+        else:
+            print('\n'.join(str(_) for _ in results))
 
 
 def main():
