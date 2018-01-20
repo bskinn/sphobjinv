@@ -222,6 +222,33 @@ def dir_change(subdir):
     if not existed:
         os.rmdir(subdir)
 
+@contextmanager
+def stdio_mgr(sys, cmd_str):
+    """Prepare sys for custom I/O."""
+    from io import StringIO
+
+    old_stdin = sys.stdin
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+
+    new_stdin = StringIO(cmd_str)
+    new_stdout = StringIO()
+    new_stderr = StringIO()
+
+    sys.stdin = new_stdin
+    sys.stdout = new_stdout
+    sys.stderr = new_stderr
+
+    yield new_stdin, new_stdout, new_stderr
+
+    sys.stdin = old_stdin
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+
+    new_stdin.close()
+    new_stdout.close()
+    new_stderr.close()
+
 
 class SuperSphobjinv(object):
     """Superclass with common setup/teardown code for all tests."""

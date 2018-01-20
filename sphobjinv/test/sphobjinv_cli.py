@@ -28,7 +28,7 @@ from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import copy_json
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
-from .sphobjinv_base import dir_change
+from .sphobjinv_base import dir_change, stdio_mgr
 from .sphobjinv_base import cmdline_sarge, run_cmdline_sarge
 
 
@@ -267,6 +267,36 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         with self.subTest('clobber'):
             self.assertEqual('Sarge', Inv(dst).project)
+
+    def test_Cmdline_SuggestCleanExit(self):
+        """Confirm suggest clean exit, no output check.
+
+        For coverage.
+
+        """
+        with self.subTest('just_names'):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'validate',
+                                    '-t', '50'])
+
+        with self.subTest('with_score'):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'validate',
+                                    '-st', '50'])
+
+        with self.subTest('with_index'):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'validate',
+                                    '-it', '50'])
+
+        with self.subTest('with_both'):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'validate',
+                                    '-sit', '50'])
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):

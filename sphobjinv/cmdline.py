@@ -66,7 +66,7 @@ SUGGEST_CONFIRM_LENGTH = 30
 
 def selective_print(thing, params):
     """Print `thing` only if not `QUIET`."""
-    if not params[QUIET]:
+    if (not params[SUBPARSER_NAME][:2] == 'co' or not params[QUIET]):
         print(thing)
 
 
