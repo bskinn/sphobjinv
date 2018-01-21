@@ -299,7 +299,7 @@ def do_convert(inv, in_path, params):
 
     # If exists, confirm overwrite; clobber if QUIET
     if (os.path.isfile(out_path) and not params[QUIET]
-            and not params[OVERWRITE]):  # pragma: subprocess test
+            and not params[OVERWRITE]):
         resp = yesno_prompt('File exists. Overwrite (Y/N)? ')
         if resp.lower() == 'n':
             print('\nExiting...')
