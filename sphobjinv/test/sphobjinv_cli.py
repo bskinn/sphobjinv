@@ -175,7 +175,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
                         decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
-    @timeout(CLI_TIMEOUT * 4)
+    @timeout(CLI_TIMEOUT * 52 * 3)
     def test_CmdlineCycleConvert(self):
         """Confirm conversion in a loop, reading all formats."""
         from itertools import product
