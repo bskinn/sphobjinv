@@ -144,20 +144,20 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good(),
-               [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
-                AP.CLI, AP.CLI_GOOD])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good(),
                [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
                 AP.API, AP.API_LOCAL, AP.API_GOOD, AP.API_GOOD_LOCAL])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good_nonlocal(),
                [AP.ALL, AP.GOOD, AP.API, AP.API_GOOD])
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good(),
+               [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
+                AP.CLI, AP.CLI_GOOD])
 
     # Expect-fail tests
-    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail(),
-               [AP.ALL, AP.LOCAL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_fail(),
                [AP.ALL, AP.LOCAL, AP.FAIL, AP.API, AP.API_LOCAL, AP.API_FAIL])
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail(),
+               [AP.ALL, AP.LOCAL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
 
     # Enable testing all invs if indicated
     os.environ.update({TESTALL: '1' if params[AP.TESTALL] else ''})

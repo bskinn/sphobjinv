@@ -17,7 +17,11 @@
 
 import os
 import os.path as osp
+import re
+import sys
 import unittest as ut
+
+from timeout_decorator import timeout
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
@@ -28,16 +32,16 @@ from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import copy_json
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
-from .sphobjinv_base import dir_change
-from .sphobjinv_base import cmdline_sarge, run_cmdline_sarge
+from .sphobjinv_base import dir_change, stdio_mgr
 
 
-SARGE_WAIT = 5.0
+CLI_TIMEOUT = 2.0
 
 
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibToPlaintextSrcFileOnly(self):
         """Confirm cmdline decompress of zlib with input file arg."""
         copy_cmp()
@@ -49,6 +53,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         decomp_cmp_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibToJSONSrcFileOnly(self):
         """Confirm cmdline JSON convert of zlib with input file arg."""
         copy_cmp()
@@ -58,6 +63,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         file_exists_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineJSONToPlaintextSrcFileOnly(self):
         """Confirm cmdline convert of flat JSON with input file arg."""
         copy_json()
@@ -69,6 +75,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         decomp_cmp_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineJSONToZlibSrcFileOnly(self):
         """Confirm cmdline convert of JSON to zlib with input file arg."""
         copy_json()
@@ -80,6 +87,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         sphinx_load_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextToZlibSrcFileOnly(self):
         """Confirm cmdline convert of plaintext to zlib with input file arg."""
         copy_dec()
@@ -91,6 +99,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         sphinx_load_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextToJSONSrcFileOnly(self):
         """Confirm cmdline convert of plaintext to JSON with input file arg."""
         copy_dec()
@@ -100,6 +109,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         file_exists_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextTgtNewName(self):
         """Confirm plaintext convert to custom target name in same dir."""
         copy_cmp()
@@ -115,6 +125,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
                     decomp_cmp_test(self, dest_fname)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineDecompDiffSrcPathNewNameThere(self):
         """Confirm decomp in other path outputs there if only name passed."""
         copy_cmp()
@@ -127,6 +138,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         decomp_cmp_test(self, scr_path(dest_fname))
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineDecompressDiffSrcTgtPaths(self):
         """Confirm decompress from other path to new path."""
         copy_cmp()
@@ -145,6 +157,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
                         decomp_cmp_test(self, dest_path)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineDecompressTgtBarePath(self):
         """Confirm decompress to target as bare path (no filename)."""
         copy_cmp()
@@ -162,6 +175,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
                         decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
+    @timeout(CLI_TIMEOUT * 52 * 3)
     def test_CmdlineCycleConvert(self):
         """Confirm conversion in a loop, reading all formats."""
         from itertools import product
@@ -226,8 +240,11 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                         self.assertEqual(getattr(invs[t], a),
                                          getattr(invs['orig'], a))
 
+    @timeout(CLI_TIMEOUT)
     def test_Cmdline_OverwritePromptAndBehavior(self):
         """Confirm overwrite prompt works properly."""
+        import sys
+
         from sphobjinv import Inventory as Inv
 
         src1 = res_path('objects_attrs.inv')
@@ -236,42 +253,145 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         args = ['convert', 'plain', src1, dst]
 
         # Initial decompress
-        run_cmdline_sarge(self, args)
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, args, suffix='initial')
+
+            with self.subTest('initial_stdout'):
+                self.assertIn('converted', out_.getvalue())
+                self.assertIn('(plain)', out_.getvalue())
 
         # First overwrite, declining clobber
         args[2] = src2
-        with cmdline_sarge(args) as (pipe, feed):
-            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+        with stdio_mgr(sys) as (in_, out_, err_):
+            in_.append('n\n')
+            run_cmdline_test(self, args, suffix='no_overwrite')
 
-            if mch is None:
-                self.fail('First, declined overwrite timed out')
+            with self.subTest('no_overwrite_stdout'):
+                self.assertIn('(Y/N)? n', out_.getvalue())
 
-            feed.feed('N\n')
-            mch = pipe.stdout.expect('Exiting', timeout=SARGE_WAIT)
-
-        with self.subTest('no_clobber'):
+        with self.subTest('no_overwrite_project'):
             self.assertEqual('attrs', Inv(dst).project)
 
         # Second overwrite, with clobber
-        with cmdline_sarge(args) as (pipe, feed):
-            mch = pipe.stdout.expect('(Y/N)? ', timeout=SARGE_WAIT)
+        with stdio_mgr(sys) as (in_, out_, err_):
+            in_.append('y\n')
+            run_cmdline_test(self, args, suffix='overwrite')
 
-            if mch is None:
-                self.fail('Second, confirmed overwrite timed out @ start')
+            with self.subTest('overwrite_stdout'):
+                self.assertIn('(Y/N)? y', out_.getvalue())
 
-            feed.feed('Y\n')
-            mch = pipe.stdout.expect('(plain)', timeout=SARGE_WAIT)
-
-            if mch is None:
-                self.fail('Second, confirmed overwrite timed out @ write')
-
-        with self.subTest('clobber'):
+        with self.subTest('overwrite_project'):
             self.assertEqual('Sarge', Inv(dst).project)
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestNoResults(self):
+        """Confirm suggest w/no found results works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-t', '99'])
+
+            with self.subTest('nothing_found_msg'):
+                self.assertIn('No results found.', out_.getvalue())
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestNameOnly(self):
+        """Confirm name-only suggest works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-t', '50'])
+
+            p = re.compile('^.*instance_of.*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestWithIndex(self):
+        """Confirm with_index suggest works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-it', '50'])
+
+            p = re.compile('^.*instance_of\\S*\\s+23\\s*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestWithScore(self):
+        """Confirm with_index suggest works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-st', '50'])
+
+            p = re.compile('^.*instance_of\\S*\\s+\\d+\\s*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestWithScoreAndIndex(self):
+        """Confirm with_index suggest works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-sit', '50'])
+
+            p = re.compile('^.*instance_of\\S*\\s+\\d+\\s+23\\s*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_SuggestLongListLinesCount(self):
+        """Confirm with_index suggest works."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-at', '1'],
+                             suffix='all_arg')
+
+            with self.subTest('count_all_arg'):
+                self.assertEqual(out_.getvalue().count('\n'), 56)
+
+        with stdio_mgr(sys) as (in_, out_, err_):
+            in_.append('y\n')
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-t', '1'],
+                             suffix='no_arg')
+
+            with self.subTest('count_no_arg'):
+                # Extra newline due to input() query
+                self.assertEqual(out_.getvalue().count('\n'), 57)
+
+        with stdio_mgr(sys) as (in_, out_, err_):
+            in_.append('n\n')
+            run_cmdline_test(self, ['suggest',
+                                    res_path(RES_FNAME_BASE + CMP_EXT),
+                                    'instance',
+                                    '-t', '1'],
+                             suffix='no_print')
+
+            with self.subTest('count_no_print'):
+                self.assertEqual(out_.getvalue().count('\n'), 3)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextNoArgs(self):
         """Confirm commandline plaintext convert w/no args fails."""
         copy_cmp()
@@ -280,6 +400,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                 with dir_change('scratch'):
                     run_cmdline_test(self, ['convert', 'plain'], expect=2)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextWrongFileType(self):
         """Confirm exit code 1 with invalid file format."""
         with dir_change('sphobjinv'):
@@ -293,12 +414,14 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                                      ['convert', 'plain', fname],
                                      expect=1)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextMissingFile(self):
         """Confirm exit code 1 with nonexistent file specified."""
         run_cmdline_test(self, ['convert', 'plain',
                                 'thisfileshouldbeabsent.txt'],
                          expect=1)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextBadOutputFilename(self):
         """Confirm exit code 1 with invalid output file name."""
         copy_cmp()
@@ -308,6 +431,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                           INVALID_FNAME],
                          expect=1)
 
+    @timeout(CLI_TIMEOUT)
     def test_Cmdline_BadOutputDir(self):
         """Confirm exit code 1 when output location can't be created."""
         run_cmdline_test(self, ['convert', 'plain',
@@ -316,6 +440,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                                                   'obj.txt'))],
                          expect=1)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibNoArgs(self):
         """Confirm commandline zlib convert with no args fails."""
         copy_dec()
@@ -324,6 +449,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                 with dir_change('scratch'):
                     run_cmdline_test(self, ['convert', 'zlib'], expect=2)
 
+    @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextSrcPathOnly(self):
         """Confirm cmdline plaintest convert with input directory arg fails."""
         copy_cmp()

@@ -18,11 +18,14 @@
 
 from contextlib import contextmanager
 from filecmp import cmp
+from io import StringIO, TextIOBase
 import os
 import os.path as osp
 import re
 import shutil as sh
 import sys
+
+import attr
 
 
 # Useful constants
@@ -155,48 +158,6 @@ def decomp_cmp_test(testcase, path):
 
 
 @contextmanager
-def cmdline_sarge(cmdlist):
-    """Bootstrap a sarge-governed cmdline exec."""
-    import sarge
-
-    arglist = ['python', '-m', 'sphobjinv.cmdline']
-    arglist.extend(cmdlist)
-
-    feeder = sarge.Feeder()
-    pipeline = sarge.run(arglist, async=True, input=feeder,
-                         stdout=sarge.Capture(buffer_size=1),
-                         stderr=sarge.Capture(buffer_size=1))
-
-    yield pipeline, feeder
-
-    if pipeline.commands[0].poll() is None:
-        pipeline.commands[0].terminate()
-
-
-def run_cmdline_sarge(testcase, arglist, *, expect=0, suffix=None,
-                      poll_intv=0.2, timeout=5.0):
-    """Perform command line test with sarge.
-
-    Can only be executed when cwd is the repo root, otherwise
-    sphobjinv is not on the package search path.
-
-    """
-    import time
-
-    with cmdline_sarge(arglist) as (pipe, feed):
-        start_time = time.time()
-
-        while pipe.commands[0].poll() is None:
-            time.sleep(poll_intv)
-            if time.time() - start_time > timeout:
-                testcase.fail('Execution timed out')
-
-    # Test that execution completed w/indicated exit code
-    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
-        testcase.assertEqual(expect, pipe.commands[0].returncode)
-
-
-@contextmanager
 def dir_change(subdir):
     """Context manager to change to sub-directory & drop back on exit."""
     from time import sleep
@@ -219,6 +180,75 @@ def dir_change(subdir):
 
     if not existed:
         os.rmdir(subdir)
+
+
+@attr.s(slots=True)
+class TeeStdin(StringIO):
+    """Class to tee contents to a side buffer on read.
+
+    Also provides .append(), which adds new content to the end of the
+    stream while leaving the read position unchanged.
+
+    """
+
+    from io import SEEK_SET, SEEK_END
+
+    tee = attr.ib(validator=attr.validators.instance_of(TextIOBase))
+    init_text = attr.ib(default='',
+                        validator=attr.validators.instance_of(str))
+
+    def __attrs_post_init__(self):
+        """Call normal __init__ on superclass."""
+        super().__init__(self.init_text)
+
+    def read(self, size=None):
+        """Tee text to side buffer when read."""
+        text = super().read(size)
+        self.tee.write(text)
+        return text
+
+    def readline(self, size=-1):
+        """Tee text to side buffer when read."""
+        text = super().readline(size)
+        self.tee.write(text)
+        return text
+
+    def append(self, text):
+        """Write to end of stream, restore position."""
+        pos = self.tell()
+        self.seek(0, self.SEEK_END)
+        retval = self.write(text)
+        self.seek(pos, self.SEEK_SET)
+        return retval
+
+
+@contextmanager
+def stdio_mgr(sys, cmd_str=''):
+    """Prepare sys for custom I/O."""
+    old_stdin = sys.stdin
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+
+    new_stdout = StringIO()
+    new_stderr = StringIO()
+    new_stdin = TeeStdin(new_stdout, cmd_str)
+
+    sys.stdin = new_stdin
+    sys.stdout = new_stdout
+    sys.stderr = new_stderr
+
+    yield new_stdin, new_stdout, new_stderr
+
+    sys.stdin = old_stdin
+    sys.stdout = old_stdout
+    sys.stderr = old_stderr
+
+    sys.stdout.write(new_stdout.read())
+    sys.stderr.write(new_stderr.read())
+
+    new_stdin.close()
+    new_stdout.close()
+    new_stderr.close()
 
 
 class SuperSphobjinv(object):

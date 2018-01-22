@@ -23,44 +23,64 @@ import argparse as ap
 import os
 import sys
 
+# Subparser selectors
+CONVERT = 'convert'
+SUGGEST = 'suggest'
+SUBPARSER_NAME = 'sprs_name'
+
+# Convert subparser mode var and choices
+MODE = 'mode'
 ZLIB = 'zlib'
 PLAIN = 'plain'
 JSON = 'json'
 
-EXPAND = 'expand'
-CONTRACT = 'contract'
-
-OVERWRITE = 'overwrite'
-
-CONVERT = 'convert'
-SUGGEST = 'suggest'
-
+# Source/destination vars
 INFILE = 'infile'
 OUTFILE = 'outfile'
-MODE = 'mode'
-QUIET = 'quiet'
 
+# Convert subparser optionals
+QUIET = 'quiet'
+EXPAND = 'expand'
+CONTRACT = 'contract'
+OVERWRITE = 'overwrite'
+
+# Suggest subparser params
+SEARCH = 'search'
+THRESH = 'thresh'
+INDEX = 'index'
+SCORE = 'score'
+ALL = 'all'
+
+# Helper strings
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
                   "plaintext, or JSON formats.")
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
-SUBPARSER_NAME = 'sprs_name'
-
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
-
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
+
+# Suggest list length above which to prompt for confirmation
+SUGGEST_CONFIRM_LENGTH = 30
 
 
 def selective_print(thing, params):
     """Print `thing` only if not `QUIET`."""
-    if not params[QUIET]:
+    if (not params[SUBPARSER_NAME][:2] == 'co' or not params[QUIET]):
         print(thing)
 
 
 def err_format(exc):
     """Pretty-format an exception."""
     return '{0}: {1}'.format(type(exc).__name__, str(exc))
+
+
+def yesno_prompt(prompt):
+    """Query user for yes/no confirmation."""
+    resp = ''
+    while not (resp.lower() == 'n' or resp.lower() == 'y'):
+        resp = input(prompt)
+    return resp
 
 
 def _getparser():
@@ -108,7 +128,7 @@ def _getparser():
                                   "file name as input file but with extension "
                                   + HELP_CONV_EXTS +
                                   ", as appropriate for the output format. "
-                                  "Bare paths are accepted here as well, "
+                                  "A bare path is accepted here, "
                                   "using the default output file names.",
                              nargs="?",
                              default=None)
@@ -141,7 +161,30 @@ def _getparser():
 
     # ### Args for suggest subparser
     spr_suggest.add_argument(INFILE,
-                             help="Path to file to be searched")
+                             help="Path to inventory file to be searched")
+    spr_suggest.add_argument(SEARCH,
+                             help="Search term for object suggestions")
+    spr_suggest.add_argument('-' + INDEX[0], '--' + INDEX,
+                             help="Include Inventory.objects list indices "
+                                  "with the search results",
+                             action='store_true')
+    spr_suggest.add_argument('-' + SCORE[0], '--' + SCORE,
+                             help="Include fuzzywuzzy scores "
+                                  "with the search results",
+                             action='store_true')
+    spr_suggest.add_argument('-' + THRESH[0], '--' + THRESH,
+                             help="Match quality threshold, integer 0-100, "
+                                  "default 75. Default is suitable when "
+                                  "'search' is exactly a known object name. "
+                                  "A value of 30-50 gives better results "
+                                  "for approximate matches.",
+                             default=75, type=int, choices=range(101),
+                             metavar='{0-100}')
+    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
+                             help="Display all results "
+                                  "regardless of the number returned "
+                                  "without prompting for confirmation.",
+                             action='store_true')
 
     return prs
 
@@ -241,8 +284,10 @@ def write_json(inv, path, *, expand=False, contract=False):
         json.dump(json_dict, f)
 
 
-def do_convert(inv, in_path, mode, params):
+def do_convert(inv, in_path, params):
     """Carry out the conversion operation."""
+    mode = params[MODE]
+
     # Work up the output location
     try:
         out_path = resolve_outpath(params[OUTFILE], in_path, mode)
@@ -254,10 +299,8 @@ def do_convert(inv, in_path, mode, params):
 
     # If exists, confirm overwrite; clobber if QUIET
     if (os.path.isfile(out_path) and not params[QUIET]
-            and not params[OVERWRITE]):  # pragma: subprocess test
-        resp = ''
-        while not (resp.lower() == 'n' or resp.lower() == 'y'):
-            resp = input('File exists. Overwrite (Y/N)? ')
+            and not params[OVERWRITE]):
+        resp = yesno_prompt('File exists. Overwrite (Y/N)? ')
         if resp.lower() == 'n':
             print('\nExiting...')
             sys.exit(0)
@@ -286,6 +329,63 @@ def do_convert(inv, in_path, mode, params):
                     params)
 
 
+def do_suggest(inv, params):
+    """Perform the suggest call and output the results."""
+    with_index = params[INDEX]
+    with_score = params[SCORE]
+    results = inv.suggest(params[SEARCH], thresh=params[THRESH],
+                          with_index=with_index,
+                          with_score=with_score)
+
+    if len(results) == 0:
+        print('\nNo results found.')
+        return
+
+    if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
+        resp = yesno_prompt("Display all {0} results ".format(len(results)) +
+                            "(Y/N)? ")
+        if resp.lower() == 'n':
+            print('\nExiting...')
+            sys.exit(0)
+
+    # Field widths in output
+    SCORE_WIDTH = 7
+    INDEX_WIDTH = 7
+
+    if with_index or with_score:
+        RST_WIDTH = max(len(_[0]) for _ in results)
+    else:
+        RST_WIDTH = max(len(_) for _ in results)
+
+    RST_WIDTH += 2
+
+    if with_index:
+        if with_score:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}'.format(RST_WIDTH,
+                                                                 SCORE_WIDTH,
+                                                                 INDEX_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Score', 'Index'))
+            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH,
+                             '-' * INDEX_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+        else:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, INDEX_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Index'))
+            print(fmt.format('-' * RST_WIDTH, '-' * INDEX_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+    else:
+        if with_score:
+            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, SCORE_WIDTH)
+            print('')
+            print(fmt.format('  Name', 'Score'))
+            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH))
+            print('\n'.join(fmt.format(*_) for _ in results))
+        else:
+            print('\n'.join(str(_) for _ in results))
+
+
 def main():
     """Handle command line invocation."""
     # Parse commandline arguments
@@ -294,7 +394,7 @@ def main():
     params = vars(ns)
 
     # Conversion mode
-    mode = params[MODE]
+#    mode = params[MODE]
 
     # Resolve input file path
     try:
@@ -312,7 +412,9 @@ def main():
 
     # Perform action based upon mode
     if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
-        do_convert(inv, in_path, mode, params)
+        do_convert(inv, in_path, params)
+    elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
+        do_suggest(inv, params)
 
     # Clean exit
     sys.exit(0)
