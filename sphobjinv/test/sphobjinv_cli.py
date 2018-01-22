@@ -21,7 +21,19 @@ import re
 import sys
 import unittest as ut
 
-from timeout_decorator import timeout
+try:
+    from signal import SIGALRM
+    SIGALRM  # Placate flake8
+except ImportError:
+    # Probably running on Windows; timeout-decorator won't work
+    def timeout(dummy_sec):
+        """Decorate the function with a null transform."""
+        def null_dec(func):
+            return func
+        return null_dec
+else:
+    from timeout_decorator import timeout
+
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
