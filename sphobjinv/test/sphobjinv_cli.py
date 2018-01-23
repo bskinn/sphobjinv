@@ -21,7 +21,19 @@ import re
 import sys
 import unittest as ut
 
-from timeout_decorator import timeout
+try:
+    from signal import SIGALRM
+    SIGALRM  # Placate flake8
+except ImportError:
+    # Probably running on Windows; timeout-decorator won't work
+    def timeout(dummy_sec):
+        """Decorate the function with a null transform."""
+        def null_dec(func):
+            return func
+        return null_dec
+else:
+    from timeout_decorator import timeout
+
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
@@ -52,6 +64,22 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         file_exists_test(self, dest_path)
 
         decomp_cmp_test(self, dest_path)
+
+    @timeout(CLI_TIMEOUT)
+    def test_CmdlineZlibToPlaintextSrcFileOnlyExpandContract(self):
+        """Confirm cmdline contract decompress of zlib with input file arg."""
+        copy_cmp()
+
+        cmp_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+        dec_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        recmp_path = scr_path(MOD_FNAME_BASE + CMP_EXT)
+
+        run_cmdline_test(self, ['convert', 'plain', '-e', cmp_path])
+        file_exists_test(self, dec_path)
+
+        run_cmdline_test(self, ['convert', 'zlib', '-c',
+                                dec_path, recmp_path])
+        file_exists_test(self, recmp_path)
 
     @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibToJSONSrcFileOnly(self):

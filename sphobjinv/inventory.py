@@ -264,9 +264,9 @@ class Inventory(object):
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
-                         SourceTypes.FnamePlaintext: (FileNotFoundError,
+                         SourceTypes.FnamePlaintext: (OSError,
                                                       TypeError),
-                         SourceTypes.FnameZlib: (FileNotFoundError,
+                         SourceTypes.FnameZlib: (OSError,
                                                  TypeError,
                                                  ZlibError),
                          SourceTypes.DictJSON: (ValidationError),
@@ -322,7 +322,7 @@ class Inventory(object):
         objects.extend(gen_dataobjs())
 
         if len(objects) == 0:
-            raise TypeError  # Wrong bytes file contents
+            raise TypeError('No objects found in plaintext')
 
         return project, version, objects
 
@@ -381,6 +381,10 @@ class Inventory(object):
         project = d[HeaderFields.Project.value]
         version = d[HeaderFields.Version.value]
         count = d[HeaderFields.Count.value]
+
+        # No objects is not allowed
+        if count < 1:
+            raise ValueError('Import of zero-length inventory')
 
         # Going to destructively process d, so shallow-copy it first
         d = d.copy()

@@ -719,6 +719,26 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         self.assertRaises(RuntimeError, Inventory,
                           source='foo', plaintext='bar')
 
+    def test_API_Inventory_NoObjectInventories(self):
+        """Confirm no-objects inventories don't import."""
+        import sphobjinv as soi
+
+        inv = soi.Inventory()
+
+        with self.subTest('plain'):
+            self.assertRaises(TypeError, soi.Inventory, inv.data_file())
+
+        with self.subTest('zlib'):
+            # Actually testing that importing an empty inventory
+            # blows up, not importing one
+            self.assertRaises((TypeError, ValueError),
+                              soi.Inventory,
+                              soi.compress(inv.data_file()))
+
+        d = {'project': 'test', 'version': '0.0', 'count': 0}
+        with self.subTest('json'):
+            self.assertRaises(ValueError, soi.Inventory, d)
+
 
 def suite_api_expect_good():
     """Create and return the test suite for API expect-good cases."""
