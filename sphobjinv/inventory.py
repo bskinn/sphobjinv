@@ -264,9 +264,9 @@ class Inventory(object):
                      }
         import_errors = {SourceTypes.BytesPlaintext: TypeError,
                          SourceTypes.BytesZlib: (ZlibError, TypeError),
-                         SourceTypes.FnamePlaintext: (FileNotFoundError,
+                         SourceTypes.FnamePlaintext: (OSError,
                                                       TypeError),
-                         SourceTypes.FnameZlib: (FileNotFoundError,
+                         SourceTypes.FnameZlib: (OSError,
                                                  TypeError,
                                                  ZlibError),
                          SourceTypes.DictJSON: (ValidationError),
