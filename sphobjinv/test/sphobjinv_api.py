@@ -731,7 +731,8 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         with self.subTest('zlib'):
             # Actually testing that importing an empty inventory
             # blows up, not importing one
-            self.assertRaises(ValueError, soi.Inventory,
+            self.assertRaises((TypeError, ValueError),
+                              soi.Inventory,
                               soi.compress(inv.data_file()))
 
         d = {'project': 'test', 'version': '0.0', 'count': 0}
