@@ -233,8 +233,7 @@ def resolve_outpath(out_path, in_path, mode):
 
 def import_infile(in_path):
     """Attempt import of indicated file."""
-    import json
-
+    from .fileops import readjson
     from .inventory import Inventory as Inv
 
     # Try general import, for zlib or plaintext files
@@ -247,9 +246,7 @@ def import_infile(in_path):
 
     # Maybe it's JSON
     try:
-        with open(in_path) as f:
-            dict_json = json.load(f)
-        inv = Inv(dict_json)
+        inv = Inv(readjson(in_path))
     except Exception:
         return None
     else:
@@ -276,12 +273,10 @@ def write_zlib(inv, path, *, expand=False, contract=False):
 
 def write_json(inv, path, *, expand=False, contract=False):
     """Write JSON from Inventory."""
-    import json
+    from .fileops import writejson
 
     json_dict = inv.json_dict(expand=expand, contract=contract)
-
-    with open(path, 'w') as f:
-        json.dump(json_dict, f)
+    writejson(path, json_dict)
 
 
 def do_convert(inv, in_path, params):
