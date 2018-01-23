@@ -66,6 +66,22 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         decomp_cmp_test(self, dest_path)
 
     @timeout(CLI_TIMEOUT)
+    def test_CmdlineZlibToPlaintextSrcFileOnlyExpandContract(self):
+        """Confirm cmdline contract decompress of zlib with input file arg."""
+        copy_cmp()
+
+        cmp_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+        dec_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        recmp_path = scr_path(MOD_FNAME_BASE + CMP_EXT)
+
+        run_cmdline_test(self, ['convert', 'plain', '-e', cmp_path])
+        file_exists_test(self, dec_path)
+
+        run_cmdline_test(self, ['convert', 'zlib', '-c',
+                                dec_path, recmp_path])
+        file_exists_test(self, recmp_path)
+
+    @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibToJSONSrcFileOnly(self):
         """Confirm cmdline JSON convert of zlib with input file arg."""
         copy_cmp()

@@ -25,12 +25,12 @@ from enum import Enum
 import attr
 
 
-# Handle attr's convert --> convert in v17.4
+# Handle attr's convert --> converter in v17.4
 _attr_ver = list(int(_) for _ in attr.__version__.split('.'))
 if _attr_ver[0] > 17 or (_attr_ver[0] == 17 and _attr_ver[1] > 3):
-    CONVERTER = 'converter'
+    CONVERTER = 'converter'  # pragma: no cover
 else:
-    CONVERTER = 'convert'
+    CONVERTER = 'convert'  # pragma: no cover
 
 
 class DataFields(Enum):
