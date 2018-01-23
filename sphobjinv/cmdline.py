@@ -43,6 +43,7 @@ QUIET = 'quiet'
 EXPAND = 'expand'
 CONTRACT = 'contract'
 OVERWRITE = 'overwrite'
+URL = 'url'
 
 # Suggest subparser params
 SEARCH = 'search'
@@ -159,11 +160,21 @@ def _getparser():
                                   "without prompting",
                              action='store_true')
 
+    # Flag to treat infile as a URL
+    spr_convert.add_argument('-' + URL[0], '--' + URL,
+                             help="Treat 'infile' as a URL for download",
+                             action='store_true')
+
     # ### Args for suggest subparser
     spr_suggest.add_argument(INFILE,
                              help="Path to inventory file to be searched")
     spr_suggest.add_argument(SEARCH,
                              help="Search term for object suggestions")
+    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
+                             help="Display all results "
+                                  "regardless of the number returned "
+                                  "without prompting for confirmation.",
+                             action='store_true')
     spr_suggest.add_argument('-' + INDEX[0], '--' + INDEX,
                              help="Include Inventory.objects list indices "
                                   "with the search results",
@@ -180,10 +191,8 @@ def _getparser():
                                   "for approximate matches.",
                              default=75, type=int, choices=range(101),
                              metavar='{0-100}')
-    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
-                             help="Display all results "
-                                  "regardless of the number returned "
-                                  "without prompting for confirmation.",
+    spr_suggest.add_argument('-' + URL[0], '--' + URL,
+                             help="Treat 'infile' as a URL for download",
                              action='store_true')
 
     return prs
@@ -381,16 +390,8 @@ def do_suggest(inv, params):
             print('\n'.join(str(_) for _ in results))
 
 
-def main():
-    """Handle command line invocation."""
-    # Parse commandline arguments
-    prs = _getparser()
-    ns, args_left = prs.parse_known_args()
-    params = vars(ns)
-
-    # Conversion mode
-#    mode = params[MODE]
-
+def inv_local(params):
+    """Create inventory from local reference."""
     # Resolve input file path
     try:
         in_path = resolve_inpath(params[INFILE])
@@ -404,6 +405,42 @@ def main():
     if inv is None:
         selective_print("\nError: Unrecognized file format", params)
         sys.exit(1)
+
+    return inv, in_path
+
+
+def inv_url(params):
+    """Create inventory from downloaded URL."""
+    from .inventory import Inventory
+
+    # Disallow --url mode on local files
+    if params[INFILE].startswith('file:/'):
+        selective_print("\nError: URL mode on local file is invalid", params)
+        sys.exit(1)
+
+    try:
+        inv = Inventory(url=params[INFILE])
+    except Exception as e:
+        selective_print("\nError while downloading/parsing URL:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    return inv
+
+
+def main():
+    """Handle command line invocation."""
+    # Parse commandline arguments
+    prs = _getparser()
+    ns, args_left = prs.parse_known_args()
+    params = vars(ns)
+
+    # Generate the input Inventory based on --url or not
+    if params[URL]:
+        inv = inv_url(params)
+        in_path = os.getcwd()
+    else:
+        inv, in_path = inv_local(params)
 
     # Perform action based upon mode
     if params[SUBPARSER_NAME][:2] == CONVERT[:2]:

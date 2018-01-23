@@ -39,6 +39,7 @@ from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
 from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
 from .sphobjinv_base import RES_FNAME_BASE
 from .sphobjinv_base import INVALID_FNAME, TESTALL
+from .sphobjinv_base import REMOTE_URL
 from .sphobjinv_base import SuperSphobjinv
 from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import copy_json
@@ -311,6 +312,16 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         with self.subTest('overwrite_project'):
             self.assertEqual('Sarge', Inv(dst).project)
 
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_ConvertURLToPlaintext(self):
+        """Confirm URL download and convert works at commandline."""
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        run_cmdline_test(self, ['convert', 'plain', '-u',
+                                REMOTE_URL.format('attrs'),
+                                dest_path])
+
+        file_exists_test(self, dest_path)
+
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestNoResults(self):
         """Confirm suggest w/no found results works."""
@@ -415,6 +426,20 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest('count_no_print'):
                 self.assertEqual(out_.getvalue().count('\n'), 3)
 
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_SuggestNameOnlyFromURL(self):
+        """Confirm name-only suggest works from URL."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest', '-u',
+                                    REMOTE_URL.format('attrs'),
+                                    'instance',
+                                    '-t', '50'])
+
+            p = re.compile('^.*instance_of.*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
@@ -482,6 +507,32 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         """Confirm cmdline plaintest convert with input directory arg fails."""
         copy_cmp()
         run_cmdline_test(self, ['convert', 'plain', scr_path()], expect=1)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_BadURLArg(self):
+        """Confirm proper error behavior when a bad URL is passed."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['convert', 'plain', '-u',
+                                    REMOTE_URL.format('blarghers'),
+                                    scr_path()],
+                             expect=1)
+
+            with self.subTest('stdout_match'):
+                self.assertIn('Error while downloading/parsing URL:',
+                              out_.getvalue())
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_AttemptURLOnLocalFile(self):
+        """Confirm error when using URL mode on local file."""
+        copy_cmp()
+        in_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+
+        run_cmdline_test(self, ['convert', 'plain', '-u', in_path],
+                         expect=1)
+
+        file_url = 'file:///' + os.path.abspath(in_path)
+        run_cmdline_test(self, ['convert', 'plain', '-u', file_url],
+                         expect=1)
 
 
 def suite_cli_expect_good():
