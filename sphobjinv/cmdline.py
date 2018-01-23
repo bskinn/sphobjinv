@@ -95,10 +95,20 @@ def _getparser():
         of ``sphobjinv``
 
     """
+    from . import __version__
+    EPILOG = (" \n" + "-" * 80 + "\n" +
+              "sphobjinv v{0}\n".format(__version__) +
+              "Submit bug reports & feature requests at"
+              " https://github.com/bskinn/sphobjinv\n"
+              "Documentation is available on Read the Docs at"
+              " {{{Add link here...}}}")
+
     prs = ap.ArgumentParser(description="Format conversion for "
                                         "and introspection of "
                                         "intersphinx "
-                                        "'objects.inv' files.")
+                                        "'objects.inv' files.",
+                            formatter_class=ap.RawDescriptionHelpFormatter,
+                            epilog=EPILOG)
     sprs = prs.add_subparsers(title='Subcommands',
                               dest=SUBPARSER_NAME,
                               metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),

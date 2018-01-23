@@ -1,5 +1,7 @@
 from setuptools import setup
 
+from sphobjinv import __version__
+
 
 def readme():
     with open('README.rst', 'r') as f:
@@ -8,7 +10,7 @@ def readme():
 
 setup(
     name='sphobjinv',
-    version='2.0.dev1',
+    version=__version__,
     packages=['sphobjinv'],
     install_requires=['attrs>=17', 'fuzzywuzzy>=0.3', 'jsonschema>=2.0',
                       'certifi'],
