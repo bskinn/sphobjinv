@@ -70,6 +70,7 @@ HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
+DEF_BASENAME = 'objects'
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
@@ -224,9 +225,15 @@ def resolve_inpath(in_path):
     return os.path.abspath(in_path)
 
 
-def resolve_outpath(out_path, in_path, mode):
+def resolve_outpath(out_path, in_path, params):
     """Resolve the output file, handling mode-specific defaults."""
-    in_fld, in_fname = os.path.split(in_path)
+    mode = params[MODE]
+
+    if params[URL]:
+        in_fld = os.getcwd()
+        in_fname = DEF_BASENAME
+    else:
+        in_fld, in_fname = os.path.split(in_path)
 
     if out_path:
         # Must check if the path entered is a folder
@@ -310,7 +317,7 @@ def do_convert(inv, in_path, params):
 
     # Work up the output location
     try:
-        out_path = resolve_outpath(params[OUTFILE], in_path, mode)
+        out_path = resolve_outpath(params[OUTFILE], in_path, params)
     except Exception as e:  # pragma: no cover
         # This may not actually be reachable except in exceptional situations
         selective_print("\nError while constructing output file path:", params)
@@ -429,19 +436,26 @@ def inv_url(params):
     """Create inventory from downloaded URL."""
     from .inventory import Inventory
 
+    in_file = params[INFILE]
+
     # Disallow --url mode on local files
-    if params[INFILE].startswith('file:/'):
+    if in_file.startswith('file:/'):
         selective_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
     try:
-        inv = Inventory(url=params[INFILE])
+        inv = Inventory(url=in_file)
     except Exception as e:
         selective_print("\nError while downloading/parsing URL:", params)
         selective_print(err_format(e), params)
         sys.exit(1)
 
-    return inv
+    if len(in_file) > 45:
+        ret_path = in_file[:20] + '[...]' + in_file[-20:]
+    else:  # pragma: no cover
+        ret_path = in_file
+
+    return inv, ret_path
 
 
 def main():
@@ -458,8 +472,7 @@ def main():
 
     # Generate the input Inventory based on --url or not
     if params[URL]:
-        inv = inv_url(params)
-        in_path = os.getcwd()
+        inv, in_path = inv_url(params)
     else:
         inv, in_path = inv_local(params)
 

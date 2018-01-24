@@ -313,12 +313,24 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             self.assertEqual('Sarge', Inv(dst).project)
 
     @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintext(self):
-        """Confirm URL download and convert works at commandline."""
+    def test_Cmdline_ConvertURLToPlaintextOutfileProvided(self):
+        """Confirm CLI URL D/L, convert works w/outfile supplied."""
         dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
         run_cmdline_test(self, ['convert', 'plain', '-u',
                                 REMOTE_URL.format('attrs'),
                                 dest_path])
+
+        file_exists_test(self, dest_path)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_ConvertURLToPlaintextNoOutfile(self):
+        """Confirm CLI URL D/L, convert works w/o outfile supplied."""
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['convert', 'plain', '-u',
+                                            REMOTE_URL.format('attrs')])
 
         file_exists_test(self, dest_path)
 
