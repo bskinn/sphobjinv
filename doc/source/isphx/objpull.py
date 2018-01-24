@@ -7,7 +7,6 @@ def pullobjs():
 
     import os
     import urllib.request as urlrq
-    import wget
 
     import certifi
 
@@ -22,23 +21,41 @@ def pullobjs():
     # Make use of the conf.py 'isphx_objstr' substitution string, too
     for n, t in intersphinx_mapping.items():
 
-        print('{0}:'.format(n))
+        print('{0}:\n'.format(n) + '-' * 16)
 
         try:
             os.remove(isphx_objstr.format(n))
         except FileNotFoundError:
             pass # No big deal
 
-        #wget.download(url=t[0] + '/objects.inv', out=isphx_objstr.format(n))
-        resp = urlrq.urlopen(t[0] + '/objects.inv', cafile=certifi.where())
-        with open(isphx_objstr.format(n), 'wb') as f:
-            f.write(resp.read())
+        try:
+            resp = urlrq.urlopen(t[0] + '/objects.inv', cafile=certifi.where())
+        except Exception as e:
+            print('HTTP request failed:\n' + str(e) + '\n')
+            continue
+        else:
+            print('... located ...')
 
-        print('... Done.\n\n')
+        try:
+            b_s = resp.read()
+        except Exception as e:
+            print('Download failed:\n' + str(e) + '\n')
+            continue
+        else:
+            print('... downloaded ...')
+
+        try:
+            with open(isphx_objstr.format(n), 'wb') as f:
+                f.write(b_s)
+        except Exception as e:
+            print('Write failed:\n' + str(e) + '\n')
+            continue
+        else:
+            print('... done.')
+
+        print('')
 
 
 if __name__ == '__main__':
 
     pullobjs()
-
-
