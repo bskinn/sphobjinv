@@ -440,6 +440,11 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest('found_object'):
                 self.assertRegex(out_.getvalue(), p)
 
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_VersionExitsOK(self):
+        """Confirm --version exits cleanly."""
+        run_cmdline_test(self, ['-v'])
+
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""

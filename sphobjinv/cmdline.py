@@ -23,6 +23,18 @@ import argparse as ap
 import os
 import sys
 
+from . import __version__
+
+# Version arg and helpers
+VERSION = 'version'
+VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
+           "Copyright (c) Brian Skinn 2016-2018\n"
+           "License: The MIT License\n\n"
+           "Bug reports & feature requests:"
+           " https://github.com/bskinn/sphobjinv\n"
+           "Documentation:"
+           " {{{Add link here...}}}\n")
+
 # Subparser selectors
 CONVERT = 'convert'
 SUGGEST = 'suggest'
@@ -95,20 +107,14 @@ def _getparser():
         of ``sphobjinv``
 
     """
-    from . import __version__
-    EPILOG = (" \n" + "-" * 80 + "\n" +
-              "sphobjinv v{0}\n".format(__version__) +
-              "Submit bug reports & feature requests at"
-              " https://github.com/bskinn/sphobjinv\n"
-              "Documentation is available on Read the Docs at"
-              " {{{Add link here...}}}")
-
     prs = ap.ArgumentParser(description="Format conversion for "
                                         "and introspection of "
                                         "intersphinx "
-                                        "'objects.inv' files.",
-                            formatter_class=ap.RawDescriptionHelpFormatter,
-                            epilog=EPILOG)
+                                        "'objects.inv' files.")
+    prs.add_argument('-' + VERSION[0], '--' + VERSION,
+                     help="Print package version & other info",
+                     action='store_true')
+
     sprs = prs.add_subparsers(title='Subcommands',
                               dest=SUBPARSER_NAME,
                               metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
@@ -444,6 +450,11 @@ def main():
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
+
+    # Print version &c. and exit if indicated
+    if params[VERSION]:
+        print(VER_TXT)
+        sys.exit(0)
 
     # Generate the input Inventory based on --url or not
     if params[URL]:
