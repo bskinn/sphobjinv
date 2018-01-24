@@ -36,7 +36,6 @@ def readbytes(path):
         |bytes| -- Binary contents of the indicated file.
 
     """
-    # Open the file and read
     with open(path, 'rb') as f:
         return f.read()
 
@@ -56,9 +55,24 @@ def writebytes(path, contents):
 
 
     """
-    # Open the file and write
     with open(path, 'wb') as f:
         f.write(contents)
+
+
+def readjson(path):
+    """Create dict from JSON file."""
+    import json
+
+    with open(path, 'r') as f:
+        return json.load(f)
+
+
+def writejson(path, d):
+    """Create JSON file from dict."""
+    import json
+
+    with open(path, 'w') as f:
+        json.dump(d, f)
 
 
 if __name__ == '__main__':    # pragma: no cover

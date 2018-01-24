@@ -23,7 +23,7 @@
 
 from __future__ import absolute_import
 
-__all__ = ['readbytes', 'writebytes',
+__all__ = ['readbytes', 'writebytes', 'readjson', 'writejson',
            'compress', 'decompress',
            'pb_comments', 'pb_data', 'pb_version', 'pb_project',
            'p_data',
@@ -37,7 +37,7 @@ __all__ = ['readbytes', 'writebytes',
 from .data import DataObjStr, DataObjBytes, DataFields
 from .inventory import Inventory, SourceTypes, HeaderFields
 from .error import SphobjinvError, VersionError
-from .fileops import readbytes, writebytes
+from .fileops import readbytes, writebytes, readjson, writejson
 from .re import pb_comments, pb_data, pb_version, pb_project
 from .re import p_data
 from .schema import json_schema

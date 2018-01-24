@@ -23,6 +23,18 @@ import argparse as ap
 import os
 import sys
 
+from . import __version__
+
+# Version arg and helpers
+VERSION = 'version'
+VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
+           "Copyright (c) Brian Skinn 2016-2018\n"
+           "License: The MIT License\n\n"
+           "Bug reports & feature requests:"
+           " https://github.com/bskinn/sphobjinv\n"
+           "Documentation:"
+           " {{{Add link here...}}}\n")
+
 # Subparser selectors
 CONVERT = 'convert'
 SUGGEST = 'suggest'
@@ -43,6 +55,7 @@ QUIET = 'quiet'
 EXPAND = 'expand'
 CONTRACT = 'contract'
 OVERWRITE = 'overwrite'
+URL = 'url'
 
 # Suggest subparser params
 SEARCH = 'search'
@@ -57,6 +70,7 @@ HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
+DEF_BASENAME = 'objects'
 DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
@@ -98,6 +112,10 @@ def _getparser():
                                         "and introspection of "
                                         "intersphinx "
                                         "'objects.inv' files.")
+    prs.add_argument('-' + VERSION[0], '--' + VERSION,
+                     help="Print package version & other info",
+                     action='store_true')
+
     sprs = prs.add_subparsers(title='Subcommands',
                               dest=SUBPARSER_NAME,
                               metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
@@ -159,11 +177,21 @@ def _getparser():
                                   "without prompting",
                              action='store_true')
 
+    # Flag to treat infile as a URL
+    spr_convert.add_argument('-' + URL[0], '--' + URL,
+                             help="Treat 'infile' as a URL for download",
+                             action='store_true')
+
     # ### Args for suggest subparser
     spr_suggest.add_argument(INFILE,
                              help="Path to inventory file to be searched")
     spr_suggest.add_argument(SEARCH,
                              help="Search term for object suggestions")
+    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
+                             help="Display all results "
+                                  "regardless of the number returned "
+                                  "without prompting for confirmation.",
+                             action='store_true')
     spr_suggest.add_argument('-' + INDEX[0], '--' + INDEX,
                              help="Include Inventory.objects list indices "
                                   "with the search results",
@@ -180,10 +208,8 @@ def _getparser():
                                   "for approximate matches.",
                              default=75, type=int, choices=range(101),
                              metavar='{0-100}')
-    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
-                             help="Display all results "
-                                  "regardless of the number returned "
-                                  "without prompting for confirmation.",
+    spr_suggest.add_argument('-' + URL[0], '--' + URL,
+                             help="Treat 'infile' as a URL for download",
                              action='store_true')
 
     return prs
@@ -199,9 +225,15 @@ def resolve_inpath(in_path):
     return os.path.abspath(in_path)
 
 
-def resolve_outpath(out_path, in_path, mode):
+def resolve_outpath(out_path, in_path, params):
     """Resolve the output file, handling mode-specific defaults."""
-    in_fld, in_fname = os.path.split(in_path)
+    mode = params[MODE]
+
+    if params[URL]:
+        in_fld = os.getcwd()
+        in_fname = DEF_BASENAME
+    else:
+        in_fld, in_fname = os.path.split(in_path)
 
     if out_path:
         # Must check if the path entered is a folder
@@ -233,8 +265,7 @@ def resolve_outpath(out_path, in_path, mode):
 
 def import_infile(in_path):
     """Attempt import of indicated file."""
-    import json
-
+    from .fileops import readjson
     from .inventory import Inventory as Inv
 
     # Try general import, for zlib or plaintext files
@@ -247,9 +278,7 @@ def import_infile(in_path):
 
     # Maybe it's JSON
     try:
-        with open(in_path) as f:
-            dict_json = json.load(f)
-        inv = Inv(dict_json)
+        inv = Inv(readjson(in_path))
     except Exception:
         return None
     else:
@@ -276,12 +305,10 @@ def write_zlib(inv, path, *, expand=False, contract=False):
 
 def write_json(inv, path, *, expand=False, contract=False):
     """Write JSON from Inventory."""
-    import json
+    from .fileops import writejson
 
     json_dict = inv.json_dict(expand=expand, contract=contract)
-
-    with open(path, 'w') as f:
-        json.dump(json_dict, f)
+    writejson(path, json_dict)
 
 
 def do_convert(inv, in_path, params):
@@ -290,7 +317,7 @@ def do_convert(inv, in_path, params):
 
     # Work up the output location
     try:
-        out_path = resolve_outpath(params[OUTFILE], in_path, mode)
+        out_path = resolve_outpath(params[OUTFILE], in_path, params)
     except Exception as e:  # pragma: no cover
         # This may not actually be reachable except in exceptional situations
         selective_print("\nError while constructing output file path:", params)
@@ -386,16 +413,8 @@ def do_suggest(inv, params):
             print('\n'.join(str(_) for _ in results))
 
 
-def main():
-    """Handle command line invocation."""
-    # Parse commandline arguments
-    prs = _getparser()
-    ns, args_left = prs.parse_known_args()
-    params = vars(ns)
-
-    # Conversion mode
-#    mode = params[MODE]
-
+def inv_local(params):
+    """Create inventory from local reference."""
     # Resolve input file path
     try:
         in_path = resolve_inpath(params[INFILE])
@@ -409,6 +428,53 @@ def main():
     if inv is None:
         selective_print("\nError: Unrecognized file format", params)
         sys.exit(1)
+
+    return inv, in_path
+
+
+def inv_url(params):
+    """Create inventory from downloaded URL."""
+    from .inventory import Inventory
+
+    in_file = params[INFILE]
+
+    # Disallow --url mode on local files
+    if in_file.startswith('file:/'):
+        selective_print("\nError: URL mode on local file is invalid", params)
+        sys.exit(1)
+
+    try:
+        inv = Inventory(url=in_file)
+    except Exception as e:
+        selective_print("\nError while downloading/parsing URL:", params)
+        selective_print(err_format(e), params)
+        sys.exit(1)
+
+    if len(in_file) > 45:
+        ret_path = in_file[:20] + '[...]' + in_file[-20:]
+    else:  # pragma: no cover
+        ret_path = in_file
+
+    return inv, ret_path
+
+
+def main():
+    """Handle command line invocation."""
+    # Parse commandline arguments
+    prs = _getparser()
+    ns, args_left = prs.parse_known_args()
+    params = vars(ns)
+
+    # Print version &c. and exit if indicated
+    if params[VERSION]:
+        print(VER_TXT)
+        sys.exit(0)
+
+    # Generate the input Inventory based on --url or not
+    if params[URL]:
+        inv, in_path = inv_url(params)
+    else:
+        inv, in_path = inv_local(params)
 
     # Perform action based upon mode
     if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
