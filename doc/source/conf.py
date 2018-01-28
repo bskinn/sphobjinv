@@ -151,6 +151,8 @@ rst_epilog = """
 
 .. |re.compile| replace:: :func:`re.compile`
 
+.. |re| replace:: :doc:`re <python:library/re>`
+
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
 
 .. |br| raw:: html

@@ -47,7 +47,8 @@ pb_version = re.compile("""
     """.format(HeaderFields.Version.value).encode(encoding='utf-8'),
                        re.M | re.X)
 
-#: Regex pattern for compilation into str and bytes re patterns
+#: Regex pattern for compilation into |str| and |bytes| |re| patterns,
+#: to match decompressed inventory data lines.
 ptn_data = """\
     ^                        # Start of line
     (?P<{0}>[^#]\\S+)        # --> Name
@@ -69,13 +70,14 @@ ptn_data = """\
                DataFields.URI.value,
                DataFields.DispName.value)
 
-#: Bytestring regex pattern for bytes data lines in decompressed
-#: ``objects.inv`` files
+#: |bytes| regex pattern for data lines in |bytes| decompressed
+#: inventory files
 pb_data = re.compile(ptn_data.encode(encoding='utf-8'), re.M | re.X)
 
-#: str regex pattern for str data lines in decompressed
-#: ``objects.inv`` files
+#: |str| regex pattern for data lines in |str| decompressed
+#: inventory files
 p_data = re.compile(ptn_data, re.M | re.X)
+
 
 if __name__ == '__main__':    # pragma: no cover
     print('Module not executable.')
