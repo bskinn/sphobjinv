@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016
+# Copyright:   (c) Brian Skinn 2016-2018
 # License:     The MIT License; see "license.txt" for full license terms
 #                   and contributor agreement.
 #
@@ -22,5 +22,5 @@ from __future__ import absolute_import
 from .sphobjinv import readfile, writefile, decode, encode
 from .sphobjinv import p_comments, p_data
 
-__version__ = '1.0'
+__version__ = '1.0.post1'
 
