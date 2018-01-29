@@ -7,8 +7,8 @@ Sphinx Objects.inv Encoder/Decoder
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/dev/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
-.. image:: https://img.shields.io/readthedocs/sphinx-objectsinv-encoderdecoder/latest.svg
-    :target: http://sphinx-objectsinv-encoderdecoder.readthedocs.io/en/latest/
+.. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
+    :target: http://sphobjinv.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/pypi/v/sphobjinv.svg
     :target: https://pypi.org/project/sphobjinv
