@@ -26,10 +26,10 @@ Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
 
 Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
-`Issues <https://github.com/bskinn/tempvars/issues>`__ page there.
+`Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
 Documentation at
-`Read The Docs <http://sphinx-objectsinv-encoderdecoder.readthedocs.io/en/latest/>`__.
+`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
 
 Copyright (c) Brian Skinn 2016-2018
 
