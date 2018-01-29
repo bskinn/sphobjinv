@@ -1,9 +1,12 @@
 from setuptools import setup
 
+from sphobjinv import __version__
+
 setup(
     name='sphobjinv',
-    version='1.0',
+    version=__version__,
     packages=['sphobjinv'],
+    provides=['sphobjinv'],
     url='https://www.github.com/bskinn/sphobjinv',
     license='MIT License',
     author='Brian Skinn',
