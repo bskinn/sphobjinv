@@ -10,6 +10,4 @@ Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
 Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.
 
 Documentation at
-`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__:
-
-.
+`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
