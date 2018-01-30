@@ -1,7 +1,12 @@
-"""\
-*Helper regexes for* ``sphobjinv``.
+r"""*Helper regexes for* ``sphobjinv``.
 
-``sphobjinv`` is a toolkit for manipulation and inspection of Sphinx objects.inv files.
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+.. note::
+
+    Objects documented here MAY or MAY NOT be part of the official
+    ``sphobjinv`` API.
 
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
@@ -21,8 +26,7 @@
 **License**
     The MIT License; see |license_txt| for full license terms
 
-Members
--------
+**Members**
 
 """
 

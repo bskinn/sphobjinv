@@ -68,4 +68,11 @@ The normal workflow would be:
 .. toctree::
     :maxdepth: 1
 
+    modules/cmdline
+    modules/data
+    modules/error
+    modules/fileops
+    modules/inventory
     modules/re
+    modules/schema
+    modules/zlib

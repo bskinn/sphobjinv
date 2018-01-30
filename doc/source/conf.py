@@ -164,6 +164,16 @@ rst_epilog = """
 
     <br />
 
+.. |cour| raw:: html
+
+    <span style="font-family:courier;font-size:90%">
+
+.. |/cour| raw:: html
+
+    </span>
+
+.. |objects.inv| replace:: |cour| objects.inv |/cour|
+
 """
 
 
