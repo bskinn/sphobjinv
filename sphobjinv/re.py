@@ -1,34 +1,29 @@
-# ----------------------------------------------------------------------------
-# Name:        re
-# Purpose:     Helper regexes for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+"""\
+*Helper regexes for* ``sphobjinv``.
 
-"""Helper regexes for sphobjinv.
+``sphobjinv`` is a toolkit for manipulation and inspection of Sphinx objects.inv files.
 
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
-**Created**
+**File Created**
     5 Nov 2017
 
 **Copyright**
     \(c) Brian Skinn 2016-2018
 
-*more...*
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt| for full license terms
+
+Members
+-------
+
 """
 
 import re

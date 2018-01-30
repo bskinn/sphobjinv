@@ -15,12 +15,13 @@
 
 import sys
 import os
+import os.path as osp
 import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, osp.abspath(osp.join(os.pardir, os.pardir)))
 
 # -- General configuration ------------------------------------------------
 
@@ -154,6 +155,10 @@ rst_epilog = """
 .. |re| replace:: :doc:`re <python:library/re>`
 
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
+
+.. |license_txt| replace:: LICENSE.txt
+
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/dev/LICENSE.txt
 
 .. |br| raw:: html
 
@@ -427,5 +432,6 @@ def isphx_subst(s):
     return isphx_objpath.format(isphx_objstr.format(s)) if isphx_local else None
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.5', isphx_subst('python'))
+    'python': ('https://docs.python.org/3.5', isphx_subst('python')),
+    'sphinx': ('http://www.sphinx-doc.org/en/stable', isphx_subst('sphinx')),
     }
