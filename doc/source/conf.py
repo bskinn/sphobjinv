@@ -172,7 +172,7 @@ rst_epilog = """
 
     </span>
 
-.. |objects.inv| replace:: |cour| objects.inv |/cour|
+.. |objects.inv| replace:: |cour|\ objects.inv\ |/cour|
 
 """
 

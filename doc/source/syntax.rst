@@ -1,25 +1,25 @@
 .. Page describing objects.inv file syntax
 
-Sphinx Objects.inv Syntax
-=========================
+Sphinx Objects.inv v2 Syntax
+============================
 
-Plaintext Sphinx ``objects.inv`` files follow a syntax that, to the best of this
+Plaintext Sphinx |objects.inv| files follow a syntax that, to the best of this
 author's ability to determine, is completely undocumented. The below
-syntax is believed to be accurate as of May 2016
-(``objects.inv`` "version 2" files, Sphinx v1.4.1). Based upon
+syntax is believed to be accurate as of Feb 2018
+(|objects.inv| "version 2" files, Sphinx v1.6.6). Based upon
 a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be accurate for all
 Sphinx>=1.0b1.
 
 **The first line** `must be exactly
-<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/ext/intersphinx.py#L236-L248>`__:
+<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L105-L106>`__:
 
 .. code-block:: none
 
     # Sphinx inventory version 2
 
 **The second and third lines** `must obey
-<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/ext/intersphinx.py#L81-L84>`__
+<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L133-L134>`__
 the template:
 
 .. code-block:: none
@@ -33,7 +33,7 @@ the |isphx| cross-references:
     .. image:: _static/mouseover_example.png
 
 **The fourth line** `must contain
-<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/ext/intersphinx.py#L85-L87>`__
+<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L136-L137>`__
 the string 'zlib' somewhere in it, but for the purposes of consistency it should
 be exactly:
 
@@ -44,7 +44,7 @@ be exactly:
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L855-L857>`__:
+<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L188-L190>`__:
 
 .. code-block:: none
 
@@ -65,8 +65,8 @@ be exactly:
 
 ``{priority}``
     Flag for `placement in search results
-    <https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/domains/
-    __init__.py#L261-L267>`__. Most will be 1 (standard priority) or
+    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/domains/
+    __init__.py#L300-L306>`__. Most will be 1 (standard priority) or
     -1 (omit from results)
 
 ``{uri}``
@@ -99,11 +99,11 @@ size of the inventory file:
     <https://en.wikipedia.org/wiki/Fragment_identifier>`__," the portion
     following the ``#`` symbol) and the tail of the anchor is identical to
     ``{name}``, that tail is `replaced
-    <https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L847-L852>`__
+    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L180-L182>`__
     with ``$``. |br| |br|
 
  #. If ``{dispname}`` is identical to ``{name}``, it is `stored
-    <https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L853-L854>`__
+    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L186-L187>`__
     as ``-``.
 
 Thus, a standard |isphx| reference to this method would take the form (the leading
