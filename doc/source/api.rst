@@ -63,16 +63,10 @@ The normal workflow would be:
     :noindex:
 
 
-**Detailed Module Info (not formal API)**
+**Contents**
 
 .. toctree::
     :maxdepth: 1
 
-    modules/cmdline
-    modules/data
-    modules/error
-    modules/fileops
-    modules/inventory
-    modules/re
-    modules/schema
-    modules/zlib
+    api/formal
+    api/exhaustive

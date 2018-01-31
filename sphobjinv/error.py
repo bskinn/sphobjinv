@@ -6,7 +6,7 @@ Sphinx |objects.inv| files.
 .. note::
 
     Objects documented here MAY or MAY NOT be part of the official
-    ``sphobjinv`` API.
+    ``sphobjinv`` :doc:`API </api/formal>`.
 
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
