@@ -208,6 +208,12 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         return self._data_line_postprocess(retval)
 
+    def evolve(self, **changes):
+        """Create a new instance with `changes` applied."""
+        d = self.json_dict()
+        d.update(changes)
+        return self.__class__(**d)
+
 
 @attr.s(slots=True, frozen=True)
 class DataObjStr(SuperDataObj):
