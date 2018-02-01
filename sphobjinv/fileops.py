@@ -1,27 +1,38 @@
-# ----------------------------------------------------------------------------
-# Name:        fileops
-# Purpose:     File operations for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*File I/O helpers for* ``sphobjinv``.
 
-"""Disk I/O module for sphobjinv."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+.. note::
+
+    Objects documented here MAY or MAY NOT be part of the official
+    ``sphobjinv`` :doc:`API </api/formal>`.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    5 Nov 2017
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt| for full license terms
+
+**Members**
+
+"""
 
 
 def readbytes(path):
-    """Read file contents and return as bytes.
+    """Read file contents and return as |bytes|.
 
     Parameters
     ----------
@@ -33,7 +44,7 @@ def readbytes(path):
     -------
     b
 
-        |bytes| -- Binary contents of the indicated file.
+        |bytes| -- Contents of the indicated file.
 
     """
     with open(path, 'rb') as f:
@@ -41,7 +52,9 @@ def readbytes(path):
 
 
 def writebytes(path, contents):
-    """Write indicated file contents (with clobber).
+    """Write indicated file contents.
+
+    Any existing file at `path` will be overwritten.
 
     Parameters
     ----------
@@ -51,8 +64,7 @@ def writebytes(path, contents):
 
     contents
 
-        |bytes| -- Binary string of data to be written to file.
-
+        |bytes| -- Content to be written to file.
 
     """
     with open(path, 'wb') as f:
@@ -60,7 +72,23 @@ def writebytes(path, contents):
 
 
 def readjson(path):
-    """Create dict from JSON file."""
+    """Create |dict| from JSON file.
+
+    No data or schema validation is performed.
+
+    Parameters
+    ----------
+    path
+
+        |str| -- Path to JSON file to be read.
+
+    Returns
+    -------
+    d
+
+        |dict| -- Deserialized JSON.
+
+    """
     import json
 
     with open(path, 'r') as f:
@@ -68,7 +96,22 @@ def readjson(path):
 
 
 def writejson(path, d):
-    """Create JSON file from dict."""
+    """Create JSON file from |dict|.
+
+    No data or schema validation is performed.
+    Any existing file at `path` will be overwritten.
+
+    Parameters
+    ----------
+    path
+
+        |str| -- Path to output JSON file.
+
+    d
+
+        |dict| -- Data structure to serialize.
+
+    """
     import json
 
     with open(path, 'w') as f:

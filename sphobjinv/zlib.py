@@ -1,24 +1,34 @@
-# ----------------------------------------------------------------------------
-# Name:        zlib
-# Purpose:     zlib compression/decompression of content lines for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*zlib (de)compression helpers for* ``sphobjinv``.
 
-"""Module for the zlib (de)compression of objects.inv data block."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
 
+.. note::
+
+    Objects documented here MAY or MAY NOT be part of the official
+    ``sphobjinv`` :doc:`API </api/formal>`.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    5 Nov 2017
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt| for full license terms
+
+**Members**
+
+"""
 
 import os
 import zlib
@@ -28,7 +38,7 @@ BUFSIZE = 16*1024    # 16k chunks
 
 
 def decompress(bstr):
-    """Decompress a version 2 |isphx| ``objects.inv`` bytestring.
+    """Decompress a version 2 |isphx| |objects.inv| bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
     :mod:`zlib`-compressed data lines are decompressed to plaintext.
@@ -37,7 +47,7 @@ def decompress(bstr):
     ----------
     bstr
 
-        |bytes| -- Binary string containing a compressed ``objects.inv``
+        |bytes| -- Binary string containing a compressed |objects.inv|
         file.
 
     Returns
@@ -45,7 +55,7 @@ def decompress(bstr):
     out_b
 
         |bytes| -- Decompressed binary string containing the plaintext
-        ``objects.inv`` content.
+        |objects.inv| content.
 
     """
     import io
@@ -77,7 +87,7 @@ def decompress(bstr):
         raise VersionError('Only v2 objects.inv files currently supported')
 
     # Pull name, version, and description lines
-    for i in range(3):
+    for _ in range(3):
         out_b += strm.readline()
 
     # Decompress chunks and append
@@ -92,7 +102,7 @@ def decompress(bstr):
 
 
 def compress(bstr):
-    """Compress a version 2 |isphx| ``objects.inv`` bytestring.
+    """Compress a version 2 |isphx| |objects.inv| bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
     plaintext data lines are compressed with :mod:`zlib`.
@@ -102,13 +112,13 @@ def compress(bstr):
     bstr
 
         |bytes| -- Binary string containing the decompressed contents of an
-        ``objects.inv`` file.
+        |objects.inv| file.
 
     Returns
     -------
     out_b
 
-        |bytes| -- Binary string containing the compressed ``objects.inv``
+        |bytes| -- Binary string containing the compressed |objects.inv|
         content.
 
     """
