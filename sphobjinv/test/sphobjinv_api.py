@@ -287,6 +287,40 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest(str(_) + '_expand_' + str(__)):
                 self.assertEqual(s_dl, S_LINES_0[_ or __])
 
+    def test_API_DataObjStr_EvolveName(self):
+        """Confirm evolving a new |str| instance works properly."""
+        from sphobjinv import Inventory as Inv
+
+        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
+        obj = inv.objects[5]
+
+        newname = 'foo'
+        obj2 = obj.evolve(name=newname)
+
+        for k in obj.json_dict():
+            with self.subTest(k):
+                if k == 'name':
+                    self.assertEqual(obj2.name, newname)
+                else:
+                    self.assertEqual(getattr(obj, k), getattr(obj2, k))
+
+    def test_API_DataObjBytes_EvolveName(self):
+        """Confirm evolving a new |bytes| instance works properly."""
+        from sphobjinv import Inventory as Inv
+
+        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
+        obj = inv.objects[5].as_bytes
+
+        newname = b'foo'
+        obj2 = obj.evolve(name=newname)
+
+        for k in obj.json_dict():
+            with self.subTest(k):
+                if k == 'name':
+                    self.assertEqual(obj2.name, newname)
+                else:
+                    self.assertEqual(getattr(obj, k), getattr(obj2, k))
+
 
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing Inventory code accuracy w/good params & expected behavior."""
@@ -654,6 +688,21 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         with self.subTest('str'):
             with self.assertRaises(TypeError):
                 soi.DataObjStr(*range(6))
+
+    def test_API_ChangingImmutableDataObj(self):
+        """Confirm DataObj's are immutable."""
+        from attr.exceptions import FrozenInstanceError as FIError
+
+        from sphobjinv import Inventory as Inv
+
+        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
+
+        with self.subTest('str'):
+            with self.assertRaises(FIError):
+                inv.objects[0].name = 'newname'
+        with self.subTest('bytes'):
+            with self.assertRaises(FIError):
+                inv.objects[0].as_bytes.name = b'newname'
 
     def test_API_DataLine_BothArgsTrue(self):
         """Confirm error raised when both expand and contract are True."""
