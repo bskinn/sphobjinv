@@ -24,7 +24,7 @@ Sphinx |objects.inv| files.
     http://sphobjinv.readthedocs.io
 
 **License**
-    The MIT License; see |license_txt| for full license terms
+    The MIT License; see |license_txt|_ for full license terms
 
 **Members**
 
