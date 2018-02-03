@@ -53,7 +53,7 @@ class DataFields(Enum):
     #: Sphinx domain housing the object
     Domain = 'domain'
 
-    #: Sphinx role to be used when referencing the object
+    #: Full name of Sphinx role to be used when referencing the object
     Role = 'role'
 
     #: Object search priority
@@ -63,7 +63,9 @@ class DataFields(Enum):
     #: relative to the documentation root
     URI = 'uri'
 
-    #: Default display name for the object when referenced as
+    #: Default display name for the object
+    #: in rendered documentation
+    #: when referenced as
     #: |cour|\ \:domain\:role\:\`name\`\ |/cour|
     DispName = 'dispname'
 
@@ -104,11 +106,22 @@ class SuperDataObj(object, metaclass=ABCMeta):
     to allow definition of common methods, properties, etc.
     all in one place.
 
+    Where marked with |dag|,
+    :class:`DataObjBytes` will return |bytes| values, whereas
+    :class:`DataObjStr` will return |str| values.
+
     """
 
-    # These names must match the str values of the DataFields enum
+    #: Helper |str| for generating plaintext |objects.inv|
+    #: data lines. The field names MUST match the |str| values
+    #: of the :class:`~DataFields` members.
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
+
+    #: Helper |str| for generating reST-like representations
+    #: of object data for
+    #: :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>`
+    #: and :meth:`__str__`.
     rst_fmt = ':{domain}:{role}:`{name}`'
 
     def __str__(self):  # pragma: no cover
@@ -121,61 +134,69 @@ class SuperDataObj(object, metaclass=ABCMeta):
     @property
     @abstractmethod
     def name(self):
-        """Return object name."""
+        r"""Object name, as recognized internally by Sphinx\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def domain(self):
-        """Return object domain."""
+        r"""Sphinx domain containing the object\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def role(self):
-        """Return object role."""
+        r"""Sphinx role to be used when referencing the object\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def priority(self):
-        """Return object search priority."""
+        r"""Object search priority\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def uri(self):
-        """Return object URI."""
+        r"""Object URI relative to documentation root\ |dag|.
+
+        Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
+
+        """
         pass
 
     @property
     @abstractmethod
     def dispname(self):
-        """Return object display name."""
+        r"""Object default name in rendered documentation\ |dag|.
+
+        Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
+
+        """
         pass
 
     @property
     @abstractmethod
     def uri_abbrev(self):
-        """Return char(s) for abbreviating URI tail."""
+        r"""Abbreviation character(s) for URI tail\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def dispname_abbrev(self):
-        """Return char(s) for abbreviating display name."""
+        r"""Abbreviation character(s) for display name\ |dag|."""
         pass
 
     @property
     @abstractmethod
     def as_str(self, s):
-        """Return DataObjStr version of DataObj instance."""
+        """:class:`DataObjStr` version of instance."""
         pass
 
     @property
     @abstractmethod
     def as_bytes(self, s):
-        """Return DataObjBytes version of DataObj instance."""
+        """:class:`DataObjBytes` version of instance."""
         pass
 
     @abstractmethod
@@ -185,7 +206,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_contracted(self):
-        """Return contracted URI."""
+        """Object relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
             return self.uri[:-len(self.name)] + self.uri_abbrev
         else:
@@ -193,7 +214,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_expanded(self):
-        """Return expanded URI."""
+        """Object relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
             return self.uri[:-len(self.uri_abbrev)] + self.name
         else:
@@ -201,7 +222,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def dispname_contracted(self):
-        """Return contracted display name."""
+        """Object display name, contracted with `dispname_abbrev`."""
         if self.dispname == self.name:
             return self.dispname_abbrev
         else:
@@ -209,7 +230,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def dispname_expanded(self):
-        """Return expanded display name."""
+        """Object display name, with `dispname_abbrev` expanded."""
         if self.dispname == self.dispname_abbrev:
             return self.name
         else:
@@ -217,8 +238,15 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def as_rst(self):
-        """Return reST reference-like object representation."""
-        return self.rst_fmt.format(**self.json_dict())
+        r"""|str| reST reference-like object representation.
+
+        Typically will NOT function as a proper reST reference
+        in Sphinx source (e.g., a `role` of
+        |cour|\ function\ |/cour| must be referenced using
+        |cour|\ \:func\:\ |/cour| for the
+        |cour|\ py\ |/cour| domain).
+        """
+        return self.rst_fmt.format(**self.as_str.json_dict())
 
     def json_dict(self, *, expand=False, contract=False):
         """Return the object data formatted as a flat dict."""
@@ -226,7 +254,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
             raise ValueError("'expand' and 'contract' cannot "
                              "both be true.")
 
-        d = {_: getattr(self, _) for _ in (__.value for __ in DataFields)}
+        d = {a: getattr(self, a) for a in (e.value for e in DataFields)}
 
         if expand:
             d.update({DataFields.URI.value: self.uri_expanded,
@@ -256,7 +284,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
 @attr.s(slots=True, frozen=True)
 class DataObjStr(SuperDataObj):
-    """Container for string versions of objects.inv data."""
+    """:class:`SuperDataObj` subclass generating |str| object data."""
 
     uri_abbrev = '$'
     dispname_abbrev = '-'
@@ -293,7 +321,7 @@ class DataObjStr(SuperDataObj):
 
 @attr.s(slots=True, frozen=True)
 class DataObjBytes(SuperDataObj):
-    """Container for the data for an objects.inv entry."""
+    """:class:`SuperDataObj` subclass generating |bytes| object data."""
 
     uri_abbrev = b'$'
     dispname_abbrev = b'-'

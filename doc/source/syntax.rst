@@ -92,6 +92,9 @@ Python 3.5 ``objects.inv``, broken out field-by-field:
     {uri}       = library/stdtypes.html#$
     {dispname}  = -
 
+
+.. _syntax_shorthand:
+
 The above illustrates two shorthand notations that were introduced to shrink the
 size of the inventory file:
 

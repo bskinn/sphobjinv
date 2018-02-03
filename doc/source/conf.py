@@ -124,6 +124,8 @@ todo_include_todos = False
 rst_epilog = """
 .. |extlink| image:: /_static/extlink.svg
 
+.. |dag| replace:: :math:`^\dagger`
+
 .. |None| replace:: :obj:`None`
 
 .. |True| replace:: :obj:`True`
