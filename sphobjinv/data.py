@@ -1,23 +1,34 @@
-# ----------------------------------------------------------------------------
-# Name:        data
-# Purpose:     Objects.inv data manipulation for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     7 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*Inventory object data class for* ``sphobjinv``.
 
-"""Module for manipulation of objects.inv data."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+.. note::
+
+    Objects documented here MAY or MAY NOT be part of the official
+    ``sphobjinv`` :doc:`API </api/formal>`.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    7 Nov 2017
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 from abc import ABCMeta, abstractmethod
 from enum import Enum
@@ -34,18 +45,35 @@ else:
 
 
 class DataFields(Enum):
-    """Enum for the regex groups of objects.inv data items."""
+    """Enum for the fields of |objects.inv| data objects."""
 
+    #: Object name, as recognized internally by Sphinx
     Name = 'name'
+
+    #: Sphinx domain housing the object
     Domain = 'domain'
+
+    #: Sphinx role to be used when referencing the object
     Role = 'role'
+
+    #: Object search priority
     Priority = 'priority'
+
+    #: URI to the location of the object's documentation,
+    #: relative to the documentation root
     URI = 'uri'
+
+    #: Default display name for the object when referenced as
+    #: |cour|\ \:domain\:role\:\`name\`\ |/cour|
     DispName = 'dispname'
 
 
 def _utf8_decode(b):
-    """Decode (if needed) to str."""
+    """Decode (if needed) to str.
+
+    Helper for type conversions among DataObjStr and DataObjBytes.
+
+    """
     if type(b) is bytes:
         return b.decode(encoding='utf-8')
     elif type(b) is str:
@@ -55,7 +83,11 @@ def _utf8_decode(b):
 
 
 def _utf8_encode(s):
-    """Encode (if needed) to bytes."""
+    """Encode (if needed) to bytes.
+
+    Helper for type conversions among DataObjStr and DataObjBytes.
+
+    """
     if type(s) is str:
         return s.encode(encoding='utf-8')
     elif type(s) is bytes:
@@ -65,7 +97,14 @@ def _utf8_encode(s):
 
 
 class SuperDataObj(object, metaclass=ABCMeta):
-    """Superclass defining common DataObj methods &c."""
+    """Abstract base superclass defining common methods &c. for data objects.
+
+    Intended only to be subclassed
+    by :class:`DataObjBytes` and :class:`DataObjStr`,
+    to allow definition of common methods, properties, etc.
+    all in one place.
+
+    """
 
     # These names must match the str values of the DataFields enum
     data_line_fmt = ('{name} {domain}:{role} {priority} '
