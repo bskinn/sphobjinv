@@ -45,7 +45,7 @@ else:
 
 
 class DataFields(Enum):
-    """Enum for the fields of |objects.inv| data objects."""
+    """|Enum| for the fields of |objects.inv| data objects."""
 
     #: Object name, as recognized internally by Sphinx
     Name = 'name'
@@ -178,13 +178,23 @@ class SuperDataObj(object, metaclass=ABCMeta):
     @property
     @abstractmethod
     def uri_abbrev(self):
-        r"""Abbreviation character(s) for URI tail\ |dag|."""
+        r"""Abbreviation character(s) for URI tail\ |dag|.
+
+        ``'$'`` or ``b'$'``
+        for :doc:`version 2 </syntax>` |objects.inv| files.
+
+        """
         pass
 
     @property
     @abstractmethod
     def dispname_abbrev(self):
-        r"""Abbreviation character(s) for display name\ |dag|."""
+        r"""Abbreviation character(s) for display name\ |dag|.
+
+        ``'-'`` or ``b'-'``
+        for :doc:`version 2 </syntax>` |objects.inv| files.
+
+        """
         pass
 
     @property
@@ -249,7 +259,50 @@ class SuperDataObj(object, metaclass=ABCMeta):
         return self.rst_fmt.format(**self.as_str.json_dict())
 
     def json_dict(self, *, expand=False, contract=False):
-        """Return the object data formatted as a flat dict."""
+        r"""Return the object data formatted as a flat |dict|.
+
+        The returned |dict| is constructed such that it matches the
+        relevant subschema of :data:`sphobjinv.schema.json_schema`, to
+        facilitate implementation of
+        :meth:`Inventory.json_dict()
+        <sphobjinv.inventory.Inventory.json_dict>`.
+
+        The |dict|\ s returned by :class:`~sphobjinv.data.DataObjBytes` and
+        :class:`~sphobjinv.data.DataObjStr` both have |str|
+        keys, but they have |bytes| and |str| values, respectively.
+        The |dict| keys are identical to the |str| values of the
+        :data:`~sphobjinv.data.DataFields` |Enum| members.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Return |dict| with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Return |dict| with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+
+        Returns
+        -------
+        d
+
+            |dict| -- Object data
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         if expand and contract:
             raise ValueError("'expand' and 'contract' cannot "
                              "both be true.")

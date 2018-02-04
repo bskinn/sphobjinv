@@ -156,6 +156,8 @@ rst_epilog = """
 
 .. |re| replace:: :doc:`re <python:library/re>`
 
+.. |Enum| replace:: :class:`~enum.Enum`
+
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
 
 .. |license_txt| replace:: LICENSE.txt
