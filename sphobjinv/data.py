@@ -1,4 +1,4 @@
-r"""*Inventory object data class for* ``sphobjinv``.
+r"""``sphobjinv`` *data classes for individual objects*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
@@ -119,9 +119,9 @@ class SuperDataObj(object, metaclass=ABCMeta):
                      '{uri} {dispname}')
 
     #: Helper |str| for generating reST-like representations
-    #: of object data for
+    #: of object data for :data:`as_rst` (used with
     #: :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>`
-    #: and :meth:`__str__`.
+    #: and :meth:`SuperDataObj.__str__`).
     rst_fmt = ':{domain}:{role}:`{name}`'
 
     def __str__(self):  # pragma: no cover
@@ -382,8 +382,8 @@ class SuperDataObj(object, metaclass=ABCMeta):
         ----------
         **kwargs
 
-            |str| or |bytes| -- Changed value to use in the new
-            instance for each passed keyword argument.
+            |str| or |bytes| -- Revised value(s) to use in the new
+            instance for the passed keyword argument(s).
 
         Returns
         -------
