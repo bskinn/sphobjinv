@@ -55,7 +55,7 @@ json_schema = {'$schema': "http://json-schema.org/schema#",
                'properties': {'project': {'type': 'string'},
                               'version': {'type': 'string'},
                               'count': {'type': 'integer'},
-                              'metadata': {'type': 'object'}
+                              'metadata': {}
                               },
                'patternProperties': {'^\\d+': {'type': 'object',
                                                'properties': subschema_json,
