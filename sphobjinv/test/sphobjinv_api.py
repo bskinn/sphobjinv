@@ -428,6 +428,35 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
 
         self.check_attrs_inventory(inv, SourceTypes.DictJSON, 'general')
 
+    def test_API_Inventory_FlatDictReimportWithMetadata(self):
+        """Confirm re-import of a generated flat_dict."""
+        from sphobjinv import Inventory, SourceTypes
+
+        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.json_dict()
+
+        d.update({'metadata': 'test string'})
+
+        with self.subTest('instantiate_metadata_string'):
+            try:
+                inv = Inventory(d)
+            except Exception:
+                self.fail('Failed when instantiating with string metadata')
+
+        self.check_attrs_inventory(inv, SourceTypes.DictJSON,
+                                   'contents_metadata_string')
+
+        d.update({'metadata': {'this': 'foo', 'that': 'bar'}})
+
+        with self.subTest('instantiate_metadata_dict'):
+            try:
+                inv = Inventory(d)
+            except Exception:
+                self.fail('Failed when instantiating with dict metadata')
+
+        self.check_attrs_inventory(inv, SourceTypes.DictJSON,
+                                   'contents_metadata_dict')
+
     def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
         """Confirm no error when flat dict passed w/too few objs w/ignore."""
         import sphobjinv as soi
