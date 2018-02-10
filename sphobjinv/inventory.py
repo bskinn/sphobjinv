@@ -400,10 +400,14 @@ class Inventory(object):
                                "(halt at {0}, expect {1})".format(i, count))
                     raise ValueError(err_str) from e
 
-        # Complain if len of remaining dict is other than 3
-        if len(d) != 3 and self._count_error:  # project, version, count
-            err_str = ("Too many objects in dict "
-                       "({0}, expect {1})".format(count + len(d) - 3, count))
+        # Complain if remaining objects are anything other than the
+        # inventory-level metadata
+        hf_values = set(e.value for e in HeaderFields)
+        check_value = self._count_error and set(d.keys()).difference(hf_values)
+        if check_value:
+            # A truthy value here will be the contents
+            # of the above set difference
+            err_str = ("Too many objects in dict ({0})".format(check_value))
             raise ValueError(err_str)
 
         # Should be good to return
