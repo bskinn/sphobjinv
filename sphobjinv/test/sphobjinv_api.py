@@ -457,6 +457,17 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
         self.check_attrs_inventory(inv, SourceTypes.DictJSON,
                                    'contents_metadata_dict')
 
+        d.update({'metadata': 42})
+
+        with self.subTest('instantiate_metadata_int'):
+            try:
+                inv = Inventory(d)
+            except Exception:
+                self.fail('Failed when instantiating with int metadata')
+
+        self.check_attrs_inventory(inv, SourceTypes.DictJSON,
+                                   'contents_metadata_int')
+
     def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
         """Confirm no error when flat dict passed w/too few objs w/ignore."""
         import sphobjinv as soi
@@ -788,7 +799,18 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         d = inv.json_dict()
         d.update({'57': d['23']})
 
-        self.assertRaises(ValueError, soi.Inventory, d)
+        self.assertRaises(ValueError, soi.Inventory, dict_json=d)
+
+    def test_API_Inventory_BadRootObjectJSONDictImport(self):
+        """Confirm error raised when spurious extra root object present."""
+        import sphobjinv as soi
+        from jsonschema.exceptions import ValidationError
+
+        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
+        d = inv.json_dict()
+        d.update({'bad_foo': 'angry_bar'})
+
+        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
 
     def test_API_Inventory_TooManyInitSrcArgs(self):
         """Confirm error if >1 sources passed."""
