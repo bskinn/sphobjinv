@@ -107,8 +107,8 @@ class SuperDataObj(object, metaclass=ABCMeta):
     all in one place.
 
     Where marked with |dag|,
-    :class:`DataObjBytes` will return |bytes| values, whereas
-    :class:`DataObjStr` will return |str| values.
+    :class:`DataObjBytes` instances will return |bytes| values, whereas
+    :class:`DataObjStr` instances will return |str| values.
 
     """
 

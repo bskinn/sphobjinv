@@ -1,24 +1,32 @@
-"""
-Module defining the Inventory object for holding entire Sphinx inventories.
+r"""``sphobjinv`` *data class for full inventories*.
 
-Name:        inventory.py
-Exposes:     SourceTypes (Enum) -- Types of source objects intelligible
-                                   to an Inventory
-             Inventory (class)  -- Object providing methods for parsing,
-                                   manipulating, and exporting Sphinx
-                                   objects.inv inventories.
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
 
-Author:      Brian Skinn (bskinn@alum.mit.edu)
+.. note::
 
-Created:     7 Dec 2017
-Copyright:   (c) Brian Skinn 2016-2018
-License:     The MIT License; see "LICENSE.txt" for full license terms
-             and contributor agreement.
+    Objects documented here MAY or MAY NOT be part of the official
+    ``sphobjinv`` :doc:`API </api/formal>`.
 
-This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-encoding and decoding objects.inv files for use with intersphinx.
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
 
-http://www.github.com/bskinn/sphobjinv
+**File Created**
+    7 Dec 2017
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
 
 """
 
@@ -30,12 +38,26 @@ from .data import DataObjStr
 
 
 class HeaderFields(Enum):
-    """Enum for regex groups of objects.inv header data."""
+    """|Enum| for various inventory-level data items.
 
+    A subset of these |Enum| values is used in various Regex,
+    JSON, and string formatting contexts within :class:`Inventory`
+    and :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
+
+    """
+
+    #: Project name associated with an inventory
     Project = 'project'
+
+    #: Project version associated with an inventory
     Version = 'version'
+
+    #: Number of objects contained in the inventory
     Count = 'count'
-    Objects = 'objects'
+
+    #: The |str| value of this |Enum| member is accepted as a root-level
+    #: key in a |dict| to be imported into an
+    #:
     Metadata = 'metadata'
 
 
@@ -412,3 +434,6 @@ class Inventory(object):
 
         # Should be good to return
         return project, version, objects
+
+if __name__ == '__main__':    # pragma: no cover
+    print('Module not executable.')
