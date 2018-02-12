@@ -5,3 +5,6 @@ sphobjinv.inventory
 
 .. automodule:: sphobjinv.inventory
     :members:
+
+
+.. |Inventory| replace:: :class:`~sphobjinv.inventory.Inventory`
