@@ -421,6 +421,15 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm --version exits cleanly."""
         run_cmdline_test(self, ['-v'])
 
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_NoArgsShowsHelp(self):
+        """Confirm help shown when invoked with no arguments."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, [])
+
+            with self.subTest('help_displayed'):
+                self.assertIn('usage: sphobjinv', out_.getvalue())
+
 
 class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
     """Testing nonlocal code expecting to work properly."""
@@ -530,7 +539,6 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         run_cmdline_test(self, ['convert', 'plain', scr_path()], expect=1)
 
     @timeout(CLI_TIMEOUT)
-    @ut.skip("Local file by URL works erratically")
     def test_Cmdline_AttemptURLOnLocalFile(self):
         """Confirm error when using URL mode on local file."""
         copy_cmp()
