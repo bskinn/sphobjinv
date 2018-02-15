@@ -530,6 +530,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         run_cmdline_test(self, ['convert', 'plain', scr_path()], expect=1)
 
     @timeout(CLI_TIMEOUT)
+    @ut.skip("Local file by URL works erratically")
     def test_Cmdline_AttemptURLOnLocalFile(self):
         """Confirm error when using URL mode on local file."""
         copy_cmp()
