@@ -18,7 +18,13 @@
 from __future__ import absolute_import
 
 __all__ = ['suite_cli_expect_good', 'suite_cli_expect_fail',
-           'suite_api_expect_good', 'suite_api_expect_fail']
+           'suite_api_expect_good', 'suite_api_expect_fail',
+           'suite_cli_expect_good_nonlocal',
+           'suite_cli_expect_fail_nonlocal',
+           'suite_api_expect_good_nonlocal']
 
 from .sphobjinv_cli import suite_cli_expect_good, suite_cli_expect_fail
+from .sphobjinv_cli import suite_cli_expect_good_nonlocal
+from .sphobjinv_cli import suite_cli_expect_fail_nonlocal
 from .sphobjinv_api import suite_api_expect_good, suite_api_expect_fail
+from .sphobjinv_api import suite_api_expect_good_nonlocal
