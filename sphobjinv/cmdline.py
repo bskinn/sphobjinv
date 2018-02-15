@@ -33,7 +33,7 @@ VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
            "Bug reports & feature requests:"
            " https://github.com/bskinn/sphobjinv\n"
            "Documentation:"
-           " {{{Add link here...}}}\n")
+           " http://sphobjinv.readthedocs.io\n")
 
 # Subparser selectors
 CONVERT = 'convert'
@@ -460,6 +460,10 @@ def inv_url(params):
 
 def main():
     """Handle command line invocation."""
+    # If no args passed, stick in '-h'
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
+
     # Parse commandline arguments
     prs = _getparser()
     ns, args_left = prs.parse_known_args()
