@@ -25,12 +25,16 @@ class AP(object):
     GOOD = 'good'
     GOOD_LOCAL = 'good_local'
     FAIL = 'fail'
+    FAIL_LOCAL = 'fail_local'
 
     TESTALL = 'testall'
 
     CLI = 'cli'
+    CLI_LOCAL = 'cli_local'
     CLI_GOOD = 'cli_good'
+    CLI_GOOD_LOCAL = 'cli_good_local'
     CLI_FAIL = 'cli_fail'
+    CLI_FAIL_LOCAL = 'cli_fail_local'
 
     API = 'api'
     API_LOCAL = 'api_local'
@@ -77,6 +81,9 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
                      action='store_true',
                      help="Run all expect-fail tests")
+    prs.add_argument(AP.PFX.format(AP.FAIL_LOCAL),
+                     action='store_true',
+                     help="Run all local expect-fail tests")
 
     # TestAll group
     gp_testall.add_argument(AP.PFX.format(AP.TESTALL),
@@ -87,12 +94,21 @@ def get_parser():
     gp_cli.add_argument(AP.PFX.format(AP.CLI),
                         action='store_true',
                         help="Run all CLI tests")
+    gp_cli.add_argument(AP.PFX.format(AP.CLI_LOCAL),
+                        action='store_true',
+                        help="Run all local CLI tests")
     gp_cli.add_argument(AP.PFX.format(AP.CLI_GOOD),
                         action='store_true',
                         help="Run expect-good CLI tests")
+    gp_cli.add_argument(AP.PFX.format(AP.CLI_GOOD_LOCAL),
+                        action='store_true',
+                        help="Run local expect-good CLI tests")
     gp_cli.add_argument(AP.PFX.format(AP.CLI_FAIL),
                         action='store_true',
                         help="Run expect-fail CLI tests")
+    gp_cli.add_argument(AP.PFX.format(AP.CLI_FAIL_LOCAL),
+                        action='store_true',
+                        help="Run local expect-fail CLI tests")
 
     # API group
     gp_api.add_argument(AP.PFX.format(AP.API),
@@ -142,7 +158,7 @@ def main():
         if any(params[k] for k in flags):
             ts.addTest(suite)
 
-    # Commandline tests per-group
+    # Add commandline-indicated tests per-group
     # Expect-good tests
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_good(),
                [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
@@ -151,13 +167,18 @@ def main():
                [AP.ALL, AP.GOOD, AP.API, AP.API_GOOD])
     addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good(),
                [AP.ALL, AP.LOCAL, AP.GOOD, AP.GOOD_LOCAL,
-                AP.CLI, AP.CLI_GOOD])
+                AP.CLI, AP.CLI_LOCAL, AP.CLI_GOOD, AP.CLI_GOOD_LOCAL])
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_good_nonlocal(),
+               [AP.ALL, AP.GOOD, AP.CLI, AP.CLI_GOOD])
 
     # Expect-fail tests
     addsuiteif(sphobjinv.test.sphobjinv_api.suite_api_expect_fail(),
                [AP.ALL, AP.LOCAL, AP.FAIL, AP.API, AP.API_LOCAL, AP.API_FAIL])
     addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail(),
-               [AP.ALL, AP.LOCAL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
+               [AP.ALL, AP.LOCAL, AP.FAIL, AP.FAIL_LOCAL,
+                AP.CLI, AP.CLI_LOCAL, AP.CLI_FAIL, AP.CLI_FAIL_LOCAL])
+    addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail_nonlocal(),
+               [AP.ALL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
 
     # Enable testing all invs if indicated
     os.environ.update({TESTALL: '1' if params[AP.TESTALL] else ''})
@@ -168,7 +189,7 @@ def main():
                             warnings=('always' if params['w'] else None))
     success = ttr.run(ts).wasSuccessful()
 
-    # Return based on success result (enables tox)
+    # Return based on success result (lets tox report success/fail)
     sys.exit(0 if success else 1)
 
 

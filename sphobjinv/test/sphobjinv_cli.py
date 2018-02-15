@@ -312,28 +312,6 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         with self.subTest('overwrite_project'):
             self.assertEqual('Sarge', Inv(dst).project)
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextOutfileProvided(self):
-        """Confirm CLI URL D/L, convert works w/outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(self, ['convert', 'plain', '-u',
-                                REMOTE_URL.format('attrs'),
-                                dest_path])
-
-        file_exists_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextNoOutfile(self):
-        """Confirm CLI URL D/L, convert works w/o outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        with dir_change('sphobjinv'):
-            with dir_change('test'):
-                with dir_change('scratch'):
-                    run_cmdline_test(self, ['convert', 'plain', '-u',
-                                            REMOTE_URL.format('attrs')])
-
-        file_exists_test(self, dest_path)
-
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestNoResults(self):
         """Confirm suggest w/no found results works."""
@@ -438,6 +416,24 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest('count_no_print'):
                 self.assertEqual(out_.getvalue().count('\n'), 3)
 
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_VersionExitsOK(self):
+        """Confirm --version exits cleanly."""
+        run_cmdline_test(self, ['-v'])
+
+    @timeout(CLI_TIMEOUT)
+    def test_Cmdline_NoArgsShowsHelp(self):
+        """Confirm help shown when invoked with no arguments."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, [])
+
+            with self.subTest('help_displayed'):
+                self.assertIn('usage: sphobjinv', out_.getvalue())
+
+
+class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
+    """Testing nonlocal code expecting to work properly."""
+
     @timeout(CLI_TIMEOUT * 4)
     def test_Cmdline_SuggestNameOnlyFromURL(self):
         """Confirm name-only suggest works from URL."""
@@ -452,10 +448,27 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest('found_object'):
                 self.assertRegex(out_.getvalue(), p)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_VersionExitsOK(self):
-        """Confirm --version exits cleanly."""
-        run_cmdline_test(self, ['-v'])
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_ConvertURLToPlaintextOutfileProvided(self):
+        """Confirm CLI URL D/L, convert works w/outfile supplied."""
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        run_cmdline_test(self, ['convert', 'plain', '-u',
+                                REMOTE_URL.format('attrs'),
+                                dest_path])
+
+        file_exists_test(self, dest_path)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_ConvertURLToPlaintextNoOutfile(self):
+        """Confirm CLI URL D/L, convert works w/o outfile supplied."""
+        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+        with dir_change('sphobjinv'):
+            with dir_change('test'):
+                with dir_change('scratch'):
+                    run_cmdline_test(self, ['convert', 'plain', '-u',
+                                            REMOTE_URL.format('attrs')])
+
+        file_exists_test(self, dest_path)
 
 
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
@@ -525,19 +538,6 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         copy_cmp()
         run_cmdline_test(self, ['convert', 'plain', scr_path()], expect=1)
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_BadURLArg(self):
-        """Confirm proper error behavior when a bad URL is passed."""
-        with stdio_mgr(sys) as (in_, out_, err_):
-            run_cmdline_test(self, ['convert', 'plain', '-u',
-                                    REMOTE_URL.format('blarghers'),
-                                    scr_path()],
-                             expect=1)
-
-            with self.subTest('stdout_match'):
-                self.assertIn('Error while downloading/parsing URL:',
-                              out_.getvalue())
-
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_AttemptURLOnLocalFile(self):
         """Confirm error when using URL mode on local file."""
@@ -552,6 +552,23 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                          expect=1)
 
 
+class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
+    """Check expect-fail cases with non-local sources/effects."""
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_BadURLArg(self):
+        """Confirm proper error behavior when a bad URL is passed."""
+        with stdio_mgr(sys) as (in_, out_, err_):
+            run_cmdline_test(self, ['convert', 'plain', '-u',
+                                    REMOTE_URL.format('blarghers'),
+                                    scr_path()],
+                             expect=1)
+
+            with self.subTest('stdout_match'):
+                self.assertIn('Error while downloading/parsing URL:',
+                              out_.getvalue())
+
+
 def suite_cli_expect_good():
     """Create and return the test suite for CLI expect-good cases."""
     s = ut.TestSuite()
@@ -561,11 +578,31 @@ def suite_cli_expect_good():
     return s
 
 
+def suite_cli_expect_good_nonlocal():
+    """Create and return the test suite for nonlocal CLI expect-good cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(
+        TestSphobjinvCmdlineExpectGoodNonlocal)])
+
+    return s
+
+
 def suite_cli_expect_fail():
     """Create and return the test suite for CLI expect-fail cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFail)])
+
+    return s
+
+
+def suite_cli_expect_fail_nonlocal():
+    """Create and return the test suite for nonlocal CLI expect-fail cases."""
+    s = ut.TestSuite()
+    tl = ut.TestLoader()
+    s.addTests([tl.loadTestsFromTestCase(
+        TestSphobjinvCmdlineExpectFailNonlocal)])
 
     return s
 
