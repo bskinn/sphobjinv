@@ -1,7 +1,7 @@
 .. Module API page for cmdline.py
 
-sphobjinv.cmdline
-=================
+sphobjinv.cmdline (non-API)
+===========================
 
 .. automodule:: sphobjinv.cmdline
     :members:

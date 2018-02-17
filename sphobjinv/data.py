@@ -3,11 +3,6 @@ r"""``sphobjinv`` *data classes for individual objects*.
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
 
-.. note::
-
-    Objects documented here MAY or MAY NOT be part of the official
-    ``sphobjinv`` :doc:`API </api/formal>`.
-
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
@@ -118,10 +113,9 @@ class SuperDataObj(object, metaclass=ABCMeta):
     data_line_fmt = ('{name} {domain}:{role} {priority} '
                      '{uri} {dispname}')
 
-    #: Helper |str| for generating reST-like representations
+    #: |str.format| template for generating reST-like representations
     #: of object data for :data:`as_rst` (used with
-    #: :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>`
-    #: and :meth:`SuperDataObj.__str__`).
+    #: :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>`).
     rst_fmt = ':{domain}:{role}:`{name}`'
 
     def __str__(self):  # pragma: no cover

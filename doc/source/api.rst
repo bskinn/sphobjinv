@@ -48,25 +48,14 @@ The normal workflow would be:
         >>> soi.writefile('/path/to/new/file', data)
 
 
-**Members**
-
-.. automodule:: sphobjinv.fileops
-    :members:
-    :noindex:
-
-.. automodule:: sphobjinv.zlib
-    :members:
-    :noindex:
-
-.. automodule:: sphobjinv.re
-    :members:
-    :noindex:
-
-
-**Contents**
-
 .. toctree::
     :maxdepth: 1
+    :caption: Formal API
 
-    api/formal
-    api/exhaustive
+    modules/data
+    modules/error
+    modules/fileops
+    modules/inventory
+    modules/re
+    modules/schema
+    modules/zlib

@@ -146,8 +146,6 @@ rst_epilog = """
 
 .. |bytes| replace:: :obj:`bytes`
 
-.. |unicode| replace:: :obj:`unicode`
-
 .. |bool| replace:: :obj:`bool`
 
 .. |dict| replace:: :obj:`dict`
@@ -177,6 +175,8 @@ rst_epilog = """
     </span>
 
 .. |objects.inv| replace:: |cour|\ objects.inv\ |/cour|
+
+.. |str.format| replace:: :meth:`str.format`
 
 """
 

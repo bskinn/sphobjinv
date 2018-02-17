@@ -3,11 +3,6 @@ r"""``sphobjinv`` *data class for full inventories*.
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
 
-.. note::
-
-    Objects documented here MAY or MAY NOT be part of the official
-    ``sphobjinv`` :doc:`API </api/formal>`.
-
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
@@ -72,7 +67,7 @@ class SourceTypes(Enum):
     Since |Enum| keys iterate in definition order, the
     definition order here defines the order in which |Inventory|
     objects attempt to parse a source object passed to
-    :meth:`Inventory.__init__` either as a positional argument
+    :class:`Inventory.__init__() <Inventory>` either as a positional argument
     or via the generic `source` keyword argument.
 
     This order **DIFFERS** from the documentation order, which is
@@ -214,24 +209,79 @@ class Inventory(object):
                            validator=attr.validators.instance_of(bool))
 
     # Actual regular attributes
+    #: |str| project display name for the inventory
+    #: (see :ref:`here <syntax-mouseover-example>`).
     project = attr.ib(init=False, default=None)
+
+    #: |str| project display version for the inventory
+    #: (see :ref:`here <syntax-mouseover-example>`).
     version = attr.ib(init=False, default=None)
+
+    #: |list| of |DataObjStr| representing the
+    #: data objects of the inventory.
+    #: Can be edited directly to change the inventory contents.
+    #: Undefined/random behavior/errors will result if the type
+    #: of the elements is anything other than |DataObjStr|.
     objects = attr.ib(init=False, default=attr.Factory(list))
+
+    #: :class:`SourceTypes` |Enum| value indicating the type of
+    #: source from which the instance was generated.
     source_type = attr.ib(init=False, default=None)
 
     # Helper strings for inventory datafile output
+    #: Preamble line for v2 |objects.inv| header
     header_preamble = '# Sphinx inventory version 2'
+
+    #: Project line |str.format| template for |objects.inv| header
     header_project = '# Project: {project}'
+
+    #: Version line |str.format| template for |objects.inv| header
     header_version = '# Version: {version}'
+
+    #: zlib compression line for v2 |objects.inv| header
     header_zlib = '# The remainder of this file is compressed using zlib.'
 
     @property
     def count(self):
-        """Return the number of objects currently in inventory."""
+        """Count of objects currently in inventory."""
         return len(self.objects)
 
     def json_dict(self, expand=False, contract=False):
-        """Generate a flat dict representation of the inventory."""
+        """Generate a flat |dict| representation of the inventory.
+
+        The returned |dict| matches the
+        schema of :data:`sphobjinv.schema.json_schema`.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Return |dict| with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Return |dict| with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        d
+
+            |dict| -- Inventory data; keys and values are all |str|
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
@@ -244,7 +294,43 @@ class Inventory(object):
 
     @property
     def objects_rst(self):
-        """Generate a list of the objects in a reST-like representation."""
+        r"""|list| of objects formatted in a |str| reST-like representation.
+
+        The format of each |str| in the |list| is given by
+        :class:`data.SuperDataObj.rst_fmt
+        <sphobjinv.data.SuperDataObj.rst_fmt>`.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Return |str|\ s with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Return |str|\ s with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        obj_l
+
+            |list| of |str|
+            -- Inventory object data in reST-like format
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         return list(_.as_rst for _ in self.objects)
 
     def __str__(self):  # pragma: no cover
@@ -312,7 +398,44 @@ class Inventory(object):
                 return
 
     def data_file(self, *, expand=False, contract=False):
-        """Generate a plaintext objects.txt as bytes."""
+        """Generate a plaintext |objects.inv| as |bytes|.
+
+        |bytes| is used here as the output type
+        since the most common use cases are anticipated to be
+        either (1) dumping to file via :func:`sphobjinv.fileops.writebytes`
+        or (2) compressing via :func:`sphobjinv.zlib.compress`,
+        both of which take |bytes| input.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Generate |bytes| with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Generate |bytes| with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        b
+
+            |bytes| -- Inventory in plaintext |objects.inv| format
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         # Rely on SuperDataObj to proof expand/contract args
         # Extra empty string at the end puts a newline at the end
         # of the generated string, consistent with files
@@ -328,13 +451,76 @@ class Inventory(object):
                          self.header_zlib],
                         (obj.data_line(expand=expand, contract=contract)
                          for obj in self.objects),
-                        [''])
+                        [''])   # DO want trailing newline
 
         return '\n'.join(striter).encode('utf-8')
 
     def suggest(self, name, *, thresh=50, with_index=False,
                 with_score=False):
-        """Suggest objects in the inventory to match a name."""
+        r"""Suggest objects in the inventory to match a name.
+
+        :meth:`~Inventory.suggest` makes use of
+        the powerful pattern-matching library |fuzzywuzzy|_
+        to identify potential matches to the given `name`
+        within the inventory.
+        The search is performed over the |list| of |str|
+        generated by :meth:`~objects_rst`.
+
+        `thresh` defines the minimum |fuzzywuzzy|_ match quality
+        (an integer ranging from 0 to 100)
+        required for a given object to be included
+        in the results list.
+        Can be any float value,
+        but best results are generally obtained
+        with values between 50 and 80,
+        depending on the number of objects in the inventory,
+        the confidence of the user in the match
+        between `name` and the object(s) of interest,
+        and the desired fidelity of the search results to `name`.
+
+        Parameters
+        ----------
+        name
+
+            |str| -- Object name for |fuzzywuzzy|_ pattern matching
+
+        thresh
+
+            |float| -- |fuzzywuzzy|_ match quality threshold
+
+        with_index
+
+            |bool| -- Include with each matched name
+            its index within :attr:`Inventory.objects`
+
+        with_score
+
+            |bool| -- Include with each matched name
+            its |fuzzywuzzy|_ match quality score
+
+        Returns
+        -------
+        res_l
+
+            |list|
+
+            If both `with_index` and `with_score`
+            are |False|, members are the |str|
+            :meth:`SuperDataObj.as_rst()
+            <sphobjinv.data.SuperDataObj.as_rst>`
+            representations of matching objects.
+
+            If either is |True|, members are |tuple|\ s
+            of the indicated match results:
+
+            `with_index == True`: |cour|\ (as_rst, index)\ |/cour|
+
+            `with_score == True`: |cour|\ (as_rst, score)\ |/cour|
+
+            `with_index == with_score == True`:
+            |cour|\ (as_rst, score, index)\ |/cour|
+
+        """
         import re
         import warnings
 

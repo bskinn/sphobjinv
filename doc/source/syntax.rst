@@ -27,6 +27,8 @@ the template:
     # Project: <project name>
     # Version: <full version number>
 
+.. _syntax-mouseover-example:
+
 The above project name and version are used to populate mouseovers for
 the |isphx| cross-references:
 
@@ -77,9 +79,14 @@ be exactly:
 ``{dispname}``
     Default cross-reference text to be displayed in compiled documentation.
 
+.. note::
+
+    The above fields MUST NOT contain spaces,
+    except for ``{dispname}`` which MAY contain them.
+
 **For illustration**, the following is the entry for the
 :meth:`join() <str.join>` method of the :class:`str` class in the
-Python 3.5 ``objects.inv``, broken out field-by-field:
+Python 3.5 |objects.inv|, broken out field-by-field:
 
 .. code-block:: none
 

@@ -4,11 +4,6 @@ This module is part of ``sphobjinv``,
 a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
 
-.. note::
-
-    Objects documented here MAY or MAY NOT be part of the official
-    ``sphobjinv`` :doc:`API </api/formal>`.
-
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
