@@ -1,23 +1,34 @@
-# ----------------------------------------------------------------------------
-# Name:        cmdline
-# Purpose:     CLI module for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*CLI module for* ``sphobjinv``.
 
-"""CLI module for sphobjinv."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+.. note::
+
+    This module is NOT part of the public API for ``sphobjinv``.
+    Its entire contents should be considered implementation detail.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    17 May 2016
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 import argparse as ap
 import os
@@ -35,22 +46,22 @@ VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
            "Documentation:"
            " http://sphobjinv.readthedocs.io\n")
 
-# Subparser selectors
+# Subparser selectors and argparse param for storing subparser name
 CONVERT = 'convert'
 SUGGEST = 'suggest'
 SUBPARSER_NAME = 'sprs_name'
 
-# Convert subparser mode var and choices
+# Convert subparser 'mode' param and choices
 MODE = 'mode'
 ZLIB = 'zlib'
 PLAIN = 'plain'
 JSON = 'json'
 
-# Source/destination vars
+# Source/destination params
 INFILE = 'infile'
 OUTFILE = 'outfile'
 
-# Convert subparser optionals
+# Convert subparser optional params
 QUIET = 'quiet'
 EXPAND = 'expand'
 CONTRACT = 'contract'
@@ -97,7 +108,7 @@ def yesno_prompt(prompt):
     return resp
 
 
-def _getparser():
+def getparser():
     """Generate argument parser.
 
     Returns
@@ -465,7 +476,7 @@ def main():
         sys.argv.append('-h')
 
     # Parse commandline arguments
-    prs = _getparser()
+    prs = getparser()
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
