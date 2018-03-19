@@ -52,10 +52,11 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    CLI Implementation (non-API) <modules/cmdline>
 
 
-.. Indices and tables
-.. ==================
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+Indices and Tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 

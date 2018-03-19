@@ -162,6 +162,10 @@ rst_epilog = """
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/dev/LICENSE.txt
 
+.. |fuzzywuzzy| replace:: ``fuzzywuzzy``
+
+.. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
+
 .. |br| raw:: html
 
     <br />

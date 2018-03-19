@@ -11,6 +11,4 @@ sphobjinv.inventory
 
 .. |DataObjStr| replace:: :class:`~sphobjinv.data.DataObjStr`
 
-.. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
-.. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
