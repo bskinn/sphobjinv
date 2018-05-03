@@ -158,6 +158,8 @@ rst_epilog = """
 
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
 
+.. |Inventory| replace:: :class:`~sphobjinv.inventory.Inventory`
+
 .. |license_txt| replace:: LICENSE.txt
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/dev/LICENSE.txt

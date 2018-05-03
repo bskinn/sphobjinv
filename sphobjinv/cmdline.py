@@ -471,7 +471,26 @@ def resolve_outpath(out_path, in_path, params):
 
 
 def import_infile(in_path):
-    """Attempt import of indicated file."""
+    """Attempt import of indicated file.
+
+    Convenience function wrapping attempts to load an
+    |Inventory| from a local path.
+
+    Parameters
+    ----------
+    in_path
+
+        |str| -- Path to input file
+
+    Returns
+    -------
+    inv
+
+        |Inventory| or |None| -- If instantiation with the file at
+        `in_path` succeeds, the resulting |Inventory| instance;
+        otherwise, |None|
+
+    """
     from .fileops import readjson
     from .inventory import Inventory as Inv
 
@@ -493,7 +512,7 @@ def import_infile(in_path):
 
 
 def write_plaintext(inv, path, *, expand=False, contract=False):
-    """Write plaintext from Inventory."""
+    """Write an |Inventory| to plaintext."""
     from .fileops import writebytes
 
     b_str = inv.data_file(expand=expand, contract=contract)
