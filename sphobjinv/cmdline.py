@@ -125,6 +125,12 @@ def _getparser():
                                    "on available options. "
                                    "Mode names can be abbreviated "
                                    "to their first two letters.")
+
+    # Enforce subparser as optional. No effect for 3.4 to 3.6;
+    # required a/o 3.7.0b4 due to change in default behavior, per:
+    # https://bugs.python.org/issue33109
+    sprs.required = False
+
     spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
                                   help=HELP_CO_PARSER,
                                   description=HELP_CO_PARSER)
