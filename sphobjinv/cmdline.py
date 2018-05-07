@@ -512,7 +512,43 @@ def import_infile(in_path):
 
 
 def write_plaintext(inv, path, *, expand=False, contract=False):
-    """Write an |Inventory| to plaintext."""
+    """Write an |Inventory| to plaintext.
+
+    Newlines are inserted in an OS-aware manner,
+    based on the value of :data:`os.linesep`.
+
+    Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written as plaintext
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writebytes
 
     b_str = inv.data_file(expand=expand, contract=contract)
@@ -520,7 +556,40 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
 
 
 def write_zlib(inv, path, *, expand=False, contract=False):
-    """Write zlib from Inventory."""
+    """Write an |Inventory| to zlib-compressed format.
+
+       Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written zlib-compressed
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writebytes
     from .zlib import compress
 
@@ -530,7 +599,43 @@ def write_zlib(inv, path, *, expand=False, contract=False):
 
 
 def write_json(inv, path, *, expand=False, contract=False):
-    """Write JSON from Inventory."""
+    """Write an |Inventory| to JSON.
+
+    Writes output via
+    :func:`fileops.writejson() <sphobjinv.fileops.writejson>`.
+
+    Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written zlib-compressed
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writejson
 
     json_dict = inv.json_dict(expand=expand, contract=contract)
