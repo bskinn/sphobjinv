@@ -4,6 +4,12 @@
 Creating and Using a Custom objects.inv
 =======================================
 
+.. warning::
+
+    This page is outdated. While the method remains sound
+    for ``sphobjinv`` v2.0, the new features added make
+    a different workflow preferable.
+
  1. Identify the head of the URI to the documentation. |br| |br|
 
  2. Create the custom ``objects.inv`` file.
