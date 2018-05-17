@@ -1,25 +1,29 @@
-# ----------------------------------------------------------------------------
-# Name:        __init__
-# Purpose:     Package definition module for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""``sphobjinv`` *package definition module*.
 
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
 
-"""Definition file for root of sphobjinv."""
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
 
+**File Created**
+    17 May 2016
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 from __future__ import absolute_import
 

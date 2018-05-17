@@ -1,23 +1,34 @@
-# ----------------------------------------------------------------------------
-# Name:        cmdline
-# Purpose:     CLI module for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*CLI module for* ``sphobjinv``.
 
-"""CLI module for sphobjinv."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+.. note::
+
+    This module is NOT part of the public API for ``sphobjinv``.
+    Its entire contents should be considered implementation detail.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    17 May 2016
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 import argparse as ap
 import os
@@ -25,8 +36,12 @@ import sys
 
 from . import __version__
 
-# Version arg and helpers
+# ### Version arg and helpers
+#: Optional argument name for use with the base
+#: argument parser, to show version &c. info, and exit
 VERSION = 'version'
+
+#: Version &c. output blurb
 VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
            "Copyright (c) Brian Skinn 2016-2018\n"
            "License: The MIT License\n\n"
@@ -35,76 +50,213 @@ VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
            "Documentation:"
            " http://sphobjinv.readthedocs.io\n")
 
-# Subparser selectors
+# ### Subparser selectors and argparse param for storing subparser name
+#: Subparser name for inventory file conversions; stored in
+#: :data:`SUBPARSER_NAME` when selected
 CONVERT = 'convert'
+
+#: Subparser name for inventory object suggestions; stored in
+#: :data:`SUBPARSER_NAME` when selected
 SUGGEST = 'suggest'
+
+#: Param for storing subparser name
+#: (:data:`CONVERT` or :data:`SUGGEST`)
 SUBPARSER_NAME = 'sprs_name'
 
-# Convert subparser mode var and choices
-MODE = 'mode'
-ZLIB = 'zlib'
-PLAIN = 'plain'
-JSON = 'json'
-
-# Source/destination vars
-INFILE = 'infile'
-OUTFILE = 'outfile'
-
-# Convert subparser optionals
-QUIET = 'quiet'
-EXPAND = 'expand'
-CONTRACT = 'contract'
-OVERWRITE = 'overwrite'
+# ### Common URL argument for both subparsers
+#: Optional argument name for use with both :data:`CONVERT` and
+#: :data:`SUGGEST` subparsers, indicating that
+#: :data:`INFILE` is to be treated as a URL
+#: rather than a local file path
 URL = 'url'
 
-# Suggest subparser params
+# ### Conversion subparser: 'mode' param and choices
+#: Positional argument name for use with :data:`CONVERT` subparser,
+#: indicating output file format
+#: (:data:`ZLIB`, :data:`PLAIN` or :data:`JSON`)
+MODE = 'mode'
+
+#: Argument value for :data:`CONVERT` :data:`MODE`,
+#: to output a :mod:`zlib`-compressed inventory
+ZLIB = 'zlib'
+
+#: Argument value for :data:`CONVERT` :data:`MODE`,
+#: to output a plaintext inventory
+PLAIN = 'plain'
+
+#: Argument value for :data:`CONVERT` :data:`MODE`,
+#: to output an inventory as JSON
+JSON = 'json'
+
+# ### Source/destination params
+#: Required positional argument name for use with both :data:`CONVERT` and
+#: :data:`SUGGEST` subparsers, holding the path
+#: (or URL, if :data:`URL` is specified)
+#: to the input file
+INFILE = 'infile'
+
+#: Optional positional argument name
+#: for use with the :data:`CONVERT` subparser,
+#: holding the path to the output file
+#: (:data:`DEF_BASENAME` and the appropriate item from :data:`DEF_OUT_EXT`
+#: are used if this argument is not provided)
+OUTFILE = 'outfile'
+
+# ### Convert subparser optional params
+#: Optional argument name for use with the :data:`CONVERT` subparser,
+#: indicating to suppress console output
+QUIET = 'quiet'
+
+#: Optional argument name for use with the :data:`CONVERT` subparser,
+#: indicating to expand URI and display name
+#: abbreviations in the generated output file
+EXPAND = 'expand'
+
+#: Optional argument name for use with the :data:`CONVERT` subparser,
+#: indicating to contract URIs and display names
+#: to abbreviated forms in the generated output file
+CONTRACT = 'contract'
+
+#: Optional argument name for use with the :data:`CONVERT` subparser,
+#: indicating to overwrite any existing output
+#: file without prompting
+OVERWRITE = 'overwrite'
+
+# ### Suggest subparser params
+#: Positional argument name for use with the :data:`SUGGEST` subparser,
+#: holding the search term for |fuzzywuzzy|_ text matching
 SEARCH = 'search'
+
+#: Optional argument name for use with the :data:`SUGGEST` subparser,
+#: taking the minimum desired |fuzzywuzzy|_ match quality
+#: as one required argument
 THRESH = 'thresh'
+
+#: Optional argument name for use with the :data:`SUGGEST` subparser,
+#: indicating to print the location index of each returned object
+#: within :data:`INFILE` along with the object domain/role/name
+#: (may be specified with :data:`SCORE`)
 INDEX = 'index'
+
+#: Optional argument name for use with the :data:`SUGGEST` subparser,
+#: indicating to print the |fuzzywuzzy|_ score of each returned object
+#: within :data:`INFILE` along with the object domain/role/name
+#: (may be specified with :data:`INDEX`)
 SCORE = 'score'
+
+#: Optional argument name for use with the :data:`SUGGEST` subparser,
+#: indicating to print all returned objects, regardless of the
+#: number returned, without asking for confirmation
 ALL = 'all'
 
-# Helper strings
+# ### Helper strings
+#: Help text for the :data:`CONVERT` subparser
 HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
                   "plaintext, or JSON formats.")
+
+#: Help text for the :data:`SUGGEST` subparser
 HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
                   "for desired object(s).")
 
-DEF_BASENAME = 'objects'
-DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
+#: Help text for default extensions for the various conversion types
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
-# Suggest list length above which to prompt for confirmation
+# ### Defaults for an unspecified OUTFILE
+#: Default base name for an unspecified :data:`OUTFILE`
+DEF_BASENAME = 'objects'
+
+#: Default extensions for an unspecified :data:`OUTFILE`
+DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
+
+# ### Useful constants
+#: Number of returned objects from a :data:`SUGGEST` subparser invocation
+#: above which user will be prompted for confirmation to print the results
+#: (unless :data:`ALL` is specified)
 SUGGEST_CONFIRM_LENGTH = 30
 
 
 def selective_print(thing, params):
-    """Print `thing` only if not `QUIET`."""
+    """Print `thing` if not in quiet mode.
+
+    Quiet mode is indicated by the value at the :data:`QUIET` key
+    within `params`
+
+    Parameters
+    ----------
+    thing
+
+        *any* -- Object to be printed
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
     if (not params[SUBPARSER_NAME][:2] == 'co' or not params[QUIET]):
         print(thing)
 
 
 def err_format(exc):
-    """Pretty-format an exception."""
+    r"""Pretty-format an exception.
+
+    Parameters
+    ----------
+    exc
+
+        :class:`Exception` -- Exception instance to pretty-format
+
+    Returns
+    -------
+    pretty_exc
+
+        |str| -- Exception type and message formatted as
+        |cour|\ '{type}: {message}'\ |/cour|
+
+    """
     return '{0}: {1}'.format(type(exc).__name__, str(exc))
 
 
 def yesno_prompt(prompt):
-    """Query user for yes/no confirmation."""
+    r"""Query user at `stdin` for yes/no confirmation.
+
+    Uses :func:`input`, so will hang if used programmatically
+    unless `stdin` is suitably mocked.
+
+    The value returned from :func:`input` must satisfy either
+    |cour|\ resp.lower() == 'n'\ |/cour| or
+    |cour|\ resp.lower() == 'y'\ |/cour|,
+    or else the query will be repeated *ad infinitum*.
+    This function does **NOT** augment `prompt`
+    to indicate the constraints on the accepted values.
+
+    Parameters
+    ----------
+    prompt
+
+        |str| -- Prompt to display to user that
+        requests a 'Y' or 'N' response
+
+    Returns
+    -------
+    resp
+
+        |str| -- User response
+
+    """
     resp = ''
     while not (resp.lower() == 'n' or resp.lower() == 'y'):
         resp = input(prompt)
     return resp
 
 
-def _getparser():
+def getparser():
     """Generate argument parser.
 
     Returns
     -------
     prs
 
-        :class:`ArgumentParser` -- Parser for commandline usage
+        :class:`~argparse.ArgumentParser` -- Parser for commandline usage
         of ``sphobjinv``
 
     """
@@ -222,8 +374,30 @@ def _getparser():
 
 
 def resolve_inpath(in_path):
-    """Resolve the input file, handling invalid values."""
-    # Path MUST be to a file
+    """Resolve the input file, handling invalid values.
+
+    Currently, only checks for existence and not-directory.
+
+    Parameters
+    ----------
+    in_path
+
+        |str| -- Path to desired input file
+
+    Returns
+    ------
+    abs_path
+
+        |str| -- Absolute path to indicated file
+
+    Raises
+    ------
+    :exc:`FileNotFoundError`
+
+        If a file is not found at the given path
+
+    """
+    # Path MUST be to a file, that exists
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Indicated path is not a valid file')
 
@@ -232,7 +406,40 @@ def resolve_inpath(in_path):
 
 
 def resolve_outpath(out_path, in_path, params):
-    """Resolve the output file, handling mode-specific defaults."""
+    r"""Resolve the output location, handling mode-specific defaults.
+
+    If the output path or basename are not specified, they are
+    taken as the same as the input file. If the extension is
+    unspecified, it is taken as the appropriate mode-specific value
+    from :data:`DEF_OUT_EXT`.
+
+    If |cour|\ --URL\ |/cour| is passed, the input directory
+    is taken to be :func:`os.getcwd` and the input basename
+    is taken as :data:`DEF_BASENAME`.
+
+    Parameters
+    ----------
+    out_path
+
+        |str| or |None| -- Output location provided by the user,
+        or |None| if omitted
+
+    in_path
+
+        |str| -- For a local input file, its absolute path.
+        For a URL, the (possibly truncated) URL text.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    out_path
+
+        |str| -- Absolute path to the target output file
+
+    """
     mode = params[MODE]
 
     if params[URL]:
@@ -270,7 +477,26 @@ def resolve_outpath(out_path, in_path, params):
 
 
 def import_infile(in_path):
-    """Attempt import of indicated file."""
+    """Attempt import of indicated file.
+
+    Convenience function wrapping attempts to load an
+    |Inventory| from a local path.
+
+    Parameters
+    ----------
+    in_path
+
+        |str| -- Path to input file
+
+    Returns
+    -------
+    inv
+
+        |Inventory| or |None| -- If instantiation with the file at
+        `in_path` succeeds, the resulting |Inventory| instance;
+        otherwise, |None|
+
+    """
     from .fileops import readjson
     from .inventory import Inventory as Inv
 
@@ -292,7 +518,43 @@ def import_infile(in_path):
 
 
 def write_plaintext(inv, path, *, expand=False, contract=False):
-    """Write plaintext from Inventory."""
+    """Write an |Inventory| to plaintext.
+
+    Newlines are inserted in an OS-aware manner,
+    based on the value of :data:`os.linesep`.
+
+    Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written as plaintext
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writebytes
 
     b_str = inv.data_file(expand=expand, contract=contract)
@@ -300,7 +562,40 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
 
 
 def write_zlib(inv, path, *, expand=False, contract=False):
-    """Write zlib from Inventory."""
+    """Write an |Inventory| to zlib-compressed format.
+
+       Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written zlib-compressed
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writebytes
     from .zlib import compress
 
@@ -310,7 +605,43 @@ def write_zlib(inv, path, *, expand=False, contract=False):
 
 
 def write_json(inv, path, *, expand=False, contract=False):
-    """Write JSON from Inventory."""
+    """Write an |Inventory| to JSON.
+
+    Writes output via
+    :func:`fileops.writejson() <sphobjinv.fileops.writejson>`.
+
+    Calling with both `expand` and `contract` as |True| is invalid.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written zlib-compressed
+
+    path
+
+        |str| -- Path to output file
+
+    expand
+
+        |bool| *(optional)* -- Generate output with any
+        :data:`~sphobjinv.data.SuperDataObj.uri` or
+        :data:`~sphobjinv.data.SuperDataObj.dispname`
+        abbreviations expanded
+
+    contract
+
+        |bool| *(optional)* -- Generate output with abbreviated
+        :data:`~sphobjinv.data.SuperDataObj.uri` and
+        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+    Raises
+    ------
+    ValueError
+
+        If both `expand` and `contract` are |True|
+
+    """
     from .fileops import writejson
 
     json_dict = inv.json_dict(expand=expand, contract=contract)
@@ -471,7 +802,7 @@ def main():
         sys.argv.append('-h')
 
     # Parse commandline arguments
-    prs = _getparser()
+    prs = getparser()
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 

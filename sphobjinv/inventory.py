@@ -1,24 +1,27 @@
-"""
-Module defining the Inventory object for holding entire Sphinx inventories.
+r"""``sphobjinv`` *data class for full inventories*.
 
-Name:        inventory.py
-Exposes:     SourceTypes (Enum) -- Types of source objects intelligible
-                                   to an Inventory
-             Inventory (class)  -- Object providing methods for parsing,
-                                   manipulating, and exporting Sphinx
-                                   objects.inv inventories.
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
 
-Author:      Brian Skinn (bskinn@alum.mit.edu)
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
 
-Created:     7 Dec 2017
-Copyright:   (c) Brian Skinn 2016-2018
-License:     The MIT License; see "LICENSE.txt" for full license terms
-             and contributor agreement.
+**File Created**
+    7 Dec 2017
 
-This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-encoding and decoding objects.inv files for use with intersphinx.
+**Copyright**
+    \(c) Brian Skinn 2016-2018
 
-http://www.github.com/bskinn/sphobjinv
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
 
 """
 
@@ -30,39 +33,156 @@ from .data import DataObjStr
 
 
 class HeaderFields(Enum):
-    """Enum for regex groups of objects.inv header data."""
+    """|Enum| for various inventory-level data items.
 
+    A subset of these |Enum| values is used in various Regex,
+    JSON, and string formatting contexts within :class:`Inventory`
+    and :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
+
+    """
+
+    #: Project name associated with an inventory
     Project = 'project'
+
+    #: Project version associated with an inventory
     Version = 'version'
+
+    #: Number of objects contained in the inventory
     Count = 'count'
-    Objects = 'objects'
+
+    #: The |str| value of this |Enum| member is accepted as a root-level
+    #: key in a |dict| to be imported into an :class:`Inventory`.
+    #: The corresponding value in the |dict| may contain any arbitrary data.
+    #: Its possible presence is accounted for in
+    #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
+    #:
+    #: The data associated with this key are **ignored**
+    #: during import into an :class:`Inventory`.
     Metadata = 'metadata'
 
 
 class SourceTypes(Enum):
-    """Enum for the import mode used in instantiating an Inventory.
+    """|Enum| for the import mode used in instantiating an |Inventory|.
 
-    Since Enum keys remain ordered in definition sequence, the
-    definition order here defines the order in which Inventory
-    objects attempt to parse source objects passed to __init__().
+    Since |Enum| keys iterate in definition order, the
+    definition order here defines the order in which |Inventory|
+    objects attempt to parse a source object passed to
+    :class:`Inventory.__init__() <Inventory>` either as a positional argument
+    or via the generic `source` keyword argument.
+
+    This order **DIFFERS** from the documentation order, which is
+    alphabetical.
 
     """
 
+    #: No source; |Inventory| was instantiated with
+    #: :data:`~Inventory.project` and :data:`~Inventory.version`
+    #: as empty strings and
+    #: :data:`~Inventory.objects` as an empty |list|.
     Manual = 'manual'
+
+    #: Instantiation from a plaintext |objects.inv| |bytes|.
     BytesPlaintext = 'bytes_plain'
+
+    #: Instantiation from a zlib-compressed
+    #: |objects.inv| |bytes|.
     BytesZlib = 'bytes_zlib'
+
+    #: Instantiation from a plaintext |objects.inv| file on disk.
     FnamePlaintext = 'fname_plain'
+
+    #: Instantiation from a zlib-compressed |objects.inv| file on disk.
     FnameZlib = 'fname_zlib'
+
+    #: Instantiation from a |dict| validated against
+    #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
     DictJSON = 'dict_json'
+
+    #: Instantiation from a zlib-compressed |objects.inv| file
+    #: downloaded from a URL.
     URL = 'url'
 
 
 @attr.s(slots=True, cmp=False)
 class Inventory(object):
-    """Entire contents of an objects.inv inventory.
+    r"""Entire contents of an |objects.inv| inventory.
 
-    All information stored within as str, even if imported
-    from a bytes source.
+    All information is stored internally as |str|,
+    even if imported from a |bytes| source.
+
+    All arguments except `count_error` are used to specify the source
+    from which the |Inventory| contents are to be populated.
+    **At most ONE** of these source arguments may be other than |None|.
+
+    The `count_error` argument is only relevant to the `dict_json` source type.
+
+    `source`
+
+        The |Inventory| will attempt to parse the indicated
+        source object as each of the below types in sequence,
+        **except** for `url`.
+
+        This argument is included mainly as a convenience
+        feature for use in interactive sessions, as
+        invocations of the following form implicitly
+        populate `source`, as the first positional argument::
+
+            >>> inv = Inventory(src_obj)
+
+        In most cases, for clarity it is recommended
+        that programmatic instantiation of |Inventory| objects
+        utilize the below format-specific arguments.
+
+    `plaintext`
+
+        Object is to be parsed as the |bytes|
+        plaintext contents of an |objects.inv| inventory.
+
+    `zlib`
+
+        Object is to be parsed as the |bytes|
+        zlib-compressed contents of an
+        |objects.inv| inventory.
+
+    `fname_plain`
+
+        Object is the |str| path to a file containing
+        the plaintext contents of an |objects.inv| inventory.
+
+    `fname_zlib`
+
+        Object is the |str| path to a file containing
+        the zlib-compressed contents of an
+        |objects.inv| inventory.
+
+    `dict_json`
+
+        Object is a |dict| containing the contents
+        of an |objects.inv| inventory, conforming to
+        the JSON schema of
+        :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
+
+        If `count_error` is passed as |True|,
+        then a :exc:`ValueError` is raised if
+        the number of objects found in the |dict|
+        does not match the value associated with
+        its `count` key.
+        If `count_error` is passed as |False|,
+        an object count mismatch is ignored.
+
+    `url`
+
+        Object is a |str| URL to a zlib-compressed
+        |objects.inv| file.
+        Any URL type supported by
+        :mod:`urllib.request` SHOULD work; only
+        |cour|\ http:\ |/cour| and
+        |cour|\ file:\ |/cour|
+        have been directly tested, however.
+
+        No authentication is supported at this time.
+
+    **Members**
 
     """
 
@@ -89,24 +209,79 @@ class Inventory(object):
                            validator=attr.validators.instance_of(bool))
 
     # Actual regular attributes
+    #: |str| project display name for the inventory
+    #: (see :ref:`here <syntax-mouseover-example>`).
     project = attr.ib(init=False, default=None)
+
+    #: |str| project display version for the inventory
+    #: (see :ref:`here <syntax-mouseover-example>`).
     version = attr.ib(init=False, default=None)
+
+    #: |list| of |DataObjStr| representing the
+    #: data objects of the inventory.
+    #: Can be edited directly to change the inventory contents.
+    #: Undefined/random behavior/errors will result if the type
+    #: of the elements is anything other than |DataObjStr|.
     objects = attr.ib(init=False, default=attr.Factory(list))
+
+    #: :class:`SourceTypes` |Enum| value indicating the type of
+    #: source from which the instance was generated.
     source_type = attr.ib(init=False, default=None)
 
     # Helper strings for inventory datafile output
+    #: Preamble line for v2 |objects.inv| header
     header_preamble = '# Sphinx inventory version 2'
+
+    #: Project line |str.format| template for |objects.inv| header
     header_project = '# Project: {project}'
+
+    #: Version line |str.format| template for |objects.inv| header
     header_version = '# Version: {version}'
+
+    #: zlib compression line for v2 |objects.inv| header
     header_zlib = '# The remainder of this file is compressed using zlib.'
 
     @property
     def count(self):
-        """Return the number of objects currently in inventory."""
+        """Count of objects currently in inventory."""
         return len(self.objects)
 
     def json_dict(self, expand=False, contract=False):
-        """Generate a flat dict representation of the inventory."""
+        """Generate a flat |dict| representation of the inventory.
+
+        The returned |dict| matches the
+        schema of :data:`sphobjinv.schema.json_schema`.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Return |dict| with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Return |dict| with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        d
+
+            |dict| -- Inventory data; keys and values are all |str|
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         d = {HeaderFields.Project.value: self.project,
              HeaderFields.Version.value: self.version,
              HeaderFields.Count.value: self.count}
@@ -119,7 +294,43 @@ class Inventory(object):
 
     @property
     def objects_rst(self):
-        """Generate a list of the objects in a reST-like representation."""
+        r"""|list| of objects formatted in a |str| reST-like representation.
+
+        The format of each |str| in the |list| is given by
+        :class:`data.SuperDataObj.rst_fmt
+        <sphobjinv.data.SuperDataObj.rst_fmt>`.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Return |str|\ s with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Return |str|\ s with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        obj_l
+
+            |list| of |str|
+            -- Inventory object data in reST-like format
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         return list(_.as_rst for _ in self.objects)
 
     def __str__(self):  # pragma: no cover
@@ -187,7 +398,44 @@ class Inventory(object):
                 return
 
     def data_file(self, *, expand=False, contract=False):
-        """Generate a plaintext objects.txt as bytes."""
+        """Generate a plaintext |objects.inv| as |bytes|.
+
+        |bytes| is used here as the output type
+        since the most common use cases are anticipated to be
+        either (1) dumping to file via :func:`sphobjinv.fileops.writebytes`
+        or (2) compressing via :func:`sphobjinv.zlib.compress`,
+        both of which take |bytes| input.
+
+        Calling with both `expand` and `contract` as |True| is invalid.
+
+        Parameters
+        ----------
+        expand
+
+            |bool| *(optional)* -- Generate |bytes| with any
+            :data:`~sphobjinv.data.SuperDataObj.uri` or
+            :data:`~sphobjinv.data.SuperDataObj.dispname`
+            abbreviations expanded
+
+        contract
+
+            |bool| *(optional)* -- Generate |bytes| with abbreviated
+            :data:`~sphobjinv.data.SuperDataObj.uri` and
+            :data:`~sphobjinv.data.SuperDataObj.dispname` values
+
+        Returns
+        -------
+        b
+
+            |bytes| -- Inventory in plaintext |objects.inv| format
+
+        Raises
+        ------
+        ValueError
+
+            If both `expand` and `contract` are |True|
+
+        """
         # Rely on SuperDataObj to proof expand/contract args
         # Extra empty string at the end puts a newline at the end
         # of the generated string, consistent with files
@@ -203,13 +451,76 @@ class Inventory(object):
                          self.header_zlib],
                         (obj.data_line(expand=expand, contract=contract)
                          for obj in self.objects),
-                        [''])
+                        [''])   # DO want trailing newline
 
         return '\n'.join(striter).encode('utf-8')
 
     def suggest(self, name, *, thresh=50, with_index=False,
                 with_score=False):
-        """Suggest objects in the inventory to match a name."""
+        r"""Suggest objects in the inventory to match a name.
+
+        :meth:`~Inventory.suggest` makes use of
+        the powerful pattern-matching library |fuzzywuzzy|_
+        to identify potential matches to the given `name`
+        within the inventory.
+        The search is performed over the |list| of |str|
+        generated by :meth:`~objects_rst`.
+
+        `thresh` defines the minimum |fuzzywuzzy|_ match quality
+        (an integer ranging from 0 to 100)
+        required for a given object to be included
+        in the results list.
+        Can be any float value,
+        but best results are generally obtained
+        with values between 50 and 80,
+        depending on the number of objects in the inventory,
+        the confidence of the user in the match
+        between `name` and the object(s) of interest,
+        and the desired fidelity of the search results to `name`.
+
+        Parameters
+        ----------
+        name
+
+            |str| -- Object name for |fuzzywuzzy|_ pattern matching
+
+        thresh
+
+            |float| -- |fuzzywuzzy|_ match quality threshold
+
+        with_index
+
+            |bool| -- Include with each matched name
+            its index within :attr:`Inventory.objects`
+
+        with_score
+
+            |bool| -- Include with each matched name
+            its |fuzzywuzzy|_ match quality score
+
+        Returns
+        -------
+        res_l
+
+            |list|
+
+            If both `with_index` and `with_score`
+            are |False|, members are the |str|
+            :meth:`SuperDataObj.as_rst()
+            <sphobjinv.data.SuperDataObj.as_rst>`
+            representations of matching objects.
+
+            If either is |True|, members are |tuple|\ s
+            of the indicated match results:
+
+            `with_index == True`: |cour|\ (as_rst, index)\ |/cour|
+
+            `with_score == True`: |cour|\ (as_rst, score)\ |/cour|
+
+            `with_index == with_score == True`:
+            |cour|\ (as_rst, score, index)\ |/cour|
+
+        """
         import re
         import warnings
 
@@ -401,7 +712,7 @@ class Inventory(object):
                     raise ValueError(err_str) from e
 
         # Complain if remaining objects are anything other than the
-        # inventory-level metadata
+        # valid inventory-level header keys
         hf_values = set(e.value for e in HeaderFields)
         check_value = self._count_error and set(d.keys()).difference(hf_values)
         if check_value:
@@ -412,3 +723,7 @@ class Inventory(object):
 
         # Should be good to return
         return project, version, objects
+
+
+if __name__ == '__main__':    # pragma: no cover
+    print('Module not executable.')

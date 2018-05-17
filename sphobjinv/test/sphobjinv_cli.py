@@ -18,7 +18,6 @@
 import os
 import os.path as osp
 import re
-import sys
 import unittest as ut
 
 try:
@@ -45,7 +44,8 @@ from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
 from .sphobjinv_base import copy_json
 from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import run_cmdline_test, sphinx_load_test
-from .sphobjinv_base import dir_change, stdio_mgr
+from .sphobjinv_base import dir_change
+from stdio_mgr import stdio_mgr
 
 
 CLI_TIMEOUT = 2.0
@@ -272,8 +272,6 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_OverwritePromptAndBehavior(self):
         """Confirm overwrite prompt works properly."""
-        import sys
-
         from sphobjinv import Inventory as Inv
 
         src1 = res_path('objects_attrs.inv')
@@ -282,7 +280,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         args = ['convert', 'plain', src1, dst]
 
         # Initial decompress
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, args, suffix='initial')
 
             with self.subTest('initial_stdout'):
@@ -291,7 +289,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         # First overwrite, declining clobber
         args[2] = src2
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             in_.append('n\n')
             run_cmdline_test(self, args, suffix='no_overwrite')
 
@@ -302,7 +300,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             self.assertEqual('attrs', Inv(dst).project)
 
         # Second overwrite, with clobber
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             in_.append('y\n')
             run_cmdline_test(self, args, suffix='overwrite')
 
@@ -315,7 +313,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestNoResults(self):
         """Confirm suggest w/no found results works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -327,7 +325,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestNameOnly(self):
         """Confirm name-only suggest works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -341,7 +339,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestWithIndex(self):
         """Confirm with_index suggest works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -355,7 +353,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestWithScore(self):
         """Confirm with_index suggest works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -369,7 +367,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestWithScoreAndIndex(self):
         """Confirm with_index suggest works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -383,7 +381,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_SuggestLongListLinesCount(self):
         """Confirm with_index suggest works."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
                                     'instance',
@@ -393,7 +391,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             with self.subTest('count_all_arg'):
                 self.assertEqual(out_.getvalue().count('\n'), 56)
 
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             in_.append('y\n')
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
@@ -405,7 +403,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 # Extra newline due to input() query
                 self.assertEqual(out_.getvalue().count('\n'), 57)
 
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             in_.append('n\n')
             run_cmdline_test(self, ['suggest',
                                     res_path(RES_FNAME_BASE + CMP_EXT),
@@ -424,7 +422,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_NoArgsShowsHelp(self):
         """Confirm help shown when invoked with no arguments."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, [])
 
             with self.subTest('help_displayed'):
@@ -437,7 +435,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT * 4)
     def test_Cmdline_SuggestNameOnlyFromURL(self):
         """Confirm name-only suggest works from URL."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest', '-u',
                                     REMOTE_URL.format('attrs'),
                                     'instance',
@@ -558,7 +556,7 @@ class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT * 4)
     def test_Cmdline_BadURLArg(self):
         """Confirm proper error behavior when a bad URL is passed."""
-        with stdio_mgr(sys) as (in_, out_, err_):
+        with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['convert', 'plain', '-u',
                                     REMOTE_URL.format('blarghers'),
                                     scr_path()],

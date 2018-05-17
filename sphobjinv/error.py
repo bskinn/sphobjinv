@@ -1,31 +1,42 @@
-# ----------------------------------------------------------------------------
-# Name:        error
-# Purpose:     Custom errors for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     5 Nov 2017
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "LICENSE.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-# ----------------------------------------------------------------------------
+r"""*Custom errors for* ``sphobjinv``.
 
-"""Module defining errors for sphobjinv."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    5 Nov 2017
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 
 class SphobjinvError(Exception):
-    """Exception superclass for the project."""
+    """Custom ``sphobjinv`` error superclass."""
 
 
 class VersionError(SphobjinvError):
-    """Attempting an operation on an unsupported version."""
+    """Raised when attempting an operation on an unsupported version.
+
+    The current version of ``sphobjinv`` only supports 'version 2'
+    |objects.inv| files (see :doc:`here </syntax>`).
+
+    """
 
 
 if __name__ == '__main__':    # pragma: no cover

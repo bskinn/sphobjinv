@@ -15,12 +15,13 @@
 
 import sys
 import os
+import os.path as osp
 import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, osp.abspath(osp.join(os.pardir, os.pardir)))
 
 # -- General configuration ------------------------------------------------
 
@@ -123,6 +124,8 @@ todo_include_todos = False
 rst_epilog = """
 .. |extlink| image:: /_static/extlink.svg
 
+.. |dag| replace:: :math:`^\dagger`
+
 .. |None| replace:: :obj:`None`
 
 .. |True| replace:: :obj:`True`
@@ -143,19 +146,43 @@ rst_epilog = """
 
 .. |bytes| replace:: :obj:`bytes`
 
-.. |unicode| replace:: :obj:`unicode`
-
 .. |bool| replace:: :obj:`bool`
 
 .. |dict| replace:: :obj:`dict`
 
 .. |re.compile| replace:: :func:`re.compile`
 
+.. |re| replace:: :doc:`re <python:library/re>`
+
+.. |Enum| replace:: :class:`~enum.Enum`
+
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
+
+.. |Inventory| replace:: :class:`~sphobjinv.inventory.Inventory`
+
+.. |license_txt| replace:: LICENSE.txt
+
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/dev/LICENSE.txt
+
+.. |fuzzywuzzy| replace:: ``fuzzywuzzy``
+
+.. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
 
 .. |br| raw:: html
 
     <br />
+
+.. |cour| raw:: html
+
+    <span style="font-family:courier;font-size:90%">
+
+.. |/cour| raw:: html
+
+    </span>
+
+.. |objects.inv| replace:: |cour|\ objects.inv\ |/cour|
+
+.. |str.format| replace:: :meth:`str.format`
 
 """
 
@@ -425,5 +452,6 @@ def isphx_subst(s):
     return isphx_objpath.format(isphx_objstr.format(s)) if isphx_local else None
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.5', isphx_subst('python'))
+    'python': ('https://docs.python.org/3.5', isphx_subst('python')),
+    'sphinx': ('http://www.sphinx-doc.org/en/stable', isphx_subst('sphinx')),
     }

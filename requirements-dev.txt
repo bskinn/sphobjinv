@@ -8,5 +8,7 @@ ipython
 jsonschema==2.6
 sphinx==1.6.5
 sphinx-rtd-theme==0.2.4
+stdio-mgr
 timeout-decorator==0.4.0
+twine
 wget

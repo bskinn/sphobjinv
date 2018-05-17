@@ -5,21 +5,21 @@ API
 
 The primary ``sphobjinv`` API consists of two pairs of functions:
 
- * :func:`~sphobjinv.fileops.readfile` / 
+ * :func:`~sphobjinv.fileops.readfile` /
    :func:`~sphobjinv.fileops.writefile` -- Read/write files from/to disk
    as |bytes|, for proper behavior of :mod:`zlib` (de)compression.
 
- * :func:`~sphobjinv.zlib.encode` / 
-   :func:`~sphobjinv.zlib.decode` -- Encode/decode the object data 
+ * :func:`~sphobjinv.zlib.encode` /
+   :func:`~sphobjinv.zlib.decode` -- Encode/decode the object data
    read from disk.
 
 Also exposed are two |re.compile| patterns, potentially useful in parsing
 **decoded data only**\ :
 
- * :data:`~sphobjinv.re.p_comments` -- Retrieves the 
+ * :data:`~sphobjinv.re.p_comments` -- Retrieves the
    `#`\ -prefixed comment lines
 
- * :data:`~sphobjinv.re.p_data` -- Retrieves all lines 
+ * :data:`~sphobjinv.re.p_data` -- Retrieves all lines
    not prefixed by `#`
 
 
@@ -29,7 +29,7 @@ The normal workflow would be:
 
         >>> import sphobjinv as soi
 
- #. Read the desired file data (compressed or uncompressed) with 
+ #. Read the desired file data (compressed or uncompressed) with
     :func:`~sphobjinv.fileops.readfile`::
 
         >>> fd = soi.readfile('/path/to/file')
@@ -39,7 +39,7 @@ The normal workflow would be:
 
         >>> data = soi.decode(fd)
 
- #. Write the desired file with :func:`~sphobjinv.fileops.writefile`, 
+ #. Write the desired file with :func:`~sphobjinv.fileops.writefile`,
     or otherwise use the resulting |bytes| data::
 
         >>> len(soi.p_data.findall(data))   # e.g., retrieve the number of object entries
@@ -48,14 +48,14 @@ The normal workflow would be:
         >>> soi.writefile('/path/to/new/file', data)
 
 
-**Members**
+.. toctree::
+    :maxdepth: 1
+    :caption: Formal API
 
-.. automodule:: sphobjinv.fileops
-    :members:
-
-.. automodule:: sphobjinv.zlib
-    :members:
-
-.. automodule:: sphobjinv.re
-    :members:
-
+    modules/data
+    modules/error
+    modules/fileops
+    modules/inventory
+    modules/re
+    modules/schema
+    modules/zlib

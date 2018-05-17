@@ -46,16 +46,17 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    :hidden:
 
    cmdline
-   api
    syntax
    customfile
+   api
+   CLI Implementation (non-API) <modules/cmdline>
 
 
 
-.. Indices and tables
-.. ==================
+Indices and Tables
+------------------
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
