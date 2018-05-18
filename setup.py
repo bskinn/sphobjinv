@@ -1,17 +1,34 @@
+import re
 from setuptools import setup
 
 from sphobjinv import __version__
 
+NAME='sphobjinv'
 
 def readme():
     with open('README.rst', 'r') as f:
-        return f.read()
+        content = f.read()
+
+    def content_update(content, pattern, sub):
+        return re.sub(pattern, sub, content, flags=re.M | re.I)
+
+    content = content_update(
+        content,
+        r'(?<=/readthedocs/{0}/)\S+?(?=\.svg$)'.format(NAME),
+        'v' + __version__)
+
+    content = content_update(
+        content,
+        r'(?<={0}\.readthedocs\.io/en/)\S+?(?=/)'.format(NAME),
+        'v' + __version__)
+
+    return content
 
 
 setup(
-    name='sphobjinv',
+    name=NAME,
     version=__version__,
-    description='Sphinx Objects.inv Encoder/Decoder',
+    description='Sphinx objects.inv Inspection/Manipulation Tool',
     long_description=readme(),
     url='https://github.com/bskinn/sphobjinv',
     license='MIT License',
