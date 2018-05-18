@@ -16,12 +16,10 @@ Sphinx Objects.inv Encoder/Decoder
 
 .. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg
 
-**This Version:**
+**Info:**
 
 .. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
     :target: http://sphobjinv.readthedocs.io/en/latest/
-
-**All Versions:**
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
