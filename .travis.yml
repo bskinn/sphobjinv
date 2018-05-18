@@ -1,0 +1,16 @@
+install:
+ - pip install -r requirements-travis.txt
+language: python
+python:
+ - 3.4
+ - 3.5
+ - 3.6
+ - 3.7-dev
+script:
+ - coverage run tests.py -a --testall
+ - flake8 sphobjinv
+ - cd doc
+ - make doctest
+ - cd ..
+ - echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.5' && codecov || echo "No codecov."
+

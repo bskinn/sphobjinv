@@ -1,26 +1,51 @@
-#-------------------------------------------------------------------------------
-# Name:        __init__
-# Purpose:     Package definition module for sphobjinv
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     17 May 2016
-# Copyright:   (c) Brian Skinn 2016-2018
-# License:     The MIT License; see "license.txt" for full license terms
-#                   and contributor agreement.
-#
-#       This file is part of Sphinx Objects.inv Encoder/Decoder, a toolkit for
-#       encoding and decoding objects.inv files for use with intersphinx.
-#
-#       http://www.github.com/bskinn/sphobjinv
-#
-#-------------------------------------------------------------------------------
+r"""``sphobjinv`` *package definition module*.
+
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    17 May 2016
+
+**Copyright**
+    \(c) Brian Skinn 2016-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 from __future__ import absolute_import
 
-from .sphobjinv import readfile, writefile, decode, encode
-from .sphobjinv import p_comments, p_data
+__all__ = ['readbytes', 'writebytes', 'readjson', 'writejson',
+           'compress', 'decompress',
+           'pb_comments', 'pb_data', 'pb_version', 'pb_project',
+           'p_data',
+           'DataFields', 'HeaderFields',
+           'SourceTypes',
+           'SphobjinvError', 'VersionError',
+           'DataObjStr', 'DataObjBytes',
+           'Inventory',
+           'json_schema']
 
-__version__ = '1.0.post1'
+from .data import DataObjStr, DataObjBytes, DataFields
+from .inventory import Inventory, SourceTypes, HeaderFields
+from .error import SphobjinvError, VersionError
+from .fileops import readbytes, writebytes, readjson, writejson
+from .re import pb_comments, pb_data, pb_version, pb_project
+from .re import p_data
+from .schema import json_schema
+from .zlib import compress, decompress
 
+
+__version__ = '2.0rc1'

@@ -3,6 +3,11 @@
 Command-Line Usage
 ==================
 
+.. warning::
+
+    This page is outdated. Do not rely on it for working with
+    ``sphobjinv`` v2.0
+
 On most systems, ``sphobjinv`` should automatically install with a command
 line / shell script inserted into {python}/Scripts and thus be executable
 from anywhere.
