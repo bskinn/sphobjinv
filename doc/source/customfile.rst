@@ -8,7 +8,8 @@ Creating and Using a Custom objects.inv
 
     This page is outdated. While the method remains sound
     for ``sphobjinv`` v2.0, the new features added make
-    a different workflow preferable.
+    a different workflow preferable in Step 2.
+
 
  1. Identify the head of the URI to the documentation. |br| |br|
 
@@ -30,7 +31,7 @@ Creating and Using a Custom objects.inv
         otherwise, one of the `built-in domains
         <http://www.sphinx-doc.org/en/stable/domains.html>`__ may suffice.
 
- 3. Encode the file with ``sphobjinv``. |br| |br|
+ 3. Compress the file with ``sphobjinv``. |br| |br|
 
  4. Transfer the encoded file to its distribution location.
 
