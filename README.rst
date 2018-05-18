@@ -1,19 +1,25 @@
 Sphinx Objects.inv Encoder/Decoder
 ==================================
 
+**Current Development Version:**
+
 .. image:: https://travis-ci.org/bskinn/sphobjinv.svg?branch=dev
     :target: https://travis-ci.org/bskinn/sphobjinv
 
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/dev/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
-.. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
-    :target: http://sphobjinv.readthedocs.io/en/latest/
+**Most Recent Stable Release:**
 
 .. image:: https://img.shields.io/pypi/v/sphobjinv.svg
     :target: https://pypi.org/project/sphobjinv
 
 .. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg
+
+**Info:**
+
+.. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
+    :target: http://sphobjinv.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt

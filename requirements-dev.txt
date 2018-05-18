@@ -6,6 +6,7 @@ flake8-docstrings==1.1.0
 fuzzywuzzy>=0.3
 ipython
 jsonschema==2.6
+restview
 sphinx==1.6.5
 sphinx-rtd-theme==0.2.4
 stdio-mgr

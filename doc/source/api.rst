@@ -3,6 +3,11 @@
 API
 ===
 
+.. warning::
+
+    This page is outdated. Do not rely on it for working with
+    ``sphobjinv`` v2.0
+
 The primary ``sphobjinv`` API consists of two pairs of functions:
 
  * :func:`~sphobjinv.fileops.readfile` /
