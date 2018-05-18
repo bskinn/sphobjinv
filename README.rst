@@ -9,7 +9,7 @@ Sphinx Objects.inv Encoder/Decoder
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/dev/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
-**Most Recent Release:**
+**Most Recent Stable Release:**
 
 .. image:: https://img.shields.io/pypi/v/sphobjinv.svg
     :target: https://pypi.org/project/sphobjinv
