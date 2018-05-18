@@ -413,7 +413,7 @@ def resolve_outpath(out_path, in_path, params):
     unspecified, it is taken as the appropriate mode-specific value
     from :data:`DEF_OUT_EXT`.
 
-    If |cour|\ --URL\ |/cour| is passed, the input directory
+    If :data:`URL` is passed, the input directory
     is taken to be :func:`os.getcwd` and the input basename
     is taken as :data:`DEF_BASENAME`.
 
@@ -649,7 +649,37 @@ def write_json(inv, path, *, expand=False, contract=False):
 
 
 def do_convert(inv, in_path, params):
-    """Carry out the conversion operation."""
+    r"""Carry out the conversion operation, including writing output.
+
+    If :data:`OVERWRITE` is passed and the output file
+    (the default location, or as passed to :data:`OUTFILE`)
+    exists, it will be overwritten without a prompt. Otherwise,
+    the user will be queried if it is desired to overwrite
+    the existing file.
+
+    If :data:`QUIET` is passed, nothing will be
+    printed to |cour|\ stdout\ |/cour|
+    (potentially useful for scripting),
+    and any existing output file will be overwritten
+    without prompting.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Inventory object to be output in the format
+        indicated by :data:`MODE`.
+
+    in_path
+
+        |str| -- For a local input file, its absolute path.
+        For a URL, the (possibly truncated) URL text.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
     mode = params[MODE]
 
     # Work up the output location
@@ -694,7 +724,36 @@ def do_convert(inv, in_path, params):
 
 
 def do_suggest(inv, params):
-    """Perform the suggest call and output the results."""
+    r"""Perform the suggest call and output the results.
+
+    Results are printed one per line.
+
+    If neither :data:`INDEX` nor :data:`SCORE` is specified,
+    the results are output without a header.
+    If either or both are specified,
+    the results are output in a lightweight tabular format.
+
+    If the number of results exceeds
+    :data:`SUGGEST_CONFIRM_LENGTH`,
+    the user will be queried whether to display
+    all of the returned results
+    unless :data:`ALL` is specified.
+
+    No |cour|\ -\\-quiet\ |/cour| option is available here, since
+    a silent mode for suggestion output is nonsensical.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Inventory object to be output in the format
+        indicated by :data:`MODE`.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
     with_index = params[INDEX]
     with_score = params[SCORE]
     results = inv.suggest(params[SEARCH], thresh=params[THRESH],
@@ -751,7 +810,32 @@ def do_suggest(inv, params):
 
 
 def inv_local(params):
-    """Create inventory from local reference."""
+    """Create |Inventory| from local source.
+
+    Uses :func:`resolve_inpath` to sanity-check and/or convert
+    :data:`INFILE`.
+
+    Calls :func:`sys.exit` internally in error-exit situations.
+
+    Parameters
+    ----------
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        at :data:`INFILE`
+
+    in_path
+
+        |str| -- Input file path as resolved/checked by
+        :func:`resolve_inpath`
+
+    """
     # Resolve input file path
     try:
         in_path = resolve_inpath(params[INFILE])
@@ -770,7 +854,33 @@ def inv_local(params):
 
 
 def inv_url(params):
-    """Create inventory from downloaded URL."""
+    """Create |Inventory| from file downloaded from URL.
+
+    Treats :data:`INFILE` as a download URL to be passed to
+    the `url` initialization argument
+    of :class:`~sphobjinv.inventory.Inventory`.
+
+    Calls :func:`sys.exit` internally in error-exit situations.
+
+    Parameters
+    ----------
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        at :data:`INFILE`
+
+    ret_path
+
+        |str| -- URL from :data:`INFILE` used to construct `inv`.
+        If URL is longer than 45 characters, the central portion is elided.
+
+    """
     from .inventory import Inventory
 
     in_file = params[INFILE]
@@ -796,7 +906,19 @@ def inv_url(params):
 
 
 def main():
-    """Handle command line invocation."""
+    r"""Handle command line invocation.
+
+    Parses command line arguments,
+    handling the no-arguments and
+    :data:`VERSION` cases.
+
+    Creates the |Inventory| from the indicated source
+    and method.
+
+    Invokes :func:`do_convert` or :func:`do_suggest`
+    per the subparser name stored in :data:`SUBPARSER_NAME`.
+
+    """
     # If no args passed, stick in '-h'
     if len(sys.argv) == 1:
         sys.argv.append('-h')
@@ -811,7 +933,9 @@ def main():
         print(VER_TXT)
         sys.exit(0)
 
-    # Generate the input Inventory based on --url or not
+    # Generate the input Inventory based on --url or not.
+    # These inventory-load functions should call
+    # sys.exit(n) internally in error-exit situations
     if params[URL]:
         inv, in_path = inv_url(params)
     else:

@@ -184,6 +184,10 @@ rst_epilog = """
 
 .. |str.format| replace:: :meth:`str.format`
 
+.. |isphxmap| replace:: ``intersphinx_mapping``
+
+.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
+
 """
 
 

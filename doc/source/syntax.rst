@@ -46,7 +46,8 @@ be exactly:
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L188-L190>`__:
+<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L188-L190>`__
+**THIS LINK IS BROKEN**:
 
 .. code-block:: none
 
@@ -155,8 +156,4 @@ as in :obj:`This is join! <str.join>`:
 .. |defdom| replace:: default domain
 
 .. _defdom: http://www.sphinx-doc.org/en/stable/domains.html
-
-.. |isphxmap| replace:: ``intersphinx_mapping``
-
-.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
 
