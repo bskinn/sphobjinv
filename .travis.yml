@@ -9,8 +9,6 @@ python:
 script:
  - coverage run tests.py -a --testall
  - flake8 sphobjinv
- - cd doc
- - make doctest
- - cd ..
+ - sh -c 'cd doc; make doctest'
  - echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.5' && codecov || echo "No codecov."
 
