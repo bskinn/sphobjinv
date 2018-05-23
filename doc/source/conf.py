@@ -110,7 +110,7 @@ add_module_names = False
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['sphobjinv.']
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
@@ -190,7 +190,39 @@ rst_epilog = """
 
 """
 
+# Universal doctest setup code
+doctest_global_setup = """\
+import os
+from pathlib import Path
+import shutil as sh
 
+_dir = Path('scratch').absolute()
+_res_inv = Path().resolve().parent
+_res_inv = _res_inv / 'sphobjinv' / 'test' / 'resource' / 'objects_attrs.inv'
+
+def _clear_files():
+    for fp in [_ for _ in Path().iterdir() if _.is_file()]:
+        fp.unlink()
+
+try:
+    _dir.mkdir()
+except FileExistsError:
+    pass
+
+os.chdir(str(_dir))
+
+_clear_files()
+
+sh.copy(str(_res_inv), str(Path()))
+
+"""
+
+doctest_global_cleanup = """\
+_clear_files()
+
+os.chdir(str(Path().parent))
+
+"""
 
 
 # -- Options for HTML output ----------------------------------------------
