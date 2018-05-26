@@ -196,12 +196,14 @@ import os
 from pathlib import Path
 import shutil as sh
 
+# SHOULD never break anything?
 _dir = Path('scratch').absolute()
+
 _res_inv = Path().resolve().parent
 _res_inv = _res_inv / 'sphobjinv' / 'test' / 'resource' / 'objects_attrs.inv'
 
 def _clear_files():
-    for fp in [_ for _ in Path().iterdir() if _.is_file()]:
+    for fp in [_ for _ in _dir.iterdir() if _.is_file()]:
         fp.unlink()
 
 try:
