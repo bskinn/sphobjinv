@@ -9,14 +9,20 @@ assembling an objects inventory, but the functionality is mainly
 intended for use downstream of a web-scraping or other automated
 content-extraction tool.
 
- #. Identify the head of the URI to the documentation. |br| |br|
+.. note::
+
+    These instructions are for ``sphobjinv`` v2.0;
+    the prior instructions for v1.0 can be found
+    `here <https://sphobjinv.readthedocs.io/en/v1.0.post1/customfile.html>`__.
+
+#. Identify the head of the URI to the documentation. |br| |br|
 
 
- #. Construct an |Inventory| containing all of the objects of interest.
-    The :attr:`~sphobjinv.data.SuperDataObj.uri` and
-    :attr:`~sphobjinv.data.SuperDataObj.dispname` values
-    can be entered with or without the
-    :ref:`standard abbreviations <syntax_shorthand>`.
+#. Construct an |Inventory| containing all of the objects of interest.
+   The :attr:`~sphobjinv.data.SuperDataObj.uri` and
+   :attr:`~sphobjinv.data.SuperDataObj.dispname` values
+   can be entered with or without the
+   :ref:`standard abbreviations <syntax_shorthand>`.
 
     * Create an empty |Inventory|:
 
@@ -66,12 +72,12 @@ content-extraction tool.
             <http://www.sphinx-doc.org/en/1.7/domains.html#cross-referencing-python-objects>`__.
 
             Thus, for example, a :class:`~sphobjinv.data.DataObjStr` corresponding
-            to a method on a class should be instantiated with
+            to a method on a class should be constructed with
             |cour|\ role='method'\ |/cour|, not |cour|\ role='meth'\ |/cour|.
 
 
 
- #. Export the |Inventory| in compressed form.
+#. Export the |Inventory| in compressed form.
 
     * Generate the text of the inventory file
       with :meth:`~sphobjinv.inventory.Inventory.data_file`,
@@ -96,17 +102,18 @@ content-extraction tool.
             >>> soi.writebytes('objects_foobar.inv', ztext)
 
 
- #. Transfer the compressed file to its distribution location.
+#. Transfer the compressed file to its distribution location.
 
     * If only local access is needed, it can be kept local.
 
-    * If external access needed, upload to a suitable host. |br| |br|
+    * If external access needed, upload to a suitable host. |br|
 
- #. Add an element to the |isphxmap|_ parameter in ``conf.py``.
+#. Add an element to the |isphxmap|_ parameter in ``conf.py``.
 
     * The key of the element is an arbitrary name, which can be used
       to specify the desired documentation set to be searched
-      for the target object, in the event of a `name` collision; e.g.::
+      for the target object, in the event of a `name` collision
+      between one or more documentation projects; e.g.::
 
           :meth:`python:str.join`
 
