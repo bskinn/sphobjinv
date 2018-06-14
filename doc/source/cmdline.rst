@@ -8,6 +8,45 @@ Command-Line Usage
     This page is outdated. Do not rely on it for working with
     ``sphobjinv`` v2.0
 
+**Mention ellipses on filenames, provenance of** `cli_run`
+**(probably would be good to add link to GH showing implementation,
+for any who might be curious), pre-loading of** `objects_attrs.inv`
+**to scratch directory, ....**
+
+**ALSO: Probably going to want to split this into** `suggest` **and**
+`convert` **subpages... there's enough there to warrant the split,
+especially with it being handled by subparsers. The help views themselves
+are going to be enormous....**
+
+.. doctest:: scratch
+
+    >>> cli_run('sphobjinv --version')
+    <BLANKLINE>
+    sphobjinv v2.0rc1
+    <BLANKLINE>
+    Copyright (c) Brian Skinn 2016-2018
+    License: The MIT License
+    <BLANKLINE>
+    Bug reports & feature requests: https://github.com/bskinn/sphobjinv
+    Documentation: http://sphobjinv.readthedocs.io
+    <BLANKLINE>
+    <BLANKLINE>
+    >>> cli_run('sphobjinv convert plain objects_attrs.inv')
+    <BLANKLINE>
+    Conversion completed.
+    '.../objects_attrs.inv' converted to '.../objects_attrs.txt' (plain).
+    <BLANKLINE>
+    >>> cli_run('sphobjinv convert plain objects_attrs.inv', inp='y\n')
+    File exists. Overwrite (Y/N)? y
+    <BLANKLINE>
+    Conversion completed.
+    '.../objects_attrs.inv' converted to '.../objects_attrs.txt' (plain).
+    <BLANKLINE>
+
+
+Old content
+-----------
+
 On most systems, ``sphobjinv`` should automatically install with a command
 line / shell script inserted into {python}/Scripts and thus be executable
 from anywhere.

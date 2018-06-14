@@ -196,33 +196,62 @@ import os
 from pathlib import Path
 import shutil as sh
 
-# SHOULD never break anything?
-_dir = Path('scratch').absolute()
+_start_dir = Path().resolve()
 
-_res_inv = Path().resolve().parent
-_res_inv = _res_inv / 'sphobjinv' / 'test' / 'resource' / 'objects_attrs.inv'
+_work_dir = Path('scratch').resolve()
+
+_res_inv = (_start_dir.parent / 'sphobjinv' / 'test' / 'resource'
+            / 'objects_attrs.inv')
 
 def _clear_files():
-    for fp in [_ for _ in _dir.iterdir() if _.is_file()]:
+    for fp in [_ for _ in _work_dir.iterdir() if _.is_file()]:
         fp.unlink()
 
 try:
-    _dir.mkdir()
+    _work_dir.mkdir()
 except FileExistsError:
     pass
 
-os.chdir(str(_dir))
+os.chdir(str(_work_dir))
 
 _clear_files()
 
 sh.copy(str(_res_inv), str(Path()))
+
+
+# Define helper(s) for running CLI commands
+
+def cli_run(argstr, inp=''):
+    '''Run as if argstr was passed to shell.
+
+    Can't handle quoted arguments.
+    '''
+    import sys
+
+    import sphobjinv.cmdline as cli
+    from stdio_mgr import stdio_mgr
+
+    old_argv = sys.argv
+    sys.argv = argstr.strip().split()
+
+    with stdio_mgr(inp) as (i_, o_, e_):
+        try:
+            cli.main()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old_argv
+
+        output = o_.getvalue() + e_.getvalue()
+
+    print(output)
 
 """
 
 doctest_global_cleanup = """\
 _clear_files()
 
-os.chdir(str(Path().parent))
+os.chdir(str(_start_dir))
 
 """
 
