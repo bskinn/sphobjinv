@@ -196,26 +196,29 @@ import os
 from pathlib import Path
 import shutil as sh
 
+# Should always be the doc root
 _start_dir = Path().resolve()
 
-_work_dir = Path('scratch').resolve()
-
-_res_inv = (_start_dir.parent / 'sphobjinv' / 'test' / 'resource'
-            / 'objects_attrs.inv')
-
-def _clear_files():
-    for fp in [_ for _ in _work_dir.iterdir() if _.is_file()]:
-        fp.unlink()
-
+# Create scratch dir if missing, and bind
+_work_dir = Path('scratch')
 try:
     _work_dir.mkdir()
 except FileExistsError:
     pass
+_work_dir = _work_dir.resolve()
 
+# Link ref to the attrs inventory
+_res_inv = (_start_dir.parent / 'sphobjinv' / 'test' / 'resource'
+            / 'objects_attrs.inv')
+
+# Scratch-clearing helper for later use
+def _clear_files():
+    for fp in [_ for _ in _work_dir.iterdir() if _.is_file()]:
+        fp.unlink()
+
+# Move to scratch, clear it, and copy in the attrs inv
 os.chdir(str(_work_dir))
-
 _clear_files()
-
 sh.copy(str(_res_inv), str(Path()))
 
 

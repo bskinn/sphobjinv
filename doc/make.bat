@@ -82,6 +82,15 @@ if "%1" == "html" (
 	goto end
 )
 
+if "%1" == "livehtml" (
+	sphinx-autobuild -b html %ALLSPHINXOPTS% %BUILDDIR%/html
+	rem if errorlevel 1 exit /b 1
+	rem echo.
+	rem echo.Build finished. The HTML pages are in %BUILDDIR%/html.
+	rem goto end
+)
+
+
 if "%1" == "dirhtml" (
 	%SPHINXBUILD% -b dirhtml %ALLSPHINXOPTS% %BUILDDIR%/dirhtml
 	if errorlevel 1 exit /b 1
