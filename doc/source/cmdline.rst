@@ -8,10 +8,20 @@ Command-Line Usage
     This page is outdated. Do not rely on it for working with
     ``sphobjinv`` v2.0
 
-**Mention ellipses on filenames, provenance of** `cli_run`
-**(probably would be good to add link to GH showing implementation,
-for any who might be curious), pre-loading of** `objects_attrs.inv`
-**to scratch directory, ....**
+*Intro bit*
+
+In the below, file paths in CLI output are elided (with |cour|\ ...\ |/cour|)
+so that doctests will pass in all of my various development environments.
+The motivation for using |cour|\ cli_run\ |/cour| is described in more
+detail `here <https://bskinn.github.io/Testing-CLI-Scripts/>`__.
+In all cases, examples are executed in a sandboxed directory pre-loaded with
+|cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
+`here <https://github.com/bskinn/sphobjinv/blob/master/sphobjinv/test/resource/objects_attrs.inv>`__).
+
+The CLI for ``sphobjinv`` is implemented using two subparsers.  
+
+
+
 
 **ALSO: Probably going to want to split this into** `suggest` **and**
 `convert` **subpages... there's enough there to warrant the split,
@@ -34,13 +44,13 @@ are going to be enormous....**
     >>> cli_run('sphobjinv convert plain objects_attrs.inv')
     <BLANKLINE>
     Conversion completed.
-    '.../objects_attrs.inv' converted to '.../objects_attrs.txt' (plain).
+    '...objects_attrs.inv' converted to '...objects_attrs.txt' (plain).
     <BLANKLINE>
     >>> cli_run('sphobjinv convert plain objects_attrs.inv', inp='y\n')
     File exists. Overwrite (Y/N)? y
     <BLANKLINE>
     Conversion completed.
-    '.../objects_attrs.inv' converted to '.../objects_attrs.txt' (plain).
+    '...objects_attrs.inv' converted to '...objects_attrs.txt' (plain).
     <BLANKLINE>
 
 
