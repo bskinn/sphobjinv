@@ -182,11 +182,15 @@ rst_epilog = """
 
 .. |objects.inv| replace:: |cour|\ objects.inv\ |/cour|
 
+.. |objects.txt| replace:: |cour|\ objects.txt\ |/cour|
+
 .. |str.format| replace:: :meth:`str.format`
 
 .. |isphxmap| replace:: ``intersphinx_mapping``
 
 .. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
+
+.. |soi| replace:: ``sphobjinv``
 
 """
 

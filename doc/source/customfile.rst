@@ -11,7 +11,7 @@ content-extraction tool.
 
 .. note::
 
-    These instructions are for ``sphobjinv`` v2.0;
+    These instructions are for |soi| v2.0;
     the prior instructions for v1.0 can be found
     `here <https://sphobjinv.readthedocs.io/en/v1.0.post1/customfile.html>`__.
 

@@ -9,24 +9,24 @@ Sphinx Objects.inv Encoder/Decoder
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
 <https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L834-L861>`__
-to a file called ``objects.inv`` in the html build directory.  This file is read by |isphx| when
+to a file called |objects.inv| in the html build directory.  This file is read by |isphx| when
 generating links in other documentation.
 
-Since version 1.0 of Sphinx (~July 2010), the data in these ``objects.inv`` inventories is compressed by
+Since version 1.0 of Sphinx (~July 2010), the data in these |objects.inv| inventories is compressed by
 :mod:`zlib` (presumably to reduce storage requirements and improve download speeds; "version 2"),
 whereas prior to that date the data was left uncompressed ("version 1").  This compression renders
 the files non-human-readable.  **It is the purpose of this package to enable quick and simple
 encoding/decoding of these files.**
 
-In particular, ``sphobjinv`` was developed to satisfy two primary use cases:
+In particular, |soi| was developed to satisfy two primary use cases:
 
- #. Searching and inspection of ``objects.inv`` contents in order to identify
+ #. Searching and inspection of |objects.inv| contents in order to identify
     how to properly insert |isphx| references. |br| |br|
 
- #. Assembly of new ``objects.inv`` files in order to allow |isphx| cross-referencing
+ #. Assembly of new |objects.inv| files in order to allow |isphx| cross-referencing
     of other documentation sets that were not created by Sphinx.
 
-Sphinx Objects.inv Encoder/Decoder is available on PyPI under ``sphobjinv``::
+Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
 
     pip install sphobjinv
 

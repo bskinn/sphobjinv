@@ -6,9 +6,9 @@ API
 .. warning::
 
     This page is outdated. Do not rely on it for working with
-    ``sphobjinv`` v2.0
+    |soi| v2.0
 
-The primary ``sphobjinv`` API consists of two pairs of functions:
+The primary |soi| API consists of two pairs of functions:
 
  * :func:`~sphobjinv.fileops.readfile` /
    :func:`~sphobjinv.fileops.writefile` -- Read/write files from/to disk
