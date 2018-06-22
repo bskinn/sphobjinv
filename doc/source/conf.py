@@ -37,11 +37,16 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx_issues',
 ]
 
 # napoleon configuration
 napoleon_google_docstring = False
 napoleon_use_rtype = False
+
+
+# sphinx-issues config
+issues_github_path = 'bskinn/sphobjinv'
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -191,6 +196,10 @@ rst_epilog = """
 .. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
 
 .. |soi| replace:: ``sphobjinv``
+
+.. |stdin| replace:: |cour|\ stdin\ |/cour|
+
+.. |stdout| replace:: |cour|\ stdout\ |/cour|
 
 """
 
