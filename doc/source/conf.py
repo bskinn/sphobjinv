@@ -173,6 +173,10 @@ rst_epilog = """
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
 
+.. |python-Levenshtein| replace:: ``python-Levenshtein``
+
+.. _python-Levenshtein: https://pypi.org/project/python-Levenshtein
+
 .. |br| raw:: html
 
     <br />

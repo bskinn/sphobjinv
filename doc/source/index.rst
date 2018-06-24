@@ -26,6 +26,8 @@ In particular, |soi| was developed to satisfy two primary use cases:
  #. Assembly of new |objects.inv| files in order to allow |isphx| cross-referencing
     of other documentation sets that were not created by Sphinx.
 
+----
+
 Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
 
     pip install sphobjinv
@@ -33,6 +35,10 @@ Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
 The package is configured for use both as a
 :doc:`command-line script <cmdline>` and as a
 :doc:`Python package <api>`.
+
+Installing the optional dependency |python-Levenshtein|_ substantially
+accelerates the the "suggest" functionality; see
+:doc:`here <levenshtein>` for more information.
 
 The project source repository is on GitHub: `bskinn/sphobjinv
 <https://www.github.com/bskinn/sphobjinv>`__.
@@ -48,6 +54,7 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    cmdline
    syntax
    customfile
+   levenshtein
    api
    CLI Implementation (non-API) <modules/cmdline>
 
