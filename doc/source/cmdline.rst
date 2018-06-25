@@ -12,8 +12,8 @@ found :doc:`here <modules/cmdline>` and in the documentation for the
 :meth:`~sphobjinv.inventory.Inventory.suggest` methods.
 
 In the CLI execution examples below and in the pages describing the subparser
-options, file paths in CLI output are elided (with |cour|\ ...\ |/cour|)
-so that doctests will pass in all of my various development environments.
+options, file paths in CLI output are elided (with '...')
+so that CLI doctests will pass regardless of the build environment.
 The motivation for using |cour|\ cli_run\ |/cour| is described in more
 detail `here <https://bskinn.github.io/Testing-CLI-Scripts/>`__.
 In all cases, examples are executed in a sandboxed directory pre-loaded with
