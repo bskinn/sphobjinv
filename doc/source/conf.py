@@ -241,8 +241,14 @@ sh.copy(str(_res_inv), str(Path()))
 
 # Define helper(s) for running CLI commands
 
-def cli_run(argstr, inp=''):
+def cli_run(argstr, *, inp='', head=None):
     '''Run as if argstr was passed to shell.
+
+    'inp' is input to pre-load to 'stdio_mgr' mocking
+    of 'stdin.
+
+    'head' is an integer, indicating the number
+    of head lines to print.
 
     Can't handle quoted arguments.
     '''
@@ -263,6 +269,9 @@ def cli_run(argstr, inp=''):
             sys.argv = old_argv
 
         output = o_.getvalue() + e_.getvalue()
+
+    if head:
+        output = '\\n'.join(output.splitlines()[:head])
 
     print(output)
 
