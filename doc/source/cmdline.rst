@@ -19,8 +19,9 @@ detail `here <https://bskinn.github.io/Testing-CLI-Scripts/>`__.
 In all cases, examples are executed in a sandboxed directory pre-loaded with
 |cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
 `here <https://github.com/bskinn/sphobjinv/blob/master/sphobjinv/test/resource/objects_attrs.inv>`__).
-
-
+:class:`~pathlib.Path` is imported into the namespace before all tests.
+`file_head` is a custom helper function defined to retrieve the head of
+a specified file.
 
 
 .. program:: sphobjinv

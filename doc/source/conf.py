@@ -275,6 +275,20 @@ def cli_run(argstr, *, inp='', head=None):
 
     print(output)
 
+def file_head(fn, *, head=None):
+    '''Print the first 'head' lines of file at 'fn'; all if head==None.'''
+    p = Path(fn)
+
+    if not p.is_file():
+        return "Not a file."
+
+    text = p.read_text()
+
+    # If head==None, then just returns a complete slice
+    lines = text.splitlines()[:head]
+
+    return "\\n".join(lines)
+
 """
 
 doctest_global_cleanup = """\
