@@ -74,6 +74,11 @@ indicated URL):
     attr.Attribute py:class 1 api.html#$ -
     attr.Factory py:class 1 api.html#$ -
 
+Note that |soi| only supports download of zlib-compressed |objects.inv| files by URL.
+Plaintext download by URL is unreliable, presumably due to encoding problems.
+If download of JSON files by URL is desirable, please
+`submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
+
 **Usage**
 
 .. doctest:: convert_usage
