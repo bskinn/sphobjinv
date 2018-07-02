@@ -37,11 +37,16 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx_issues',
 ]
 
 # napoleon configuration
 napoleon_google_docstring = False
 napoleon_use_rtype = False
+
+
+# sphinx-issues config
+issues_github_path = 'bskinn/sphobjinv'
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -110,7 +115,7 @@ add_module_names = False
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['sphobjinv.']
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
@@ -168,6 +173,10 @@ rst_epilog = """
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
 
+.. |python-Levenshtein| replace:: ``python-Levenshtein``
+
+.. _python-Levenshtein: https://pypi.org/project/python-Levenshtein
+
 .. |br| raw:: html
 
     <br />
@@ -182,11 +191,113 @@ rst_epilog = """
 
 .. |objects.inv| replace:: |cour|\ objects.inv\ |/cour|
 
+.. |objects.txt| replace:: |cour|\ objects.txt\ |/cour|
+
 .. |str.format| replace:: :meth:`str.format`
+
+.. |isphxmap| replace:: ``intersphinx_mapping``
+
+.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
+
+.. |soi| replace:: ``sphobjinv``
+
+.. |stdin| replace:: |cour|\ stdin\ |/cour|
+
+.. |stdout| replace:: |cour|\ stdout\ |/cour|
 
 """
 
+# Universal doctest setup code
+doctest_global_setup = """\
+import os
+from pathlib import Path
+import shutil as sh
 
+# Should always be the doc root
+_start_dir = Path().resolve()
+
+# Create scratch dir if missing, and bind
+_work_dir = Path('scratch')
+try:
+    _work_dir.mkdir()
+except FileExistsError:
+    pass
+_work_dir = _work_dir.resolve()
+
+# Link ref to the attrs inventory
+_res_inv = (_start_dir.parent / 'sphobjinv' / 'test' / 'resource'
+            / 'objects_attrs.inv')
+
+# Scratch-clearing helper for later use
+def _clear_files():
+    for fp in [_ for _ in _work_dir.iterdir() if _.is_file()]:
+        fp.unlink()
+
+# Move to scratch, clear it, and copy in the attrs inv
+os.chdir(str(_work_dir))
+_clear_files()
+sh.copy(str(_res_inv), str(Path()))
+
+
+# Define helper(s) for running CLI commands
+
+def cli_run(argstr, *, inp='', head=None):
+    '''Run as if argstr was passed to shell.
+
+    'inp' is input to pre-load to 'stdio_mgr' mocking
+    of 'stdin.
+
+    'head' is an integer, indicating the number
+    of head lines to print.
+
+    Can't handle quoted arguments.
+    '''
+    import sys
+
+    import sphobjinv.cmdline as cli
+    from stdio_mgr import stdio_mgr
+
+    old_argv = sys.argv
+    sys.argv = argstr.strip().split()
+
+    with stdio_mgr(inp) as (i_, o_, e_):
+        try:
+            cli.main()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old_argv
+
+        output = o_.getvalue() + e_.getvalue()
+
+    if head:
+        output = '\\n'.join(output.splitlines()[:head])
+
+    print(output)
+
+def file_head(fn, *, head=None):
+    '''Print the first 'head' lines of file at 'fn'; all if head==None.'''
+    p = Path(fn)
+
+    if not p.is_file():
+        return "Not a file."
+
+    with p.open() as f:
+        text = f.read()
+
+    # If head==None, then just returns a complete slice
+    lines = text.splitlines()[:head]
+
+    return "\\n".join(lines)
+
+"""
+
+doctest_global_cleanup = """\
+_clear_files()
+
+os.chdir(str(_start_dir))
+
+"""
 
 
 # -- Options for HTML output ----------------------------------------------

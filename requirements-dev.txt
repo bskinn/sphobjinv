@@ -8,6 +8,8 @@ ipython
 jsonschema==2.6
 restview
 sphinx==1.6.5
+sphinx-autobuild
+sphinx-issues
 sphinx-rtd-theme==0.2.4
 stdio-mgr
 timeout-decorator==0.4.0
