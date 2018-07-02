@@ -126,11 +126,25 @@ content-extraction tool.
           :attr:`~sphobjinv.data.SuperDataObj.uri` of given object
           is appended when constructing an |isphx| cross-reference.
 
-        * The second element of the value tuple is the complete URL of the
+        * The second element of the value tuple can be |None|, in which case
+          the |objects.inv| file is assumed to be at the repository head URI.
+          Otherwise, this element is the complete address of the
           distribution location of the compressed inventory file,
-          from step (4), whether local
-          (|cour|\ file:\ ///\ |/cour|)
-          or remote
-          (e.g., |cour|\ http:\ //\ |/cour|)
+          from step (4), whether a local path or a remote URL.
 
-        .. MAKE SURE TO UPDATE THESE TWO STEP REFERENCES IF NUMBERING CHANGES!!
+    Examples:
+
+        .. code::
+
+            intersphinx_mapping = {
+                # Standard reference to web docs, with web objects.inv
+                'python': ('https://docs.python.org/3.5', None),
+
+                # Django puts its objects.inv file in a non-standard location
+                'django': ('http://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
+
+                # Drawing the Sphinx objects.inv from a local copy, but referring to the 1.7 web docs
+                'sphinx': ('http://www.sphinx-doc.org/en/1.7/', '/path/to/local/objects.inv',
+            }
+
+    .. MAKE SURE TO UPDATE THESE TWO STEP REFERENCES IF NUMBERING CHANGES!!

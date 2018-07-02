@@ -46,6 +46,18 @@ via :option:`--thresh`:
     :py:function:`attr.filters.include`                      48       13
     <BLANKLINE>
 
+Remote |objects.inv| files can be retrieved for inspection by passing the
+:option:`--url` flag:
+
+.. doctest:: suggest_main
+
+    >>> cli_run('sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv instance -u -t 48')  # doctest: +NORMALIZE_WHITESPACE
+    :py:exception:`attr.exceptions.FrozenInstanceError`
+    :py:function:`attr.validators.instance_of`
+    :std:doc:`license`
+    :py:function:`attr.filters.include`
+    <BLANKLINE>
+
 Note that |soi| only supports download of zlib-compressed |objects.inv| files by URL.
 Plaintext download by URL is unreliable, presumably due to encoding problems.
 If download of JSON files by URL is desirable, please
@@ -64,37 +76,43 @@ If download of JSON files by URL is desirable, please
 
 .. option:: infile
 
-    TEXT
+    Path (or URL, if :option:`--url` is specified) to file to be converted.
 
 .. option:: search
 
-    SEARCH TEXT
+    Search term for |fuzzywuzzy|_ matching
 
 **Flags**
 
 .. option:: -h, --help
 
-    ...
+    Display `suggest` help message and exit.
 
 .. option:: -a, --all
 
-    ...
+    Display all search results without prompting, regardless of the number of hits.
+    Otherwise, prompt if number of results exceeds
+    :data:`sphobjinv.cmdline.SUGGEST_CONFIRM_LENGTH`.
 
 .. option:: -i, --index
 
-    ...
+    Display the index position within the 
+    :attr:`Inventory.objects <sphobjinv.inventory.Inventory.objects>` list
+    for each search result returned.
 
 .. option:: -s, --score
 
-    ...
+    Display the |fuzzywuzzy|_ match score for each search result returned.
 
-.. option:: -t, --thresh
+.. option:: -t, --thresh <#>
 
-    ...
+    Change the |fuzzywuzzy|_ match quality threshold (0-100; higher values
+    yield fewer results). Default is specified in
+    :data:`sphobjinv.cmdline.DEF_THRESH`.
 
 .. option:: -u, --url
 
-    ...
+    Treat :option:`infile` as a URL for download.
 
 
 

@@ -174,6 +174,9 @@ DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 #: (unless :data:`ALL` is specified)
 SUGGEST_CONFIRM_LENGTH = 30
 
+#: Default match threshold for :option:`sphobjinv suggest --thresh`
+DEF_THRESH = 75
+
 
 def selective_print(thing, params):
     """Print `thing` if not in quiet mode.
@@ -278,9 +281,10 @@ def getparser():
                                    "Mode names can be abbreviated "
                                    "to their first two letters.")
 
-    # Enforce subparser as optional. No effect for 3.4 to 3.6;
-    # required a/o 3.7.0b4 due to change in default behavior, per:
-    # https://bugs.python.org/issue33109
+    # Enforce subparser as optional. No effect for 3.4 to 3.7;
+    # briefly required a/o 3.7.0b4 due to change in default behavior, per:
+    # https://bugs.python.org/issue33109. 3.6 behavior restored for
+    # 3.7 release.
     sprs.required = False
 
     spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
@@ -364,7 +368,7 @@ def getparser():
                                   "'search' is exactly a known object name. "
                                   "A value of 30-50 gives better results "
                                   "for approximate matches.",
-                             default=75, type=int, choices=range(101),
+                             default=DEF_THRESH, type=int, choices=range(101),
                              metavar='{0-100}')
     spr_suggest.add_argument('-' + URL[0], '--' + URL,
                              help="Treat 'infile' as a URL for download",
