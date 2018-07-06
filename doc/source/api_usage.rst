@@ -1,7 +1,7 @@
-.. API page
+.. API usage page
 
-API
-===
+API Usage
+=========
 
 .. warning::
 
@@ -53,14 +53,3 @@ The normal workflow would be:
         >>> soi.writefile('/path/to/new/file', data)
 
 
-.. toctree::
-    :maxdepth: 1
-    :caption: Formal API
-
-    modules/data
-    modules/error
-    modules/fileops
-    modules/inventory
-    modules/re
-    modules/schema
-    modules/zlib
