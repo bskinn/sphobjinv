@@ -3,9 +3,46 @@
 API Usage
 =========
 
+In all of the below, the |soi| package has been imported as
+|cour|\ soi\ |/cour|, and the working temp directory has
+been populated with the |cour|\ objects_attrs.inv\ |/cour| inventory.
+
+Inspecting an Inventory
+-----------------------
+
+Inspecting the contents of an existing inventory is handled entirely by the
+:class:`~sphobjinv.inventory.Inventory` class:
+
+.. doctest:: api_inspect
+
+    >>> inv = soi.Inventory('objects_attrs.inv')
+    >>> print(inv)
+    <Inventory (fname_zlib): attrs v17.2, 56 objects>
+    >>> inv.version
+    '17.2'
+    >>> inv.count
+    56
+
+The individual objects contained in the inventory are represented by instances
+of the :class:`~sphobjinv.data.DataObjStr` class, which are stored in
+a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
+
+.. doctest:: api_inspect
+
+    >>> len(inv.objects)
+    56
+    >>> dobj = inv.objects[0]
+    >>> dobj
+    DataObjStr(name='attr.Attribute', domain='py', role='class', priority='1', uri='api.html#$', dispname='-')
+    >>> dobj.name
+    'attr.Attribute'
+    >>> dobj.domain
+    'py'
+
 .. warning::
 
-    This page is outdated. Do not rely on it for working with
+    The contents of this page below this notice are outdated.
+    Do not rely on this for working with
     |soi| v2.0
 
 The primary |soi| API consists of two pairs of functions:

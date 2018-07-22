@@ -213,6 +213,8 @@ import os
 from pathlib import Path
 import shutil as sh
 
+import sphobjinv as soi
+
 # Should always be the doc root
 _start_dir = Path().resolve()
 
