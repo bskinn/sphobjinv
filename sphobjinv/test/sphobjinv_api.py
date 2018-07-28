@@ -729,6 +729,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
             with self.assertRaises(TypeError):
                 soi.DataObjStr(*range(6))
 
+    @ut.skip('Changed to mutable to avoid Inventory revision pain.')
     def test_API_ChangingImmutableDataObj(self):
         """Confirm DataObj's are immutable."""
         from attr.exceptions import FrozenInstanceError as FIError
