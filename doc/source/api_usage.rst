@@ -41,6 +41,25 @@ a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
     >>> [d.name for d in inv.objects if 'validator' in d.uri]
     ['api_validators', 'examples_validators']
 
+:class:`~sphobjinv.inventory.Inventory` objects can also import from plaintext or zlib-compressed
+inventories, as |bytes|:
+
+.. doctest:: api_inspect
+
+    >>> inv2 = soi.Inventory(inv.data_file())
+    >>> print(inv2)
+    <Inventory (bytes_plain): attrs v17.2, 56 objects>
+    >>> inv3 = soi.Inventory(soi.compress(inv.data_file()))
+    >>> print(inv3)
+    <Inventory (bytes_zlib): attrs v17.2, 56 objects>
+
+Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword argument:
+
+.. doctest:: api_inspect
+
+    >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv')
+    >>> print(inv4)
+    <Inventory (url): attrs v17.2, 56 objects>
 
 Modifying an Inventory
 ----------------------
@@ -109,6 +128,45 @@ If desired, the :ref:`shorthand <syntax_shorthand>` used for the
     >>> do = inv.objects[0]
     >>> do.data_line(expand=True)
     'attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute'
+
+
+Exporting an Inventory
+----------------------
+
+:class:`~sphobjinv.inventory.Inventory` instances can be written to disk
+in three formats: zlib-compressed |objects.inv|,
+plaintext |objects.txt|, and JSON. The API does not provide single-function
+means to do this, however.
+
+To start, load the source |objects.inv|:
+
+.. doctest:: api_exporting
+
+    >>> inv = soi.Inventory('objects_attrs.inv')
+
+To export plaintext:
+
+.. doctest:: api_exporting
+
+    >>> df = inv.data_file()
+    >>> soi.writebytes('objects_attrs.txt', df)
+    >>>
+
+For zlib-compressed:
+
+.. doctest:: api_exporting
+
+    >>> dfc = soi.compress(df)
+    >>> soi.writebytes('objects_attrs_new.inv', dfc)
+
+For JSON
+
+.. doctest:: api_exporting
+
+    >>> jd = inv.json_dict()
+    >>> soi.writejson('objects_attrs.json', jd)
+
+
 
 .. warning::
 
