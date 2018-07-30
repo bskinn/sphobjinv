@@ -96,8 +96,8 @@ The other attributes of the :class:`~sphobjinv.inventory.Inventory` instance can
     <Inventory (fname_zlib): not_attrs v0.1, 57 objects>
 
 
-Formatting an Inventory
------------------------
+Formatting Inventory Contents
+-----------------------------
 
 The contents of the :class:`~sphobjinv.inventory.Inventory` can be converted to
 the plaintext |objects.inv| format **as** |bytes| via :meth:`~sphobjinv.inventory.Inventory.data_file`:
@@ -142,6 +142,7 @@ To start, load the source |objects.inv|:
 
 .. doctest:: api_exporting
 
+    >>> from pathlib import Path
     >>> inv = soi.Inventory('objects_attrs.inv')
 
 To export plaintext:
@@ -150,7 +151,13 @@ To export plaintext:
 
     >>> df = inv.data_file()
     >>> soi.writebytes('objects_attrs.txt', df)
-    >>>
+    >>> print(*Path('objects_attrs.txt').read_text().splitlines()[:6], sep='\n')
+    # Sphinx inventory version 2
+    # Project: attrs
+    # Version: 17.2
+    # The remainder of this file is compressed using zlib.
+    attr.Attribute py:class 1 api.html#$ -
+    attr.Factory py:class 1 api.html#$ -
 
 For zlib-compressed:
 
@@ -158,64 +165,20 @@ For zlib-compressed:
 
     >>> dfc = soi.compress(df)
     >>> soi.writebytes('objects_attrs_new.inv', dfc)
+    >>> print(*Path('objects_attrs_new.inv').read_bytes().splitlines()[:4], sep='\n')
+    b'# Sphinx inventory version 2'
+    b'# Project: attrs'
+    b'# Version: 17.2'
+    b'# The remainder of this file is compressed using zlib.'
+    >>> print(Path('objects_attrs_new.inv').read_bytes().splitlines()[6][:10])
+    b'5\xcb0\xd7\x9f>\xf3\x84\x89'
 
-For JSON
+For JSON:
 
 .. doctest:: api_exporting
 
     >>> jd = inv.json_dict()
     >>> soi.writejson('objects_attrs.json', jd)
-
-
-
-.. warning::
-
-    The contents of this page below this notice are outdated.
-    Do not rely on this for working with
-    |soi| v2.0
-
-The primary |soi| API consists of two pairs of functions:
-
- * :func:`~sphobjinv.fileops.readfile` /
-   :func:`~sphobjinv.fileops.writefile` -- Read/write files from/to disk
-   as |bytes|, for proper behavior of :mod:`zlib` (de)compression.
-
- * :func:`~sphobjinv.zlib.encode` /
-   :func:`~sphobjinv.zlib.decode` -- Encode/decode the object data
-   read from disk.
-
-Also exposed are two |re.compile| patterns, potentially useful in parsing
-**decoded data only**\ :
-
- * :data:`~sphobjinv.re.p_comments` -- Retrieves the
-   `#`\ -prefixed comment lines
-
- * :data:`~sphobjinv.re.p_data` -- Retrieves all lines
-   not prefixed by `#`
-
-
-The normal workflow would be:
-
- #. Import the module; e.g.::
-
-        >>> import sphobjinv as soi
-
- #. Read the desired file data (compressed or uncompressed) with
-    :func:`~sphobjinv.fileops.readfile`::
-
-        >>> fd = soi.readfile('/path/to/file')
-
- #. Decode [or encode] the file data with :func:`~sphobjinv.zlib.decode`
-    [or :func:`~sphobjinv.zlib.encode`]::
-
-        >>> data = soi.decode(fd)
-
- #. Write the desired file with :func:`~sphobjinv.fileops.writefile`,
-    or otherwise use the resulting |bytes| data::
-
-        >>> len(soi.p_data.findall(data))   # e.g., retrieve the number of object entries
-        6319
-
-        >>> soi.writefile('/path/to/new/file', data)
-
+    >>> print(Path('objects_attrs.json').read_text()[:51])
+    {"project": "attrs", "version": "17.2", "count": 56
 

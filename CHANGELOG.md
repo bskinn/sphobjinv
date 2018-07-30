@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-### [2.0.0rc1] - [ADD DATE]
+### Unreleased Changes
+
+#### Changed
+
+ * Instances of DataObjStr and DataObjBytes are NO LONGER IMMUTABLE.
+   Working with Inventory instances was going to be far too cumbersome
+   with immutable DataObjStr instances in .objects.
+
+
+### [2.0.0rc1] - 2018-05-18
 
 #### Fixed
 
