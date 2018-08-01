@@ -179,6 +179,6 @@ For JSON:
 
     >>> jd = inv.json_dict()
     >>> soi.writejson('objects_attrs.json', jd)
-    >>> print(Path('objects_attrs.json').read_text()[:51])
+    >>> print(Path('objects_attrs.json').read_text()[:51])  # doctest: +SKIP
     {"project": "attrs", "version": "17.2", "count": 56
 
