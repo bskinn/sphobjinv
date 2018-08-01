@@ -199,7 +199,9 @@ rst_epilog = """
 
 .. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
 
-.. |soi| replace:: ``sphobjinv``
+.. |soi| raw:: html
+
+    <span style="font-family:courier; font-size: 90%; font-weight: bold;">sphobjinv</span>
 
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 

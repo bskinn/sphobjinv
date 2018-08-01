@@ -76,7 +76,7 @@ The :class:`~sphobjinv.data.DataObjStr` instances can be edited in place:
     DataObjStr(name='attr.Attribute', domain='py', role='class', priority='1', uri='attribute.html', dispname='-')
 
 New instances can be easily created either by direct instantiation, or by
-:meth:`~sphobjinv.data.DataObjStr.evolve`:
+:meth:`~sphobjinv.data.SuperDataObj.evolve`:
 
 .. doctest:: api_modify
 
