@@ -96,7 +96,7 @@ If download of JSON files by URL is desirable, please
 
 .. option:: -i, --index
 
-    Display the index position within the 
+    Display the index position within the
     :attr:`Inventory.objects <sphobjinv.inventory.Inventory.objects>` list
     for each search result returned.
 
