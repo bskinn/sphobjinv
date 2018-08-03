@@ -678,6 +678,41 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
                             self.assertEqual(objs[0].dispname,
                                              objs[1].dispname)
 
+    @ut.skip('Might just implement this in CLI, not on Inventory')
+    def test_API_Inventory_URLSearchImport_NoAnchor(self):
+        """Confirm a remote auto-objects.inv search w/o anchor works.
+
+        Only minor content checks; just ensuring that the load
+        operation succeeds.
+
+        """
+        from sphobjinv import Inventory as Inv
+
+        URL = 'https://docs.python.org/3.5/library/functions.html'
+
+        try:
+            Inv(url=URL)
+        except Exception:
+            self.fail(msg="Webpage URL search w/o anchor failed.")
+
+    @ut.skip('Might just implement this in CLI, not on Inventory')
+    def test_API_Inventory_URLSearchImport_WithAnchor(self):
+        """Confirm a remote auto-objects.inv search WITH anchor works.
+
+        Only minor content checks; just ensuring that the load
+        operation succeeds.
+
+        """
+        from sphobjinv import Inventory as Inv
+
+        URL = ('https://docs.python.org/3.5/library/'
+               'functions.html#built-in-funcs')
+
+        try:
+            Inv(url=URL)
+        except Exception:
+            self.fail(msg="Webpage URL search with anchor failed.")
+
 
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""

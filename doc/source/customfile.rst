@@ -9,6 +9,10 @@ assembling an objects inventory, but the functionality is mainly
 intended for use downstream of a web-scraping or other automated
 content-extraction tool.
 
+A (possibly obsolete) representative example of such a custom |objects.inv|
+can be found at my GitHub repo
+`here <https://github.com/bskinn/intersphinx-xlwsf>`__.
+
 .. note::
 
     These instructions are for |soi| v2.0;
@@ -65,10 +69,11 @@ content-extraction tool.
 
         .. note::
 
-            The `role` values here must be the **full** role names,
+            The `role` values here must be the **full** role names ("`block directives`"),
             described as the "directives" in the `Sphinx documentation for
             domains <http://www.sphinx-doc.org/en/1.7/domains.html#the-python-domain>`__,
-            and not the abbreviated forms `used when constructing cross-references
+            and not the abbreviated forms ("`inline directives`")
+            `used when constructing cross-references
             <http://www.sphinx-doc.org/en/1.7/domains.html#cross-referencing-python-objects>`__.
 
             Thus, for example, a :class:`~sphobjinv.data.DataObjStr` corresponding
