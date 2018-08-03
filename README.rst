@@ -1,5 +1,5 @@
-Sphinx Objects.inv Encoder/Decoder
-==================================
+sphobjinv: Manipulate and inspect Sphinx objects.inv files
+==========================================================
 
 **Current Development Version:**
 
@@ -24,8 +24,16 @@ Sphinx Objects.inv Encoder/Decoder
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
 
-Encode/decode command-line tool and Python package for
-intersphinx ``objects.inv`` files.
+**Using Sphinx?**
+
+**Having trouble writing cross-references?**
+
+``sphobjinv`` (short for '**Sph**\ inx **Obj**\ ects.\ **inv**') can help!
+
+*[TO DRAFT]*
+
+
+---
 
 Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
 (``pip install sphobjinv``).
@@ -34,7 +42,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Documentation at
+Full documentation at
 `Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
 
 Copyright (c) Brian Skinn 2016-2018
