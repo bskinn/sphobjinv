@@ -4,9 +4,9 @@ Command-Line Usage
 ==================
 
 The CLI for |soi| is implemented using two subparsers, one each for the
-:doc:`convert <cli/convert>` and :doc:`suggest <cli/suggest>` sub-functions.
+:doc:`convert <convert>` and :doc:`suggest <suggest>` sub-functions.
 More information about the implementation of these features can be
-found :doc:`here <modules/cmdline>` and in the documentation for the
+found :doc:`here <implementation>` and in the documentation for the
 :class:`~sphobjinv.inventory.Inventory` object, in particular the
 :meth:`~sphobjinv.inventory.Inventory.data_file` and
 :meth:`~sphobjinv.inventory.Inventory.suggest` methods.
@@ -78,7 +78,7 @@ The options for the parent |soi| command are:
     :maxdepth: 1
     :hidden:
 
-    "convert" Mode <cli/convert>
-    "suggest" Mode <cli/suggest>
+    "convert" Mode <convert>
+    "suggest" Mode <suggest>
 
 

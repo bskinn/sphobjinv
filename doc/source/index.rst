@@ -33,7 +33,7 @@ Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
     pip install sphobjinv
 
 The package is configured for use both as a
-:doc:`command-line script <cmdline_usage>` and as a
+:doc:`command-line script <cli/index>` and as a
 :doc:`Python package <api_usage>`.
 
 Installing the optional dependency |python-Levenshtein|_ substantially
@@ -51,13 +51,13 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    :maxdepth: 1
    :hidden:
 
-   cmdline_usage
+   cli/index
    api_usage
    customfile
    levenshtein
    syntax
-   api_listing
-   CLI Implementation (non-API) <modules/cmdline>
+   api/index
+   CLI Implementation (non-API) <cli/implementation>
 
 
 
