@@ -720,7 +720,7 @@ def do_convert(inv, in_path, params):
         sys.exit(1)
 
     # Report success, if not QUIET
-    selective_print("\nConversion completed.\n"
+    selective_print("Conversion completed.\n"
                     "'{0}' converted to '{1}' ({2}).".format(in_path,
                                                              out_path,
                                                              mode),
@@ -765,7 +765,7 @@ def do_suggest(inv, params):
                           with_score=with_score)
 
     if len(results) == 0:
-        print('\nNo results found.')
+        print('No results found.')
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
@@ -860,9 +860,12 @@ def inv_local(params):
 def inv_url(params):
     """Create |Inventory| from file downloaded from URL.
 
-    Treats :data:`INFILE` as a download URL to be passed to
+    Initially, treats :data:`INFILE` as a download URL to be passed to
     the `url` initialization argument
     of :class:`~sphobjinv.inventory.Inventory`.
+
+    If an inventory is not found at that exact URL, progressively
+    searches the directory tree of the URL for |objects.inv|.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -894,11 +897,62 @@ def inv_url(params):
         selective_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
+    # Need to initialize the inventory variable
+    inv = None
+
+    # Try URL as provided
     try:
         inv = Inventory(url=in_file)
     except Exception as e:
-        selective_print("\nError while downloading/parsing URL:", params)
-        selective_print(err_format(e), params)
+        selective_print("No inventory at provided URL.", params)
+    else:
+        selective_print('Remote inventory found.\n', params)
+
+    # Keep searching if inv not found yet
+    if not inv:
+        # Strip any anchor, as this fouls the directory tree search
+        in_file = in_file.partition('#')[0]
+
+        # Loop back along the directory tree, checking for an objects.inv
+        # at each level. Stop once the root is reached.
+        # Start by breaking the URL into parts as divided by slashes.
+        urlparts = in_file.rstrip('/').split('/')
+
+        # Stop condition flag
+        stop = False
+
+        while not stop:
+            # Stop condition check. Still want to check the URL
+            # if only the base domain is left, so the loop will
+            # run one more time after stop gets set True.
+            # Length of 3 accounts for the parts embodied by
+            # the "http://domain.com" portion of the URL.
+            # DO NOT WANT to try to download at "http://objects.inv"!
+            if len(urlparts) <= 3:
+                stop = True
+
+            # Add inventory filename to parts and reassemble URL
+            urlparts.append('objects.inv')
+            in_file = '/'.join(urlparts)
+
+            # Attempt import, ignoring HTTP error, or breaking
+            # the loop if the inventory is successfully imported
+            selective_print('Attempting "{0}" ...'.format(in_file), params)
+            try:
+                inv = Inventory(url=in_file)
+            except Exception:
+                pass
+            else:
+                selective_print('Remote inventory found.', params)
+                break
+
+            # Pull off the 'objects.inv' and one level of directory
+            # tree, then continue to the next loop iteration.
+            urlparts = in_file.rstrip('/').split('/')[:-2]
+
+    # Success or no?
+    if not inv:
+        selective_print('No inventory found!', params)
         sys.exit(1)
 
     if len(in_file) > 45:
@@ -936,6 +990,10 @@ def main():
     if params[VERSION]:
         print(VER_TXT)
         sys.exit(0)
+
+    # Regardless of mode, insert extra blank line
+    # for cosmetics
+    selective_print(' ', params)
 
     # Generate the input Inventory based on --url or not.
     # These inventory-load functions should call

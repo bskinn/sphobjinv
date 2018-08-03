@@ -13,6 +13,7 @@ object exposed by :attr:`SuperDataObj.as_rst <sphobjinv.data.SuperDataObj.as_rst
 .. doctest:: suggest_main
 
     >>> cli_run('sphobjinv suggest objects_attrs.inv instance')
+    <BLANKLINE>
     :py:exception:`attr.exceptions.FrozenInstanceError`
     :py:function:`attr.validators.instance_of`
     <BLANKLINE>
@@ -52,16 +53,40 @@ Remote |objects.inv| files can be retrieved for inspection by passing the
 .. doctest:: suggest_main
 
     >>> cli_run('sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv instance -u -t 48')  # doctest: +NORMALIZE_WHITESPACE
+    <BLANKLINE>
+    Remote inventory found.
+    <BLANKLINE>
     :py:exception:`attr.exceptions.FrozenInstanceError`
     :py:function:`attr.validators.instance_of`
     :std:doc:`license`
     :py:function:`attr.filters.include`
     <BLANKLINE>
 
-Note that |soi| only supports download of zlib-compressed |objects.inv| files by URL.
+Note that the URL provided **MUST** have the leading protocol specified (here,
+|cour|\ https\ ://\ |/cour|).
+
+It is not necessary to locate the |objects.inv| file before running |soi|;
+for most Sphinx documentation sets, if you provide a URL to any page in the docs,
+it will automatically find and use the correct |objects.inv|:
+
+.. doctest:: suggest_main
+
+    >>> cli_run('sphobjinv suggest -u https://sphobjinv.readthedocs.io/en/v2.0rc1/cmdline.html compress')  # doctest: +NORMALIZE_WHITESPACE
+    <BLANKLINE>
+    No inventory at provided URL.
+    Attempting "https://sphobjinv.readthedocs.io/en/v2.0rc1/cmdline.html/objects.inv" ...
+    Attempting "https://sphobjinv.readthedocs.io/en/v2.0rc1/objects.inv" ...
+    Remote inventory found.
+    <BLANKLINE>
+    :py:function:`sphobjinv.zlib.compress`
+    :py:function:`sphobjinv.zlib.decompress`
+    <BLANKLINE>
+
+|soi| only supports download of zlib-compressed |objects.inv| files by URL.
 Plaintext download by URL is unreliable, presumably due to encoding problems.
 If download of JSON files by URL is desirable, please
 `submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
+
 
 **Usage**
 

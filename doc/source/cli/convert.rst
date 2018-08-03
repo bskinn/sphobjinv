@@ -42,6 +42,7 @@ file:
 .. doctest:: convert_main
 
     >>> cli_run('sphobjinv convert plain objects_attrs.inv', inp='n\n')
+    <BLANKLINE>
     File exists. Overwrite (Y/N)? n
     <BLANKLINE>
     Exiting...
@@ -63,6 +64,8 @@ indicated URL):
 
     >>> cli_run('sphobjinv convert plain -u https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv')
     <BLANKLINE>
+    Remote inventory found.
+    <BLANKLINE>
     Conversion completed.
     'https://github.com/b[...]ce/objects_attrs.inv' converted to '...objects.txt' (plain).
     <BLANKLINE>
@@ -74,10 +77,31 @@ indicated URL):
     attr.Attribute py:class 1 api.html#$ -
     attr.Factory py:class 1 api.html#$ -
 
-Note that |soi| only supports download of zlib-compressed |objects.inv| files by URL.
+Note that the URL provided **MUST** have the leading protocol specified (here,
+|cour|\ https\ ://\ |/cour|).
+
+It is not necessary to locate the |objects.inv| file before running |soi|;
+for most Sphinx documentation sets, if you provide a URL to any page in the docs,
+it will automatically find and use the correct |objects.inv|:
+
+.. doctest:: convert_url
+
+    >>> cli_run('sphobjinv convert plain -ou https://docs.python.org/3/library/urllib.error.html#urllib.error.URLError')
+    <BLANKLINE>
+    No inventory at provided URL.
+    Attempting "https://docs.python.org/3/library/urllib.error.html/objects.inv" ...
+    Attempting "https://docs.python.org/3/library/objects.inv" ...
+    Attempting "https://docs.python.org/3/objects.inv" ...
+    Remote inventory found.
+    Conversion completed.
+    '...objects.inv' converted to '...objects.txt' (plain).
+    <BLANKLINE>
+
+|soi| only supports download of zlib-compressed |objects.inv| files by URL.
 Plaintext download by URL is unreliable, presumably due to encoding problems.
 If download of JSON files by URL is desirable, please
 `submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
+
 
 **Usage**
 

@@ -389,7 +389,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                              suffix='all_arg')
 
             with self.subTest('count_all_arg'):
-                self.assertEqual(out_.getvalue().count('\n'), 56)
+                self.assertEqual(out_.getvalue().count('\n'), 57)
 
         with stdio_mgr() as (in_, out_, err_):
             in_.append('y\n')
@@ -401,7 +401,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
             with self.subTest('count_no_arg'):
                 # Extra newline due to input() query
-                self.assertEqual(out_.getvalue().count('\n'), 57)
+                self.assertEqual(out_.getvalue().count('\n'), 58)
 
         with stdio_mgr() as (in_, out_, err_):
             in_.append('n\n')
@@ -412,7 +412,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                              suffix='no_print')
 
             with self.subTest('count_no_print'):
-                self.assertEqual(out_.getvalue().count('\n'), 3)
+                self.assertEqual(out_.getvalue().count('\n'), 4)
 
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_VersionExitsOK(self):
@@ -433,7 +433,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
     """Testing nonlocal code expecting to work properly."""
 
     @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromURL(self):
+    def test_Cmdline_SuggestNameOnlyFromInventoryURL(self):
         """Confirm name-only suggest works from URL."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(self, ['suggest', '-u',
@@ -442,6 +442,57 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
                                     '-t', '50'])
 
             p = re.compile('^.*instance_of.*$', re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_SuggestNameOnlyFromDirURLNoAnchor(self):
+        """Confirm name-only suggest works from docpage URL."""
+        URL = ('http://sphobjinv.readthedocs.io/en/v2.0rc1/'
+               'modules/')
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest', '-u',
+                                    URL,
+                                    'inventory',
+                                    '-at', '50'])
+
+            p = re.compile('^.*nventory.*$', re.I | re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_SuggestNameOnlyFromPageURLNoAnchor(self):
+        """Confirm name-only suggest works from docpage URL."""
+        URL = ('http://sphobjinv.readthedocs.io/en/v2.0rc1/'
+               'modules/cmdline.html')
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest', '-u',
+                                    URL,
+                                    'inventory',
+                                    '-at', '50'])
+
+            p = re.compile('^.*nventory.*$', re.I | re.M)
+
+            with self.subTest('found_object'):
+                self.assertRegex(out_.getvalue(), p)
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_SuggestNameOnlyFromPageURLWithAnchor(self):
+        """Confirm name-only suggest works from docpage URL."""
+        URL = ('http://sphobjinv.readthedocs.io/en/v2.0rc1/modules/'
+               'cmdline.html#sphobjinv.cmdline.do_convert')
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(self, ['suggest', '-u',
+                                    URL,
+                                    'inventory',
+                                    '-at', '50'])
+
+            p = re.compile('^.*nventory.*$', re.I | re.M)
 
             with self.subTest('found_object'):
                 self.assertRegex(out_.getvalue(), p)
@@ -563,7 +614,33 @@ class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
                              expect=1)
 
             with self.subTest('stdout_match'):
-                self.assertIn('Error while downloading/parsing URL:',
+                self.assertIn('No inventory at provided URL.',
+                              out_.getvalue())
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_NotSphinxURLArg(self):
+        """Confirm proper error behavior when a non-Sphinx URL is passed."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(self, ['convert', 'plain', '-u',
+                                    'http://www.google.com',
+                                    scr_path()],
+                             expect=1)
+
+            with self.subTest('stdout_match'):
+                self.assertIn('No inventory at provided URL.',
+                              out_.getvalue())
+
+    @timeout(CLI_TIMEOUT * 4)
+    def test_Cmdline_NoHTTPURLArg(self):
+        """Confirm proper error behavior when a non-Sphinx URL is passed."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(self, ['convert', 'plain', '-u',
+                                    'sphobjinv.readthedocs.io/en/latest',
+                                    scr_path()],
+                             expect=1)
+
+            with self.subTest('stdout_match'):
+                self.assertIn('No inventory at provided URL.',
                               out_.getvalue())
 
 
