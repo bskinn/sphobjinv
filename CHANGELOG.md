@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Unreleased Changes
 
+#### Added
+
+ * Loading remote inventories from the CLI (*NOT* via the API) now will
+   perform an automatic walk along the directory structure of the
+   provided URL, searching for the objects.inv file of the
+   documentation set.
+
 #### Changed
 
  * Instances of DataObjStr and DataObjBytes are NO LONGER IMMUTABLE.
