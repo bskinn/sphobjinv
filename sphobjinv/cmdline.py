@@ -182,7 +182,10 @@ def selective_print(thing, params):
     """Print `thing` if not in quiet mode.
 
     Quiet mode is indicated by the value at the :data:`QUIET` key
-    within `params`
+    within `params`.
+
+    Quiet mode is not implemented for the ":doc:`suggest </cli/suggest>`"
+    CLI mode.
 
     Parameters
     ----------
@@ -888,6 +891,7 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
+    from .fileops import urlwalk
     from .inventory import Inventory
 
     in_file = params[INFILE]
@@ -906,59 +910,33 @@ def inv_url(params):
     except Exception as e:
         selective_print("No inventory at provided URL.", params)
     else:
-        selective_print('Remote inventory found.\n', params)
+        selective_print('Remote inventory found.', params)
+        url = in_file
 
     # Keep searching if inv not found yet
     if not inv:
-        # Strip any anchor, as this fouls the directory tree search
-        in_file = in_file.partition('#')[0]
-
-        # Loop back along the directory tree, checking for an objects.inv
-        # at each level. Stop once the root is reached.
-        # Start by breaking the URL into parts as divided by slashes.
-        urlparts = in_file.rstrip('/').split('/')
-
-        # Stop condition flag
-        stop = False
-
-        while not stop:
-            # Stop condition check. Still want to check the URL
-            # if only the base domain is left, so the loop will
-            # run one more time after stop gets set True.
-            # Length of 3 accounts for the parts embodied by
-            # the "http://domain.com" portion of the URL.
-            # DO NOT WANT to try to download at "http://objects.inv"!
-            if len(urlparts) <= 3:
-                stop = True
-
-            # Add inventory filename to parts and reassemble URL
-            urlparts.append('objects.inv')
-            in_file = '/'.join(urlparts)
-
-            # Attempt import, ignoring HTTP error, or breaking
-            # the loop if the inventory is successfully imported
-            selective_print('Attempting "{0}" ...'.format(in_file), params)
+        for url in urlwalk(in_file):
+            selective_print('Attempting "{0}" ...'.format(url), params)
             try:
-                inv = Inventory(url=in_file)
+                inv = Inventory(url=url)
             except Exception:
                 pass
             else:
                 selective_print('Remote inventory found.', params)
                 break
 
-            # Pull off the 'objects.inv' and one level of directory
-            # tree, then continue to the next loop iteration.
-            urlparts = in_file.rstrip('/').split('/')[:-2]
+    # Cosmetic line break
+    selective_print(' ', params)
 
     # Success or no?
     if not inv:
         selective_print('No inventory found!', params)
         sys.exit(1)
 
-    if len(in_file) > 45:
-        ret_path = in_file[:20] + '[...]' + in_file[-20:]
+    if len(url) > 45:
+        ret_path = url[:20] + '[...]' + url[-20:]
     else:  # pragma: no cover
-        ret_path = in_file
+        ret_path = url
 
     return inv, ret_path
 

@@ -113,5 +113,40 @@ def writejson(path, d):
         json.dump(d, f)
 
 
+def urlwalk(url):
+    r"""Generate a series of candidate |objects.inv| URLs.
+
+    URLs are based on the seed `url` passed in. Ensure that the
+    path separator in `url` is the standard **forward** slash
+    ('|cour|\ /\ |/cour|').
+
+    Parameters
+    ----------
+    url
+
+        |str| -- Seed URL defining directory structure to walk through.
+
+    Yields
+    ------
+    inv_url
+
+        |str| -- Candidate URL for |objects.inv| location.
+
+    """
+    # Scrub any anchor, as it fouls things
+    url = url.partition('#')[0]
+
+    urlparts = url.rstrip('/').split('/')
+
+    # This loop condition results in the yielded values stopping at
+    # 'http[s]://domain.com/objects.inv', since the URL protocol
+    # specifier has two forward slashes
+    while len(urlparts) >= 3:
+        urlparts.append('objects.inv')
+        yield '/'.join(urlparts)
+        urlparts.pop()
+        urlparts.pop()
+
+
 if __name__ == '__main__':    # pragma: no cover
     print('Module not executable.')
