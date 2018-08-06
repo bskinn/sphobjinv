@@ -93,6 +93,7 @@ it will automatically find and use the correct |objects.inv|:
     Attempting "https://docs.python.org/3/library/objects.inv" ...
     Attempting "https://docs.python.org/3/objects.inv" ...
     Remote inventory found.
+    <BLANKLINE>
     Conversion completed.
     '...objects.inv' converted to '...objects.txt' (plain).
     <BLANKLINE>
