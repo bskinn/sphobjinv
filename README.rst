@@ -28,9 +28,44 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
 **Having trouble writing cross-references?**
 
-``sphobjinv`` (short for '**Sph**\ inx **Obj**\ ects.\ **inv**') can help!
+``sphobjinv`` (short for '**sph**\ inx **obj**\ ects.\ **inv**') can help!
 
-*[TO DRAFT]*
+The syntax required for a functional Sphinx cross-reference is highly
+non-obvious in many cases. Sometimes Sphinx can guess correctly what
+you mean, but it's pretty hit-or-miss.  The best approach is to provide
+Sphinx with a completely specified cross-reference, and that's where
+``sphobjinv`` comes in.
+
+After a ``pip install sphobjinv``, find the documentation set you want
+to cross-reference into, and pass it to ``sphobjinv suggest``.
+
+For internal cross-references, locate ``objects.inv`` within `build/html`::
+
+    $ sphobjinv suggest doc/build/html/objects.inv as_rst -sit 50
+
+      Name                                                        Score    Index
+    -----------------------------------------------------------  -------  -------
+    :py:attribute:`sphobjinv.data.SuperDataObj.as_rst`             60       56
+    :py:function:`sphobjinv.cmdline.getparser`                     50       32
+    :py:attribute:`sphobjinv.data.SuperDataObj.as_str`             50       57
+    :py:attribute:`sphobjinv.inventory.Inventory.objects_rst`      50       99
+
+For external references, just find the documentation wherever it lives on the web,
+and pass ``sphobjinv suggest`` a URL from within the documentation set
+with the ``--url/-u`` flag. For example, say I need to know how to
+cross-reference the ``redirect()`` function from Flask (see
+`here <http://flask.pocoo.org/docs/1.0/api/?highlight=redirect#flask.redirect>`__)::
+
+    $ sphobjinv suggest http://flask.pocoo.org/docs/1.0/views/#method-hints redirect -siu
+
+    No inventory at provided URL.
+    Attempting "http://flask.pocoo.org/docs/1.0/views/objects.inv" ...
+    Attempting "http://flask.pocoo.org/docs/1.0/objects.inv" ...
+    Remote inventory found.
+    
+      Name                            Score    Index
+    -------------------------------  -------  -------
+    :py:function:`flask.redirect`      90       360
 
 
 ---
