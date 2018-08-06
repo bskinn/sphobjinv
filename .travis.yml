@@ -1,5 +1,6 @@
 install:
  - pip install -r requirements-travis.txt
+ - pip install -e .
 language: python
 python:
  - 3.4
