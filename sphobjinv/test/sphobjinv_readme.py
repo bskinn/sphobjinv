@@ -20,6 +20,7 @@ import os.path as osp
 import re
 import shlex
 import subprocess as sp
+import sys
 from textwrap import dedent
 import unittest as ut
 
@@ -30,7 +31,11 @@ p_shell = re.compile("""
     (?=(\\n\\n|\\n\\s+[$]))      # Lookahead for end of output
     """, re.X)
 
+py_ver = sys.version_info
 
+
+@ut.skipUnless(py_ver[0] >= 3 and py_ver[1] >= 5,
+               "Don't test README on Python 3.4")
 class TestReadmeShellCmds(ut.TestCase):
     """Testing README shell command output."""
 
