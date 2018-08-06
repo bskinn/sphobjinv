@@ -24,6 +24,8 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
 
+---
+
 **Using Sphinx?**
 
 **Having trouble writing cross-references?**

@@ -31,11 +31,12 @@ p_shell = re.compile("""
     (?=(\\n\\n|\\n\\s+[$]))      # Lookahead for end of output
     """, re.X)
 
+
 py_ver = sys.version_info
 
 
-@ut.skipUnless(py_ver[0] >= 3 and py_ver[1] >= 5,
-               "Don't test README on Python 3.4")
+@ut.skipUnless(py_ver[0] > 3 or (py_ver[0] == 3 and py_ver[1] >= 5),
+               "Skip on Python 3.4 due to variant subprocess behavior")
 class TestReadmeShellCmds(ut.TestCase):
     """Testing README shell command output."""
 
@@ -49,27 +50,22 @@ class TestReadmeShellCmds(ut.TestCase):
         chk = dt.OutputChecker()
 
         cmds = [_.group('cmd') for _ in p_shell.finditer(text)]
-        outs = [_.group('out') for _ in p_shell.finditer(text)]
+        outs = [dedent(_.group('out')) for _ in p_shell.finditer(text)]
 
         for i, tup in enumerate(zip(cmds, outs)):
             c, o = tup
 
             with self.subTest('exec_{0}'.format(i)):
-                if 'run' in dir(sp):  # Python 3.5+
-                    proc = sp.run(shlex.split(c), stdout=sp.PIPE,
-                                  stderr=sp.STDOUT, timeout=30,
-                                  )
-                else:  # Python 3.4
-                    proc = sp.call(shlex.split(c), stdout=sp.PIPE,
-                                   stderr=sp.STDOUT, timeout=30,
-                                   )
+                proc = sp.run(shlex.split(c), stdout=sp.PIPE,
+                              stderr=sp.STDOUT, timeout=30,
+                              )
 
-            result = '\n' + proc.stdout.decode('utf-8')
+            result = proc.stdout.decode('utf-8')
             dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
             with self.subTest('check_{0}'.format(i)):
-                self.assertTrue(chk.check_output(dedent(o), result, dt_flags),
-                                msg='\n'.join((dedent(o), result)))
+                self.assertTrue(chk.check_output(o, result, dt_flags),
+                                msg='\n'.join((o, result)))
 
 
 def setup_soi_import(dt_obj):
