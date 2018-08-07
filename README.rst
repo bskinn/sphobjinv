@@ -24,7 +24,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
 
----
+----
 
 **Using Sphinx?**
 
@@ -52,6 +52,8 @@ For internal cross-references, locate ``objects.inv`` within `build/html`::
     :py:attribute:`sphobjinv.data.SuperDataObj.as_str`             50       57
     :py:attribute:`sphobjinv.inventory.Inventory.objects_rst`      50       99
 
+.. end shell command
+
 For external references, just find the documentation wherever it lives on the web,
 and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
@@ -64,13 +66,50 @@ cross-reference the ``redirect()`` function from Flask (see
     Attempting "http://flask.pocoo.org/docs/1.0/views/objects.inv" ...
     Attempting "http://flask.pocoo.org/docs/1.0/objects.inv" ...
     Remote inventory found.
-    
+
       Name                            Score    Index
     -------------------------------  -------  -------
     :py:function:`flask.redirect`      90       360
 
+.. end shell command
 
----
+**Need to edit an inventory after it's created, or compose one from scratch?**
+
+``sphobjinv`` can help with that, too.
+
+``objects.inv`` files can be decompressed to plaintext at the commandline::
+
+    $ sphobjinv convert plain -o doc/build/html/objects.inv doc/scratch/
+    Conversion completed.
+    '...objects.inv' converted to '...objects.txt' (plain).
+
+.. end shell command
+
+JSON output is also supported (``sphobjinv convert json ...``).
+
+Alternatively, ``sphobjinv`` exposes an API to enable automation of
+inventory modifications::
+
+    >>> import sphobjinv as soi
+    >>> inv = soi.Inventory('doc/build/html/objects.inv')
+    >>> print(inv)
+    <Inventory (fname_zlib): sphobjinv v2.0, 179 objects>
+    >>> inv.project
+    'sphobjinv'
+    >>> inv.version
+    '2.0'
+    >>> inv.objects[0]
+    DataObjStr(name='sphobjinv.cmdline', domain='py', role='module', priority='0', uri='cli/implementation.html#module-$', dispname='-')
+
+The API also enables straightforward re-export of an inventory,
+for subsequent use with `intersphinx` cross-references.
+See `the docs <http://sphobjinv.readthedocs.io/en/latest/>`__
+for more details.
+
+----
+
+Full documentation is hosted at
+`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
 
 Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
 (``pip install sphobjinv``).
@@ -78,9 +117,6 @@ Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
 Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
-
-Full documentation at
-`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
 
 Copyright (c) Brian Skinn 2016-2018
 

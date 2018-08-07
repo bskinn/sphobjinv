@@ -27,8 +27,8 @@ import unittest as ut
 
 p_shell = re.compile("""
     \\n\\s+[$](?P<cmd>.*)        # Entered command
-    (?P<out>(\\n\\s+.*)+?)       # Line(s) of output
-    (?=(\\n\\n|\\n\\s+[$]))      # Lookahead for end of output
+    (?P<out>(\\n.*)+?)           # Line(s) of output
+    (?=\\n\\.\\.)                # Lookahead for explicit shell block endpoint
     """, re.X)
 
 
@@ -63,9 +63,11 @@ class TestReadmeShellCmds(ut.TestCase):
             result = proc.stdout.decode('utf-8')
             dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
+            msg = '\n\nExpected:\n' + o + '\n\nGot:\n' + result
+
             with self.subTest('check_{0}'.format(i)):
                 self.assertTrue(chk.check_output(o, result, dt_flags),
-                                msg='\n'.join((o, result)))
+                                msg=msg)
 
 
 def setup_soi_import(dt_obj):
