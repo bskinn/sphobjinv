@@ -73,6 +73,12 @@ cross-reference the ``redirect()`` function from Flask (see
 
 .. end shell command
 
+**NOTE** that the results from ``sphobjinv suggest`` are printed using the longer
+*block directives*, whereas cross-references must be composed using the
+*inline directives*. Thus, the above ``redirect()`` function must be
+cross-referenced as ``:func:`flask.redirect```, **not**
+``:function:`flask.redirect```.
+
 **Need to edit an inventory after it's created, or compose one from scratch?**
 
 ``sphobjinv`` can help with that, too.
