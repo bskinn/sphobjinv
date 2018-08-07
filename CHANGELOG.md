@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 #### Added
 
- * Loading remote inventories from the CLI (*NOT* via the API) now will
+ * Loading remote inventories from the CLI now will
    perform an automatic walk along the directory structure of the
    provided URL, searching for the objects.inv file of the
    documentation set.
+ * The above URL walking functionality is exposed for API use
+   at sphobjinv.fileops.urlwalk.
 
 #### Changed
 

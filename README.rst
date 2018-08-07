@@ -85,10 +85,13 @@ cross-reference the ``redirect()`` function from Flask (see
 
 .. end shell command
 
-JSON output is also supported (``sphobjinv convert json ...``).
+JSON output is supported (``sphobjinv convert json ...``), and
+inventories can be re-compressed to the
+partially-zlib-compressed form that ``intersphinx`` reads
+(``sphobjinv convert zlib ...``).
 
 Alternatively, ``sphobjinv`` exposes an API to enable automation of
-inventory modifications::
+inventory creation/modification::
 
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
@@ -102,7 +105,7 @@ inventory modifications::
     DataObjStr(name='sphobjinv.cmdline', domain='py', role='module', priority='0', uri='cli/implementation.html#module-$', dispname='-')
 
 The API also enables straightforward re-export of an inventory,
-for subsequent use with `intersphinx` cross-references.
+for subsequent use with ``intersphinx`` cross-references.
 See `the docs <http://sphobjinv.readthedocs.io/en/latest/>`__
 for more details.
 
