@@ -10,7 +10,7 @@ intended for use downstream of a web-scraping or other automated
 content-extraction tool.
 
 A (possibly obsolete) representative example of such a custom |objects.inv|
-can be found at my GitHub repo
+can be found at the GitHub repo
 `here <https://github.com/bskinn/intersphinx-xlwsf>`__.
 
 .. note::

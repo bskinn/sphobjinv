@@ -77,7 +77,7 @@ indicated URL):
     attr.Attribute py:class 1 api.html#$ -
     attr.Factory py:class 1 api.html#$ -
 
-Note that the URL provided **MUST** have the leading protocol specified (here,
+The URL provided **MUST** have the leading protocol specified (here,
 |cour|\ https\ ://\ |/cour|).
 
 It is not necessary to locate the |objects.inv| file before running |soi|;

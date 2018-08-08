@@ -42,6 +42,8 @@ class AP(object):
     API_GOOD_LOCAL = 'api_good_local'
     API_FAIL = 'api_fail'
 
+    README = 'readme'
+
     PFX = "--{0}"
 
 
@@ -84,6 +86,9 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.FAIL_LOCAL),
                      action='store_true',
                      help="Run all local expect-fail tests")
+    prs.add_argument(AP.PFX.format(AP.README),
+                     action='store_true',
+                     help="Run README doctest")
 
     # TestAll group
     gp_testall.add_argument(AP.PFX.format(AP.TESTALL),
@@ -179,6 +184,10 @@ def main():
                 AP.CLI, AP.CLI_LOCAL, AP.CLI_FAIL, AP.CLI_FAIL_LOCAL])
     addsuiteif(sphobjinv.test.sphobjinv_cli.suite_cli_expect_fail_nonlocal(),
                [AP.ALL, AP.FAIL, AP.CLI, AP.CLI_FAIL])
+
+    # README doctest
+    addsuiteif(sphobjinv.test.sphobjinv_readme.suite_doctest_readme(),
+               [AP.ALL, AP.README])
 
     # Enable testing all invs if indicated
     os.environ.update({TESTALL: '1' if params[AP.TESTALL] else ''})

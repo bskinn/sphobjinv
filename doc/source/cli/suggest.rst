@@ -62,7 +62,7 @@ Remote |objects.inv| files can be retrieved for inspection by passing the
     :py:function:`attr.filters.include`
     <BLANKLINE>
 
-Note that the URL provided **MUST** have the leading protocol specified (here,
+The URL provided **MUST** have the leading protocol specified (here,
 |cour|\ https\ ://\ |/cour|).
 
 It is not necessary to locate the |objects.inv| file before running |soi|;

@@ -3,13 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Sphinx Objects.inv Encoder/Decoder
-==================================
+Welcome to sphobjinv!
+=====================
+
+*A toolkit for inspection/manipulation of Sphinx objects inventories*
+
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
 <https://github.com/sphinx-doc/sphinx/blob/b371312887869c52e7be9033e60450a9dc12ca0c/sphinx/util/inventory.py#L159-L191>`__
-to a file called |objects.inv| in the html build directory.  This file is read by |isphx| when
+to a file called |objects.inv| in the html build directory.
+(One common location is, |cour|\ doc/build/html\ |/cour|, though the exact location will vary
+depending on the details of how Sphinx is configured.)  This file is read by |isphx| when
 generating links in other documentation.
 
 Since version 1.0 of Sphinx (~July 2010), the data in these |objects.inv| inventories is compressed by
@@ -33,7 +38,7 @@ Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
     pip install sphobjinv
 
 The package is configured for use both as a
-:doc:`command-line script <cmdline_usage>` and as a
+:doc:`command-line script <cli/index>` and as a
 :doc:`Python package <api_usage>`.
 
 Installing the optional dependency |python-Levenshtein|_ substantially
@@ -51,13 +56,13 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    :maxdepth: 1
    :hidden:
 
-   cmdline_usage
+   cli/index
    api_usage
    customfile
    levenshtein
    syntax
-   api_listing
-   CLI Implementation (non-API) <modules/cmdline>
+   api/index
+   CLI Implementation (non-API) <cli/implementation>
 
 
 
