@@ -11,17 +11,23 @@ found :doc:`here <implementation>` and in the documentation for the
 :meth:`~sphobjinv.inventory.Inventory.data_file` and
 :meth:`~sphobjinv.inventory.Inventory.suggest` methods.
 
-In the CLI execution examples below and in the pages describing the subparser
-options, file paths in CLI output are elided (with '...')
-so that CLI doctests will pass regardless of the build environment.
-The motivation for using |cour|\ cli_run\ |/cour| is described in more
-detail `here <https://bskinn.github.io/Testing-CLI-Scripts/>`__.
-In all cases, examples are executed in a sandboxed directory pre-loaded with
-|cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
-`here <https://github.com/bskinn/sphobjinv/blob/master/sphobjinv/test/resource/objects_attrs.inv>`__).
-:class:`~pathlib.Path` is imported into the namespace before all tests.
-|cour|\ file_head\ |/cour| is a custom helper function defined to retrieve the head of
-a specified file.
+Some notes on these CLI docs:
+
+ * CLI examples are executed in a sandboxed directory pre-loaded with
+   |cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
+   `here <https://github.com/bskinn/sphobjinv/blob/master/sphobjinv/
+   test/resource/objects_attrs.inv>`__).
+
+ * :class:`~pathlib.Path` (from :mod:`pathlib`)
+   is imported into the namespace before all tests.
+
+ * |cour|\ cli_run\ |/cour| is a helper function that enables doctesting
+   of CLI examples by mimicking execution of a shell command.
+   It is described in more detail
+   `here <https://bskinn.github.io/Testing-CLI-Scripts/>`__.
+
+ * |cour|\ file_head\ |/cour| is a helper function
+   that retrieves the head of a specified file.
 
 
 .. program:: sphobjinv

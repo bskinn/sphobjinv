@@ -3,13 +3,13 @@
 Sphinx objects.inv v2 Syntax
 ============================
 
-Plaintext Sphinx |objects.inv| files follow a syntax that, to the best of this
-author's ability to determine, is completely undocumented. The below
-syntax is believed to be accurate as of Jun 2018
-(|objects.inv| "version 2" files, Sphinx v1.7.4). Based upon
-a quick ``git diff`` of the `Sphinx repository
+After decompression, "version 2" Sphinx |objects.inv| files
+follow a syntax that, to the best of this author's ability to determine,
+is completely undocumented. The below
+syntax is believed to be accurate as of Jun 2018 (Sphinx v1.7.4).
+Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be accurate for all
-Sphinx versions >=1.0b1 that make use of the "version 2" |objects.inv| format.
+Sphinx versions >=1.0b1 that make use of this "version 2" |objects.inv| format.
 
 **The first line** `must be exactly
 <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L105-L106>`__:

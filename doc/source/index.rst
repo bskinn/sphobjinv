@@ -21,7 +21,7 @@ Since version 1.0 of Sphinx (~July 2010), the data in these |objects.inv| invent
 :mod:`zlib` (presumably to reduce storage requirements and improve download speeds; "version 2"),
 whereas prior to that date the data was left uncompressed ("version 1").  This compression renders
 the files non-human-readable.  **It is the purpose of this package to enable quick and simple
-compression/decompression and inspection of these files.**
+compression/decompression and inspection of these "version 2" inventory files.**
 
 In particular, |soi| was developed to satisfy two primary use cases:
 
@@ -33,9 +33,9 @@ In particular, |soi| was developed to satisfy two primary use cases:
 
 ----
 
-Sphinx Objects.inv Encoder/Decoder is available on PyPI under |soi|::
+Install |soi| via |cour|\ pip\ |/cour|::
 
-    pip install sphobjinv
+    $ pip install sphobjinv
 
 The package is configured for use both as a
 :doc:`command-line script <cli/index>` and as a
