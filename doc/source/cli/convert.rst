@@ -5,11 +5,13 @@ Command-Line Usage: "convert" Mode
 
 .. program:: sphobjinv convert
 
-The |cour|\ convert\ |/cour| subparser is used for all conversions of inventory
+The |cour|\ convert\ |/cour| subparser is used for all conversions of
+"version 2" Sphinx inventory
 files among plaintext, zlib-compressed, and (unique to |soi|) JSON formats.
-Currently, the |soi| CLI can read |objects.inv| files from local files
-in any of these three formats, as well as standard zlib-compressed files
-from remote locations (see :option:`--url`). At the moment, the only output
+Currently, the |soi| CLI can read inventory data from local files
+in any of these three formats, as well as the standard zlib-compressed format
+from files in remote locations (see :option:`--url`).
+At the moment, the only output
 method supported is writing to a local file, again in all three formats.
 
 .. note::
