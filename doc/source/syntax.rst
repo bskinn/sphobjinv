@@ -1,25 +1,25 @@
 .. Page describing objects.inv file syntax
 
-Sphinx Objects.inv v2 Syntax
+Sphinx objects.inv v2 Syntax
 ============================
 
-Plaintext Sphinx |objects.inv| files follow a syntax that, to the best of this
-author's ability to determine, is completely undocumented. The below
-syntax is believed to be accurate as of Feb 2018
-(|objects.inv| "version 2" files, Sphinx v1.6.6). Based upon
-a quick ``git diff`` of the `Sphinx repository
+After decompression, "version 2" Sphinx |objects.inv| files
+follow a syntax that, to the best of this author's ability to determine,
+is completely undocumented. The below
+syntax is believed to be accurate as of Jun 2018 (Sphinx v1.7.4).
+Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be accurate for all
-Sphinx>=1.0b1.
+Sphinx versions >=1.0b1 that make use of this "version 2" |objects.inv| format.
 
 **The first line** `must be exactly
-<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L105-L106>`__:
+<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L105-L106>`__:
 
 .. code-block:: none
 
     # Sphinx inventory version 2
 
 **The second and third lines** `must obey
-<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L133-L134>`__
+<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L133-L134>`__
 the template:
 
 .. code-block:: none
@@ -35,7 +35,7 @@ the |isphx| cross-references:
     .. image:: _static/mouseover_example.png
 
 **The fourth line** `must contain
-<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L136-L137>`__
+<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L136-L137>`__
 the string 'zlib' somewhere in it, but for the purposes of consistency it should
 be exactly:
 
@@ -46,7 +46,7 @@ be exactly:
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L188-L190>`__:
+<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L188-L190>`__:
 
 .. code-block:: none
 
@@ -67,8 +67,8 @@ be exactly:
 
 ``{priority}``
     Flag for `placement in search results
-    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/domains/
-    __init__.py#L300-L306>`__. Most will be 1 (standard priority) or
+    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/domains/
+    __init__.py#L319-L325>`__. Most will be 1 (standard priority) or
     -1 (omit from results)
 
 ``{uri}``
@@ -109,11 +109,11 @@ size of the inventory file:
     <https://en.wikipedia.org/wiki/Fragment_identifier>`__," the portion
     following the ``#`` symbol) and the tail of the anchor is identical to
     ``{name}``, that tail is `replaced
-    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L180-L182>`__
+    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L180-L182>`__
     with ``$``. |br| |br|
 
  #. If ``{dispname}`` is identical to ``{name}``, it is `stored
-    <https://github.com/sphinx-doc/sphinx/blob/1.6.6/sphinx/util/inventory.py#L186-L187>`__
+    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L186-L187>`__
     as ``-``.
 
 Thus, a standard |isphx| reference to this method would take the form (the leading
@@ -155,8 +155,4 @@ as in :obj:`This is join! <str.join>`:
 .. |defdom| replace:: default domain
 
 .. _defdom: http://www.sphinx-doc.org/en/stable/domains.html
-
-.. |isphxmap| replace:: ``intersphinx_mapping``
-
-.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
 

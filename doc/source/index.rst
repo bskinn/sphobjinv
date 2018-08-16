@@ -3,36 +3,47 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Sphinx Objects.inv Encoder/Decoder
-==================================
+Welcome to sphobjinv!
+=====================
+
+*A toolkit for inspection/manipulation of Sphinx objects inventories*
+
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
-<https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/builders/html.py#L834-L861>`__
-to a file called ``objects.inv`` in the html build directory.  This file is read by |isphx| when
+<https://github.com/sphinx-doc/sphinx/blob/b371312887869c52e7be9033e60450a9dc12ca0c/sphinx/util/inventory.py#L159-L191>`__
+to a file called |objects.inv| in the html build directory.
+(One common location is, |cour|\ doc/build/html\ |/cour|, though the exact location will vary
+depending on the details of how Sphinx is configured.)  This file is read by |isphx| when
 generating links in other documentation.
 
-Since version 1.0 of Sphinx (~July 2010), the data in these ``objects.inv`` inventories is compressed by
+Since version 1.0 of Sphinx (~July 2010), the data in these |objects.inv| inventories is compressed by
 :mod:`zlib` (presumably to reduce storage requirements and improve download speeds; "version 2"),
 whereas prior to that date the data was left uncompressed ("version 1").  This compression renders
 the files non-human-readable.  **It is the purpose of this package to enable quick and simple
-encoding/decoding of these files.**
+compression/decompression and inspection of these "version 2" inventory files.**
 
-In particular, ``sphobjinv`` was developed to satisfy two primary use cases:
+In particular, |soi| was developed to satisfy two primary use cases:
 
- #. Searching and inspection of ``objects.inv`` contents in order to identify
-    how to properly insert |isphx| references. |br| |br|
+ #. Searching and inspection of |objects.inv| contents in order to identify
+    how to properly construct |isphx| references. |br| |br|
 
- #. Assembly of new ``objects.inv`` files in order to allow |isphx| cross-referencing
+ #. Assembly of new |objects.inv| files in order to allow |isphx| cross-referencing
     of other documentation sets that were not created by Sphinx.
 
-Sphinx Objects.inv Encoder/Decoder is available on PyPI under ``sphobjinv``::
+----
 
-    pip install sphobjinv
+Install |soi| via |cour|\ pip\ |/cour|::
+
+    $ pip install sphobjinv
 
 The package is configured for use both as a
-:doc:`command-line script <cmdline>` and as a
-:doc:`Python package <api>`.
+:doc:`command-line script <cli/index>` and as a
+:doc:`Python package <api_usage>`.
+
+Installing the optional dependency |python-Levenshtein|_ substantially
+accelerates the the "suggest" functionality; see
+:doc:`here <levenshtein>` for more information.
 
 The project source repository is on GitHub: `bskinn/sphobjinv
 <https://www.github.com/bskinn/sphobjinv>`__.
@@ -45,11 +56,13 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    :maxdepth: 1
    :hidden:
 
-   cmdline
-   syntax
+   cli/index
+   api_usage
    customfile
-   api
-   CLI Implementation (non-API) <modules/cmdline>
+   levenshtein
+   syntax
+   api/index
+   CLI Implementation (non-API) <cli/implementation>
 
 
 

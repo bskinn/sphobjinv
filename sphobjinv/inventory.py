@@ -478,6 +478,10 @@ class Inventory(object):
         between `name` and the object(s) of interest,
         and the desired fidelity of the search results to `name`.
 
+        This functionality is provided by the
+        :doc:`'suggest' subparser </cli/suggest>`
+        of the command-line interface.
+
         Parameters
         ----------
         name

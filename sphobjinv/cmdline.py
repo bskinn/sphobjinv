@@ -174,12 +174,18 @@ DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
 #: (unless :data:`ALL` is specified)
 SUGGEST_CONFIRM_LENGTH = 30
 
+#: Default match threshold for :option:`sphobjinv suggest --thresh`
+DEF_THRESH = 75
+
 
 def selective_print(thing, params):
     """Print `thing` if not in quiet mode.
 
     Quiet mode is indicated by the value at the :data:`QUIET` key
-    within `params`
+    within `params`.
+
+    Quiet mode is not implemented for the ":doc:`suggest </cli/suggest>`"
+    CLI mode.
 
     Parameters
     ----------
@@ -278,9 +284,10 @@ def getparser():
                                    "Mode names can be abbreviated "
                                    "to their first two letters.")
 
-    # Enforce subparser as optional. No effect for 3.4 to 3.6;
-    # required a/o 3.7.0b4 due to change in default behavior, per:
-    # https://bugs.python.org/issue33109
+    # Enforce subparser as optional. No effect for 3.4 to 3.7;
+    # briefly required a/o 3.7.0b4 due to change in default behavior, per:
+    # https://bugs.python.org/issue33109. 3.6 behavior restored for
+    # 3.7 release.
     sprs.required = False
 
     spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
@@ -364,7 +371,7 @@ def getparser():
                                   "'search' is exactly a known object name. "
                                   "A value of 30-50 gives better results "
                                   "for approximate matches.",
-                             default=75, type=int, choices=range(101),
+                             default=DEF_THRESH, type=int, choices=range(101),
                              metavar='{0-100}')
     spr_suggest.add_argument('-' + URL[0], '--' + URL,
                              help="Treat 'infile' as a URL for download",
@@ -413,7 +420,7 @@ def resolve_outpath(out_path, in_path, params):
     unspecified, it is taken as the appropriate mode-specific value
     from :data:`DEF_OUT_EXT`.
 
-    If |cour|\ --URL\ |/cour| is passed, the input directory
+    If :data:`URL` is passed, the input directory
     is taken to be :func:`os.getcwd` and the input basename
     is taken as :data:`DEF_BASENAME`.
 
@@ -649,7 +656,37 @@ def write_json(inv, path, *, expand=False, contract=False):
 
 
 def do_convert(inv, in_path, params):
-    """Carry out the conversion operation."""
+    r"""Carry out the conversion operation, including writing output.
+
+    If :data:`OVERWRITE` is passed and the output file
+    (the default location, or as passed to :data:`OUTFILE`)
+    exists, it will be overwritten without a prompt. Otherwise,
+    the user will be queried if it is desired to overwrite
+    the existing file.
+
+    If :data:`QUIET` is passed, nothing will be
+    printed to |cour|\ stdout\ |/cour|
+    (potentially useful for scripting),
+    and any existing output file will be overwritten
+    without prompting.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Inventory object to be output in the format
+        indicated by :data:`MODE`.
+
+    in_path
+
+        |str| -- For a local input file, its absolute path.
+        For a URL, the (possibly truncated) URL text.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
     mode = params[MODE]
 
     # Work up the output location
@@ -686,7 +723,7 @@ def do_convert(inv, in_path, params):
         sys.exit(1)
 
     # Report success, if not QUIET
-    selective_print("\nConversion completed.\n"
+    selective_print("Conversion completed.\n"
                     "'{0}' converted to '{1}' ({2}).".format(in_path,
                                                              out_path,
                                                              mode),
@@ -694,7 +731,36 @@ def do_convert(inv, in_path, params):
 
 
 def do_suggest(inv, params):
-    """Perform the suggest call and output the results."""
+    r"""Perform the suggest call and output the results.
+
+    Results are printed one per line.
+
+    If neither :data:`INDEX` nor :data:`SCORE` is specified,
+    the results are output without a header.
+    If either or both are specified,
+    the results are output in a lightweight tabular format.
+
+    If the number of results exceeds
+    :data:`SUGGEST_CONFIRM_LENGTH`,
+    the user will be queried whether to display
+    all of the returned results
+    unless :data:`ALL` is specified.
+
+    No |cour|\ -\\-quiet\ |/cour| option is available here, since
+    a silent mode for suggestion output is nonsensical.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Inventory object to be output in the format
+        indicated by :data:`MODE`.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
     with_index = params[INDEX]
     with_score = params[SCORE]
     results = inv.suggest(params[SEARCH], thresh=params[THRESH],
@@ -702,7 +768,7 @@ def do_suggest(inv, params):
                           with_score=with_score)
 
     if len(results) == 0:
-        print('\nNo results found.')
+        print('No results found.')
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
@@ -751,7 +817,32 @@ def do_suggest(inv, params):
 
 
 def inv_local(params):
-    """Create inventory from local reference."""
+    """Create |Inventory| from local source.
+
+    Uses :func:`resolve_inpath` to sanity-check and/or convert
+    :data:`INFILE`.
+
+    Calls :func:`sys.exit` internally in error-exit situations.
+
+    Parameters
+    ----------
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        at :data:`INFILE`
+
+    in_path
+
+        |str| -- Input file path as resolved/checked by
+        :func:`resolve_inpath`
+
+    """
     # Resolve input file path
     try:
         in_path = resolve_inpath(params[INFILE])
@@ -770,7 +861,37 @@ def inv_local(params):
 
 
 def inv_url(params):
-    """Create inventory from downloaded URL."""
+    """Create |Inventory| from file downloaded from URL.
+
+    Initially, treats :data:`INFILE` as a download URL to be passed to
+    the `url` initialization argument
+    of :class:`~sphobjinv.inventory.Inventory`.
+
+    If an inventory is not found at that exact URL, progressively
+    searches the directory tree of the URL for |objects.inv|.
+
+    Calls :func:`sys.exit` internally in error-exit situations.
+
+    Parameters
+    ----------
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        at :data:`INFILE`
+
+    ret_path
+
+        |str| -- URL from :data:`INFILE` used to construct `inv`.
+        If URL is longer than 45 characters, the central portion is elided.
+
+    """
+    from .fileops import urlwalk
     from .inventory import Inventory
 
     in_file = params[INFILE]
@@ -780,23 +901,60 @@ def inv_url(params):
         selective_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
+    # Need to initialize the inventory variable
+    inv = None
+
+    # Try URL as provided
     try:
         inv = Inventory(url=in_file)
     except Exception as e:
-        selective_print("\nError while downloading/parsing URL:", params)
-        selective_print(err_format(e), params)
+        selective_print("No inventory at provided URL.", params)
+    else:
+        selective_print('Remote inventory found.', params)
+        url = in_file
+
+    # Keep searching if inv not found yet
+    if not inv:
+        for url in urlwalk(in_file):
+            selective_print('Attempting "{0}" ...'.format(url), params)
+            try:
+                inv = Inventory(url=url)
+            except Exception:
+                pass
+            else:
+                selective_print('Remote inventory found.', params)
+                break
+
+    # Cosmetic line break
+    selective_print(' ', params)
+
+    # Success or no?
+    if not inv:
+        selective_print('No inventory found!', params)
         sys.exit(1)
 
-    if len(in_file) > 45:
-        ret_path = in_file[:20] + '[...]' + in_file[-20:]
+    if len(url) > 45:
+        ret_path = url[:20] + '[...]' + url[-20:]
     else:  # pragma: no cover
-        ret_path = in_file
+        ret_path = url
 
     return inv, ret_path
 
 
 def main():
-    """Handle command line invocation."""
+    r"""Handle command line invocation.
+
+    Parses command line arguments,
+    handling the no-arguments and
+    :data:`VERSION` cases.
+
+    Creates the |Inventory| from the indicated source
+    and method.
+
+    Invokes :func:`do_convert` or :func:`do_suggest`
+    per the subparser name stored in :data:`SUBPARSER_NAME`.
+
+    """
     # If no args passed, stick in '-h'
     if len(sys.argv) == 1:
         sys.argv.append('-h')
@@ -811,7 +969,13 @@ def main():
         print(VER_TXT)
         sys.exit(0)
 
-    # Generate the input Inventory based on --url or not
+    # Regardless of mode, insert extra blank line
+    # for cosmetics
+    selective_print(' ', params)
+
+    # Generate the input Inventory based on --url or not.
+    # These inventory-load functions should call
+    # sys.exit(n) internally in error-exit situations
     if params[URL]:
         inv, in_path = inv_url(params)
     else:

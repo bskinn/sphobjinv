@@ -9,14 +9,18 @@ def readme():
     with open('README.rst', 'r') as f:
         content = f.read()
 
+    # Helper function
     def content_update(content, pattern, sub):
         return re.sub(pattern, sub, content, flags=re.M | re.I)
 
+    # Docs reference updates to current release version, for PyPI
+    # This one gets the badge image
     content = content_update(
         content,
         r'(?<=/readthedocs/{0}/)\S+?(?=\.svg$)'.format(NAME),
         'v' + __version__)
 
+    # This one gets the RtD links
     content = content_update(
         content,
         r'(?<={0}\.readthedocs\.io/en/)\S+?(?=/)'.format(NAME),
