@@ -67,7 +67,7 @@ The options for the parent |soi| command are:
 
     >>> cli_run('sphobjinv --version')
     <BLANKLINE>
-    sphobjinv v2.0rc1
+    sphobjinv v2.0
     <BLANKLINE>
     Copyright (c) Brian Skinn 2016-2018
     License: The MIT License

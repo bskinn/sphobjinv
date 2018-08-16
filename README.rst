@@ -118,7 +118,8 @@ inventory creation/modification::
 
 The API also enables straightforward re-export of an inventory,
 for subsequent use with ``intersphinx`` cross-references.
-See `the docs <http://sphobjinv.readthedocs.io/en/latest/>`__
+See `the docs <http://sphobjinv.readthedocs.io/en/latest/
+api_usage.html#exporting-an-inventory>`__
 for more details.
 
 ----

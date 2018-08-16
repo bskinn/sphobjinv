@@ -48,4 +48,4 @@ from .schema import json_schema
 from .zlib import compress, decompress
 
 
-__version__ = '2.0rc1'
+__version__ = '2.0'
