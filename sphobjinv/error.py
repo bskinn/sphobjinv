@@ -39,5 +39,5 @@ class VersionError(SphobjinvError):
     """
 
 
-if __name__ == '__main__':    # pragma: no cover
-    print('Module not executable.')
+if __name__ == "__main__":  # pragma: no cover
+    print("Module not executable.")

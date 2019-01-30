@@ -1,5 +1,5 @@
 install:
- - pip install -r requirements-travis.txt
+ - pip install -U --force-reinstall -r requirements-travis.txt
  - pip install -e .
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
@@ -9,8 +9,11 @@ python:
  - 3.6
  - 3.7-dev
 script:
+ - python --version
+ - pip list
  - coverage run tests.py -a --testall
- - flake8 sphobjinv
- - echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.6' && sh -c 'cd doc; make doctest' || echo 'No doctest.'
- - echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.6' && codecov || echo "No codecov."
+ - do_others=$( echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.6' | wc -l )
+ - if [ $do_others -gt 0 ]; then pip install black; black --check setup.py tests.py sphobjinv sphobjinv/test -l 79; else echo "No black."; fi
+ - if [ $do_others -gt 0 ]; then sh -c 'cd doc; make doctest'; else echo "No doctest."; fi
+ - if [ $do_others -gt 0 ]; then codecov; else echo "No codecov."; fi
 

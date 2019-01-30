@@ -32,37 +32,37 @@ import attr
 
 
 # Handle attr's convert --> converter in v17.4
-_attr_ver = list(int(_) for _ in attr.__version__.split('.'))
+_attr_ver = list(int(_) for _ in attr.__version__.split("."))
 if _attr_ver[0] > 17 or (_attr_ver[0] == 17 and _attr_ver[1] > 3):
-    CONVERTER = 'converter'  # pragma: no cover
+    CONVERTER = "converter"  # pragma: no cover
 else:
-    CONVERTER = 'convert'  # pragma: no cover
+    CONVERTER = "convert"  # pragma: no cover
 
 
 class DataFields(Enum):
     """|Enum| for the fields of |objects.inv| data objects."""
 
     #: Object name, as recognized internally by Sphinx
-    Name = 'name'
+    Name = "name"
 
     #: Sphinx domain housing the object
-    Domain = 'domain'
+    Domain = "domain"
 
     #: Full name of Sphinx role to be used when referencing the object
-    Role = 'role'
+    Role = "role"
 
     #: Object search priority
-    Priority = 'priority'
+    Priority = "priority"
 
     #: URI to the location of the object's documentation,
     #: relative to the documentation root
-    URI = 'uri'
+    URI = "uri"
 
     #: Default display name for the object
     #: in rendered documentation
     #: when referenced as
     #: |cour|\ \:domain\:role\:\`name\`\ |/cour|
-    DispName = 'dispname'
+    DispName = "dispname"
 
 
 def _utf8_decode(b):
@@ -72,7 +72,7 @@ def _utf8_decode(b):
 
     """
     if type(b) is bytes:
-        return b.decode(encoding='utf-8')
+        return b.decode(encoding="utf-8")
     elif type(b) is str:
         return b
     else:
@@ -86,7 +86,7 @@ def _utf8_encode(s):
 
     """
     if type(s) is str:
-        return s.encode(encoding='utf-8')
+        return s.encode(encoding="utf-8")
     elif type(s) is bytes:
         return s
     else:
@@ -110,20 +110,20 @@ class SuperDataObj(object, metaclass=ABCMeta):
     #: Helper |str| for generating plaintext |objects.inv|
     #: data lines. The field names MUST match the |str| values
     #: of the :class:`~DataFields` members.
-    data_line_fmt = ('{name} {domain}:{role} {priority} '
-                     '{uri} {dispname}')
+    data_line_fmt = "{name} {domain}:{role} {priority} " "{uri} {dispname}"
 
     #: |str.format| template for generating reST-like representations
     #: of object data for :data:`as_rst` (used with
     #: :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>`).
-    rst_fmt = ':{domain}:{role}:`{name}`'
+    rst_fmt = ":{domain}:{role}:`{name}`"
 
     def __str__(self):  # pragma: no cover
         """Return pretty string representation."""
-        fmt_str = '<{0}:: :{1}:{2}:`{3}`>'
+        fmt_str = "<{0}:: :{1}:{2}:`{3}`>"
 
-        return fmt_str.format(type(self).__name__, self.domain,
-                              self.role, self.name)
+        return fmt_str.format(
+            type(self).__name__, self.domain, self.role, self.name
+        )
 
     @property
     @abstractmethod
@@ -212,7 +212,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
     def uri_contracted(self):
         """Object relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
-            return self.uri[:-len(self.name)] + self.uri_abbrev
+            return self.uri[: -len(self.name)] + self.uri_abbrev
         else:
             return self.uri
 
@@ -220,7 +220,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
     def uri_expanded(self):
         """Object relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
-            return self.uri[:-len(self.uri_abbrev)] + self.name
+            return self.uri[: -len(self.uri_abbrev)] + self.name
         else:
             return self.uri
 
@@ -298,18 +298,25 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         """
         if expand and contract:
-            raise ValueError("'expand' and 'contract' cannot "
-                             "both be true.")
+            raise ValueError("'expand' and 'contract' cannot " "both be true.")
 
         d = {a: getattr(self, a) for a in (e.value for e in DataFields)}
 
         if expand:
-            d.update({DataFields.URI.value: self.uri_expanded,
-                      DataFields.DispName.value: self.dispname_expanded})
+            d.update(
+                {
+                    DataFields.URI.value: self.uri_expanded,
+                    DataFields.DispName.value: self.dispname_expanded,
+                }
+            )
 
         if contract:
-            d.update({DataFields.URI.value: self.uri_contracted,
-                      DataFields.DispName.value: self.dispname_contracted})
+            d.update(
+                {
+                    DataFields.URI.value: self.uri_contracted,
+                    DataFields.DispName.value: self.dispname_contracted,
+                }
+            )
 
         return d
 
@@ -395,8 +402,8 @@ class SuperDataObj(object, metaclass=ABCMeta):
 class DataObjStr(SuperDataObj):
     """:class:`SuperDataObj` subclass generating |str| object data."""
 
-    uri_abbrev = '$'
-    dispname_abbrev = '-'
+    uri_abbrev = "$"
+    dispname_abbrev = "-"
 
     name = attr.ib(**{CONVERTER: _utf8_decode})
     domain = attr.ib(**{CONVERTER: _utf8_decode})
@@ -409,13 +416,15 @@ class DataObjStr(SuperDataObj):
 
     @as_bytes.default
     def _as_bytes_default(self):
-        return DataObjBytes(name=self.name,
-                            domain=self.domain,
-                            role=self.role,
-                            priority=self.priority,
-                            uri=self.uri,
-                            dispname=self.dispname,
-                            as_str=self)
+        return DataObjBytes(
+            name=self.name,
+            domain=self.domain,
+            role=self.role,
+            priority=self.priority,
+            uri=self.uri,
+            dispname=self.dispname,
+            as_str=self,
+        )
 
     as_str = attr.ib(repr=False)
 
@@ -432,8 +441,8 @@ class DataObjStr(SuperDataObj):
 class DataObjBytes(SuperDataObj):
     """:class:`SuperDataObj` subclass generating |bytes| object data."""
 
-    uri_abbrev = b'$'
-    dispname_abbrev = b'-'
+    uri_abbrev = b"$"
+    dispname_abbrev = b"-"
 
     name = attr.ib(**{CONVERTER: _utf8_encode})
     domain = attr.ib(**{CONVERTER: _utf8_encode})
@@ -446,13 +455,15 @@ class DataObjBytes(SuperDataObj):
 
     @as_str.default
     def _as_str_default(self):
-        return DataObjStr(name=self.name,
-                          domain=self.domain,
-                          role=self.role,
-                          priority=self.priority,
-                          uri=self.uri,
-                          dispname=self.dispname,
-                          as_bytes=self)
+        return DataObjStr(
+            name=self.name,
+            domain=self.domain,
+            role=self.role,
+            priority=self.priority,
+            uri=self.uri,
+            dispname=self.dispname,
+            as_bytes=self,
+        )
 
     as_bytes = attr.ib(repr=False)
 
@@ -462,8 +473,8 @@ class DataObjBytes(SuperDataObj):
 
     def _data_line_postprocess(self, s):
         """Encode to bytes before data_line return."""
-        return s.encode('utf-8')
+        return s.encode("utf-8")
 
 
-if __name__ == '__main__':    # pragma: no cover
-    print('Module not executable.')
+if __name__ == "__main__":  # pragma: no cover
+    print("Module not executable.")

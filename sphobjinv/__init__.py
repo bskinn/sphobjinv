@@ -27,16 +27,29 @@ Sphinx |objects.inv| files.
 
 from __future__ import absolute_import
 
-__all__ = ['readbytes', 'writebytes', 'readjson', 'writejson', 'urlwalk',
-           'compress', 'decompress',
-           'pb_comments', 'pb_data', 'pb_version', 'pb_project',
-           'p_data',
-           'DataFields', 'HeaderFields',
-           'SourceTypes',
-           'SphobjinvError', 'VersionError',
-           'DataObjStr', 'DataObjBytes',
-           'Inventory',
-           'json_schema']
+__all__ = [
+    "readbytes",
+    "writebytes",
+    "readjson",
+    "writejson",
+    "urlwalk",
+    "compress",
+    "decompress",
+    "pb_comments",
+    "pb_data",
+    "pb_version",
+    "pb_project",
+    "p_data",
+    "DataFields",
+    "HeaderFields",
+    "SourceTypes",
+    "SphobjinvError",
+    "VersionError",
+    "DataObjStr",
+    "DataObjBytes",
+    "Inventory",
+    "json_schema",
+]
 
 from .data import DataObjStr, DataObjBytes, DataFields
 from .inventory import Inventory, SourceTypes, HeaderFields
@@ -48,4 +61,4 @@ from .schema import json_schema
 from .zlib import compress, decompress
 
 
-__version__ = '2.0'
+__version__ = "2.0"

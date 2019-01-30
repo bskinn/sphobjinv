@@ -39,134 +39,137 @@ from . import __version__
 # ### Version arg and helpers
 #: Optional argument name for use with the base
 #: argument parser, to show version &c. info, and exit
-VERSION = 'version'
+VERSION = "version"
 
 #: Version &c. output blurb
-VER_TXT = ("\nsphobjinv v{0}\n\n".format(__version__) +
-           "Copyright (c) Brian Skinn 2016-2018\n"
-           "License: The MIT License\n\n"
-           "Bug reports & feature requests:"
-           " https://github.com/bskinn/sphobjinv\n"
-           "Documentation:"
-           " http://sphobjinv.readthedocs.io\n")
+VER_TXT = (
+    "\nsphobjinv v{0}\n\n".format(__version__)
+    + "Copyright (c) Brian Skinn 2016-2018\n"
+    "License: The MIT License\n\n"
+    "Bug reports & feature requests:"
+    " https://github.com/bskinn/sphobjinv\n"
+    "Documentation:"
+    " http://sphobjinv.readthedocs.io\n"
+)
 
 # ### Subparser selectors and argparse param for storing subparser name
 #: Subparser name for inventory file conversions; stored in
 #: :data:`SUBPARSER_NAME` when selected
-CONVERT = 'convert'
+CONVERT = "convert"
 
 #: Subparser name for inventory object suggestions; stored in
 #: :data:`SUBPARSER_NAME` when selected
-SUGGEST = 'suggest'
+SUGGEST = "suggest"
 
 #: Param for storing subparser name
 #: (:data:`CONVERT` or :data:`SUGGEST`)
-SUBPARSER_NAME = 'sprs_name'
+SUBPARSER_NAME = "sprs_name"
 
 # ### Common URL argument for both subparsers
 #: Optional argument name for use with both :data:`CONVERT` and
 #: :data:`SUGGEST` subparsers, indicating that
 #: :data:`INFILE` is to be treated as a URL
 #: rather than a local file path
-URL = 'url'
+URL = "url"
 
 # ### Conversion subparser: 'mode' param and choices
 #: Positional argument name for use with :data:`CONVERT` subparser,
 #: indicating output file format
 #: (:data:`ZLIB`, :data:`PLAIN` or :data:`JSON`)
-MODE = 'mode'
+MODE = "mode"
 
 #: Argument value for :data:`CONVERT` :data:`MODE`,
 #: to output a :mod:`zlib`-compressed inventory
-ZLIB = 'zlib'
+ZLIB = "zlib"
 
 #: Argument value for :data:`CONVERT` :data:`MODE`,
 #: to output a plaintext inventory
-PLAIN = 'plain'
+PLAIN = "plain"
 
 #: Argument value for :data:`CONVERT` :data:`MODE`,
 #: to output an inventory as JSON
-JSON = 'json'
+JSON = "json"
 
 # ### Source/destination params
 #: Required positional argument name for use with both :data:`CONVERT` and
 #: :data:`SUGGEST` subparsers, holding the path
 #: (or URL, if :data:`URL` is specified)
 #: to the input file
-INFILE = 'infile'
+INFILE = "infile"
 
 #: Optional positional argument name
 #: for use with the :data:`CONVERT` subparser,
 #: holding the path to the output file
 #: (:data:`DEF_BASENAME` and the appropriate item from :data:`DEF_OUT_EXT`
 #: are used if this argument is not provided)
-OUTFILE = 'outfile'
+OUTFILE = "outfile"
 
 # ### Convert subparser optional params
 #: Optional argument name for use with the :data:`CONVERT` subparser,
 #: indicating to suppress console output
-QUIET = 'quiet'
+QUIET = "quiet"
 
 #: Optional argument name for use with the :data:`CONVERT` subparser,
 #: indicating to expand URI and display name
 #: abbreviations in the generated output file
-EXPAND = 'expand'
+EXPAND = "expand"
 
 #: Optional argument name for use with the :data:`CONVERT` subparser,
 #: indicating to contract URIs and display names
 #: to abbreviated forms in the generated output file
-CONTRACT = 'contract'
+CONTRACT = "contract"
 
 #: Optional argument name for use with the :data:`CONVERT` subparser,
 #: indicating to overwrite any existing output
 #: file without prompting
-OVERWRITE = 'overwrite'
+OVERWRITE = "overwrite"
 
 # ### Suggest subparser params
 #: Positional argument name for use with the :data:`SUGGEST` subparser,
 #: holding the search term for |fuzzywuzzy|_ text matching
-SEARCH = 'search'
+SEARCH = "search"
 
 #: Optional argument name for use with the :data:`SUGGEST` subparser,
 #: taking the minimum desired |fuzzywuzzy|_ match quality
 #: as one required argument
-THRESH = 'thresh'
+THRESH = "thresh"
 
 #: Optional argument name for use with the :data:`SUGGEST` subparser,
 #: indicating to print the location index of each returned object
 #: within :data:`INFILE` along with the object domain/role/name
 #: (may be specified with :data:`SCORE`)
-INDEX = 'index'
+INDEX = "index"
 
 #: Optional argument name for use with the :data:`SUGGEST` subparser,
 #: indicating to print the |fuzzywuzzy|_ score of each returned object
 #: within :data:`INFILE` along with the object domain/role/name
 #: (may be specified with :data:`INDEX`)
-SCORE = 'score'
+SCORE = "score"
 
 #: Optional argument name for use with the :data:`SUGGEST` subparser,
 #: indicating to print all returned objects, regardless of the
 #: number returned, without asking for confirmation
-ALL = 'all'
+ALL = "all"
 
 # ### Helper strings
 #: Help text for the :data:`CONVERT` subparser
-HELP_CO_PARSER = ("Convert intersphinx inventory to zlib-compressed, "
-                  "plaintext, or JSON formats.")
+HELP_CO_PARSER = (
+    "Convert intersphinx inventory to zlib-compressed, "
+    "plaintext, or JSON formats."
+)
 
 #: Help text for the :data:`SUGGEST` subparser
-HELP_SU_PARSER = ("Fuzzy-search intersphinx inventory "
-                  "for desired object(s).")
+HELP_SU_PARSER = "Fuzzy-search intersphinx inventory " "for desired object(s)."
 
 #: Help text for default extensions for the various conversion types
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
 
 # ### Defaults for an unspecified OUTFILE
 #: Default base name for an unspecified :data:`OUTFILE`
-DEF_BASENAME = 'objects'
+DEF_BASENAME = "objects"
 
 #: Default extensions for an unspecified :data:`OUTFILE`
-DEF_OUT_EXT = {ZLIB: '.inv', PLAIN: '.txt', JSON: '.json'}
+DEF_OUT_EXT = {ZLIB: ".inv", PLAIN: ".txt", JSON: ".json"}
 
 # ### Useful constants
 #: Number of returned objects from a :data:`SUGGEST` subparser invocation
@@ -198,7 +201,7 @@ def selective_print(thing, params):
         |dict| -- Parameters/values mapping from the active subparser
 
     """
-    if (not params[SUBPARSER_NAME][:2] == 'co' or not params[QUIET]):
+    if not params[SUBPARSER_NAME][:2] == "co" or not params[QUIET]:
         print(thing)
 
 
@@ -219,7 +222,7 @@ def err_format(exc):
         |cour|\ '{type}: {message}'\ |/cour|
 
     """
-    return '{0}: {1}'.format(type(exc).__name__, str(exc))
+    return "{0}: {1}".format(type(exc).__name__, str(exc))
 
 
 def yesno_prompt(prompt):
@@ -249,8 +252,8 @@ def yesno_prompt(prompt):
         |str| -- User response
 
     """
-    resp = ''
-    while not (resp.lower() == 'n' or resp.lower() == 'y'):
+    resp = ""
+    while not (resp.lower() == "n" or resp.lower() == "y"):
         resp = input(prompt)
     return resp
 
@@ -266,23 +269,30 @@ def getparser():
         of ``sphobjinv``
 
     """
-    prs = ap.ArgumentParser(description="Format conversion for "
-                                        "and introspection of "
-                                        "intersphinx "
-                                        "'objects.inv' files.")
-    prs.add_argument('-' + VERSION[0], '--' + VERSION,
-                     help="Print package version & other info",
-                     action='store_true')
+    prs = ap.ArgumentParser(
+        description="Format conversion for "
+        "and introspection of "
+        "intersphinx "
+        "'objects.inv' files."
+    )
+    prs.add_argument(
+        "-" + VERSION[0],
+        "--" + VERSION,
+        help="Print package version & other info",
+        action="store_true",
+    )
 
-    sprs = prs.add_subparsers(title='Subcommands',
-                              dest=SUBPARSER_NAME,
-                              metavar='{{{0},{1}}}'.format(CONVERT, SUGGEST),
-                              help="Execution mode. Type "
-                                   "'sphobjinv [mode] -h' "
-                                   "for more information "
-                                   "on available options. "
-                                   "Mode names can be abbreviated "
-                                   "to their first two letters.")
+    sprs = prs.add_subparsers(
+        title="Subcommands",
+        dest=SUBPARSER_NAME,
+        metavar="{{{0},{1}}}".format(CONVERT, SUGGEST),
+        help="Execution mode. Type "
+        "'sphobjinv [mode] -h' "
+        "for more information "
+        "on available options. "
+        "Mode names can be abbreviated "
+        "to their first two letters.",
+    )
 
     # Enforce subparser as optional. No effect for 3.4 to 3.7;
     # briefly required a/o 3.7.0b4 due to change in default behavior, per:
@@ -290,92 +300,129 @@ def getparser():
     # 3.7 release.
     sprs.required = False
 
-    spr_convert = sprs.add_parser(CONVERT, aliases=[CONVERT[:2]],
-                                  help=HELP_CO_PARSER,
-                                  description=HELP_CO_PARSER)
-    spr_suggest = sprs.add_parser(SUGGEST, aliases=[SUGGEST[:2]],
-                                  help=HELP_SU_PARSER,
-                                  description=HELP_SU_PARSER)
+    spr_convert = sprs.add_parser(
+        CONVERT,
+        aliases=[CONVERT[:2]],
+        help=HELP_CO_PARSER,
+        description=HELP_CO_PARSER,
+    )
+    spr_suggest = sprs.add_parser(
+        SUGGEST,
+        aliases=[SUGGEST[:2]],
+        help=HELP_SU_PARSER,
+        description=HELP_SU_PARSER,
+    )
 
     # ### Args for conversion subparser
-    spr_convert.add_argument(MODE,
-                             help="Conversion output format",
-                             choices=(ZLIB, PLAIN, JSON))
+    spr_convert.add_argument(
+        MODE, help="Conversion output format", choices=(ZLIB, PLAIN, JSON)
+    )
 
-    spr_convert.add_argument(INFILE,
-                             help="Path to file to be converted")
+    spr_convert.add_argument(INFILE, help="Path to file to be converted")
 
-    spr_convert.add_argument(OUTFILE,
-                             help="Path to desired output file. "
-                                  "Defaults to same directory and main "
-                                  "file name as input file but with extension "
-                                  + HELP_CONV_EXTS +
-                                  ", as appropriate for the output format. "
-                                  "A bare path is accepted here, "
-                                  "using the default output file names.",
-                             nargs="?",
-                             default=None)
+    spr_convert.add_argument(
+        OUTFILE,
+        help="Path to desired output file. "
+        "Defaults to same directory and main "
+        "file name as input file but with extension "
+        + HELP_CONV_EXTS
+        + ", as appropriate for the output format. "
+        "A bare path is accepted here, "
+        "using the default output file names.",
+        nargs="?",
+        default=None,
+    )
 
     # Mutually exclusive group for --expand/--contract
-    gp_expcont = spr_convert.add_argument_group(title="URI/display name "
-                                                      "conversions")
+    gp_expcont = spr_convert.add_argument_group(
+        title="URI/display name " "conversions"
+    )
     meg_expcont = gp_expcont.add_mutually_exclusive_group()
-    meg_expcont.add_argument('-e', '--' + EXPAND,
-                             help="Expand all URI and display name "
-                                  "abbreviations",
-                             action='store_true')
+    meg_expcont.add_argument(
+        "-e",
+        "--" + EXPAND,
+        help="Expand all URI and display name " "abbreviations",
+        action="store_true",
+    )
 
-    meg_expcont.add_argument('-c', '--' + CONTRACT,
-                             help="Contract all URI and display name "
-                                  "abbreviations",
-                             action='store_true')
+    meg_expcont.add_argument(
+        "-c",
+        "--" + CONTRACT,
+        help="Contract all URI and display name " "abbreviations",
+        action="store_true",
+    )
 
     # Clobber argument
-    spr_convert.add_argument('-' + OVERWRITE[0], '--' + OVERWRITE,
-                             help="Overwrite output files without prompting",
-                             action='store_true')
+    spr_convert.add_argument(
+        "-" + OVERWRITE[0],
+        "--" + OVERWRITE,
+        help="Overwrite output files without prompting",
+        action="store_true",
+    )
 
     # stdout suppressor option (e.g., for scripting)
-    spr_convert.add_argument('-' + QUIET[0], '--' + QUIET,
-                             help="Suppress printing of status messages "
-                                  "and overwrite output files "
-                                  "without prompting",
-                             action='store_true')
+    spr_convert.add_argument(
+        "-" + QUIET[0],
+        "--" + QUIET,
+        help="Suppress printing of status messages "
+        "and overwrite output files "
+        "without prompting",
+        action="store_true",
+    )
 
     # Flag to treat infile as a URL
-    spr_convert.add_argument('-' + URL[0], '--' + URL,
-                             help="Treat 'infile' as a URL for download",
-                             action='store_true')
+    spr_convert.add_argument(
+        "-" + URL[0],
+        "--" + URL,
+        help="Treat 'infile' as a URL for download",
+        action="store_true",
+    )
 
     # ### Args for suggest subparser
-    spr_suggest.add_argument(INFILE,
-                             help="Path to inventory file to be searched")
-    spr_suggest.add_argument(SEARCH,
-                             help="Search term for object suggestions")
-    spr_suggest.add_argument('-' + ALL[0], '--' + ALL,
-                             help="Display all results "
-                                  "regardless of the number returned "
-                                  "without prompting for confirmation.",
-                             action='store_true')
-    spr_suggest.add_argument('-' + INDEX[0], '--' + INDEX,
-                             help="Include Inventory.objects list indices "
-                                  "with the search results",
-                             action='store_true')
-    spr_suggest.add_argument('-' + SCORE[0], '--' + SCORE,
-                             help="Include fuzzywuzzy scores "
-                                  "with the search results",
-                             action='store_true')
-    spr_suggest.add_argument('-' + THRESH[0], '--' + THRESH,
-                             help="Match quality threshold, integer 0-100, "
-                                  "default 75. Default is suitable when "
-                                  "'search' is exactly a known object name. "
-                                  "A value of 30-50 gives better results "
-                                  "for approximate matches.",
-                             default=DEF_THRESH, type=int, choices=range(101),
-                             metavar='{0-100}')
-    spr_suggest.add_argument('-' + URL[0], '--' + URL,
-                             help="Treat 'infile' as a URL for download",
-                             action='store_true')
+    spr_suggest.add_argument(
+        INFILE, help="Path to inventory file to be searched"
+    )
+    spr_suggest.add_argument(SEARCH, help="Search term for object suggestions")
+    spr_suggest.add_argument(
+        "-" + ALL[0],
+        "--" + ALL,
+        help="Display all results "
+        "regardless of the number returned "
+        "without prompting for confirmation.",
+        action="store_true",
+    )
+    spr_suggest.add_argument(
+        "-" + INDEX[0],
+        "--" + INDEX,
+        help="Include Inventory.objects list indices "
+        "with the search results",
+        action="store_true",
+    )
+    spr_suggest.add_argument(
+        "-" + SCORE[0],
+        "--" + SCORE,
+        help="Include fuzzywuzzy scores " "with the search results",
+        action="store_true",
+    )
+    spr_suggest.add_argument(
+        "-" + THRESH[0],
+        "--" + THRESH,
+        help="Match quality threshold, integer 0-100, "
+        "default 75. Default is suitable when "
+        "'search' is exactly a known object name. "
+        "A value of 30-50 gives better results "
+        "for approximate matches.",
+        default=DEF_THRESH,
+        type=int,
+        choices=range(101),
+        metavar="{0-100}",
+    )
+    spr_suggest.add_argument(
+        "-" + URL[0],
+        "--" + URL,
+        help="Treat 'infile' as a URL for download",
+        action="store_true",
+    )
 
     return prs
 
@@ -406,7 +453,7 @@ def resolve_inpath(in_path):
     """
     # Path MUST be to a file, that exists
     if not os.path.isfile(in_path):
-        raise FileNotFoundError('Indicated path is not a valid file')
+        raise FileNotFoundError("Indicated path is not a valid file")
 
     # Return the path as absolute
     return os.path.abspath(in_path)
@@ -565,7 +612,7 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
     from .fileops import writebytes
 
     b_str = inv.data_file(expand=expand, contract=contract)
-    writebytes(path, b_str.replace(b'\n', os.linesep.encode('utf-8')))
+    writebytes(path, b_str.replace(b"\n", os.linesep.encode("utf-8")))
 
 
 def write_zlib(inv, path, *, expand=False, contract=False):
@@ -699,35 +746,41 @@ def do_convert(inv, in_path, params):
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
-    if (os.path.isfile(out_path) and not params[QUIET]
-            and not params[OVERWRITE]):
-        resp = yesno_prompt('File exists. Overwrite (Y/N)? ')
-        if resp.lower() == 'n':
-            print('\nExiting...')
+    if (
+        os.path.isfile(out_path)
+        and not params[QUIET]
+        and not params[OVERWRITE]
+    ):
+        resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
+        if resp.lower() == "n":
+            print("\nExiting...")
             sys.exit(0)
 
     # Write the output file
     try:
         if mode == ZLIB:
-            write_zlib(inv, out_path, expand=params[EXPAND],
-                       contract=params[CONTRACT])
+            write_zlib(
+                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
+            )
         if mode == PLAIN:
-            write_plaintext(inv, out_path, expand=params[EXPAND],
-                            contract=params[CONTRACT])
+            write_plaintext(
+                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
+            )
         if mode == JSON:
-            write_json(inv, out_path, expand=params[EXPAND],
-                       contract=params[CONTRACT])
+            write_json(
+                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
+            )
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)
         sys.exit(1)
 
     # Report success, if not QUIET
-    selective_print("Conversion completed.\n"
-                    "'{0}' converted to '{1}' ({2}).".format(in_path,
-                                                             out_path,
-                                                             mode),
-                    params)
+    selective_print(
+        "Conversion completed.\n"
+        "'{0}' converted to '{1}' ({2}).".format(in_path, out_path, mode),
+        params,
+    )
 
 
 def do_suggest(inv, params):
@@ -763,19 +816,23 @@ def do_suggest(inv, params):
     """
     with_index = params[INDEX]
     with_score = params[SCORE]
-    results = inv.suggest(params[SEARCH], thresh=params[THRESH],
-                          with_index=with_index,
-                          with_score=with_score)
+    results = inv.suggest(
+        params[SEARCH],
+        thresh=params[THRESH],
+        with_index=with_index,
+        with_score=with_score,
+    )
 
     if len(results) == 0:
-        print('No results found.')
+        print("No results found.")
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
-        resp = yesno_prompt("Display all {0} results ".format(len(results)) +
-                            "(Y/N)? ")
-        if resp.lower() == 'n':
-            print('\nExiting...')
+        resp = yesno_prompt(
+            "Display all {0} results ".format(len(results)) + "(Y/N)? "
+        )
+        if resp.lower() == "n":
+            print("\nExiting...")
             sys.exit(0)
 
     # Field widths in output
@@ -791,29 +848,32 @@ def do_suggest(inv, params):
 
     if with_index:
         if with_score:
-            fmt = '{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}'.format(RST_WIDTH,
-                                                                 SCORE_WIDTH,
-                                                                 INDEX_WIDTH)
-            print('')
-            print(fmt.format('  Name', 'Score', 'Index'))
-            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH,
-                             '-' * INDEX_WIDTH))
-            print('\n'.join(fmt.format(*_) for _ in results))
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
+                RST_WIDTH, SCORE_WIDTH, INDEX_WIDTH
+            )
+            print("")
+            print(fmt.format("  Name", "Score", "Index"))
+            print(
+                fmt.format(
+                    "-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH
+                )
+            )
+            print("\n".join(fmt.format(*_) for _ in results))
         else:
-            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, INDEX_WIDTH)
-            print('')
-            print(fmt.format('  Name', 'Index'))
-            print(fmt.format('-' * RST_WIDTH, '-' * INDEX_WIDTH))
-            print('\n'.join(fmt.format(*_) for _ in results))
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, INDEX_WIDTH)
+            print("")
+            print(fmt.format("  Name", "Index"))
+            print(fmt.format("-" * RST_WIDTH, "-" * INDEX_WIDTH))
+            print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
-            fmt = '{{0: <{0}}}  {{1: ^{1}}}'.format(RST_WIDTH, SCORE_WIDTH)
-            print('')
-            print(fmt.format('  Name', 'Score'))
-            print(fmt.format('-' * RST_WIDTH, '-' * SCORE_WIDTH))
-            print('\n'.join(fmt.format(*_) for _ in results))
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, SCORE_WIDTH)
+            print("")
+            print(fmt.format("  Name", "Score"))
+            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH))
+            print("\n".join(fmt.format(*_) for _ in results))
         else:
-            print('\n'.join(str(_) for _ in results))
+            print("\n".join(str(_) for _ in results))
 
 
 def inv_local(params):
@@ -897,7 +957,7 @@ def inv_url(params):
     in_file = params[INFILE]
 
     # Disallow --url mode on local files
-    if in_file.startswith('file:/'):
+    if in_file.startswith("file:/"):
         selective_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
@@ -910,7 +970,7 @@ def inv_url(params):
     except Exception as e:
         selective_print("No inventory at provided URL.", params)
     else:
-        selective_print('Remote inventory found.', params)
+        selective_print("Remote inventory found.", params)
         url = in_file
 
     # Keep searching if inv not found yet
@@ -922,19 +982,19 @@ def inv_url(params):
             except Exception:
                 pass
             else:
-                selective_print('Remote inventory found.', params)
+                selective_print("Remote inventory found.", params)
                 break
 
     # Cosmetic line break
-    selective_print(' ', params)
+    selective_print(" ", params)
 
     # Success or no?
     if not inv:
-        selective_print('No inventory found!', params)
+        selective_print("No inventory found!", params)
         sys.exit(1)
 
     if len(url) > 45:
-        ret_path = url[:20] + '[...]' + url[-20:]
+        ret_path = url[:20] + "[...]" + url[-20:]
     else:  # pragma: no cover
         ret_path = url
 
@@ -957,7 +1017,7 @@ def main():
     """
     # If no args passed, stick in '-h'
     if len(sys.argv) == 1:
-        sys.argv.append('-h')
+        sys.argv.append("-h")
 
     # Parse commandline arguments
     prs = getparser()
@@ -971,7 +1031,7 @@ def main():
 
     # Regardless of mode, insert extra blank line
     # for cosmetics
-    selective_print(' ', params)
+    selective_print(" ", params)
 
     # Generate the input Inventory based on --url or not.
     # These inventory-load functions should call
@@ -991,5 +1051,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':    # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     main()
