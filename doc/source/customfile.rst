@@ -35,7 +35,7 @@ can be found at the GitHub repo
             >>> import sphobjinv as soi
             >>> inv = soi.Inventory()
             >>> print(inv)
-            <Inventory (manual): None vNone, 0 objects>
+            <Inventory (manual): <no project> <no version>, 0 objects>
 
     * Define the :attr:`~sphobjinv.inventory.Inventory.project`
       and :attr:`~sphobjinv.inventory.Inventory.version` attributes:

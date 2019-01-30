@@ -967,7 +967,7 @@ def inv_url(params):
     # Try URL as provided
     try:
         inv = Inventory(url=in_file)
-    except Exception as e:
+    except Exception:
         selective_print("No inventory at provided URL.", params)
     else:
         selective_print("Remote inventory found.", params)
