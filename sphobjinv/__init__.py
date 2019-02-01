@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     17 May 2016
 
 **Copyright**
-    \(c) Brian Skinn 2016-2018
+    \(c) Brian Skinn 2016-2019
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -61,4 +61,4 @@ from .schema import json_schema
 from .zlib import compress, decompress
 
 
-__version__ = "2.0"
+__version__ = "2.0.1rc1"

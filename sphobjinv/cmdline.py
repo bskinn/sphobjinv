@@ -15,7 +15,7 @@ Sphinx |objects.inv| files.
     17 May 2016
 
 **Copyright**
-    \(c) Brian Skinn 2016-2018
+    \(c) Brian Skinn 2016-2019
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -44,7 +44,7 @@ VERSION = "version"
 #: Version &c. output blurb
 VER_TXT = (
     "\nsphobjinv v{0}\n\n".format(__version__)
-    + "Copyright (c) Brian Skinn 2016-2018\n"
+    + "Copyright (c) Brian Skinn 2016-2019\n"
     "License: The MIT License\n\n"
     "Bug reports & feature requests:"
     " https://github.com/bskinn/sphobjinv\n"
