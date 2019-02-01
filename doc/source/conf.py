@@ -66,7 +66,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'sphobjinv'
-copyright = '2016-2018, Brian Skinn'
+copyright = '2016-2019, Brian Skinn'
 author = 'Brian Skinn'
 
 # The version info for the project you're documenting, acts as replacement for

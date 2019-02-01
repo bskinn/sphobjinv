@@ -3,11 +3,23 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+and this project strives to adhere to
+[Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
 
 ### Unreleased Changes
 
 ...
+
+
+### [2.0.1rc1] - 2019-02-01
+
+#### Fixed
+
+ * Sphinx *can* generate inventories with empty-string values for
+   `project` and `version`; `sphobjinv` now can import such
+   inventories without error.
+
 
 ### [2.0.0] - 2018-08-16
 

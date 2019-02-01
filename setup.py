@@ -6,9 +6,14 @@ from sphobjinv import __version__
 NAME = "sphobjinv"
 
 
+version_override = "2.0"
+
+
 def readme():
     with open("README.rst", "r") as f:
         content = f.read()
+
+    new_ver = version_override if version_override else __version__
 
     # Helper function
     def content_update(content, pattern, sub):
@@ -19,14 +24,14 @@ def readme():
     content = content_update(
         content,
         r"(?<=/readthedocs/{0}/)\S+?(?=\.svg$)".format(NAME),
-        "v" + __version__,
+        "v" + new_ver,
     )
 
     # This one gets the RtD links
     content = content_update(
         content,
         r"(?<={0}\.readthedocs\.io/en/)\S+?(?=/)".format(NAME),
-        "v" + __version__,
+        "v" + new_ver,
     )
 
     return content

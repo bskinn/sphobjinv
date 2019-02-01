@@ -5,8 +5,8 @@
 # Author:      Brian Skinn
 #                bskinn@alum.mit.edu
 #
-# Created:     6 Aug 2018
-# Copyright:   (c) Brian Skinn 2016-2018
+# Created:     6 Aug 2019
+# Copyright:   (c) Brian Skinn 2016-2019
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #            https://www.github.com/bskinn/sphobjinv
