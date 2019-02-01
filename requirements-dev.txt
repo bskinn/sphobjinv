@@ -13,5 +13,6 @@ sphinx-issues
 sphinx-rtd-theme==0.4.1
 stdio-mgr
 timeout-decorator==0.4.0
+tox
 twine
 wget

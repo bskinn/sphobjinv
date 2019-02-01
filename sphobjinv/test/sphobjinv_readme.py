@@ -24,6 +24,14 @@ import sys
 from textwrap import dedent
 import unittest as ut
 
+from sphinx import __version__ as sphinx_ver
+
+with open("requirements-dev.txt", "r") as f:
+    reqs = f.read()
+
+m_sphinx_req = re.search("^sphinx==(.+)$", reqs, re.I | re.M)
+sphinx_req = m_sphinx_req.group(1)
+
 
 p_shell = re.compile(
     """
@@ -39,8 +47,10 @@ py_ver = sys.version_info
 
 
 @ut.skipUnless(
-    py_ver[0] > 3 or (py_ver[0] == 3 and py_ver[1] >= 5),
-    "Skip on Python 3.4 due to variant subprocess behavior",
+    (py_ver[0] > 3 or (py_ver[0] == 3 and py_ver[1] >= 5))
+    and sphinx_ver == sphinx_req,
+    "Skip on Python 3.4 due to variant subprocess behavior, "
+    "and skip if Sphinx version mismatches current dev version.",
 )
 class TestReadmeShellCmds(ut.TestCase):
     """Testing README shell command output."""
@@ -97,7 +107,9 @@ def suite_doctest_readme():
     """Create and return the test suite for README."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestReadmeShellCmds), TestReadme])
+    s.addTests([tl.loadTestsFromTestCase(TestReadmeShellCmds)])
+    if sphinx_ver == sphinx_req:
+        s.addTests([TestReadme])
 
     return s
 
