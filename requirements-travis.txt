@@ -4,8 +4,8 @@ codecov
 coverage
 fuzzywuzzy>=0.3
 jsonschema==2.6
-flake8==3.5.0
-flake8-docstrings==1.3.0
+flake8
+flake8-docstrings
 sphinx==1.7.6
 sphinx-issues
 sphinx-rtd-theme==0.4.1

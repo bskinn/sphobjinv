@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2018
+    \(c) Brian Skinn 2016-2019
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -42,7 +42,7 @@ def readbytes(path):
         |bytes| -- Contents of the indicated file.
 
     """
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         return f.read()
 
 
@@ -62,7 +62,7 @@ def writebytes(path, contents):
         |bytes| -- Content to be written to file.
 
     """
-    with open(path, 'wb') as f:
+    with open(path, "wb") as f:
         f.write(contents)
 
 
@@ -86,7 +86,7 @@ def readjson(path):
     """
     import json
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         return json.load(f)
 
 
@@ -109,7 +109,7 @@ def writejson(path, d):
     """
     import json
 
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         json.dump(d, f)
 
 
@@ -134,19 +134,19 @@ def urlwalk(url):
 
     """
     # Scrub any anchor, as it fouls things
-    url = url.partition('#')[0]
+    url = url.partition("#")[0]
 
-    urlparts = url.rstrip('/').split('/')
+    urlparts = url.rstrip("/").split("/")
 
     # This loop condition results in the yielded values stopping at
     # 'http[s]://domain.com/objects.inv', since the URL protocol
     # specifier has two forward slashes
     while len(urlparts) >= 3:
-        urlparts.append('objects.inv')
-        yield '/'.join(urlparts)
+        urlparts.append("objects.inv")
+        yield "/".join(urlparts)
         urlparts.pop()
         urlparts.pop()
 
 
-if __name__ == '__main__':    # pragma: no cover
-    print('Module not executable.')
+if __name__ == "__main__":  # pragma: no cover
+    print("Module not executable.")

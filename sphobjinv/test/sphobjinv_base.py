@@ -6,7 +6,7 @@
 #                bskinn@alum.mit.edu
 #
 # Created:     29 Oct 2017
-# Copyright:   (c) Brian Skinn 2016-2018
+# Copyright:   (c) Brian Skinn 2016-2019
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
 #            https://www.github.com/bskinn/sphobjinv
@@ -26,40 +26,42 @@ import sys
 
 
 # Useful constants
-RES_FNAME_BASE = 'objects_attrs'
-INIT_FNAME_BASE = 'objects'
-MOD_FNAME_BASE = 'objects_mod'
+RES_FNAME_BASE = "objects_attrs"
+INIT_FNAME_BASE = "objects"
+MOD_FNAME_BASE = "objects_mod"
 
-CMP_EXT = '.inv'
-DEC_EXT = '.txt'
-JSON_EXT = '.json'
+CMP_EXT = ".inv"
+DEC_EXT = ".txt"
+JSON_EXT = ".json"
 
-SOI_PATH = osp.abspath(osp.join('sphobjinv', 'sphobjinv.py'))
-INVALID_FNAME = '*?*?.txt' if os.name == 'nt' else '/'
-B_LINES_0 = {False:
-             b'attr.Attribute py:class 1 api.html#$ -',
-             True:
-             b'attr.Attribute py:class 1 api.html#attr.Attribute '
-             b'attr.Attribute'}
-S_LINES_0 = {_: B_LINES_0[_].decode('utf-8') for _ in B_LINES_0}
+SOI_PATH = osp.abspath(osp.join("sphobjinv", "sphobjinv.py"))
+INVALID_FNAME = "*?*?.txt" if os.name == "nt" else "/"
+B_LINES_0 = {
+    False: b"attr.Attribute py:class 1 api.html#$ -",
+    True: b"attr.Attribute py:class 1 api.html#attr.Attribute "
+    b"attr.Attribute",
+}
+S_LINES_0 = {_: B_LINES_0[_].decode("utf-8") for _ in B_LINES_0}
 
 # Constant mainly for the many-inventory URL testing
-REMOTE_URL = ('https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/'
-              'test/resource/objects_{0}.inv')
+REMOTE_URL = (
+    "https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/"
+    "test/resource/objects_{0}.inv"
+)
 
 
 # Regex pattern for objects.inv files
-P_INV = re.compile('objects_([\\w\\d]+)\\.inv', re.I)
+P_INV = re.compile(r"objects_([^.]+)\.inv", re.I)
 
 
 # Environ flag for testing all or not
-TESTALL = 'TESTALL'
+TESTALL = "TESTALL"
 
 
 # Useful functions
-def res_path(fname=''):
+def res_path(fname=""):
     """Construct file path in resource dir from project root."""
-    return osp.join('sphobjinv', 'test', 'resource', fname)
+    return osp.join("sphobjinv", "test", "resource", fname)
 
 
 # Absolute path to the .txt file in `resource`
@@ -67,9 +69,9 @@ def res_path(fname=''):
 RES_DECOMP_PATH = osp.abspath(res_path(RES_FNAME_BASE + DEC_EXT))
 
 
-def scr_path(fname=''):
+def scr_path(fname=""):
     """Construct file path in scratch dir from project root."""
-    return osp.join('sphobjinv', 'test', 'scratch', fname)
+    return osp.join("sphobjinv", "test", "scratch", fname)
 
 
 def ensure_scratch():
@@ -86,34 +88,38 @@ def clear_scratch():
 
 def copy_cmp():
     """Copy the compressed example file into scratch."""
-    sh.copy(res_path(RES_FNAME_BASE + CMP_EXT),
-            scr_path(INIT_FNAME_BASE + CMP_EXT))
+    sh.copy(
+        res_path(RES_FNAME_BASE + CMP_EXT), scr_path(INIT_FNAME_BASE + CMP_EXT)
+    )
 
 
 def copy_dec():
     """Copy the decompressed example file into scratch."""
-    sh.copy(res_path(RES_FNAME_BASE + DEC_EXT),
-            scr_path(INIT_FNAME_BASE + DEC_EXT))
+    sh.copy(
+        res_path(RES_FNAME_BASE + DEC_EXT), scr_path(INIT_FNAME_BASE + DEC_EXT)
+    )
 
 
 def copy_json():
     """Copy the JSON example file into scratch."""
-    sh.copy(res_path(RES_FNAME_BASE + JSON_EXT),
-            scr_path(INIT_FNAME_BASE + JSON_EXT))
+    sh.copy(
+        res_path(RES_FNAME_BASE + JSON_EXT),
+        scr_path(INIT_FNAME_BASE + JSON_EXT),
+    )
 
 
 def sphinx_load_test(testcase, path):
     """Perform 'live' Sphinx inventory load test."""
     # Easier to have the file open the whole time
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
 
         from sphinx.util.inventory import InventoryFile as IFile
 
         # Attempt the load operation
         try:
-            IFile.load(f, '', osp.join)
+            IFile.load(f, "", osp.join)
         except Exception:
-            with testcase.subTest('sphinx_load_ok'):
+            with testcase.subTest("sphinx_load_ok"):
                 testcase.fail()
 
 
@@ -122,7 +128,7 @@ def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
     from sphobjinv.cmdline import main
 
     # Assemble execution arguments
-    runargs = ['sphobjinv']
+    runargs = ["sphobjinv"]
     runargs.extend(arglist)
 
     # Mock sys.argv, run main, and restore sys.argv
@@ -138,19 +144,19 @@ def run_cmdline_test(testcase, arglist, *, expect=0, suffix=None):
         sys.argv = stored_sys_argv
 
     # Test that execution completed w/indicated exit code
-    with testcase.subTest('exit_code' + ('_' + suffix if suffix else '')):
+    with testcase.subTest("exit_code" + ("_" + suffix if suffix else "")):
         testcase.assertEqual(expect, retcode)
 
 
 def file_exists_test(testcase, path, suffix=None):
     """Confirm indicated filespec exists."""
-    with testcase.subTest('file_exists' + ('_' + suffix if suffix else '')):
+    with testcase.subTest("file_exists" + ("_" + suffix if suffix else "")):
         testcase.assertTrue(osp.isfile(path))
 
 
 def decomp_cmp_test(testcase, path):
     """Confirm that indicated decompressed file is identical to resource."""
-    with testcase.subTest('decomp_cmp'):
+    with testcase.subTest("decomp_cmp"):
         testcase.assertTrue(cmp(RES_DECOMP_PATH, path, shallow=False))
 
 
@@ -193,5 +199,5 @@ class SuperSphobjinv(object):
         clear_scratch()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Module not executable.")

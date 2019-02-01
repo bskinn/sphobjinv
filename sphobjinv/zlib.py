@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2018
+    \(c) Brian Skinn 2016-2019
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -29,7 +29,7 @@ import os
 import zlib
 
 
-BUFSIZE = 16*1024    # 16k chunks
+BUFSIZE = 16 * 1024  # 16k chunks
 
 
 def decompress(bstr):
@@ -69,7 +69,7 @@ def decompress(bstr):
 
         """
         decompressor = zlib.decompressobj()
-        for chunk in iter(lambda: bstrm.read(BUFSIZE), b''):
+        for chunk in iter(lambda: bstrm.read(BUFSIZE), b""):
             yield decompressor.decompress(chunk)
         yield decompressor.flush()
 
@@ -78,8 +78,8 @@ def decompress(bstr):
 
     # Check to be sure it's v2
     out_b = strm.readline()
-    if not out_b.endswith(b'2\n'):  # pragma: no cover
-        raise VersionError('Only v2 objects.inv files currently supported')
+    if not out_b.endswith(b"2\n"):  # pragma: no cover
+        raise VersionError("Only v2 objects.inv files currently supported")
 
     # Pull name, version, and description lines
     for _ in range(3):
@@ -90,7 +90,7 @@ def decompress(bstr):
         out_b += chunk
 
     # Replace newlines with the OS-local newlines
-    out_b = out_b.replace(b'\n', os.linesep.encode('utf-8'))
+    out_b = out_b.replace(b"\n", os.linesep.encode("utf-8"))
 
     # Return the newline-composited result
     return out_b
@@ -120,7 +120,7 @@ def compress(bstr):
     from .re import pb_comments, pb_data
 
     # Preconvert any DOS newlines to Unix
-    s = bstr.replace(b'\r\n', b'\n')
+    s = bstr.replace(b"\r\n", b"\n")
 
     # Pull all of the lines
     m_comments = pb_comments.findall(s)
@@ -128,8 +128,8 @@ def compress(bstr):
 
     # Assemble the binary header comments and data
     # Comments and data blocks must end in newlines
-    hb = b'\n'.join(m_comments) + b'\n'
-    db = b'\n'.join(_.group(0) for _ in m_data) + b'\n'
+    hb = b"\n".join(m_comments) + b"\n"
+    db = b"\n".join(_.group(0) for _ in m_data) + b"\n"
 
     # Compress the data block
     # Compression level nine is to match that specified in
@@ -142,5 +142,5 @@ def compress(bstr):
     return hb + dbc
 
 
-if __name__ == '__main__':    # pragma: no cover
-    print('Module not executable.')
+if __name__ == "__main__":  # pragma: no cover
+    print("Module not executable.")
