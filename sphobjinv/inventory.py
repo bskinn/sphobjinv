@@ -42,13 +42,13 @@ class HeaderFields(Enum):
     """
 
     #: Project name associated with an inventory
-    Project = 'project'
+    Project = "project"
 
     #: Project version associated with an inventory
-    Version = 'version'
+    Version = "version"
 
     #: Number of objects contained in the inventory
-    Count = 'count'
+    Count = "count"
 
     #: The |str| value of this |Enum| member is accepted as a root-level
     #: key in a |dict| to be imported into an :class:`Inventory`.
@@ -58,7 +58,7 @@ class HeaderFields(Enum):
     #:
     #: The data associated with this key are **ignored**
     #: during import into an :class:`Inventory`.
-    Metadata = 'metadata'
+    Metadata = "metadata"
 
 
 class SourceTypes(Enum):
@@ -79,28 +79,28 @@ class SourceTypes(Enum):
     #: :data:`~Inventory.project` and :data:`~Inventory.version`
     #: as empty strings and
     #: :data:`~Inventory.objects` as an empty |list|.
-    Manual = 'manual'
+    Manual = "manual"
 
     #: Instantiation from a plaintext |objects.inv| |bytes|.
-    BytesPlaintext = 'bytes_plain'
+    BytesPlaintext = "bytes_plain"
 
     #: Instantiation from a zlib-compressed
     #: |objects.inv| |bytes|.
-    BytesZlib = 'bytes_zlib'
+    BytesZlib = "bytes_zlib"
 
     #: Instantiation from a plaintext |objects.inv| file on disk.
-    FnamePlaintext = 'fname_plain'
+    FnamePlaintext = "fname_plain"
 
     #: Instantiation from a zlib-compressed |objects.inv| file on disk.
-    FnameZlib = 'fname_zlib'
+    FnameZlib = "fname_zlib"
 
     #: Instantiation from a |dict| validated against
     #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
-    DictJSON = 'dict_json'
+    DictJSON = "dict_json"
 
     #: Instantiation from a zlib-compressed |objects.inv| file
     #: downloaded from a URL.
-    URL = 'url'
+    URL = "url"
 
 
 @attr.s(slots=True, cmp=False)
@@ -205,8 +205,9 @@ class Inventory(object):
     _url = attr.ib(repr=False, default=None)
 
     # Flag for whether to raise error on object count mismatch
-    _count_error = attr.ib(repr=False, default=True,
-                           validator=attr.validators.instance_of(bool))
+    _count_error = attr.ib(
+        repr=False, default=True, validator=attr.validators.instance_of(bool)
+    )
 
     # Actual regular attributes
     #: |str| project display name for the inventory
@@ -222,7 +223,7 @@ class Inventory(object):
     #: Can be edited directly to change the inventory contents.
     #: Undefined/random behavior/errors will result if the type
     #: of the elements is anything other than |DataObjStr|.
-    objects = attr.ib(init=False, default=attr.Factory(list))
+    objects = attr.ib(init=False, default=attr.Factory(list), repr=False)
 
     #: :class:`SourceTypes` |Enum| value indicating the type of
     #: source from which the instance was generated.
@@ -230,16 +231,16 @@ class Inventory(object):
 
     # Helper strings for inventory datafile output
     #: Preamble line for v2 |objects.inv| header
-    header_preamble = '# Sphinx inventory version 2'
+    header_preamble = "# Sphinx inventory version 2"
 
     #: Project line |str.format| template for |objects.inv| header
-    header_project = '# Project: {project}'
+    header_project = "# Project: {project}"
 
     #: Version line |str.format| template for |objects.inv| header
-    header_version = '# Version: {version}'
+    header_version = "# Version: {version}"
 
     #: zlib compression line for v2 |objects.inv| header
-    header_zlib = '# The remainder of this file is compressed using zlib.'
+    header_zlib = "# The remainder of this file is compressed using zlib."
 
     @property
     def count(self):
@@ -282,13 +283,14 @@ class Inventory(object):
             If both `expand` and `contract` are |True|
 
         """
-        d = {HeaderFields.Project.value: self.project,
-             HeaderFields.Version.value: self.version,
-             HeaderFields.Count.value: self.count}
+        d = {
+            HeaderFields.Project.value: self.project,
+            HeaderFields.Version.value: self.version,
+            HeaderFields.Count.value: self.count,
+        }
 
         for i, o in enumerate(self.objects):
-            d.update({str(i): o.json_dict(expand=expand,
-                                          contract=contract)})
+            d.update({str(i): o.json_dict(expand=expand, contract=contract)})
 
         return d
 
@@ -335,25 +337,34 @@ class Inventory(object):
 
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
-        ret_str = "<{0} ({1}): {2} v{3}, {4} objects>"
+        ret_str = "<{0} ({1}): {2} {3}, {4} objects>"
 
-        return ret_str.format(type(self).__name__, self.source_type.value,
-                              self.project, self.version, self.count)
+        proj = self.project if self.project else "<no project>"
+        ver = "v" + self.version if self.version else "<no version>"
+
+        return ret_str.format(
+            type(self).__name__, self.source_type.value, proj, ver, self.count
+        )
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
         from .data import _utf8_encode
 
         # List of sources
-        src_list = (self._source, self._plaintext, self._zlib,
-                    self._fname_plain, self._fname_zlib,
-                    self._dict_json, self._url)
+        src_list = (
+            self._source,
+            self._plaintext,
+            self._zlib,
+            self._fname_plain,
+            self._fname_zlib,
+            self._dict_json,
+            self._url,
+        )
         src_count = sum(1 for _ in src_list if _ is not None)
 
         # Complain if multiple sources provided
         if src_count > 1:
-            raise RuntimeError('At most one data source can '
-                               'be specified.')
+            raise RuntimeError("At most one data source can " "be specified.")
 
         # Leave uninitialized ("manual" init) if no source provided
         if src_count == 0:
@@ -371,27 +382,36 @@ class Inventory(object):
         # Plaintext str or bytes
         # Special case, since preconverting input.
         if self._plaintext is not None:
-            self._try_import(self._import_plaintext_bytes,
-                             _utf8_encode(self._plaintext),
-                             ())
+            self._try_import(
+                self._import_plaintext_bytes, _utf8_encode(self._plaintext), ()
+            )
             self.source_type = SourceTypes.BytesPlaintext
             return
 
         # Remainder are iterable
-        for src, fxn, st in zip((self._zlib, self._fname_plain,
-                                 self._fname_zlib, self._dict_json,
-                                 self._url),
-                                (self._import_zlib_bytes,
-                                 self._import_plaintext_fname,
-                                 self._import_zlib_fname,
-                                 self._import_json_dict,
-                                 self._import_url),
-                                (SourceTypes.BytesZlib,
-                                 SourceTypes.FnamePlaintext,
-                                 SourceTypes.FnameZlib,
-                                 SourceTypes.DictJSON,
-                                 SourceTypes.URL)
-                                ):
+        for src, fxn, st in zip(
+            (
+                self._zlib,
+                self._fname_plain,
+                self._fname_zlib,
+                self._dict_json,
+                self._url,
+            ),
+            (
+                self._import_zlib_bytes,
+                self._import_plaintext_fname,
+                self._import_zlib_fname,
+                self._import_json_dict,
+                self._import_url,
+            ),
+            (
+                SourceTypes.BytesZlib,
+                SourceTypes.FnamePlaintext,
+                SourceTypes.FnameZlib,
+                SourceTypes.DictJSON,
+                SourceTypes.URL,
+            ),
+        ):
             if src is not None:
                 self._try_import(fxn, src, ())
                 self.source_type = st
@@ -445,18 +465,23 @@ class Inventory(object):
         # to assemble the strings sequentially
         from itertools import chain
 
-        striter = chain([self.header_preamble,
-                         self.header_project.format(project=self.project),
-                         self.header_version.format(version=self.version),
-                         self.header_zlib],
-                        (obj.data_line(expand=expand, contract=contract)
-                         for obj in self.objects),
-                        [''])   # DO want trailing newline
+        striter = chain(
+            [
+                self.header_preamble,
+                self.header_project.format(project=self.project),
+                self.header_version.format(version=self.version),
+                self.header_zlib,
+            ],
+            (
+                obj.data_line(expand=expand, contract=contract)
+                for obj in self.objects
+            ),
+            [""],
+        )  # DO want trailing newline
 
-        return '\n'.join(striter).encode('utf-8')
+        return "\n".join(striter).encode("utf-8")
 
-    def suggest(self, name, *, thresh=50, with_index=False,
-                with_score=False):
+    def suggest(self, name, *, thresh=50, with_index=False, with_score=False):
         r"""Suggest objects in the inventory to match a name.
 
         :meth:`~Inventory.suggest` makes use of
@@ -530,27 +555,32 @@ class Inventory(object):
 
         # Suppress any UserWarning about the speed issue
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
+            warnings.simplefilter("ignore")
             from fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index
-        srch_list = list('{0} {1}'.format(i, o) for i, o in
-                         enumerate(self.objects_rst))
+        srch_list = list(
+            "{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst)
+        )
 
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
-        results = list('{0} {1}'.format(*_) for _ in
-                       fwp.extract(name, srch_list, limit=None)
-                       if _[1] >= thresh)
+        results = list(
+            "{0} {1}".format(*_)
+            for _ in fwp.extract(name, srch_list, limit=None)
+            if _[1] >= thresh
+        )
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
         # (rst, score, index)
-        p_idx = re.compile('^(\\d+)\\s+(.+?)\\s+(\\d+)$')
-        results = list((m.group(2), int(m.group(3)), int(m.group(1)))
-                       for m in map(p_idx.match, results))
+        p_idx = re.compile("^(\\d+)\\s+(.+?)\\s+(\\d+)$")
+        results = list(
+            (m.group(2), int(m.group(3)), int(m.group(1)))
+            for m in map(p_idx.match, results)
+        )
 
         # Return based on flags
         if with_score:
@@ -571,21 +601,20 @@ class Inventory(object):
         from jsonschema.exceptions import ValidationError
 
         # Lookups for method names and expected import-failure errors
-        importers = {SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
-                     SourceTypes.BytesZlib: self._import_zlib_bytes,
-                     SourceTypes.FnamePlaintext: self._import_plaintext_fname,
-                     SourceTypes.FnameZlib: self._import_zlib_fname,
-                     SourceTypes.DictJSON: self._import_json_dict,
-                     }
-        import_errors = {SourceTypes.BytesPlaintext: TypeError,
-                         SourceTypes.BytesZlib: (ZlibError, TypeError),
-                         SourceTypes.FnamePlaintext: (OSError,
-                                                      TypeError),
-                         SourceTypes.FnameZlib: (OSError,
-                                                 TypeError,
-                                                 ZlibError),
-                         SourceTypes.DictJSON: (ValidationError),
-                         }
+        importers = {
+            SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
+            SourceTypes.BytesZlib: self._import_zlib_bytes,
+            SourceTypes.FnamePlaintext: self._import_plaintext_fname,
+            SourceTypes.FnameZlib: self._import_zlib_fname,
+            SourceTypes.DictJSON: self._import_json_dict,
+        }
+        import_errors = {
+            SourceTypes.BytesPlaintext: TypeError,
+            SourceTypes.BytesZlib: (ZlibError, TypeError),
+            SourceTypes.FnamePlaintext: (OSError, TypeError),
+            SourceTypes.FnameZlib: (OSError, TypeError, ZlibError),
+            SourceTypes.DictJSON: (ValidationError),
+        }
 
         # Attempt series of import approaches
         # Enum keys are ordered, so iteration is too.
@@ -594,13 +623,14 @@ class Inventory(object):
                 # No action for source types w/o a handler function defined.
                 continue
 
-            if self._try_import(importers[st], self._source,
-                                import_errors[st]):
+            if self._try_import(
+                importers[st], self._source, import_errors[st]
+            ):
                 self.source_type = st
                 return
 
         # Nothing worked, complain.
-        raise TypeError('Invalid Inventory source type')
+        raise TypeError("Invalid Inventory source type")
 
     def _try_import(self, import_fxn, src, exc):
         """Attempt the indicated import method on the indicated source.
@@ -624,10 +654,10 @@ class Inventory(object):
         from .re import pb_data, pb_project, pb_version
 
         b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
-        project = b_res.decode('utf-8')
+        project = b_res.decode("utf-8")
 
         b_res = pb_version.search(b_str).group(HeaderFields.Version.value)
-        version = b_res.decode('utf-8')
+        version = b_res.decode("utf-8")
 
         def gen_dataobjs():
             for mch in pb_data.finditer(b_str):
@@ -637,7 +667,7 @@ class Inventory(object):
         objects.extend(gen_dataobjs())
 
         if len(objects) == 0:
-            raise TypeError('No objects found in plaintext')
+            raise TypeError("No objects found in plaintext")
 
         return project, version, objects
 
@@ -699,7 +729,7 @@ class Inventory(object):
 
         # No objects is not allowed
         if count < 1:
-            raise ValueError('Import of zero-length inventory')
+            raise ValueError("Import of zero-length inventory")
 
         # Going to destructively process d, so shallow-copy it first
         d = d.copy()
@@ -711,8 +741,10 @@ class Inventory(object):
                 objects.append(DataObjStr(**d.pop(str(i))))
             except KeyError as e:
                 if self._count_error:
-                    err_str = ("Too few objects found in dict "
-                               "(halt at {0}, expect {1})".format(i, count))
+                    err_str = (
+                        "Too few objects found in dict "
+                        "(halt at {0}, expect {1})".format(i, count)
+                    )
                     raise ValueError(err_str) from e
 
         # Complain if remaining objects are anything other than the
@@ -722,12 +754,12 @@ class Inventory(object):
         if check_value:
             # A truthy value here will be the contents
             # of the above set difference
-            err_str = ("Too many objects in dict ({0})".format(check_value))
+            err_str = "Too many objects in dict ({0})".format(check_value)
             raise ValueError(err_str)
 
         # Should be good to return
         return project, version, objects
 
 
-if __name__ == '__main__':    # pragma: no cover
-    print('Module not executable.')
+if __name__ == "__main__":  # pragma: no cover
+    print("Module not executable.")
