@@ -25,8 +25,6 @@ Sphinx |objects.inv| files.
 
 """
 
-from __future__ import absolute_import
-
 __all__ = [
     "readbytes",
     "writebytes",
@@ -51,14 +49,18 @@ __all__ = [
     "json_schema",
 ]
 
-from .data import DataObjStr, DataObjBytes, DataFields
-from .inventory import Inventory, SourceTypes, HeaderFields
-from .error import SphobjinvError, VersionError
-from .fileops import readbytes, writebytes, readjson, writejson, urlwalk
-from .re import pb_comments, pb_data, pb_version, pb_project
-from .re import p_data
-from .schema import json_schema
-from .zlib import compress, decompress
-
-
-__version__ = "2.0.1rc1"
+from sphobjinv.data import DataObjStr, DataObjBytes, DataFields
+from sphobjinv.inventory import Inventory, SourceTypes, HeaderFields
+from sphobjinv.error import SphobjinvError, VersionError
+from sphobjinv.fileops import (
+    readbytes,
+    writebytes,
+    readjson,
+    writejson,
+    urlwalk,
+)
+from sphobjinv.re import pb_comments, pb_data, pb_version, pb_project
+from sphobjinv.re import p_data
+from sphobjinv.schema import json_schema
+from sphobjinv.version import __version__  # noqa: F401
+from sphobjinv.zlib import compress, decompress

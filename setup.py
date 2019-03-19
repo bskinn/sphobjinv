@@ -1,7 +1,10 @@
 import re
-from setuptools import setup
+from pathlib import Path
+from setuptools import find_packages, setup
 
-from sphobjinv import __version__
+# from sphobjinv import __version__
+with (Path(".") / "src" / "sphobjinv" / "version.py").open() as f:
+    exec(f.read())
 
 NAME = "sphobjinv"
 
@@ -46,7 +49,8 @@ setup(
     license="MIT License",
     author="Brian Skinn",
     author_email="bskinn@alum.mit.edu",
-    packages=["sphobjinv"],
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     provides=["sphobjinv"],
     python_requires=">=3.4",
     requires=[
