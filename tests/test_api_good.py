@@ -1,19 +1,29 @@
-# ------------------------------------------------------------------------------
-# Name:        sphobjinv_api
-# Purpose:     Module for sphobjinv API tests
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     18 Dec 2017
-# Copyright:   (c) Brian Skinn 2016-2019
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#            https://www.github.com/bskinn/sphobjinv
-#
-# ------------------------------------------------------------------------------
+r"""*Direct expect-good API tests for* ``sphobjinv``.
 
-"""Module for sphobjinv API tests."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    20 Mar 2019
+
+**Copyright**
+    \(c) Brian Skinn 2016-2019
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+
+"""
 
 import unittest as ut
 
@@ -28,78 +38,99 @@ from .sphobjinv_base import decomp_cmp_test, file_exists_test
 from .sphobjinv_base import sphinx_load_test
 
 
+import itertools as itt
+
+import pytest
+
+import sphobjinv as soi
+
+
+pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.local]
+
+
+@pytest.mark.parametrize(
+    ["actual", "expect"],
+    tuple(
+        itt.zip_longest(
+            soi.SourceTypes,  # actual
+            [  # expect
+                soi.SourceTypes.Manual,
+                soi.SourceTypes.BytesPlaintext,
+                soi.SourceTypes.BytesZlib,
+                soi.SourceTypes.FnamePlaintext,
+                soi.SourceTypes.FnameZlib,
+                soi.SourceTypes.DictJSON,
+                soi.SourceTypes.URL,
+            ],
+            fillvalue=None,
+        )
+    ),
+    ids=(lambda a: a.value if a else a),
+)
+def test_source_types_iteration(actual, expect):
+    """Confirm that SourceTypes iterates in the expected order."""
+    assert actual.value == expect.value
+
+
+def test_api_compress(scratch_path, misc_info, sphinx_load_test):
+    """Check that a compress attempt via API throws no errors."""
+
+    # Store src and dest filename for reuse
+    src_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value
+        + misc_info.Extensions.DEC_EXT.value
+    )
+    dest_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value
+        + misc_info.Extensions.CMP_EXT.value
+    )
+
+    # See if it makes it all the way through the process without error
+    try:
+        b_dec = soi.readbytes(str(src_path))
+        b_cmp = soi.compress(b_dec)
+        soi.writebytes(str(dest_path), b_cmp)
+    except Exception as e:
+        pytest.fail("objects.txt compression failed.")
+
+    # Simple assertion that compressed file now exists
+    assert dest_path.is_file()
+
+    # Seeing if sphinx actually likes the file
+    sphinx_load_test(dest_path)
+
+
+def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
+    """Check that a decompress attempt via API throws no errors."""
+
+    # Store src and dest filename for reuse
+    src_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value
+        + misc_info.Extensions.CMP_EXT.value
+    )
+    dest_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value
+        + misc_info.Extensions.DEC_EXT.value
+    )
+
+    # See if it makes it all the way through the process without error
+    try:
+        b_cmp = soi.readbytes(str(src_path))
+        b_dec = soi.decompress(b_cmp)
+        soi.writebytes(str(dest_path), b_dec)
+    except Exception as e:
+        pytest.fail("objects.inv decompression failed.")
+
+    # Simple assertion that compressed file now exists
+    assert dest_path.is_file()
+
+    # Seeing if decompressed file matches the reference
+    decomp_cmp_test(dest_path)
+
+
+@pytest.mark.skip("Un-converted tests")
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    def test_API_SourceTypes_IterationCheck(self):
-        """Confirm that SourceTypes iterates in the expected order."""
-        import itertools as itt
-
-        import sphobjinv as soi
-
-        items = [
-            soi.SourceTypes.Manual,
-            soi.SourceTypes.BytesPlaintext,
-            soi.SourceTypes.BytesZlib,
-            soi.SourceTypes.FnamePlaintext,
-            soi.SourceTypes.FnameZlib,
-            soi.SourceTypes.DictJSON,
-            soi.SourceTypes.URL,
-        ]
-
-        for it, en in itt.zip_longest(items, soi.SourceTypes, fillvalue=None):
-            with self.subTest(en.value if en else it.value):
-                self.assertEqual(it, en)
-
-    def test_API_CompressSucceeds(self):
-        """Check that a compress attempt via API throws no errors."""
-        import sphobjinv as soi
-
-        # Populate scratch with the decompressed ref file
-        copy_dec()
-
-        # Store dest filename for reuse
-        dest_fname = scr_path(MOD_FNAME_BASE + CMP_EXT)
-
-        # See if it makes it all the way through the process without error
-        with self.subTest("error_in_process"):
-            try:
-                b_dec = soi.readbytes(scr_path(INIT_FNAME_BASE + DEC_EXT))
-                b_cmp = soi.compress(b_dec)
-                soi.writebytes(dest_fname, b_cmp)
-            except Exception:
-                self.fail(msg="objects.txt compression failed.")
-
-        # Simple assertion that compressed file now exists
-        file_exists_test(self, dest_fname)
-
-        # Seeing if sphinx actually likes the file
-        sphinx_load_test(self, dest_fname)
-
-    def test_API_DecompressSucceeds(self):
-        """Check that a decomp attempt via API throws no errors."""
-        import sphobjinv as soi
-
-        # Populate scratch with compressed ref file
-        copy_cmp()
-
-        # Store target filename for reuse
-        dest_fname = scr_path(MOD_FNAME_BASE + DEC_EXT)
-
-        # See if the compress operation completes without error
-        with self.subTest("error_in_process"):
-            try:
-                b_cmp = soi.readbytes(scr_path(INIT_FNAME_BASE + CMP_EXT))
-                b_dec = soi.decompress(b_cmp)
-                soi.writebytes(dest_fname, b_dec)
-            except Exception:
-                self.fail(msg="objects.inv decompression failed.")
-
-        # Simple assertion of the existence of the decompressed file
-        file_exists_test(self, dest_fname)
-
-        # Testing compare w/original file
-        decomp_cmp_test(self, dest_fname)
 
     def test_API_RegexDataCheck(self):
         """Confirm the regex for loading data lines is working properly."""
@@ -327,6 +358,7 @@ class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
                     self.assertEqual(getattr(obj, k), getattr(obj2, k))
 
 
+@pytest.mark.skip("Un-converted tests")
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing Inventory code accuracy w/good params & expected behavior."""
 
@@ -633,256 +665,6 @@ class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
                 # 'message' will be a Warning instance, thus 'args[0]'
                 # to retrieve the warning message as str.
                 self.assertIn("levenshtein", wc[0].message.args[0].lower())
-
-
-class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
-    """Testing Inventory URL download import method.
-
-    The test in this class is SLOW. For routine testing work, invoke tests.py
-    with '--local', rather than '--all', to avoid running it.
-
-    """
-
-    def test_API_Inventory_ManyURLImports(self):
-        """Confirm a plethora of .inv files downloads properly via url arg."""
-        import os
-
-        from sphobjinv import Inventory as Inv
-
-        for fn in os.listdir(res_path()):
-            # Drop unless testall
-            if (
-                not os.environ.get(TESTALL, False)
-                and fn != "objects_attrs.inv"
-            ):
-                continue
-
-            mch = P_INV.match(fn)
-            if mch is not None:
-                name = mch.group(1)
-                inv1 = Inv(res_path(fn))
-                inv2 = Inv(url=REMOTE_URL.format(name))
-                with self.subTest(name + "_project"):
-                    self.assertEqual(inv1.project, inv2.project)
-                with self.subTest(name + "_version"):
-                    self.assertEqual(inv1.version, inv2.version)
-                with self.subTest(name + "_count"):
-                    self.assertEqual(inv1.count, inv2.count)
-
-                # Only check objects if counts match
-                if inv1.count == inv2.count:
-                    for i, objs in enumerate(zip(inv1.objects, inv2.objects)):
-                        with self.subTest(name + "_obj" + str(i)):
-                            self.assertEqual(objs[0].name, objs[1].name)
-                            self.assertEqual(objs[0].domain, objs[1].domain)
-                            self.assertEqual(objs[0].role, objs[1].role)
-                            self.assertEqual(objs[0].uri, objs[1].uri)
-                            self.assertEqual(
-                                objs[0].priority, objs[1].priority
-                            )
-                            self.assertEqual(
-                                objs[0].dispname, objs[1].dispname
-                            )
-
-
-class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
-    """Testing that code raises expected errors when invoked improperly."""
-
-    def test_API_NoInputFile(self):
-        """Confirm that appropriate exceptions are raised w/no input file."""
-        import sphobjinv as soi
-
-        with self.subTest("decomp_input_file"):
-            with self.assertRaises(FileNotFoundError):
-                soi.readbytes(INIT_FNAME_BASE + DEC_EXT)
-
-        with self.subTest("comp_input_file"):
-            with self.assertRaises(FileNotFoundError):
-                soi.readbytes(INIT_FNAME_BASE + CMP_EXT)
-
-    def test_API_WriteFileBadOutputFile(self):
-        """Confirm OSError raised on bad filename (example of read error)."""
-        import sphobjinv as soi
-
-        b_str = b"This is a binary string!"
-
-        with self.assertRaises(OSError):
-            soi.writebytes(INVALID_FNAME, b_str)
-
-    def test_API_ErrorDecompressingPlaintext(self):
-        """Confirm error raised on attempt to decompress plaintext."""
-        from zlib import error as ZlibError
-
-        import sphobjinv as soi
-
-        # OS-dependent. VersionError on Windows b/c bytes import of the
-        # text-file objects_attrs.txt has the first line ending with b'2\r\n',
-        # whereas *nix will pass the version check but choke in the zlib
-        # decompression process
-        self.assertRaises(
-            (ZlibError, soi.VersionError),
-            soi.Inventory,
-            fname_zlib=res_path(RES_FNAME_BASE + DEC_EXT),
-        )
-
-    def test_API_BadDataObjInitTypes(self):
-        """Confirm error raised when init-ed w/wrong types."""
-        import sphobjinv as soi
-
-        with self.subTest("bytes"):
-            with self.assertRaises(TypeError):
-                soi.DataObjBytes(*range(6))
-
-        with self.subTest("str"):
-            with self.assertRaises(TypeError):
-                soi.DataObjStr(*range(6))
-
-    @ut.skip("Changed to mutable to avoid Inventory revision pain.")
-    def test_API_ChangingImmutableDataObj(self):
-        """Confirm DataObj's are immutable."""
-        from attr.exceptions import FrozenInstanceError as FIError
-
-        from sphobjinv import Inventory as Inv
-
-        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
-
-        with self.subTest("str"):
-            with self.assertRaises(FIError):
-                inv.objects[0].name = "newname"
-        with self.subTest("bytes"):
-            with self.assertRaises(FIError):
-                inv.objects[0].as_bytes.name = b"newname"
-
-    def test_API_DataLine_BothArgsTrue(self):
-        """Confirm error raised when both expand and contract are True."""
-        import sphobjinv as soi
-
-        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True]).groupdict())
-        with self.assertRaises(ValueError):
-            dos.data_line(expand=True, contract=True)
-
-    def test_API_Inventory_InvalidSource(self):
-        """Confirm error raised when invalid source provided."""
-        import sphobjinv as soi
-
-        with self.assertRaises(TypeError):
-            soi.Inventory("abcdefg")
-
-    def test_API_Inventory_NoItemsFlatDict(self):
-        """Confirm TypeError with no-items dict passed to json_dict."""
-        import sphobjinv as soi
-
-        d = {
-            soi.HeaderFields.Project.value: "proj",
-            soi.HeaderFields.Version.value: "v3.3",
-            soi.HeaderFields.Count.value: 5,
-        }
-
-        self.assertRaises(TypeError, soi.Inventory._import_json_dict, d)
-
-    def test_API_Inventory_TooSmallDictImport(self):
-        """Confirm error raised when JSON dict passed w/too few objects."""
-        import sphobjinv as soi
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.pop("12")
-
-        self.assertRaises(ValueError, soi.Inventory, d)
-
-    def test_API_Inventory_BadObjDictImport(self):
-        """Confirm error raised when JSON dict passed w/an invalid object."""
-        from jsonschema.exceptions import ValidationError
-        import sphobjinv as soi
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"112": "foobarbazquux"})
-
-        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
-
-    def test_API_Inventory_TooBigJSONDictImport(self):
-        """Confirm error raised when JSON dict passed w/too many objects."""
-        import sphobjinv as soi
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"57": d["23"]})
-
-        self.assertRaises(ValueError, soi.Inventory, dict_json=d)
-
-    def test_API_Inventory_BadRootObjectJSONDictImport(self):
-        """Confirm error raised when spurious extra root object present."""
-        import sphobjinv as soi
-        from jsonschema.exceptions import ValidationError
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"bad_foo": "angry_bar"})
-
-        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
-
-    def test_API_Inventory_TooManyInitSrcArgs(self):
-        """Confirm error if >1 sources passed."""
-        from sphobjinv import Inventory
-
-        self.assertRaises(
-            RuntimeError, Inventory, source="foo", plaintext="bar"
-        )
-
-    def test_API_Inventory_NoObjectInventories(self):
-        """Confirm no-objects inventories don't import."""
-        import sphobjinv as soi
-
-        inv = soi.Inventory()
-
-        with self.subTest("plain"):
-            self.assertRaises(TypeError, soi.Inventory, inv.data_file())
-
-        with self.subTest("zlib"):
-            # Actually testing that importing an empty inventory
-            # blows up, not importing one
-            self.assertRaises(
-                (TypeError, ValueError),
-                soi.Inventory,
-                soi.compress(inv.data_file()),
-            )
-
-        d = {"project": "test", "version": "0.0", "count": 0}
-        with self.subTest("json"):
-            self.assertRaises(ValueError, soi.Inventory, d)
-
-
-def suite_api_expect_good():
-    """Create and return the test suite for API expect-good cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests(
-        [
-            tl.loadTestsFromTestCase(TestSphobjinvAPIExpectGood),
-            tl.loadTestsFromTestCase(TestSphobjinvAPIInventoryExpectGood),
-        ]
-    )
-
-    return s
-
-
-def suite_api_expect_good_nonlocal():
-    """Create and return the test suite for nonlocal API expect-good cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIInvGoodNonlocal)])
-
-    return s
-
-
-def suite_api_expect_fail():
-    """Create and return the test suite for API expect-fail cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvAPIExpectFail)])
-
-    return s
 
 
 if __name__ == "__main__":

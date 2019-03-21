@@ -82,7 +82,7 @@ def misc_info(res_path):
         # Regex pattern for objects_xyz.inv files
         p_inv = re.compile(r"objects_([^.]+)\.inv", re.I)
 
-    # Standard location for decompressed object in resource folder,
+    # Standard location for the already-decompressed object in resource folder,
     # for comparison to a freshly generated decompressed file
     Info.res_decomp_path = res_path / (
         Info.FNames.RES_FNAME_BASE.value + Info.Extensions.DEC_EXT.value
@@ -97,10 +97,14 @@ def misc_info(res_path):
 
 
 @pytest.fixture()
-def scratch_dir(tmp_path, res_path, misc_info):
+def scratch_path(tmp_path, res_path, misc_info):
+    res_base = misc_info.FNames.RES_FNAME_BASE.value
+    scr_base = misc_info.FNames.INIT_FNAME_BASE.value
+
     for ext in [_.value for _ in misc_info.Extensions]:
         shutil.copy(
-            str(res_path / "objects_attrs{}".format(ext)), str(tmp_path)
+            str(res_path / "{}{}".format(res_base, ext)),
+            str(tmp_path / "{}{}".format(scr_base, ext)),
         )
 
     yield tmp_path
