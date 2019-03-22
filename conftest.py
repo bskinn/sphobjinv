@@ -36,6 +36,8 @@ from pathlib import Path
 
 import pytest
 
+import sphobjinv as soi
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -175,3 +177,17 @@ def decomp_cmp_test(misc_info):
 def ensure_doc_scratch():
     """Ensure doc/scratch dir exists, for README shell examples."""
     (Path(".") / "doc" / "scratch").mkdir(parents=True, exist_ok=True)
+
+
+@pytest.fixture(scope="session")
+def bytes_txt(misc_info, res_path):
+    """Load and return the contents of the example objects_attrs.txt as bytes."""
+    return soi.fileops.readbytes(
+        str(
+            res_path
+            / (
+                misc_info.FNames.RES_FNAME_BASE.value
+                + misc_info.Extensions.DEC_EXT.value
+            )
+        )
+    )

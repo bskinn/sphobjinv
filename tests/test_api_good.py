@@ -75,7 +75,6 @@ def test_source_types_iteration(actual, expect):
 def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
 
-    # Store src and dest filename for reuse
     src_path = scratch_path / (
         misc_info.FNames.INIT_FNAME_BASE.value
         + misc_info.Extensions.DEC_EXT.value
@@ -85,7 +84,6 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
         + misc_info.Extensions.CMP_EXT.value
     )
 
-    # See if it makes it all the way through the process without error
     try:
         b_dec = soi.readbytes(str(src_path))
         b_cmp = soi.compress(b_dec)
@@ -93,17 +91,14 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     except Exception as e:
         pytest.fail("objects.txt compression failed.")
 
-    # Simple assertion that compressed file now exists
     assert dest_path.is_file()
 
-    # Seeing if sphinx actually likes the file
     sphinx_load_test(dest_path)
 
 
 def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
 
-    # Store src and dest filename for reuse
     src_path = scratch_path / (
         misc_info.FNames.INIT_FNAME_BASE.value
         + misc_info.Extensions.CMP_EXT.value
@@ -113,7 +108,6 @@ def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
         + misc_info.Extensions.DEC_EXT.value
     )
 
-    # See if it makes it all the way through the process without error
     try:
         b_cmp = soi.readbytes(str(src_path))
         b_dec = soi.decompress(b_cmp)
@@ -121,56 +115,56 @@ def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     except Exception as e:
         pytest.fail("objects.inv decompression failed.")
 
-    # Simple assertion that compressed file now exists
     assert dest_path.is_file()
 
-    # Seeing if decompressed file matches the reference
     decomp_cmp_test(dest_path)
 
 
-@pytest.mark.skip("Un-converted tests")
+@pytest.mark.parametrize(
+    ["element", "datadict"],
+    (
+        [
+            0,
+            {  # attr.Attribute py:class 1 api.html#$ -
+                soi.DataFields.Name: b"attr.Attribute",
+                soi.DataFields.Domain: b"py",
+                soi.DataFields.Role: b"class",
+                soi.DataFields.Priority: b"1",
+                soi.DataFields.URI: b"api.html#$",
+                soi.DataFields.DispName: b"-",
+            },
+        ],
+        [
+            -3,
+            {  # slots std:label -1 examples.html#$ Slots
+                soi.DataFields.Name: b"slots",
+                soi.DataFields.Domain: b"std",
+                soi.DataFields.Role: b"label",
+                soi.DataFields.Priority: b"-1",
+                soi.DataFields.URI: b"examples.html#$",
+                soi.DataFields.DispName: b"Slots",
+            },
+        ],
+    ),
+)
+def test_api_data_regex(element, datadict, bytes_txt, misc_info):
+    """Confirm the regex for loading data lines is working properly."""
+    import sphobjinv as soi
+
+    # Prelim approximate check to be sure we're working with the
+    # correct file/data.
+    assert len(soi.re.pb_data.findall(bytes_txt)) == 56
+
+    mchs = list(soi.re.pb_data.finditer(bytes_txt))
+
+    assert mchs[element].groupdict() == {
+        _.value: datadict[_] for _ in datadict
+    }
+
+
+@pytest.mark.skip(reason="Un-converted tests")
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    def test_API_RegexDataCheck(self):
-        """Confirm the regex for loading data lines is working properly."""
-        import sphobjinv as soi
-
-        # Populate scratch with the decompressed file
-        copy_dec()
-
-        # Read the file
-        b_str = soi.fileops.readbytes(scr_path(INIT_FNAME_BASE + DEC_EXT))
-
-        # Have to convert any DOS newlines REMOVE THIS
-        b_str = b_str.replace(b"\r\n", b"\n")
-
-        # A separate check shows 56 entries in the reference hive."""
-        with self.subTest("entries_count"):
-            self.assertEqual(56, len(soi.re.pb_data.findall(b_str)))
-
-        # The first entry in the file is:
-        #  attr.Attribute py:class 1 api.html#$ -
-        # The third entry from the end is:
-        #  slots std:label -1 examples.html#$ Slots
-        elements = [0, -3]
-        testdata = {
-            soi.DataFields.Name: [b"attr.Attribute", b"slots"],
-            soi.DataFields.Domain: [b"py", b"std"],
-            soi.DataFields.Role: [b"class", b"label"],
-            soi.DataFields.Priority: [b"1", b"-1"],
-            soi.DataFields.URI: [b"api.html#$", b"examples.html#$"],
-            soi.DataFields.DispName: [b"-", b"Slots"],
-        }
-
-        # Materialize the list of data line matches
-        mchs = list(soi.re.pb_data.finditer(b_str))
-
-        # Test each of the id-ed data lines
-        for i, e in enumerate(elements):
-            for df in soi.DataFields:
-                with self.subTest("{0}_{1}".format(df.value, e)):
-                    self.assertEqual(mchs[e].group(df.value), testdata[df][i])
 
     def test_API_DataObjBytes_InitCheck(self):
         """Confirm the DataObjBytes type functions correctly."""
