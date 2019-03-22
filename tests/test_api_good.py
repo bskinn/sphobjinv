@@ -162,48 +162,69 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
     }
 
 
+@pytest.mark.xfail(
+    reason="Will fail until .as_xxx properties are removed from attrs cmp"
+)
+def test_api_dataobjbytes_init(bytes_txt):
+    """Confirm the DataObjBytes type functions correctly."""
+
+    mch = soi.pb_data.search(bytes_txt)
+    b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+    s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
+
+    try:
+        b_dob = soi.DataObjBytes(**b_mchdict)
+    except Exception:
+        pytest.fail("bytes instantiation failed")
+
+    try:
+        s_dob = soi.DataObjBytes(**s_mchdict)
+    except Exception:
+        pytest.fail("str instantiation failed")
+
+    assert b_dob == s_dob
+
+    assert all(
+        [
+            getattr(b_dob, _) == getattr(b_dob.as_str, _).encode("utf-8")
+            for _ in b_mchdict
+        ]
+    )
+
+
+@pytest.mark.xfail(
+    reason="Will fail until .as_xxx properties are removed from attrs cmp"
+)
+def test_api_dataobjstr_init(bytes_txt):
+    """Confirm the DataObjStr type functions correctly."""
+
+    mch = soi.pb_data.search(bytes_txt)
+    b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+    s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
+
+    try:
+        b_dos = soi.DataObjStr(**b_mchdict)
+    except Exception:
+        pytest.fail("bytes instantiation failed")
+
+    try:
+        s_dos = soi.DataObjStr(**s_mchdict)
+    except Exception:
+        pytest.fail("str instantiation failed")
+
+    assert b_do == s_dos
+
+    assert all(
+        [
+            getattr(s_dos, _) == getattr(s_dob.as_bytes, _).decode("utf-8")
+            for _ in s_mchdict
+        ]
+    )
+
+
 @pytest.mark.skip(reason="Un-converted tests")
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    def test_API_DataObjBytes_InitCheck(self):
-        """Confirm the DataObjBytes type functions correctly."""
-        import sphobjinv as soi
-
-        # Pull .txt file and match first data line
-        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        s_mchdict = {
-            _: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict
-        }
-
-        # Confirm DataObjBytes instantiates w/bytes
-        with self.subTest("inst_bytes"):
-            try:
-                b_dob = soi.DataObjBytes(**b_mchdict)
-            except Exception:
-                self.fail("bytes instantiation failed")
-
-        # Confirm DataObjBytes instantiates w/str
-        with self.subTest("inst_str"):
-            try:
-                s_dob = soi.DataObjBytes(**s_mchdict)
-            except Exception:
-                self.fail("str instantiation failed")
-
-        # Confirm members match
-        for _ in b_mchdict:
-            with self.subTest("match_" + _):
-                self.assertEqual(getattr(b_dob, _), getattr(s_dob, _))
-
-        # Confirm str-equivalents match
-        for _ in b_mchdict:
-            with self.subTest("str_equiv_" + _):
-                self.assertEqual(
-                    getattr(b_dob, _),
-                    getattr(b_dob.as_str, _).encode(encoding="utf-8"),
-                )
 
     def test_API_DataObjStr_InitCheck(self):
         """Confirm the DataObjStr type functions correctly."""
