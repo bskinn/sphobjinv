@@ -222,107 +222,62 @@ def test_api_dataobjstr_init(bytes_txt):
     )
 
 
+def test_api_dataobjbytes_flatdictfxn(bytes_txt):
+    """Confirm that flat dict generating function works."""
+
+    mch = soi.pb_data.search(bytes_txt)
+
+    b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+    b_jsondict = soi.DataObjBytes(**b_mchdict).json_dict()
+
+    assert b_mchdict == b_jsondict
+
+
+def test_api_dataobjstr_flatdictfxn(bytes_txt):
+    """Confirm that flat dict generating function works."""
+
+    mch = soi.pb_data.search(bytes_txt)
+
+    b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
+    s_mchdict = {_: b_mchdict[_].decode("utf-8") for _ in b_mchdict}
+    s_jsondict = soi.DataObjStr(**b_mchdict).json_dict()
+
+    assert s_mchdict == s_jsondict
+
+
+@pytest.mark.parametrize("dataline_arg", (True, False))
+@pytest.mark.parametrize("init_expanded", (True, False))
+def test_api_dataobjbytes_datalinefxn(init_expanded, dataline_arg):
+    """Confirm that data line formatting function works.
+
+    Also provides further testing of flat_dict.
+
+    """
+
+    # Generate and check data line as bytes, both expanded
+    # and contracted, with both expanded/contracted flag
+
+    dob = soi.DataObjBytes(
+        **soi.pb_data.search(B_LINES_0[init_expanded]).groupdict()
+    )
+
+    # If dataline_arg is False, should match the value of init_expanded.
+    # If dataline_arg is True, should match the True (expanded) value.
+    # Thus, the only False (contracted) situation is with both values False.
+    b_dl = dob.data_line(expand=dataline_arg)
+    assert b_dl == B_LINES_0[dataline_arg or init_expanded]
+
+    # If dataline_arg is False, should match the value of init_expanded.
+    # If dataline_arg is True, should match the False (contracted) value.
+    # Thus, the only True (expanded) situation is when init_expanded == True
+    # and and dataline_arg == False.
+    b_dl = dob.data_line(contract=dataline_arg)
+    assert b_dl == B_LINES_0[init_expanded and not dataline_arg]
+
+
 @pytest.mark.skip(reason="Un-converted tests")
 class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    def test_API_DataObjStr_InitCheck(self):
-        """Confirm the DataObjStr type functions correctly."""
-        import sphobjinv as soi
-
-        # Pull .txt file and match first data line
-        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        s_mchdict = {
-            _: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict
-        }
-
-        # Confirm DataObjStr instantiates w/bytes
-        with self.subTest("inst_bytes"):
-            try:
-                b_dos = soi.DataObjStr(**b_mchdict)
-            except Exception:
-                self.fail("bytes instantiation failed")
-
-        # Confirm DataObjStr instantiates w/str
-        with self.subTest("inst_str"):
-            try:
-                s_dos = soi.DataObjStr(**s_mchdict)
-            except Exception:
-                self.fail("str instantiation failed")
-
-        # Confirm members match
-        for _ in s_mchdict:
-            with self.subTest("match_" + _):
-                self.assertEqual(getattr(b_dos, _), getattr(s_dos, _))
-
-        # Confirm bytes-equivalents match
-        for _ in s_mchdict:
-            with self.subTest("str_equiv_" + _):
-                self.assertEqual(
-                    getattr(s_dos, _),
-                    getattr(s_dos.as_bytes, _).decode(encoding="utf-8"),
-                )
-
-    def test_API_DataObjBytes_FlatDictFxn(self):
-        """Confirm that flat dict generating function works."""
-        import sphobjinv as soi
-
-        # Pull .txt file and match first data line
-        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
-
-        # Extract the match information, stuff into a DataObjBytes
-        # instance, and extract the flat_dict
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        b_jsondict = soi.DataObjBytes(**b_mchdict).json_dict()
-
-        # Check matchingness
-        for _ in b_mchdict:
-            with self.subTest(_):
-                self.assertEqual(b_mchdict[_], b_jsondict[_])
-
-    def test_API_DataObjStr_FlatDictFxn(self):
-        """Confirm that flat dict generating function works."""
-        import sphobjinv as soi
-
-        # Pull .txt file and match first data line
-        b_dec = soi.readbytes(res_path(RES_FNAME_BASE + DEC_EXT))
-        mch = soi.pb_data.search(b_dec)
-
-        # Extract the match information, stuff into a DataObjStr
-        # instance, and extract the flat_dict
-        b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
-        s_jsondict = soi.DataObjStr(**b_mchdict).json_dict()
-
-        # Check matchingness
-        for _ in b_mchdict:
-            with self.subTest(_):
-                self.assertEqual(
-                    b_mchdict[_].decode(encoding="utf-8"), s_jsondict[_]
-                )
-
-    # These methods testing data_line also implicitly test flat_dict
-    def test_API_DataObjBytes_DataLineFxn(self):
-        """Confirm that data line formatting function works."""
-        from itertools import product
-
-        import sphobjinv as soi
-
-        # Generate and check data line as bytes, both expanded
-        # and contracted, with both expanded/contracted flag
-        for _, __ in product(B_LINES_0, repeat=2):  # True/False product
-            dob = soi.DataObjBytes(
-                **soi.pb_data.search(B_LINES_0[_]).groupdict()
-            )
-            b_dl = dob.data_line(expand=__)
-            with self.subTest(str(_) + "_expand_" + str(__)):
-                self.assertEqual(b_dl, B_LINES_0[_ or __])
-
-            b_dl = dob.data_line(contract=__)
-            with self.subTest(str(_) + "_contract_" + str(__)):
-                self.assertEqual(b_dl, B_LINES_0[_ and not __])
 
     def test_API_DataObjStr_DataLineFxn(self):
         """Confirm that data line formatting function works."""
