@@ -43,7 +43,10 @@ def pytest_addoption(parser):
     parser.addoption(
         "--testall",
         action="store_true",
-        help="Test *all* inventories stored in testing resource folder",
+        help=(
+            "Where relevant, test *all* inventories stored in "
+            "testing resource folder, not just objects_attrs.inv"
+        ),
     )
 
 
@@ -95,7 +98,7 @@ def misc_info(res_path):
         _: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines
     }
 
-    return Info
+    return Info()
 
 
 @pytest.fixture()
@@ -191,3 +194,23 @@ def bytes_txt(misc_info, res_path):
             )
         )
     )
+
+
+@pytest.fixture(scope="session")
+def check_attrs_inventory():
+    """Provide function for high-level attrs Inventory consistency tests."""
+
+    def func(inv, source_type):
+        """Perform high-level attrs Inventory consistency test.
+
+        `inv` is an Inventory instance.
+        `source_type` is a member of the `soi.inventory.SourceTypes` enum.
+
+        """
+
+        assert inv.project == "attrs"
+        assert inv.version == "17.2"
+        assert inv.count == 56
+        assert inv.source_type
+
+    return func

@@ -212,11 +212,11 @@ def test_api_dataobjstr_init(bytes_txt):
     except Exception:
         pytest.fail("str instantiation failed")
 
-    assert b_do == s_dos
+    assert b_dos == s_dos
 
     assert all(
         [
-            getattr(s_dos, _) == getattr(s_dob.as_bytes, _).decode("utf-8")
+            getattr(s_dos, _) == getattr(b_dos.as_bytes, _).decode("utf-8")
             for _ in s_mchdict
         ]
     )
@@ -245,124 +245,89 @@ def test_api_dataobjstr_flatdictfxn(bytes_txt):
     assert s_mchdict == s_jsondict
 
 
+@pytest.mark.parametrize(
+    ["dataobjtype", "regex", "lines"],
+    (
+        [soi.DataObjBytes, soi.pb_data, "byte_lines"],
+        [soi.DataObjStr, soi.p_data, "str_lines"],
+    ),
+    ids=(lambda i: i if type(i) == str else ""),
+)
 @pytest.mark.parametrize("dataline_arg", (True, False))
 @pytest.mark.parametrize("init_expanded", (True, False))
-def test_api_dataobjbytes_datalinefxn(init_expanded, dataline_arg):
+def test_api_dataobj_datalinefxn(
+    dataobjtype, regex, lines, init_expanded, dataline_arg, misc_info
+):
     """Confirm that data line formatting function works.
+
+    Test both str and bytes versions of the DataObj.
 
     Also provides further testing of flat_dict.
 
     """
 
-    # Generate and check data line as bytes, both expanded
-    # and contracted, with both expanded/contracted flag
+    lines_obj = getattr(misc_info, lines)
 
-    dob = soi.DataObjBytes(
-        **soi.pb_data.search(B_LINES_0[init_expanded]).groupdict()
-    )
+    dobj = dataobjtype(**regex.search(lines_obj[init_expanded]).groupdict())
 
     # If dataline_arg is False, should match the value of init_expanded.
     # If dataline_arg is True, should match the True (expanded) value.
     # Thus, the only False (contracted) situation is with both values False.
-    b_dl = dob.data_line(expand=dataline_arg)
-    assert b_dl == B_LINES_0[dataline_arg or init_expanded]
+    dl = dobj.data_line(expand=dataline_arg)
+    assert dl == lines_obj[dataline_arg or init_expanded]
 
     # If dataline_arg is False, should match the value of init_expanded.
     # If dataline_arg is True, should match the False (contracted) value.
     # Thus, the only True (expanded) situation is when init_expanded == True
     # and and dataline_arg == False.
-    b_dl = dob.data_line(contract=dataline_arg)
-    assert b_dl == B_LINES_0[init_expanded and not dataline_arg]
+    dl = dobj.data_line(contract=dataline_arg)
+    assert dl == lines_obj[init_expanded and not dataline_arg]
 
 
-@pytest.mark.skip(reason="Un-converted tests")
-class TestSphobjinvAPIExpectGood(SuperSphobjinv, ut.TestCase):
-    """Testing code accuracy under good params & expected behavior."""
+@pytest.mark.xfail(
+    reason="Will fail until .as_xxx properties are removed from attrs cmp"
+)
+@pytest.mark.parametrize(
+    "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
+)
+def test_api_dataobj_evolvename(use_bytes, misc_info, res_path):
+    """Confirm evolving new DataObj instances works properly."""
 
-    def test_API_DataObjStr_DataLineFxn(self):
-        """Confirm that data line formatting function works."""
-        from itertools import product
+    inv = soi.Inventory(
+        str(
+            res_path
+            / (
+                misc_info.FNames.RES_FNAME_BASE.value
+                + misc_info.Extensions.CMP_EXT.value
+            )
+        )
+    )
+    obj = (
+        inv.objects[5].as_bytes if use_bytes else inv.objects[5]
+    )  # Arbitrary choice
+    oldname = obj.name
 
-        import sphobjinv as soi
+    newname = b"foo" if use_bytes else "foo"
+    obj2 = obj.evolve(name=newname)
+    obj3 = obj2.evolve(name=oldname)
 
-        # Generate and check data line as str, both expanded
-        # and contracted, with both expanded/contracted flag
-        for _, __ in product(S_LINES_0, repeat=2):  # True/False product
-            dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[_]).groupdict())
-            s_dl = dos.data_line(expand=__)
-            with self.subTest(str(_) + "_expand_" + str(__)):
-                self.assertEqual(s_dl, S_LINES_0[_ or __])
+    assert obj == obj3
+    assert obj2.name == newname
 
-    def test_API_DataObjStr_EvolveName(self):
-        """Confirm evolving a new |str| instance works properly."""
-        from sphobjinv import Inventory as Inv
 
-        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
-        obj = inv.objects[5]
+def test_api_inventory_default_none_instantiation():
+    """Confirm 'manual' instantiation with None."""
+    inv = soi.Inventory()
 
-        newname = "foo"
-        obj2 = obj.evolve(name=newname)
-
-        for k in obj.json_dict():
-            with self.subTest(k):
-                if k == "name":
-                    self.assertEqual(obj2.name, newname)
-                else:
-                    self.assertEqual(getattr(obj, k), getattr(obj2, k))
-
-    def test_API_DataObjBytes_EvolveName(self):
-        """Confirm evolving a new |bytes| instance works properly."""
-        from sphobjinv import Inventory as Inv
-
-        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
-        obj = inv.objects[5].as_bytes
-
-        newname = b"foo"
-        obj2 = obj.evolve(name=newname)
-
-        for k in obj.json_dict():
-            with self.subTest(k):
-                if k == "name":
-                    self.assertEqual(obj2.name, newname)
-                else:
-                    self.assertEqual(getattr(obj, k), getattr(obj2, k))
+    assert inv.project is None
+    assert inv.version is None
+    assert inv.count == 0
+    assert inv.source_type is soi.SourceTypes.Manual
 
 
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing Inventory code accuracy w/good params & expected behavior."""
-
-    def test_API_Inventory_DefaultNoneInstantiation(self):
-        """Confirm 'manual' instantiation with None."""
-        import sphobjinv as soi
-
-        inv = soi.Inventory()
-
-        with self.subTest("project"):
-            self.assertEqual(inv.project, None)
-
-        with self.subTest("version"):
-            self.assertEqual(inv.version, None)
-
-        with self.subTest("count"):
-            self.assertEqual(inv.count, 0)
-
-        with self.subTest("source_type"):
-            self.assertEqual(inv.source_type, soi.SourceTypes.Manual)
-
-    def check_attrs_inventory(self, inv, st, subtest_id):
-        """Encapsulate high-level consistency tests for Inventory objects."""
-        with self.subTest("{0}_{1}_project".format(subtest_id, st.value)):
-            self.assertEqual(inv.project, "attrs")
-
-        with self.subTest("{0}_{1}_version".format(subtest_id, st.value)):
-            self.assertEqual(inv.version, "17.2")
-
-        with self.subTest("{0}_{1}_count".format(subtest_id, st.value)):
-            self.assertEqual(inv.count, 56)
-
-        with self.subTest("{0}_{1}_source_type".format(subtest_id, st.value)):
-            self.assertEqual(inv.source_type, st)
 
     def test_API_Inventory_TestMostImports(self):
         """Check all high-level modes for Inventory instantiation."""
