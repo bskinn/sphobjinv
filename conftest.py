@@ -56,6 +56,28 @@ def res_path():
 
 
 @pytest.fixture(scope="session")
+def res_cmp(res_path, misc_info):
+    return str(
+        res_path
+        / (
+            misc_info.FNames.RES_FNAME_BASE.value
+            + misc_info.Extensions.CMP_EXT.value
+        )
+    )
+
+
+@pytest.fixture(scope="session")
+def res_dec(res_path, misc_info):
+    return str(
+        res_path
+        / (
+            misc_info.FNames.RES_FNAME_BASE.value
+            + misc_info.Extensions.DEC_EXT.value
+        )
+    )
+
+
+@pytest.fixture(scope="session")
 def misc_info(res_path):
     class Info:
         class FNames(Enum):
@@ -197,7 +219,7 @@ def bytes_txt(misc_info, res_path):
 
 
 @pytest.fixture(scope="session")
-def check_attrs_inventory():
+def attrs_inventory_test():
     """Provide function for high-level attrs Inventory consistency tests."""
 
     def func(inv, source_type):

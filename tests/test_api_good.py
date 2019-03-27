@@ -39,6 +39,7 @@ from .sphobjinv_base import sphinx_load_test
 
 
 import itertools as itt
+import re
 
 import pytest
 
@@ -290,18 +291,10 @@ def test_api_dataobj_datalinefxn(
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
-def test_api_dataobj_evolvename(use_bytes, misc_info, res_path):
+def test_api_dataobj_evolvename(use_bytes, res_cmp):
     """Confirm evolving new DataObj instances works properly."""
 
-    inv = soi.Inventory(
-        str(
-            res_path
-            / (
-                misc_info.FNames.RES_FNAME_BASE.value
-                + misc_info.Extensions.CMP_EXT.value
-            )
-        )
-    )
+    inv = soi.Inventory(res_cmp)
     obj = (
         inv.objects[5].as_bytes if use_bytes else inv.objects[5]
     )  # Arbitrary choice
@@ -325,133 +318,112 @@ def test_api_inventory_default_none_instantiation():
     assert inv.source_type is soi.SourceTypes.Manual
 
 
+@pytest.mark.parametrize(
+    ["source_type", "inv_arg"],
+    [
+        (soi.SourceTypes.BytesPlaintext, "plaintext"),
+        (soi.SourceTypes.BytesZlib, "zlib"),
+        (soi.SourceTypes.FnamePlaintext, "fname_plain"),
+        (soi.SourceTypes.FnameZlib, "fname_zlib"),
+    ],
+    ids=(lambda v: v if type(v) == str else ""),
+)
+def test_api_inventory_bytes_fname_instantiation(
+    source_type, inv_arg, res_path, misc_info, attrs_inventory_test
+):
+    """Check bytes and filename modes for Inventory instantiation."""
+
+    source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
+
+    if source_type in (
+        soi.SourceTypes.BytesPlaintext,
+        soi.SourceTypes.FnamePlaintext,
+    ):
+        source += misc_info.Extensions.DEC_EXT.value
+    else:
+        source += misc_info.Extensions.CMP_EXT.value
+
+    if source_type in (
+        soi.SourceTypes.BytesPlaintext,
+        soi.SourceTypes.BytesZlib,
+    ):
+        source = soi.readbytes(source)
+
+    # General import, without a specified kwarg
+    attrs_inventory_test(soi.Inventory(source), source_type)
+
+    # Importing with the respective kwarg for each source type
+    inv = soi.Inventory(**{inv_arg: source})
+    attrs_inventory_test(inv, source_type)
+
+    # Special case for plaintext bytes, try decoding it
+    if source_type is soi.SourceTypes.BytesPlaintext:
+        inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
+        attrs_inventory_test(inv, source_type)
+
+
+@pytest.mark.parametrize("prop", ("none", "expand", "contract"))
+def test_api_inventory_flatdict_jsonvalidate(prop, res_cmp):
+    """Confirm that the flat_dict properties generated valid JSON."""
+    import jsonschema
+
+    inv = soi.Inventory(res_cmp)
+    val = jsonschema.Draft4Validator(soi.json_schema)
+
+    kwarg = {} if prop == "none" else {prop: True}
+    try:
+        val.validate(inv.json_dict(**kwarg))
+    except jsonschema.ValidationError:
+        pytest.fail("'{}' JSON invalid".format(prop))
+
+
+def test_api_inventory_flatdict_reimport(res_dec, attrs_inventory_test):
+    """Confirm re-import of a generated flat_dict."""
+
+    inv = soi.Inventory(res_dec)
+    inv = soi.Inventory(inv.json_dict())
+
+    attrs_inventory_test(inv, soi.SourceTypes.DictJSON)
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    ["test string", {"this": "foo", "that": "bar"}, 42],
+    ids=(lambda v: re.search("'([^']+)'", str(type(v))).group(1)),
+)
+def test_api_inventory_flatdict_reimportwithmetadata(
+    metadata, res_dec, attrs_inventory_test
+):
+    """Confirm re-import of a generated flat_dict with metadata."""
+
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+
+    d.update({"metadata": metadata})
+    try:
+        inv = soi.Inventory(d)
+    except Exception:
+        pytest.fail("Instantiation fail on metadata '{}'".format(metadata))
+
+    attrs_inventory_test(inv, soi.SourceTypes.DictJSON)
+
+
+def test_api_inventory_toosmallflatdict_importbutignore(res_dec):
+    """Confirm no error when flat dict passed w/too few objs w/ignore."""
+
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+    d.pop("12")
+
+    inv2 = soi.Inventory(d, count_error=False)
+
+    # 55 b/c the loop continues past missing elements
+    assert inv2.count == 55
+
+
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing Inventory code accuracy w/good params & expected behavior."""
-
-    def test_API_Inventory_TestMostImports(self):
-        """Check all high-level modes for Inventory instantiation."""
-        from sphobjinv import readbytes, Inventory as Inv, SourceTypes as ST
-        from sphobjinv.data import _utf8_decode
-
-        sources = {
-            ST.BytesPlaintext: readbytes(res_path(RES_FNAME_BASE + DEC_EXT)),
-            ST.BytesZlib: readbytes(res_path(RES_FNAME_BASE + CMP_EXT)),
-            ST.FnamePlaintext: res_path(RES_FNAME_BASE + DEC_EXT),
-            ST.FnameZlib: res_path(RES_FNAME_BASE + CMP_EXT),
-        }
-
-        for st in ST:
-            if st in [ST.Manual, ST.DictJSON, ST.URL]:
-                # Manual isn't tested
-                # DictJSON is tested independently, to avoid crashing this
-                #  test if something goes wrong in the generation & reimport.
-                # URL is its own beast, tested in the separate Nonlocal
-                #  class, below.
-                continue
-
-            self.check_attrs_inventory(Inv(sources[st]), st, "general")
-
-            if st == ST.BytesPlaintext:
-                inv = Inv(plaintext=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
-                inv = Inv(plaintext=_utf8_decode(sources[st]))
-                self.check_attrs_inventory(inv, st, st.value)
-
-            if st == ST.BytesZlib:
-                inv = Inv(zlib=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
-            if st == ST.FnamePlaintext:
-                inv = Inv(fname_plain=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
-            if st == ST.FnameZlib:
-                inv = Inv(fname_zlib=sources[st])
-                self.check_attrs_inventory(inv, st, st.value)
-
-    def test_API_Inventory_FlatDictJSONValidate(self):
-        """Confirm that the flat_dict properties generated valid JSON."""
-        import jsonschema
-
-        import sphobjinv as soi
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
-        v = jsonschema.Draft4Validator(soi.json_schema)
-
-        for prop in ["none", "expand", "contract"]:
-            kwarg = {} if prop == "none" else {prop: True}
-            with self.subTest(prop):
-                try:
-                    v.validate(inv.json_dict(**kwarg))
-                except jsonschema.ValidationError:
-                    self.fail("'{0}' JSON invalid".format(prop))
-
-    def test_API_Inventory_FlatDictReimport(self):
-        """Confirm re-import of a generated flat_dict."""
-        from sphobjinv import Inventory, SourceTypes
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        inv = Inventory(inv.json_dict())
-
-        self.check_attrs_inventory(inv, SourceTypes.DictJSON, "general")
-
-    def test_API_Inventory_FlatDictReimportWithMetadata(self):
-        """Confirm re-import of a generated flat_dict."""
-        from sphobjinv import Inventory, SourceTypes
-
-        inv = Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-
-        d.update({"metadata": "test string"})
-
-        with self.subTest("instantiate_metadata_string"):
-            try:
-                inv = Inventory(d)
-            except Exception:
-                self.fail("Failed when instantiating with string metadata")
-
-        self.check_attrs_inventory(
-            inv, SourceTypes.DictJSON, "contents_metadata_string"
-        )
-
-        d.update({"metadata": {"this": "foo", "that": "bar"}})
-
-        with self.subTest("instantiate_metadata_dict"):
-            try:
-                inv = Inventory(d)
-            except Exception:
-                self.fail("Failed when instantiating with dict metadata")
-
-        self.check_attrs_inventory(
-            inv, SourceTypes.DictJSON, "contents_metadata_dict"
-        )
-
-        d.update({"metadata": 42})
-
-        with self.subTest("instantiate_metadata_int"):
-            try:
-                inv = Inventory(d)
-            except Exception:
-                self.fail("Failed when instantiating with int metadata")
-
-        self.check_attrs_inventory(
-            inv, SourceTypes.DictJSON, "contents_metadata_int"
-        )
-
-    def test_API_Inventory_TooSmallFlatDictImportButIgnore(self):
-        """Confirm no error when flat dict passed w/too few objs w/ignore."""
-        import sphobjinv as soi
-
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.pop("12")
-
-        inv2 = soi.Inventory(d, count_error=False)
-
-        # 55 b/c the loop continues past missing elements
-        self.assertEqual(inv2.count, 55)
 
     def test_API_Inventory_DataFileGenAndReimport(self):
         """Confirm integrated data_file export/import behavior."""
