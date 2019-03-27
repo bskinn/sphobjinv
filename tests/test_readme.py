@@ -26,15 +26,12 @@ Sphinx |objects.inv| files.
 """
 
 import doctest as dt
-
-# import os.path as osp
 import re
 import shlex
 import subprocess as sp
 import sys
 from textwrap import dedent
 
-# import unittest as ut
 
 import pytest
 from sphinx import __version__ as sphinx_ver
@@ -73,22 +70,21 @@ def test_readme_shell_cmds(ensure_doc_scratch):
 
     chk = dt.OutputChecker()
 
-    cmds = [_.group("cmd") for _ in p_shell.finditer(text)]
-    outs = [dedent(_.group("out")) for _ in p_shell.finditer(text)]
     dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
-    for i, tup in enumerate(zip(cmds, outs)):
-        c, o = tup
+    for mch in p_shell.finditer(text):
+        cmd = mch.group("cmd")
+        out = mch.group("out")
 
         proc = sp.run(
-            shlex.split(c), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30
+            shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30
         )
 
         result = proc.stdout.decode("utf-8")
 
-        msg = "\n\nExpected:\n" + o + "\n\nGot:\n" + result
+        msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        assert chk.check_output(o, result, dt_flags), msg
+        assert chk.check_output(out, result, dt_flags), msg
 
 
 if __name__ == "__main__":
