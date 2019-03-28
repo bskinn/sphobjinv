@@ -40,6 +40,7 @@ from .sphobjinv_base import sphinx_load_test
 
 import itertools as itt
 import re
+from pathlib import Path
 
 import pytest
 
@@ -47,6 +48,13 @@ import sphobjinv as soi
 
 
 pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.local]
+
+
+testall_inv_paths = (
+    p
+    for p in (Path(__file__).parent / "resource").iterdir()
+    if p.name.startswith("objects_") and p.name.endswith(".inv")
+)
 
 
 @pytest.mark.parametrize(
@@ -421,157 +429,106 @@ def test_api_inventory_toosmallflatdict_importbutignore(res_dec):
     assert inv2.count == 55
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvAPIInventoryExpectGood(SuperSphobjinv, ut.TestCase):
-    """Testing Inventory code accuracy w/good params & expected behavior."""
+def test_API_Inventory_NameSuggest(res_cmp):
+    """Confirm object name suggestion is nominally working."""
+    from numbers import Number
 
-    def test_API_Inventory_DataFileGenAndReimport(self):
-        """Confirm integrated data_file export/import behavior."""
-        import os
+    rst = ":py:function:`attr.evolve`"
+    idx = 6
 
-        import sphobjinv as soi
+    inv = soi.Inventory(str(res_cmp))
 
-        for fn in os.listdir(res_path()):
-            # Drop unless testall
-            if (
-                not os.environ.get(TESTALL, False)
-                and fn != "objects_attrs.inv"
-            ):
-                continue
+    # No test on the exact fuzzywuzzy match score in these since
+    # it could change as fw continues development
+    assert inv.suggest("evolve")[0] == rst
 
-            if fn.startswith("objects_") and fn.endswith(".inv"):
-                # Make Inventory
-                mch = P_INV.match(fn)
-                proj = mch.group(1)
-                inv1 = soi.Inventory(res_path(fn))
+    assert inv.suggest("evolve", with_index=True)[0] == (rst, idx)
 
-                # Generate new zlib file and reimport
-                data = inv1.data_file()
-                cmp_data = soi.compress(data)
-                soi.writebytes(scr_path(fn), cmp_data)
-                inv2 = soi.Inventory(scr_path(fn))
+    rec = inv.suggest("evolve", with_score=True)
+    assert rec[0][0] == rst
+    assert isinstance(rec[0][1], Number)
 
-                # Test the things
-                with self.subTest(proj + "_project"):
-                    self.assertEqual(inv1.project, inv2.project)
-                with self.subTest(proj + "_version"):
-                    self.assertEqual(inv1.version, inv2.version)
-                with self.subTest(proj + "_count"):
-                    self.assertEqual(inv1.count, inv2.count)
+    rec = inv.suggest("evolve", with_index=True, with_score=True)
+    assert rec[0][0] == rst
+    assert isinstance(rec[0][1], Number)
+    assert rec[0][2] == idx
 
-                # Only check objects if counts match
-                if inv1.count == inv2.count:
-                    for i, objs in enumerate(zip(inv1.objects, inv2.objects)):
-                        with self.subTest(proj + "_obj" + str(i)):
-                            self.assertEqual(objs[0].name, objs[1].name)
-                            self.assertEqual(objs[0].domain, objs[1].domain)
-                            self.assertEqual(objs[0].role, objs[1].role)
-                            self.assertEqual(objs[0].uri, objs[1].uri)
-                            self.assertEqual(
-                                objs[0].priority, objs[1].priority
-                            )
-                            self.assertEqual(
-                                objs[0].dispname, objs[1].dispname
-                            )
 
-    def test_API_Inventory_DataFileGenAndSphinxLoad(self):
-        """Confirm Sphinx likes generated inventory files."""
-        import os
+# Must be run first, otherwise the fuzzywuzzy warning is consumed
+# inappropriately
+@pytest.mark.first
+def test_api_fuzzywuzzy_warningcheck():
+    """Confirm only the Levenshtein warning is raised, if any are."""
+    import warnings
 
-        import sphobjinv as soi
+    with warnings.catch_warnings(record=True) as wc:
+        warnings.simplefilter("always")
+        from fuzzywuzzy import process  # noqa: F401
 
-        for fn in os.listdir(res_path()):
-            # Drop unless testall
-            if (
-                not os.environ.get(TESTALL, False)
-                and fn != "objects_attrs.inv"
-            ):
-                continue
+    # Try to import, and adjust tests accordingly
+    try:
+        import Levenshtein  # noqa: F401
+    except ImportError:
+        lev_present = False
+    else:
+        lev_present = True
 
-            if fn.startswith("objects_") and fn.endswith(".inv"):
-                # Make Inventory
-                mch = P_INV.match(fn)
-                proj = mch.group(1)
-                inv1 = soi.Inventory(res_path(fn))
+    if lev_present:
+        assert len(wc) == 0, "Warning unexpectedly raised"  # pragma: no cover
+    else:
+        assert len(wc) == 1, "Warning unexpectedly not raised"
 
-                # Generate new zlib file
-                data = inv1.data_file()
-                cmp_data = soi.compress(data)
-                soi.writebytes(scr_path(fn), cmp_data)
+        # 'message' will be a Warning instance, thus 'args[0]'
+        # to retrieve the warning message as str.
+        assert (
+            "levenshtein" in wc[0].message.args[0].lower()
+        ), "Warning raised for unexpected reason"
 
-                # Test the Sphinx load process
-                with self.subTest(proj):
-                    sphinx_load_test(self, scr_path(fn))
 
-    def test_API_Inventory_NameSuggest(self):
-        """Confirm object name suggestion is nominally working."""
-        from numbers import Number
+@pytest.mark.parametrize(
+    "inv_path", list(testall_inv_paths), ids=(lambda p: p.name)
+)
+@pytest.mark.testall
+def test_api_inventory_datafile_gen_and_reimport(
+    inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
+):
+    """Confirm integrated data_file export/import behavior."""
 
-        import sphobjinv as soi
+    fname = inv_path.name
+    scr_fpath = scratch_path / fname
 
-        rst = ":py:function:`attr.evolve`"
-        idx = 6
+    # Drop most unless testall
+    if (
+        not pytestconfig.getoption("--testall")
+        and fname != "objects_attrs.inv"
+    ):
+        pytest.skip("'--testall' not specified")
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + CMP_EXT))
+    # Make Inventory
+    mch = misc_info.p_inv.match(fname)
+    proj = mch.group(1)
+    inv1 = soi.Inventory(str(res_path / fname))
 
-        # No test on the exact fuzzywuzzy match score in these since
-        # it could change as fw continues development
-        rec = inv.suggest("evolve")
+    # Generate new zlib file and reimport
+    data = inv1.data_file()
+    cmp_data = soi.compress(data)
+    soi.writebytes(str(scr_fpath), cmp_data)
+    inv2 = soi.Inventory(str(scr_fpath))
 
-        with self.subTest("plain"):
-            self.assertEqual(rec[0], rst)
+    # Test the things
+    assert inv1.project == inv2.project
+    assert inv1.version == inv2.version
+    assert inv1.count == inv2.count
+    for objs in zip(inv1.objects, inv2.objects):
+        assert objs[0].name == objs[1].name
+        assert objs[0].domain == objs[1].domain
+        assert objs[0].role == objs[1].role
+        assert objs[0].uri == objs[1].uri
+        assert objs[0].priority == objs[1].priority
+        assert objs[0].dispname == objs[1].dispname
 
-        rec = inv.suggest("evolve", with_index=True)
-
-        with self.subTest("with_index"):
-            self.assertEqual(rec[0][0], rst)
-            self.assertEqual(rec[0][1], idx)
-
-        rec = inv.suggest("evolve", with_score=True)
-
-        with self.subTest("with_score"):
-            self.assertEqual(rec[0][0], rst)
-            self.assertIsInstance(rec[0][1], Number)
-
-        rec = inv.suggest("evolve", with_index=True, with_score=True)
-
-        with self.subTest("with_both"):
-            self.assertEqual(rec[0][0], rst)
-            self.assertIsInstance(rec[0][1], Number)
-            self.assertEqual(rec[0][2], idx)
-
-    def test_API_FuzzyWuzzy_WarningCheck(self):
-        """Confirm only the Levenshtein warning is raised, if any are."""
-        import warnings
-
-        with warnings.catch_warnings(record=True) as wc:
-            warnings.simplefilter("always")
-            from fuzzywuzzy import process
-
-            process.__doc__  # Stop flake8 unused import complaint
-
-        # Try to import, and adjust tests accordingly
-        try:
-            import Levenshtein
-
-            Levenshtein.__doc__  # Stop flake8 complaint
-        except ImportError:
-            lev_present = False
-        else:
-            lev_present = True
-
-        if lev_present:
-            with self.subTest("count_Lev_present"):  # pragma: no cover
-                self.assertEqual(len(wc), 0)
-
-        else:
-            with self.subTest("count_Lev_absent"):
-                self.assertEqual(len(wc), 1)
-
-            with self.subTest("identity_Lev_absent"):
-                # 'message' will be a Warning instance, thus 'args[0]'
-                # to retrieve the warning message as str.
-                self.assertIn("levenshtein", wc[0].message.args[0].lower())
+    # Ensure sphinx likes the regenerated inventory
+    sphinx_load_test(scr_fpath)
 
 
 if __name__ == "__main__":

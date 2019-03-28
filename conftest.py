@@ -138,6 +138,26 @@ def scratch_path(tmp_path, res_path, misc_info):
 
 
 @pytest.fixture(scope="session")
+def ensure_doc_scratch():
+    """Ensure doc/scratch dir exists, for README shell examples."""
+    (Path(".") / "doc" / "scratch").mkdir(parents=True, exist_ok=True)
+
+
+@pytest.fixture(scope="session")
+def bytes_txt(misc_info, res_path):
+    """Load and return the contents of the example objects_attrs.txt as bytes."""
+    return soi.fileops.readbytes(
+        str(
+            res_path
+            / (
+                misc_info.FNames.RES_FNAME_BASE.value
+                + misc_info.Extensions.DEC_EXT.value
+            )
+        )
+    )
+
+
+@pytest.fixture(scope="session")
 def sphinx_load_test():
     """Return function to perform 'live' Sphinx inventory load test."""
 
@@ -196,26 +216,6 @@ def decomp_cmp_test(misc_info):
         assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
 
     return func
-
-
-@pytest.fixture(scope="session")
-def ensure_doc_scratch():
-    """Ensure doc/scratch dir exists, for README shell examples."""
-    (Path(".") / "doc" / "scratch").mkdir(parents=True, exist_ok=True)
-
-
-@pytest.fixture(scope="session")
-def bytes_txt(misc_info, res_path):
-    """Load and return the contents of the example objects_attrs.txt as bytes."""
-    return soi.fileops.readbytes(
-        str(
-            res_path
-            / (
-                misc_info.FNames.RES_FNAME_BASE.value
-                + misc_info.Extensions.DEC_EXT.value
-            )
-        )
-    )
 
 
 @pytest.fixture(scope="session")

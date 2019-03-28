@@ -6,6 +6,9 @@ fuzzywuzzy>=0.3
 jsonschema==2.6
 flake8
 flake8-docstrings
+pytest
+pytest-timeout
+pytest-ordering
 sphinx==1.7.6
 sphinx-issues
 sphinx-rtd-theme==0.4.1
