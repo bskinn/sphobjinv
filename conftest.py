@@ -59,10 +59,7 @@ def res_path():
 def res_cmp(res_path, misc_info):
     return str(
         res_path
-        / (
-            misc_info.FNames.RES_FNAME_BASE.value
-            + misc_info.Extensions.CMP_EXT.value
-        )
+        / (misc_info.FNames.RES_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value)
     )
 
 
@@ -70,10 +67,7 @@ def res_cmp(res_path, misc_info):
 def res_dec(res_path, misc_info):
     return str(
         res_path
-        / (
-            misc_info.FNames.RES_FNAME_BASE.value
-            + misc_info.Extensions.DEC_EXT.value
-        )
+        / (misc_info.FNames.RES_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value)
     )
 
 
@@ -116,9 +110,7 @@ def misc_info(res_path):
     )
 
     # String version of the sample object lines
-    Info.str_lines = {
-        _: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines
-    }
+    Info.str_lines = {_: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines}
 
     return Info()
 

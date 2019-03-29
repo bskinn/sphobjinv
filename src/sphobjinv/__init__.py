@@ -52,13 +52,7 @@ __all__ = [
 from sphobjinv.data import DataObjStr, DataObjBytes, DataFields
 from sphobjinv.inventory import Inventory, SourceTypes, HeaderFields
 from sphobjinv.error import SphobjinvError, VersionError
-from sphobjinv.fileops import (
-    readbytes,
-    writebytes,
-    readjson,
-    writejson,
-    urlwalk,
-)
+from sphobjinv.fileops import readbytes, writebytes, readjson, writejson, urlwalk
 from sphobjinv.re import pb_comments, pb_data, pb_version, pb_project
 from sphobjinv.re import p_data
 from sphobjinv.schema import json_schema

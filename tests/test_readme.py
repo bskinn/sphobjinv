@@ -56,9 +56,7 @@ py_ver = sys.version_info
 
 
 @pytest.mark.skipif(
-    py_ver[0] < 3
-    or (py_ver[0] == 3 and py_ver[1] < 5)
-    or sphinx_ver != sphinx_req,
+    py_ver[0] < 3 or (py_ver[0] == 3 and py_ver[1] < 5) or sphinx_ver != sphinx_req,
     reason="Skip on Python 3.4 and below due to variant subprocess behavior, "
     "and skip if Sphinx version mismatches current dev version.",
 )
@@ -75,9 +73,7 @@ def test_readme_shell_cmds(ensure_doc_scratch):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
-        proc = sp.run(
-            shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30
-        )
+        proc = sp.run(shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30)
 
         result = proc.stdout.decode("utf-8")
 

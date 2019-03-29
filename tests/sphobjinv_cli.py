@@ -92,9 +92,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm cmdline JSON convert of zlib with input file arg."""
         copy_cmp()
         dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
-        run_cmdline_test(
-            self, ["convert", "json", scr_path(INIT_FNAME_BASE + CMP_EXT)]
-        )
+        run_cmdline_test(self, ["convert", "json", scr_path(INIT_FNAME_BASE + CMP_EXT)])
 
         file_exists_test(self, dest_path)
 
@@ -129,9 +127,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm cmdline convert of plaintext to zlib with input file arg."""
         copy_dec()
         dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        run_cmdline_test(
-            self, ["convert", "zlib", scr_path(INIT_FNAME_BASE + DEC_EXT)]
-        )
+        run_cmdline_test(self, ["convert", "zlib", scr_path(INIT_FNAME_BASE + DEC_EXT)])
 
         file_exists_test(self, dest_path)
 
@@ -142,9 +138,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         """Confirm cmdline convert of plaintext to JSON with input file arg."""
         copy_dec()
         dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
-        run_cmdline_test(
-            self, ["convert", "json", scr_path(INIT_FNAME_BASE + DEC_EXT)]
-        )
+        run_cmdline_test(self, ["convert", "json", scr_path(INIT_FNAME_BASE + DEC_EXT)])
 
         file_exists_test(self, dest_path)
 
@@ -158,12 +152,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 with dir_change("scratch"):
                     run_cmdline_test(
                         self,
-                        [
-                            "convert",
-                            "plain",
-                            INIT_FNAME_BASE + CMP_EXT,
-                            dest_fname,
-                        ],
+                        ["convert", "plain", INIT_FNAME_BASE + CMP_EXT, dest_fname],
                     )
 
                     file_exists_test(self, dest_fname)
@@ -176,13 +165,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         copy_cmp()
         dest_fname = MOD_FNAME_BASE + DEC_EXT
         run_cmdline_test(
-            self,
-            [
-                "convert",
-                "plain",
-                scr_path(INIT_FNAME_BASE + CMP_EXT),
-                dest_fname,
-            ],
+            self, ["convert", "plain", scr_path(INIT_FNAME_BASE + CMP_EXT), dest_fname]
         )
 
         file_exists_test(self, scr_path(dest_fname))
@@ -253,10 +236,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
         for fn in os.listdir(res_path()):
             # Drop unless testall
-            if (
-                not os.environ.get(TESTALL, False)
-                and fn != "objects_attrs.inv"
-            ):
+            if not os.environ.get(TESTALL, False) and fn != "objects_attrs.inv":
                 continue
 
             # Only .inv
@@ -267,34 +247,19 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
 
             run_cmdline_test(
                 self,
-                [
-                    "convert",
-                    "plain",
-                    src_fname.format(proj),
-                    plain_fname.format(proj),
-                ],
+                ["convert", "plain", src_fname.format(proj), plain_fname.format(proj)],
                 suffix=sfx_fmt.format(proj, "plain"),
             )
 
             run_cmdline_test(
                 self,
-                [
-                    "convert",
-                    "json",
-                    plain_fname.format(proj),
-                    json_fname.format(proj),
-                ],
+                ["convert", "json", plain_fname.format(proj), json_fname.format(proj)],
                 suffix=sfx_fmt.format(proj, "json"),
             )
 
             run_cmdline_test(
                 self,
-                [
-                    "convert",
-                    "zlib",
-                    json_fname.format(proj),
-                    zlib_fname.format(proj),
-                ],
+                ["convert", "zlib", json_fname.format(proj), zlib_fname.format(proj)],
                 suffix=sfx_fmt.format(proj, "zlib"),
             )
 
@@ -311,9 +276,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 (HF.Project.value, HF.Version.value, HF.Count.value),
             ):
                 with self.subTest(sfx_fmt.format(t, a)):
-                    self.assertEqual(
-                        getattr(invs[t], a), getattr(invs["orig"], a)
-                    )
+                    self.assertEqual(getattr(invs[t], a), getattr(invs["orig"], a))
 
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_OverwritePromptAndBehavior(self):
@@ -362,13 +325,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-t",
-                    "99",
-                ],
+                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "99"],
             )
 
             with self.subTest("nothing_found_msg"):
@@ -380,13 +337,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-t",
-                    "50",
-                ],
+                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "50"],
             )
 
             p = re.compile("^.*instance_of.*$", re.M)
@@ -460,13 +411,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-at",
-                    "1",
-                ],
+                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-at", "1"],
                 suffix="all_arg",
             )
 
@@ -477,13 +422,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             in_.append("y\n")
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-t",
-                    "1",
-                ],
+                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "1"],
                 suffix="no_arg",
             )
 
@@ -495,13 +434,7 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
             in_.append("n\n")
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-t",
-                    "1",
-                ],
+                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "1"],
                 suffix="no_print",
             )
 
@@ -532,14 +465,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "suggest",
-                    "-u",
-                    REMOTE_URL.format("attrs"),
-                    "instance",
-                    "-t",
-                    "50",
-                ],
+                ["suggest", "-u", REMOTE_URL.format("attrs"), "instance", "-t", "50"],
             )
 
             p = re.compile("^.*instance_of.*$", re.M)
@@ -553,9 +479,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
         URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/"
 
         with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self, ["suggest", "-u", URL, "inventory", "-at", "50"]
-            )
+            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
 
             p = re.compile("^.*nventory.*$", re.I | re.M)
 
@@ -565,15 +489,10 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
     @timeout(CLI_TIMEOUT * 4)
     def test_Cmdline_SuggestNameOnlyFromPageURLNoAnchor(self):
         """Confirm name-only suggest works from docpage URL."""
-        URL = (
-            "http://sphobjinv.readthedocs.io/en/v2.0rc1/"
-            "modules/cmdline.html"
-        )
+        URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/cmdline.html"
 
         with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self, ["suggest", "-u", URL, "inventory", "-at", "50"]
-            )
+            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
 
             p = re.compile("^.*nventory.*$", re.I | re.M)
 
@@ -589,9 +508,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
         )
 
         with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self, ["suggest", "-u", URL, "inventory", "-at", "50"]
-            )
+            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
 
             p = re.compile("^.*nventory.*$", re.I | re.M)
 
@@ -603,8 +520,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
         """Confirm CLI URL D/L, convert works w/outfile supplied."""
         dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
         run_cmdline_test(
-            self,
-            ["convert", "plain", "-u", REMOTE_URL.format("attrs"), dest_path],
+            self, ["convert", "plain", "-u", REMOTE_URL.format("attrs"), dest_path]
         )
 
         file_exists_test(self, dest_path)
@@ -617,8 +533,7 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
             with dir_change("test"):
                 with dir_change("scratch"):
                     run_cmdline_test(
-                        self,
-                        ["convert", "plain", "-u", REMOTE_URL.format("attrs")],
+                        self, ["convert", "plain", "-u", REMOTE_URL.format("attrs")]
                     )
 
         file_exists_test(self, dest_path)
@@ -646,9 +561,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
                     with open(fname, "wb") as f:
                         f.write(b"this is not objects.inv\n")
 
-                    run_cmdline_test(
-                        self, ["convert", "plain", fname], expect=1
-                    )
+                    run_cmdline_test(self, ["convert", "plain", fname], expect=1)
 
     @timeout(CLI_TIMEOUT)
     def test_CmdlinePlaintextMissingFile(self):
@@ -663,12 +576,7 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         copy_cmp()
         run_cmdline_test(
             self,
-            [
-                "convert",
-                "plain",
-                scr_path(INIT_FNAME_BASE + CMP_EXT),
-                INVALID_FNAME,
-            ],
+            ["convert", "plain", scr_path(INIT_FNAME_BASE + CMP_EXT), INVALID_FNAME],
             expect=1,
         )
 
@@ -722,13 +630,7 @@ class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "convert",
-                    "plain",
-                    "-u",
-                    REMOTE_URL.format("blarghers"),
-                    scr_path(),
-                ],
+                ["convert", "plain", "-u", REMOTE_URL.format("blarghers"), scr_path()],
                 expect=1,
             )
 
@@ -741,13 +643,7 @@ class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 self,
-                [
-                    "convert",
-                    "plain",
-                    "-u",
-                    "http://www.google.com",
-                    scr_path(),
-                ],
+                ["convert", "plain", "-u", "http://www.google.com", scr_path()],
                 expect=1,
             )
 
@@ -787,9 +683,7 @@ def suite_cli_expect_good_nonlocal():
     """Create and return the test suite for nonlocal CLI expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests(
-        [tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGoodNonlocal)]
-    )
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGoodNonlocal)])
 
     return s
 
@@ -807,9 +701,7 @@ def suite_cli_expect_fail_nonlocal():
     """Create and return the test suite for nonlocal CLI expect-fail cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests(
-        [tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFailNonlocal)]
-    )
+    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFailNonlocal)])
 
     return s
 

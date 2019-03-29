@@ -190,9 +190,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
         """Confirm error if >1 sources passed."""
         from sphobjinv import Inventory
 
-        self.assertRaises(
-            RuntimeError, Inventory, source="foo", plaintext="bar"
-        )
+        self.assertRaises(RuntimeError, Inventory, source="foo", plaintext="bar")
 
     def test_API_Inventory_NoObjectInventories(self):
         """Confirm no-objects inventories don't import."""
@@ -207,9 +205,7 @@ class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
             # Actually testing that importing an empty inventory
             # blows up, not importing one
             self.assertRaises(
-                (TypeError, ValueError),
-                soi.Inventory,
-                soi.compress(inv.data_file()),
+                (TypeError, ValueError), soi.Inventory, soi.compress(inv.data_file())
             )
 
         d = {"project": "test", "version": "0.0", "count": 0}

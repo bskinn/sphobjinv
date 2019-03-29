@@ -472,10 +472,7 @@ class Inventory(object):
                 self.header_version.format(version=self.version),
                 self.header_zlib,
             ],
-            (
-                obj.data_line(expand=expand, contract=contract)
-                for obj in self.objects
-            ),
+            (obj.data_line(expand=expand, contract=contract) for obj in self.objects),
             [""],
         )  # DO want trailing newline
 
@@ -560,9 +557,7 @@ class Inventory(object):
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index
-        srch_list = list(
-            "{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst)
-        )
+        srch_list = list("{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst))
 
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
@@ -623,9 +618,7 @@ class Inventory(object):
                 # No action for source types w/o a handler function defined.
                 continue
 
-            if self._try_import(
-                importers[st], self._source, import_errors[st]
-            ):
+            if self._try_import(importers[st], self._source, import_errors[st]):
                 self.source_type = st
                 return
 

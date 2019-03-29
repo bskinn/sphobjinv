@@ -38,8 +38,7 @@ SOI_PATH = osp.abspath(osp.join("sphobjinv", "sphobjinv.py"))
 INVALID_FNAME = "*?*?.txt" if os.name == "nt" else "/"
 B_LINES_0 = {
     False: b"attr.Attribute py:class 1 api.html#$ -",
-    True: b"attr.Attribute py:class 1 api.html#attr.Attribute "
-    b"attr.Attribute",
+    True: b"attr.Attribute py:class 1 api.html#attr.Attribute " b"attr.Attribute",
 }
 S_LINES_0 = {_: B_LINES_0[_].decode("utf-8") for _ in B_LINES_0}
 
@@ -88,24 +87,17 @@ def clear_scratch():
 
 def copy_cmp():
     """Copy the compressed example file into scratch."""
-    sh.copy(
-        res_path(RES_FNAME_BASE + CMP_EXT), scr_path(INIT_FNAME_BASE + CMP_EXT)
-    )
+    sh.copy(res_path(RES_FNAME_BASE + CMP_EXT), scr_path(INIT_FNAME_BASE + CMP_EXT))
 
 
 def copy_dec():
     """Copy the decompressed example file into scratch."""
-    sh.copy(
-        res_path(RES_FNAME_BASE + DEC_EXT), scr_path(INIT_FNAME_BASE + DEC_EXT)
-    )
+    sh.copy(res_path(RES_FNAME_BASE + DEC_EXT), scr_path(INIT_FNAME_BASE + DEC_EXT))
 
 
 def copy_json():
     """Copy the JSON example file into scratch."""
-    sh.copy(
-        res_path(RES_FNAME_BASE + JSON_EXT),
-        scr_path(INIT_FNAME_BASE + JSON_EXT),
-    )
+    sh.copy(res_path(RES_FNAME_BASE + JSON_EXT), scr_path(INIT_FNAME_BASE + JSON_EXT))
 
 
 def sphinx_load_test(testcase, path):

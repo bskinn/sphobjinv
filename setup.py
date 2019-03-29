@@ -25,16 +25,12 @@ def readme():
     # Docs reference updates to current release version, for PyPI
     # This one gets the badge image
     content = content_update(
-        content,
-        r"(?<=/readthedocs/{0}/)\S+?(?=\.svg$)".format(NAME),
-        "v" + new_ver,
+        content, r"(?<=/readthedocs/{0}/)\S+?(?=\.svg$)".format(NAME), "v" + new_ver
     )
 
     # This one gets the RtD links
     content = content_update(
-        content,
-        r"(?<={0}\.readthedocs\.io/en/)\S+?(?=/)".format(NAME),
-        "v" + new_ver,
+        content, r"(?<={0}\.readthedocs\.io/en/)\S+?(?=/)".format(NAME), "v" + new_ver
     )
 
     return content

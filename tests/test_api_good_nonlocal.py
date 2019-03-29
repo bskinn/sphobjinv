@@ -65,10 +65,7 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
 
         for fn in os.listdir(res_path()):
             # Drop unless testall
-            if (
-                not os.environ.get(TESTALL, False)
-                and fn != "objects_attrs.inv"
-            ):
+            if not os.environ.get(TESTALL, False) and fn != "objects_attrs.inv":
                 continue
 
             mch = P_INV.match(fn)
@@ -91,12 +88,8 @@ class TestSphobjinvAPIInvGoodNonlocal(SuperSphobjinv, ut.TestCase):
                             self.assertEqual(objs[0].domain, objs[1].domain)
                             self.assertEqual(objs[0].role, objs[1].role)
                             self.assertEqual(objs[0].uri, objs[1].uri)
-                            self.assertEqual(
-                                objs[0].priority, objs[1].priority
-                            )
-                            self.assertEqual(
-                                objs[0].dispname, objs[1].dispname
-                            )
+                            self.assertEqual(objs[0].priority, objs[1].priority)
+                            self.assertEqual(objs[0].dispname, objs[1].dispname)
 
 
 if __name__ == "__main__":

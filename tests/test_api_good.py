@@ -71,12 +71,10 @@ def test_source_types_iteration(actual, expect):
 def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value
-        + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value
-        + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
     )
 
     try:
@@ -94,12 +92,10 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
 def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value
-        + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value
-        + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
     )
 
     try:
@@ -151,9 +147,7 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
 
     mchs = list(soi.re.pb_data.finditer(bytes_txt))
 
-    assert mchs[element].groupdict() == {
-        _.value: datadict[_] for _ in datadict
-    }
+    assert mchs[element].groupdict() == {_.value: datadict[_] for _ in datadict}
 
 
 @pytest.mark.xfail(
@@ -282,9 +276,7 @@ def test_api_dataobj_datalinefxn(
 def test_api_dataobj_evolvename(use_bytes, res_cmp):
     """Confirm evolving new DataObj instances works properly."""
     inv = soi.Inventory(res_cmp)
-    obj = (
-        inv.objects[5].as_bytes if use_bytes else inv.objects[5]
-    )  # Arbitrary choice
+    obj = inv.objects[5].as_bytes if use_bytes else inv.objects[5]  # Arbitrary choice
     oldname = obj.name
 
     newname = b"foo" if use_bytes else "foo"
@@ -321,18 +313,12 @@ def test_api_inventory_bytes_fname_instantiation(
     """Check bytes and filename modes for Inventory instantiation."""
     source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
 
-    if source_type in (
-        soi.SourceTypes.BytesPlaintext,
-        soi.SourceTypes.FnamePlaintext,
-    ):
+    if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.FnamePlaintext):
         source += misc_info.Extensions.DEC_EXT.value
     else:
         source += misc_info.Extensions.CMP_EXT.value
 
-    if source_type in (
-        soi.SourceTypes.BytesPlaintext,
-        soi.SourceTypes.BytesZlib,
-    ):
+    if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.BytesZlib):
         source = soi.readbytes(source)
 
     # General import, without a specified kwarg
@@ -460,9 +446,7 @@ def test_api_fuzzywuzzy_warningcheck():
         ), "Warning raised for unexpected reason"
 
 
-@pytest.mark.parametrize(
-    "inv_path", list(testall_inv_paths), ids=(lambda p: p.name)
-)
+@pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
 @pytest.mark.testall
 def test_api_inventory_datafile_gen_and_reimport(
     inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
@@ -472,10 +456,7 @@ def test_api_inventory_datafile_gen_and_reimport(
     scr_fpath = scratch_path / fname
 
     # Drop most unless testall
-    if (
-        not pytestconfig.getoption("--testall")
-        and fname != "objects_attrs.inv"
-    ):
+    if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
         pytest.skip("'--testall' not specified")
 
     # Make Inventory

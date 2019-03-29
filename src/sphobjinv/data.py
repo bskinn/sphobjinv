@@ -121,9 +121,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
         """Return pretty string representation."""
         fmt_str = "<{0}:: :{1}:{2}:`{3}`>"
 
-        return fmt_str.format(
-            type(self).__name__, self.domain, self.role, self.name
-        )
+        return fmt_str.format(type(self).__name__, self.domain, self.role, self.name)
 
     @property
     @abstractmethod
