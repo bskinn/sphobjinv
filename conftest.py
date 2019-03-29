@@ -48,6 +48,7 @@ def pytest_addoption(parser):
             "testing resource folder, not just objects_attrs.inv"
         ),
     )
+    parser.addoption("--nonloc", action="store_true", help=("Include nonlocal tests"))
 
 
 @pytest.fixture(scope="session")
