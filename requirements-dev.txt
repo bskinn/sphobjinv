@@ -7,8 +7,9 @@ fuzzywuzzy>=0.3
 ipython
 jsonschema==2.6
 pytest
-pytest-timeout
+pytest-cov
 pytest-ordering
+pytest-timeout
 restview
 sphinx==1.7.6
 sphinx-autobuild
