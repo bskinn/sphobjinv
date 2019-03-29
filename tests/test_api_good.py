@@ -25,19 +25,6 @@ Sphinx |objects.inv| files.
 
 """
 
-import unittest as ut
-
-from .sphobjinv_base import B_LINES_0, S_LINES_0
-from .sphobjinv_base import DEC_EXT, CMP_EXT
-from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
-from .sphobjinv_base import REMOTE_URL, P_INV, TESTALL
-from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
-from .sphobjinv_base import decomp_cmp_test, file_exists_test
-from .sphobjinv_base import sphinx_load_test
-
-
 import itertools as itt
 import re
 from pathlib import Path
@@ -83,7 +70,6 @@ def test_source_types_iteration(actual, expect):
 
 def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
-
     src_path = scratch_path / (
         misc_info.FNames.INIT_FNAME_BASE.value
         + misc_info.Extensions.DEC_EXT.value
@@ -97,7 +83,7 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
         b_dec = soi.readbytes(str(src_path))
         b_cmp = soi.compress(b_dec)
         soi.writebytes(str(dest_path), b_cmp)
-    except Exception as e:
+    except Exception:
         pytest.fail("objects.txt compression failed.")
 
     assert dest_path.is_file()
@@ -107,7 +93,6 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
 
 def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
-
     src_path = scratch_path / (
         misc_info.FNames.INIT_FNAME_BASE.value
         + misc_info.Extensions.CMP_EXT.value
@@ -121,7 +106,7 @@ def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
         b_cmp = soi.readbytes(str(src_path))
         b_dec = soi.decompress(b_cmp)
         soi.writebytes(str(dest_path), b_dec)
-    except Exception as e:
+    except Exception:
         pytest.fail("objects.inv decompression failed.")
 
     assert dest_path.is_file()
@@ -176,7 +161,6 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
 )
 def test_api_dataobjbytes_init(bytes_txt):
     """Confirm the DataObjBytes type functions correctly."""
-
     mch = soi.pb_data.search(bytes_txt)
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
     s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
@@ -206,7 +190,6 @@ def test_api_dataobjbytes_init(bytes_txt):
 )
 def test_api_dataobjstr_init(bytes_txt):
     """Confirm the DataObjStr type functions correctly."""
-
     mch = soi.pb_data.search(bytes_txt)
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
     s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
@@ -233,7 +216,6 @@ def test_api_dataobjstr_init(bytes_txt):
 
 def test_api_dataobjbytes_flatdictfxn(bytes_txt):
     """Confirm that flat dict generating function works."""
-
     mch = soi.pb_data.search(bytes_txt)
 
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
@@ -244,7 +226,6 @@ def test_api_dataobjbytes_flatdictfxn(bytes_txt):
 
 def test_api_dataobjstr_flatdictfxn(bytes_txt):
     """Confirm that flat dict generating function works."""
-
     mch = soi.pb_data.search(bytes_txt)
 
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
@@ -274,7 +255,6 @@ def test_api_dataobj_datalinefxn(
     Also provides further testing of flat_dict.
 
     """
-
     lines_obj = getattr(misc_info, lines)
 
     dobj = dataobjtype(**regex.search(lines_obj[init_expanded]).groupdict())
@@ -301,7 +281,6 @@ def test_api_dataobj_datalinefxn(
 )
 def test_api_dataobj_evolvename(use_bytes, res_cmp):
     """Confirm evolving new DataObj instances works properly."""
-
     inv = soi.Inventory(res_cmp)
     obj = (
         inv.objects[5].as_bytes if use_bytes else inv.objects[5]
@@ -340,7 +319,6 @@ def test_api_inventory_bytes_fname_instantiation(
     source_type, inv_arg, res_path, misc_info, attrs_inventory_test
 ):
     """Check bytes and filename modes for Inventory instantiation."""
-
     source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
 
     if source_type in (
@@ -387,7 +365,6 @@ def test_api_inventory_flatdict_jsonvalidate(prop, res_cmp):
 
 def test_api_inventory_flatdict_reimport(res_dec, attrs_inventory_test):
     """Confirm re-import of a generated flat_dict."""
-
     inv = soi.Inventory(res_dec)
     inv = soi.Inventory(inv.json_dict())
 
@@ -403,7 +380,6 @@ def test_api_inventory_flatdict_reimportwithmetadata(
     metadata, res_dec, attrs_inventory_test
 ):
     """Confirm re-import of a generated flat_dict with metadata."""
-
     inv = soi.Inventory(res_dec)
     d = inv.json_dict()
 
@@ -418,7 +394,6 @@ def test_api_inventory_flatdict_reimportwithmetadata(
 
 def test_api_inventory_toosmallflatdict_importbutignore(res_dec):
     """Confirm no error when flat dict passed w/too few objs w/ignore."""
-
     inv = soi.Inventory(res_dec)
     d = inv.json_dict()
     d.pop("12")
@@ -493,7 +468,6 @@ def test_api_inventory_datafile_gen_and_reimport(
     inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
 ):
     """Confirm integrated data_file export/import behavior."""
-
     fname = inv_path.name
     scr_fpath = scratch_path / fname
 
@@ -505,8 +479,6 @@ def test_api_inventory_datafile_gen_and_reimport(
         pytest.skip("'--testall' not specified")
 
     # Make Inventory
-    mch = misc_info.p_inv.match(fname)
-    proj = mch.group(1)
     inv1 = soi.Inventory(str(res_path / fname))
 
     # Generate new zlib file and reimport

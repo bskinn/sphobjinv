@@ -30,7 +30,6 @@ import re
 import shlex
 import subprocess as sp
 import sys
-from textwrap import dedent
 
 
 import pytest

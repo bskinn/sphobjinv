@@ -32,10 +32,12 @@ pytestmark = pytest.mark.fixture
 
 
 def test_info_fixture(misc_info):
+    """Confirm arbitrary member of misc_info fixture."""
     assert True in misc_info.byte_lines
 
 
 def test_populate_scratch(misc_info, scratch_path):
+    """Ensure the scratch_path fixture populates the scratch dir correctly."""
     scr_base = misc_info.FNames.INIT_FNAME_BASE.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
@@ -43,15 +45,24 @@ def test_populate_scratch(misc_info, scratch_path):
 
 
 def test_sphinx_load(res_path, sphinx_load_test):
+    """Confirm sphinx_load_test fixture works on known-good inventory."""
     sphinx_load_test(res_path / "objects_attrs.inv")
 
 
 def test_cli_invoke(run_cmdline_test):
-    # Test execution with nothing on the CLI should print help and exit ok.
+    """Confirm CLI test with no args exits ok.
+
+    Should just print help and exit.
+
+    """
     run_cmdline_test([])
 
 
 def test_decomp_comp_fixture(misc_info, decomp_cmp_test):
-    # This basically an identity check; tells 'cmp' to compare
-    # the reference decompressed file with itself.
+    """Test decomp_cmp_test works in 'identity' case.
+
+    Basically is telling filecmp.cmp to compare a reference inventory file
+    with itself.
+
+    """
     decomp_cmp_test(misc_info.res_decomp_path)
