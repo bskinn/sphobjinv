@@ -48,74 +48,57 @@ import sphobjinv as soi
 pytestmark = [pytest.mark.api, pytest.mark.fail]
 
 
+def test_apifail_readbytes_missing_input_file(scratch_path):
+    """Confirm that appropriate exception is raised w/no input file."""
+    with pytest.raises(FileNotFoundError):
+        soi.readbytes(str(scratch_path / "thisfilewillneverexist.foo"))
+
+
+def test_apifail_writebytes_badoutputfile(scratch_path, misc_info):
+    """Confirm OSError raised on bad filename (example of read error)."""
+    b_str = b"This is a binary string!"
+
+    with pytest.raises(OSError):
+        soi.writebytes(misc_info.invalid_filename, b_str)
+
+
+def test_apifail_error_decompressing_plaintext(res_dec):
+    """Confirm error raised on attempt to decompress plaintext."""
+    from zlib import error as ZlibError
+
+    # OS-dependent. VersionError on Windows b/c bytes import of the
+    # text-file objects_attrs.txt has the first line ending with b'2\r\n',
+    # whereas *nix will pass the version check but choke in the zlib
+    # decompression process
+    with pytest.raises((ZlibError, soi.VersionError)):
+        soi.Inventory(fname_zlib=res_dec)
+
+
+@pytest.mark.parametrize("dobj", [soi.DataObjBytes, soi.DataObjStr])
+def test_apifail_bad_dataobj_init_types(dobj):
+    """Confirm error raised when init-ed w/wrong types."""
+    with pytest.raises(TypeError):
+        dobj(*range(6))
+
+
+@pytest.mark.xfail(reason="Changed to mutable to avoid Inventory revision pain")
+@pytest.mark.parametrize("use_bytes", [True, False])
+def test_apifail_changing_immutable_dataobj(use_bytes, res_cmp):
+    """Confirm DataObj's are immutable."""
+    from attr.exceptions import FrozenInstanceError as FIError
+
+    inv = soi.Inventory(res_cmp)
+
+    with pytest.raises(FIError):
+        if use_bytes:
+            inv.objects[0].as_bytes.name = b"newname"
+        else:
+            inv.objects[0].name = "newname"
+
+
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
-
-    def test_API_NoInputFile(self):
-        """Confirm that appropriate exceptions are raised w/no input file."""
-        import sphobjinv as soi
-
-        with self.subTest("decomp_input_file"):
-            with self.assertRaises(FileNotFoundError):
-                soi.readbytes(INIT_FNAME_BASE + DEC_EXT)
-
-        with self.subTest("comp_input_file"):
-            with self.assertRaises(FileNotFoundError):
-                soi.readbytes(INIT_FNAME_BASE + CMP_EXT)
-
-    def test_API_WriteFileBadOutputFile(self):
-        """Confirm OSError raised on bad filename (example of read error)."""
-        import sphobjinv as soi
-
-        b_str = b"This is a binary string!"
-
-        with self.assertRaises(OSError):
-            soi.writebytes(INVALID_FNAME, b_str)
-
-    def test_API_ErrorDecompressingPlaintext(self):
-        """Confirm error raised on attempt to decompress plaintext."""
-        from zlib import error as ZlibError
-
-        import sphobjinv as soi
-
-        # OS-dependent. VersionError on Windows b/c bytes import of the
-        # text-file objects_attrs.txt has the first line ending with b'2\r\n',
-        # whereas *nix will pass the version check but choke in the zlib
-        # decompression process
-        self.assertRaises(
-            (ZlibError, soi.VersionError),
-            soi.Inventory,
-            fname_zlib=res_path(RES_FNAME_BASE + DEC_EXT),
-        )
-
-    def test_API_BadDataObjInitTypes(self):
-        """Confirm error raised when init-ed w/wrong types."""
-        import sphobjinv as soi
-
-        with self.subTest("bytes"):
-            with self.assertRaises(TypeError):
-                soi.DataObjBytes(*range(6))
-
-        with self.subTest("str"):
-            with self.assertRaises(TypeError):
-                soi.DataObjStr(*range(6))
-
-    @ut.skip("Changed to mutable to avoid Inventory revision pain.")
-    def test_API_ChangingImmutableDataObj(self):
-        """Confirm DataObj's are immutable."""
-        from attr.exceptions import FrozenInstanceError as FIError
-
-        from sphobjinv import Inventory as Inv
-
-        inv = Inv(res_path(RES_FNAME_BASE + CMP_EXT))
-
-        with self.subTest("str"):
-            with self.assertRaises(FIError):
-                inv.objects[0].name = "newname"
-        with self.subTest("bytes"):
-            with self.assertRaises(FIError):
-                inv.objects[0].as_bytes.name = b"newname"
 
     def test_API_DataLine_BothArgsTrue(self):
         """Confirm error raised when both expand and contract are True."""
