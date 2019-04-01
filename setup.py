@@ -49,18 +49,8 @@ setup(
     package_dir={"": "src"},
     provides=["sphobjinv"],
     python_requires=">=3.4",
-    requires=[
-        "attrs (>=17.1,<18.0)",
-        "certifi",
-        "fuzzywuzzy (>=0.3)",
-        "jsonschema (>=2.0)",
-    ],
-    install_requires=[
-        "attrs>=17.1,<18.0",
-        "certifi",
-        "fuzzywuzzy>=0.3",
-        "jsonschema>=2.0",
-    ],
+    requires=["attrs (>=17.4)", "certifi", "fuzzywuzzy (>=0.3)", "jsonschema (>=2.0)"],
+    install_requires=["attrs>=17.4", "certifi", "fuzzywuzzy>=0.3", "jsonschema>=2.0"],
     classifiers=[
         "License :: OSI Approved",
         "License :: OSI Approved :: MIT License",

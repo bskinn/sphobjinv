@@ -44,6 +44,7 @@ testall_inv_paths = (
 
 @pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
 @pytest.mark.testall
+@pytest.mark.timeout(20)
 def test_api_inventory_many_url_imports(
     inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
 ):

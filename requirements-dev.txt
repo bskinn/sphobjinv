@@ -1,4 +1,4 @@
-attrs>=17,<18
+attrs>=17.4
 certifi
 coverage
 flake8
@@ -15,8 +15,7 @@ sphinx==1.7.6
 sphinx-autobuild
 sphinx-issues
 sphinx-rtd-theme==0.4.1
-stdio-mgr
-timeout-decorator==0.4.0
+stdio-mgr>=1.0.1
 tox
 twine
 wget

@@ -31,14 +31,6 @@ from enum import Enum
 import attr
 
 
-# Handle attr's convert --> converter in v17.4
-_attr_ver = list(int(_) for _ in attr.__version__.split("."))
-if _attr_ver[0] > 17 or (_attr_ver[0] == 17 and _attr_ver[1] > 3):
-    CONVERTER = "converter"  # pragma: no cover
-else:
-    CONVERTER = "convert"  # pragma: no cover
-
-
 class DataFields(Enum):
     """|Enum| for the fields of |objects.inv| data objects."""
 
@@ -403,12 +395,12 @@ class DataObjStr(SuperDataObj):
     uri_abbrev = "$"
     dispname_abbrev = "-"
 
-    name = attr.ib(**{CONVERTER: _utf8_decode})
-    domain = attr.ib(**{CONVERTER: _utf8_decode})
-    role = attr.ib(**{CONVERTER: _utf8_decode})
-    priority = attr.ib(**{CONVERTER: _utf8_decode})
-    uri = attr.ib(**{CONVERTER: _utf8_decode})
-    dispname = attr.ib(**{CONVERTER: _utf8_decode})
+    name = attr.ib(converter=_utf8_decode)
+    domain = attr.ib(converter=_utf8_decode)
+    role = attr.ib(converter=_utf8_decode)
+    priority = attr.ib(converter=_utf8_decode)
+    uri = attr.ib(converter=_utf8_decode)
+    dispname = attr.ib(converter=_utf8_decode)
 
     as_bytes = attr.ib(repr=False)
 
@@ -442,12 +434,12 @@ class DataObjBytes(SuperDataObj):
     uri_abbrev = b"$"
     dispname_abbrev = b"-"
 
-    name = attr.ib(**{CONVERTER: _utf8_encode})
-    domain = attr.ib(**{CONVERTER: _utf8_encode})
-    role = attr.ib(**{CONVERTER: _utf8_encode})
-    priority = attr.ib(**{CONVERTER: _utf8_encode})
-    uri = attr.ib(**{CONVERTER: _utf8_encode})
-    dispname = attr.ib(**{CONVERTER: _utf8_encode})
+    name = attr.ib(converter=_utf8_encode)
+    domain = attr.ib(converter=_utf8_encode)
+    role = attr.ib(converter=_utf8_encode)
+    priority = attr.ib(converter=_utf8_encode)
+    uri = attr.ib(converter=_utf8_encode)
+    dispname = attr.ib(converter=_utf8_encode)
 
     as_str = attr.ib(repr=False)
 
