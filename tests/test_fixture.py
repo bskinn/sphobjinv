@@ -36,12 +36,13 @@ def test_info_fixture(misc_info):
     assert True in misc_info.byte_lines
 
 
-def test_populate_scratch(misc_info, scratch_path):
+def test_populate_scratch(misc_info, scratch_path, subtests):
     """Ensure the scratch_path fixture populates the scratch dir correctly."""
     scr_base = misc_info.FNames.INIT_FNAME_BASE.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
-        assert (scratch_path / "{}{}".format(scr_base, ext)).is_file(), ext
+        with subtests.test(msg=ext):
+            assert (scratch_path / "{}{}".format(scr_base, ext)).is_file(), ext
 
 
 def test_sphinx_load(res_path, sphinx_load_test):

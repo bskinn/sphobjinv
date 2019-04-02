@@ -60,7 +60,7 @@ py_ver = sys.version_info
     reason="Skip on Python 3.4 and below due to variant subprocess behavior, "
     "and skip if Sphinx version mismatches current dev version.",
 )
-def test_readme_shell_cmds(ensure_doc_scratch):
+def test_readme_shell_cmds(ensure_doc_scratch, subtests):
     """Perform testing on README shell command examples."""
     with open("README.rst") as f:
         text = f.read()
@@ -69,7 +69,7 @@ def test_readme_shell_cmds(ensure_doc_scratch):
 
     dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
-    for mch in p_shell.finditer(text):
+    for i, mch in enumerate(p_shell.finditer(text)):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
@@ -79,7 +79,8 @@ def test_readme_shell_cmds(ensure_doc_scratch):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        assert chk.check_output(out, result, dt_flags), msg
+        with subtests.test(i=i):
+            assert chk.check_output(out, result, dt_flags), msg
 
 
 if __name__ == "__main__":

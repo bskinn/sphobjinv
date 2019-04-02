@@ -6,10 +6,11 @@ fuzzywuzzy>=0.3
 jsonschema==2.6
 flake8
 flake8-docstrings
-pytest
-pytest-timeout
-pytest-ordering
+pytest>=4.4.0
 pytest-cov
+pytest-ordering
+pytest-subtests
+pytest-timeout
 sphinx==1.7.6
 sphinx-issues
 sphinx-rtd-theme==0.4.1

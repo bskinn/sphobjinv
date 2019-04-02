@@ -25,21 +25,6 @@ Sphinx |objects.inv| files.
 
 """
 
-import unittest as ut
-
-from .sphobjinv_base import B_LINES_0, S_LINES_0
-from .sphobjinv_base import DEC_EXT, CMP_EXT
-from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import RES_FNAME_BASE, INVALID_FNAME
-from .sphobjinv_base import REMOTE_URL, P_INV, TESTALL
-from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
-from .sphobjinv_base import decomp_cmp_test, file_exists_test
-from .sphobjinv_base import sphinx_load_test
-
-
-import itertools as itt
-
 import pytest
 
 import sphobjinv as soi
@@ -96,104 +81,97 @@ def test_apifail_changing_immutable_dataobj(use_bytes, res_cmp):
             inv.objects[0].name = "newname"
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvAPIExpectFail(SuperSphobjinv, ut.TestCase):
-    """Testing that code raises expected errors when invoked improperly."""
+def test_apifail_dataline_bothargstrue(misc_info):
+    """Confirm error raised when both expand and contract are True."""
+    dos = soi.DataObjStr(**soi.p_data.search(misc_info.str_lines[True]).groupdict())
+    with pytest.raises(ValueError):
+        dos.data_line(expand=True, contract=True)
 
-    def test_API_DataLine_BothArgsTrue(self):
-        """Confirm error raised when both expand and contract are True."""
-        import sphobjinv as soi
 
-        dos = soi.DataObjStr(**soi.p_data.search(S_LINES_0[True]).groupdict())
-        with self.assertRaises(ValueError):
-            dos.data_line(expand=True, contract=True)
+def test_apifail_inventory_invalidsource():
+    """Confirm error raised when invalid source provided."""
+    with pytest.raises(TypeError):
+        soi.Inventory("abcdefg")
 
-    def test_API_Inventory_InvalidSource(self):
-        """Confirm error raised when invalid source provided."""
-        import sphobjinv as soi
 
-        with self.assertRaises(TypeError):
-            soi.Inventory("abcdefg")
+def test_apifail_inventory_dictimport_noitems():
+    """Confirm ValueError with no-items dict passed to json_dict."""
+    d = {
+        soi.HeaderFields.Project.value: "proj",
+        soi.HeaderFields.Version.value: "v3.3",
+        soi.HeaderFields.Count.value: 5,
+    }
 
-    def test_API_Inventory_NoItemsFlatDict(self):
-        """Confirm TypeError with no-items dict passed to json_dict."""
-        import sphobjinv as soi
+    with pytest.raises(ValueError):
+        soi.Inventory()._import_json_dict(d)
 
-        d = {
-            soi.HeaderFields.Project.value: "proj",
-            soi.HeaderFields.Version.value: "v3.3",
-            soi.HeaderFields.Count.value: 5,
-        }
 
-        self.assertRaises(TypeError, soi.Inventory._import_json_dict, d)
+def test_apifail_inventory_dictimport_toosmall(res_dec):
+    """Confirm error raised when JSON dict passed w/too few objects."""
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+    d.pop("12")
 
-    def test_API_Inventory_TooSmallDictImport(self):
-        """Confirm error raised when JSON dict passed w/too few objects."""
-        import sphobjinv as soi
+    with pytest.raises(ValueError):
+        soi.Inventory(d)
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.pop("12")
 
-        self.assertRaises(ValueError, soi.Inventory, d)
+def test_apifail_inventory_dictimport_badobj(res_dec):
+    """Confirm error raised when JSON dict passed w/an invalid object."""
+    from jsonschema.exceptions import ValidationError
 
-    def test_API_Inventory_BadObjDictImport(self):
-        """Confirm error raised when JSON dict passed w/an invalid object."""
-        from jsonschema.exceptions import ValidationError
-        import sphobjinv as soi
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+    d.update({"112": "foobarbazquux"})
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"112": "foobarbazquux"})
+    with pytest.raises(ValidationError):
+        soi.Inventory(dict_json=d)
 
-        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
 
-    def test_API_Inventory_TooBigJSONDictImport(self):
-        """Confirm error raised when JSON dict passed w/too many objects."""
-        import sphobjinv as soi
+def test_apifail_inventory_dictimport_toobig(res_dec):
+    """Confirm error raised when JSON dict passed w/too many objects."""
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+    d.update({"57": d["23"]})
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"57": d["23"]})
+    with pytest.raises(ValueError):
+        soi.Inventory(dict_json=d)
 
-        self.assertRaises(ValueError, soi.Inventory, dict_json=d)
 
-    def test_API_Inventory_BadRootObjectJSONDictImport(self):
-        """Confirm error raised when spurious extra root object present."""
-        import sphobjinv as soi
-        from jsonschema.exceptions import ValidationError
+def test_apifail_inventory_dictimport_badrootobject(res_dec):
+    """Confirm error raised when spurious extra root object present."""
+    from jsonschema.exceptions import ValidationError
 
-        inv = soi.Inventory(res_path(RES_FNAME_BASE + DEC_EXT))
-        d = inv.json_dict()
-        d.update({"bad_foo": "angry_bar"})
+    inv = soi.Inventory(res_dec)
+    d = inv.json_dict()
+    d.update({"bad_foo": "angry_bar"})
 
-        self.assertRaises(ValidationError, soi.Inventory, dict_json=d)
+    with pytest.raises(ValidationError):
+        soi.Inventory(dict_json=d)
 
-    def test_API_Inventory_TooManyInitSrcArgs(self):
-        """Confirm error if >1 sources passed."""
-        from sphobjinv import Inventory
 
-        self.assertRaises(RuntimeError, Inventory, source="foo", plaintext="bar")
+def test_apifail_inventory_dictimport_toomanysrcargs():
+    """Confirm error if >1 sources passed."""
+    with pytest.raises(RuntimeError):
+        soi.Inventory(source="foo", plaintext="bar")
 
-    def test_API_Inventory_NoObjectInventories(self):
-        """Confirm no-objects inventories don't import."""
-        import sphobjinv as soi
 
-        inv = soi.Inventory()
+def test_apifail_inventory_no_object_invs(subtests):
+    """Confirm no-objects inventories don't import."""
+    inv = soi.Inventory()
 
-        with self.subTest("plain"):
-            self.assertRaises(TypeError, soi.Inventory, inv.data_file())
+    with subtests.test(msg="plain"):
+        with pytest.raises(TypeError):
+            soi.Inventory(inv.data_file())
 
-        with self.subTest("zlib"):
-            # Actually testing that importing an empty inventory
-            # blows up, not importing one
-            self.assertRaises(
-                (TypeError, ValueError), soi.Inventory, soi.compress(inv.data_file())
-            )
+    with subtests.test(msg="zlib"):
+        with pytest.raises((TypeError, ValueError)):
+            soi.Inventory(soi.compress(inv.data_file()))
 
-        d = {"project": "test", "version": "0.0", "count": 0}
-        with self.subTest("json"):
-            self.assertRaises(ValueError, soi.Inventory, d)
+    d = {"project": "test", "version": "0.0", "count": 0}
+    with subtests.test(msg="json"):
+        with pytest.raises(ValueError):
+            soi.Inventory(d)
 
 
 if __name__ == "__main__":
