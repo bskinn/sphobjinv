@@ -46,7 +46,13 @@ testall_inv_paths = (
 @pytest.mark.testall
 @pytest.mark.timeout(20)
 def test_api_inventory_many_url_imports(
-    inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
+    inv_path,
+    res_path,
+    scratch_path,
+    misc_info,
+    sphinx_load_test,
+    pytestconfig,
+    subtests,
 ):
     """Confirm a plethora of .inv files downloads properly via url arg.
 
@@ -73,22 +79,24 @@ def test_api_inventory_many_url_imports(
     inv2 = soi.Inventory(url=misc_info.remote_url.format(proj_name))
 
     # Test the things
-    assert inv1.project == inv2.project
-    assert inv1.version == inv2.version
-    assert inv1.count == inv2.count
-    for objs in zip(inv1.objects, inv2.objects):
-        assert objs[0].name == objs[1].name
-        assert objs[0].domain == objs[1].domain
-        assert objs[0].role == objs[1].role
-        assert objs[0].uri == objs[1].uri
-        assert objs[0].priority == objs[1].priority
-        assert objs[0].dispname == objs[1].dispname
+    with subtests.test(msg="properties"):
+        assert inv1.project == inv2.project
+        assert inv1.version == inv2.version
+        assert inv1.count == inv2.count
+        for objs in zip(inv1.objects, inv2.objects):
+            assert objs[0].name == objs[1].name
+            assert objs[0].domain == objs[1].domain
+            assert objs[0].role == objs[1].role
+            assert objs[0].uri == objs[1].uri
+            assert objs[0].priority == objs[1].priority
+            assert objs[0].dispname == objs[1].dispname
 
     # Ensure sphinx likes the regenerated inventory
-    data = inv2.data_file()
-    cmp_data = soi.compress(data)
-    soi.writebytes(str(scr_fpath), cmp_data)
-    sphinx_load_test(scr_fpath)
+    with subtests.test(msg="sphinx_load"):
+        data = inv2.data_file()
+        cmp_data = soi.compress(data)
+        soi.writebytes(str(scr_fpath), cmp_data)
+        sphinx_load_test(scr_fpath)
 
 
 if __name__ == "__main__":
