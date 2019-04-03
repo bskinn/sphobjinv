@@ -52,7 +52,7 @@ Remote |objects.inv| files can be retrieved for inspection by passing the
 
 .. doctest:: suggest_main
 
-    >>> cli_run('sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv instance -u -t 48')  # doctest: +NORMALIZE_WHITESPACE
+    >>> cli_run('sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/dev/tests/resource/objects_attrs.inv instance -u -t 48')  # doctest: +NORMALIZE_WHITESPACE
     <BLANKLINE>
     Remote inventory found.
     <BLANKLINE>
