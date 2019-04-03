@@ -1,20 +1,21 @@
+dist: xenial
 install:
  - pip install -U pip setuptools
  - pip install -U --force-reinstall -r requirements-travis.txt
- - pip install -e .
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
 python:
  - 3.4
  - 3.5
  - 3.6
- - 3.7-dev
+ - 3.7
+ - 3.8-dev
 script:
  - python --version
  - pip list
- - coverage run tests.py -a --testall
+ - pytest --cov=src --testall --nonloc
  - do_rest=$( echo $TRAVIS_PYTHON_VERSION | grep -e '^3\.6' | wc -l )
- - if [ $do_rest -gt 0 ]; then pip install black; black --check setup.py tests.py sphobjinv sphobjinv/test -l 79; else echo "No black."; fi
+ - if [ $do_rest -gt 0 ]; then pip install black; black --check .; else echo "No black."; fi
  - if [ $do_rest -gt 0 ]; then sh -c 'cd doc; make doctest'; else echo "No doctest."; fi
  - if [ $do_rest -gt 0 ]; then codecov; else echo "No codecov."; fi
 

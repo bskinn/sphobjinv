@@ -1,4 +1,4 @@
-attrs>=17,<18
+attrs>=17.4
 certifi
 codecov
 coverage
@@ -6,8 +6,14 @@ fuzzywuzzy>=0.3
 jsonschema==2.6
 flake8
 flake8-docstrings
+pytest>=4.4.0
+pytest-cov
+pytest-ordering
+pytest-subtests
+pytest-timeout
 sphinx==1.7.6
 sphinx-issues
 sphinx-rtd-theme==0.4.1
-stdio-mgr
-timeout-decorator==0.4.0
+stdio-mgr>=1.0.1
+-e .
+

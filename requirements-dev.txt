@@ -1,4 +1,4 @@
-attrs>=17,<18
+attrs>=17.4
 certifi
 coverage
 flake8
@@ -6,13 +6,18 @@ flake8-docstrings
 fuzzywuzzy>=0.3
 ipython
 jsonschema==2.6
+pytest>=4.4.0
+pytest-cov
+pytest-ordering
+pytest-subtests
+pytest-timeout
 restview
 sphinx==1.7.6
 sphinx-autobuild
 sphinx-issues
 sphinx-rtd-theme==0.4.1
-stdio-mgr
-timeout-decorator==0.4.0
+stdio-mgr>=1.0.1
 tox
 twine
 wget
+-e .

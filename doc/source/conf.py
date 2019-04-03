@@ -223,14 +223,11 @@ _start_dir = Path().resolve()
 
 # Create scratch dir if missing, and bind
 _work_dir = Path('scratch')
-try:
-    _work_dir.mkdir()
-except FileExistsError:
-    pass
+_work_dir.mkdir(exist_ok=True)
 _work_dir = _work_dir.resolve()
 
 # Link ref to the attrs inventory
-_res_inv = (_start_dir.parent / 'sphobjinv' / 'test' / 'resource'
+_res_inv = (_start_dir.parent / 'tests' / 'resource'
             / 'objects_attrs.inv')
 
 # Scratch-clearing helper for later use

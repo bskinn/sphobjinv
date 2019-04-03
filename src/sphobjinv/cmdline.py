@@ -43,8 +43,7 @@ VERSION = "version"
 
 #: Version &c. output blurb
 VER_TXT = (
-    "\nsphobjinv v{0}\n\n".format(__version__)
-    + "Copyright (c) Brian Skinn 2016-2019\n"
+    "\nsphobjinv v{0}\n\n".format(__version__) + "Copyright (c) Brian Skinn 2016-2019\n"
     "License: The MIT License\n\n"
     "Bug reports & feature requests:"
     " https://github.com/bskinn/sphobjinv\n"
@@ -154,8 +153,7 @@ ALL = "all"
 # ### Helper strings
 #: Help text for the :data:`CONVERT` subparser
 HELP_CO_PARSER = (
-    "Convert intersphinx inventory to zlib-compressed, "
-    "plaintext, or JSON formats."
+    "Convert intersphinx inventory to zlib-compressed, " "plaintext, or JSON formats."
 )
 
 #: Help text for the :data:`SUGGEST` subparser
@@ -301,16 +299,10 @@ def getparser():
     sprs.required = False
 
     spr_convert = sprs.add_parser(
-        CONVERT,
-        aliases=[CONVERT[:2]],
-        help=HELP_CO_PARSER,
-        description=HELP_CO_PARSER,
+        CONVERT, aliases=[CONVERT[:2]], help=HELP_CO_PARSER, description=HELP_CO_PARSER
     )
     spr_suggest = sprs.add_parser(
-        SUGGEST,
-        aliases=[SUGGEST[:2]],
-        help=HELP_SU_PARSER,
-        description=HELP_SU_PARSER,
+        SUGGEST, aliases=[SUGGEST[:2]], help=HELP_SU_PARSER, description=HELP_SU_PARSER
     )
 
     # ### Args for conversion subparser
@@ -334,9 +326,7 @@ def getparser():
     )
 
     # Mutually exclusive group for --expand/--contract
-    gp_expcont = spr_convert.add_argument_group(
-        title="URI/display name " "conversions"
-    )
+    gp_expcont = spr_convert.add_argument_group(title="URI/display name " "conversions")
     meg_expcont = gp_expcont.add_mutually_exclusive_group()
     meg_expcont.add_argument(
         "-e",
@@ -379,9 +369,7 @@ def getparser():
     )
 
     # ### Args for suggest subparser
-    spr_suggest.add_argument(
-        INFILE, help="Path to inventory file to be searched"
-    )
+    spr_suggest.add_argument(INFILE, help="Path to inventory file to be searched")
     spr_suggest.add_argument(SEARCH, help="Search term for object suggestions")
     spr_suggest.add_argument(
         "-" + ALL[0],
@@ -394,8 +382,7 @@ def getparser():
     spr_suggest.add_argument(
         "-" + INDEX[0],
         "--" + INDEX,
-        help="Include Inventory.objects list indices "
-        "with the search results",
+        help="Include Inventory.objects list indices " "with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
@@ -746,11 +733,7 @@ def do_convert(inv, in_path, params):
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
-    if (
-        os.path.isfile(out_path)
-        and not params[QUIET]
-        and not params[OVERWRITE]
-    ):
+    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
             print("\nExiting...")
@@ -759,17 +742,13 @@ def do_convert(inv, in_path, params):
     # Write the output file
     try:
         if mode == ZLIB:
-            write_zlib(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
-            )
+            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
         if mode == PLAIN:
             write_plaintext(
                 inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
             )
         if mode == JSON:
-            write_json(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
-            )
+            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)
@@ -828,9 +807,7 @@ def do_suggest(inv, params):
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
-        resp = yesno_prompt(
-            "Display all {0} results ".format(len(results)) + "(Y/N)? "
-        )
+        resp = yesno_prompt("Display all {0} results ".format(len(results)) + "(Y/N)? ")
         if resp.lower() == "n":
             print("\nExiting...")
             sys.exit(0)
@@ -853,11 +830,7 @@ def do_suggest(inv, params):
             )
             print("")
             print(fmt.format("  Name", "Score", "Index"))
-            print(
-                fmt.format(
-                    "-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH
-                )
-            )
+            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, INDEX_WIDTH)

@@ -1,7 +1,10 @@
 import re
-from setuptools import setup
+from pathlib import Path
+from setuptools import find_packages, setup
 
-from sphobjinv import __version__
+# from sphobjinv import __version__
+with (Path(".") / "src" / "sphobjinv" / "version.py").open() as f:
+    exec(f.read())
 
 NAME = "sphobjinv"
 
@@ -22,16 +25,12 @@ def readme():
     # Docs reference updates to current release version, for PyPI
     # This one gets the badge image
     content = content_update(
-        content,
-        r"(?<=/readthedocs/{0}/)\S+?(?=\.svg$)".format(NAME),
-        "v" + new_ver,
+        content, r"(?<=/readthedocs/{0}/)\S+?(?=\.svg$)".format(NAME), "v" + new_ver
     )
 
     # This one gets the RtD links
     content = content_update(
-        content,
-        r"(?<={0}\.readthedocs\.io/en/)\S+?(?=/)".format(NAME),
-        "v" + new_ver,
+        content, r"(?<={0}\.readthedocs\.io/en/)\S+?(?=/)".format(NAME), "v" + new_ver
     )
 
     return content
@@ -46,21 +45,12 @@ setup(
     license="MIT License",
     author="Brian Skinn",
     author_email="bskinn@alum.mit.edu",
-    packages=["sphobjinv"],
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     provides=["sphobjinv"],
     python_requires=">=3.4",
-    requires=[
-        "attrs (>=17.1,<18.0)",
-        "certifi",
-        "fuzzywuzzy (>=0.3)",
-        "jsonschema (>=2.0)",
-    ],
-    install_requires=[
-        "attrs>=17.1,<18.0",
-        "certifi",
-        "fuzzywuzzy>=0.3",
-        "jsonschema>=2.0",
-    ],
+    requires=["attrs (>=17.4)", "certifi", "fuzzywuzzy (>=0.3)", "jsonschema (>=2.0)"],
+    install_requires=["attrs>=17.4", "certifi", "fuzzywuzzy>=0.3", "jsonschema>=2.0"],
     classifiers=[
         "License :: OSI Approved",
         "License :: OSI Approved :: MIT License",
