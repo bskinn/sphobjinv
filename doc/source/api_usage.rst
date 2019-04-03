@@ -57,7 +57,7 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
 
 .. doctest:: api_inspect
 
-    >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/test/resource/objects_attrs.inv')
+    >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/dev/tests/resource/objects_attrs.inv')
     >>> print(inv4)
     <Inventory (url): attrs v17.2, 56 objects>
 
