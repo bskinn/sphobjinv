@@ -66,7 +66,7 @@ def test_apifail_bad_dataobj_init_types(dobj):
         dobj(*range(6))
 
 
-@pytest.mark.xfail(reason="Changed to mutable to avoid Inventory revision pain")
+@pytest.mark.xfail(reason="Made mutable to simplify Inventory revision by users")
 @pytest.mark.parametrize("use_bytes", [True, False])
 def test_apifail_changing_immutable_dataobj(use_bytes, res_cmp):
     """Confirm DataObj's are immutable."""

@@ -240,7 +240,7 @@ def test_api_dataobjstr_flatdictfxn(bytes_txt):
 @pytest.mark.parametrize("dataline_arg", (True, False))
 @pytest.mark.parametrize("init_expanded", (True, False))
 def test_api_dataobj_datalinefxn(
-    dataobjtype, regex, lines, init_expanded, dataline_arg, misc_info
+    dataobjtype, regex, lines, init_expanded, dataline_arg, misc_info, subtests
 ):
     """Confirm that data line formatting function works.
 
@@ -256,15 +256,17 @@ def test_api_dataobj_datalinefxn(
     # If dataline_arg is False, should match the value of init_expanded.
     # If dataline_arg is True, should match the True (expanded) value.
     # Thus, the only False (contracted) situation is with both values False.
-    dl = dobj.data_line(expand=dataline_arg)
-    assert dl == lines_obj[dataline_arg or init_expanded]
+    with subtests.test(msg="expand"):
+        dl = dobj.data_line(expand=dataline_arg)
+        assert dl == lines_obj[dataline_arg or init_expanded]
 
     # If dataline_arg is False, should match the value of init_expanded.
     # If dataline_arg is True, should match the False (contracted) value.
     # Thus, the only True (expanded) situation is when init_expanded == True
     # and and dataline_arg == False.
-    dl = dobj.data_line(contract=dataline_arg)
-    assert dl == lines_obj[init_expanded and not dataline_arg]
+    with subtests.test(msg="contract"):
+        dl = dobj.data_line(contract=dataline_arg)
+        assert dl == lines_obj[init_expanded and not dataline_arg]
 
 
 @pytest.mark.xfail(
@@ -273,7 +275,7 @@ def test_api_dataobj_datalinefxn(
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
-def test_api_dataobj_evolvename(use_bytes, res_cmp):
+def test_api_dataobj_evolvename(use_bytes, res_cmp, subtests):
     """Confirm evolving new DataObj instances works properly."""
     inv = soi.Inventory(res_cmp)
     obj = inv.objects[5].as_bytes if use_bytes else inv.objects[5]  # Arbitrary choice
@@ -283,18 +285,28 @@ def test_api_dataobj_evolvename(use_bytes, res_cmp):
     obj2 = obj.evolve(name=newname)
     obj3 = obj2.evolve(name=oldname)
 
-    assert obj == obj3
-    assert obj2.name == newname
+    with subtests.test(msg="old_new_match"):
+        assert obj == obj3
+
+    with subtests.test(msg="name_is_changed"):
+        assert obj2.name == newname
 
 
-def test_api_inventory_default_none_instantiation():
+def test_api_inventory_default_none_instantiation(subtests):
     """Confirm 'manual' instantiation with None."""
     inv = soi.Inventory()
 
-    assert inv.project is None
-    assert inv.version is None
-    assert inv.count == 0
-    assert inv.source_type is soi.SourceTypes.Manual
+    with subtests.test(msg="project"):
+        assert inv.project is None
+
+    with subtests.test(msg="version"):
+        assert inv.version is None
+
+    with subtests.test(msg="count"):
+        assert inv.count == 0
+
+    with subtests.test(msg="source_type"):
+        assert inv.source_type is soi.SourceTypes.Manual
 
 
 @pytest.mark.parametrize(
@@ -308,7 +320,7 @@ def test_api_inventory_default_none_instantiation():
     ids=(lambda v: v if type(v) == str else ""),
 )
 def test_api_inventory_bytes_fname_instantiation(
-    source_type, inv_arg, res_path, misc_info, attrs_inventory_test
+    source_type, inv_arg, res_path, misc_info, attrs_inventory_test, subtests
 ):
     """Check bytes and filename modes for Inventory instantiation."""
     source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
@@ -322,16 +334,19 @@ def test_api_inventory_bytes_fname_instantiation(
         source = soi.readbytes(source)
 
     # General import, without a specified kwarg
-    attrs_inventory_test(soi.Inventory(source), source_type)
+    with subtests.test(msg="general"):
+        attrs_inventory_test(soi.Inventory(source), source_type)
 
     # Importing with the respective kwarg for each source type
-    inv = soi.Inventory(**{inv_arg: source})
-    attrs_inventory_test(inv, source_type)
+    with subtests.test(msg="specific"):
+        inv = soi.Inventory(**{inv_arg: source})
+        attrs_inventory_test(inv, source_type)
 
     # Special case for plaintext bytes, try decoding it
     if source_type is soi.SourceTypes.BytesPlaintext:
-        inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
-        attrs_inventory_test(inv, source_type)
+        with subtests.test(msg="plaintext_bytes"):
+            inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
+            attrs_inventory_test(inv, source_type)
 
 
 @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
@@ -390,7 +405,7 @@ def test_api_inventory_toosmallflatdict_importbutignore(res_dec):
     assert inv2.count == 55
 
 
-def test_API_Inventory_NameSuggest(res_cmp):
+def test_api_inventory_namesuggest(res_cmp, subtests):
     """Confirm object name suggestion is nominally working."""
     from numbers import Number
 
@@ -401,18 +416,22 @@ def test_API_Inventory_NameSuggest(res_cmp):
 
     # No test on the exact fuzzywuzzy match score in these since
     # it could change as fw continues development
-    assert inv.suggest("evolve")[0] == rst
+    with subtests.test(msg="basic"):
+        assert inv.suggest("evolve")[0] == rst
 
-    assert inv.suggest("evolve", with_index=True)[0] == (rst, idx)
+    with subtests.test(msg="index"):
+        assert inv.suggest("evolve", with_index=True)[0] == (rst, idx)
 
-    rec = inv.suggest("evolve", with_score=True)
-    assert rec[0][0] == rst
-    assert isinstance(rec[0][1], Number)
+    with subtests.test(msg="score"):
+        rec = inv.suggest("evolve", with_score=True)
+        assert rec[0][0] == rst
+        assert isinstance(rec[0][1], Number)
 
-    rec = inv.suggest("evolve", with_index=True, with_score=True)
-    assert rec[0][0] == rst
-    assert isinstance(rec[0][1], Number)
-    assert rec[0][2] == idx
+    with subtests.test(msg="index_and_score"):
+        rec = inv.suggest("evolve", with_index=True, with_score=True)
+        assert rec[0][0] == rst
+        assert isinstance(rec[0][1], Number)
+        assert rec[0][2] == idx
 
 
 # Must be run first, otherwise the fuzzywuzzy warning is consumed
@@ -449,7 +468,13 @@ def test_api_fuzzywuzzy_warningcheck():
 @pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
 @pytest.mark.testall
 def test_api_inventory_datafile_gen_and_reimport(
-    inv_path, res_path, scratch_path, misc_info, sphinx_load_test, pytestconfig
+    inv_path,
+    res_path,
+    scratch_path,
+    misc_info,
+    sphinx_load_test,
+    pytestconfig,
+    subtests,
 ):
     """Confirm integrated data_file export/import behavior."""
     fname = inv_path.name
@@ -469,19 +494,21 @@ def test_api_inventory_datafile_gen_and_reimport(
     inv2 = soi.Inventory(str(scr_fpath))
 
     # Test the things
-    assert inv1.project == inv2.project
-    assert inv1.version == inv2.version
-    assert inv1.count == inv2.count
-    for objs in zip(inv1.objects, inv2.objects):
-        assert objs[0].name == objs[1].name
-        assert objs[0].domain == objs[1].domain
-        assert objs[0].role == objs[1].role
-        assert objs[0].uri == objs[1].uri
-        assert objs[0].priority == objs[1].priority
-        assert objs[0].dispname == objs[1].dispname
+    with subtests.test(msg="content"):
+        assert inv1.project == inv2.project
+        assert inv1.version == inv2.version
+        assert inv1.count == inv2.count
+        for objs in zip(inv1.objects, inv2.objects):
+            assert objs[0].name == objs[1].name
+            assert objs[0].domain == objs[1].domain
+            assert objs[0].role == objs[1].role
+            assert objs[0].uri == objs[1].uri
+            assert objs[0].priority == objs[1].priority
+            assert objs[0].dispname == objs[1].dispname
 
     # Ensure sphinx likes the regenerated inventory
-    sphinx_load_test(scr_fpath)
+    with subtests.test(msg="sphinx_load"):
+        sphinx_load_test(scr_fpath)
 
 
 if __name__ == "__main__":
