@@ -97,8 +97,8 @@ def misc_info(res_path):
 
         # For the URL mode of Inventory instantiation
         remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/dev/sphobjinv/"
-            "test/resource/objects_{0}.inv"
+            "https://github.com/bskinn/sphobjinv/raw/dev/"
+            "tests/resource/objects_{0}.inv"
         )
 
         # Regex pattern for objects_xyz.inv files
