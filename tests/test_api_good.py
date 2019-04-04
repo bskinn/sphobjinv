@@ -275,7 +275,7 @@ def test_api_dataobj_datalinefxn(
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
-def test_api_dataobj_evolvename(use_bytes, res_cmp):
+def test_api_dataobj_evolvename(use_bytes, res_cmp, subtests):
     """Confirm evolving new DataObj instances works properly."""
     inv = soi.Inventory(res_cmp)
     obj = inv.objects[5].as_bytes if use_bytes else inv.objects[5]  # Arbitrary choice
@@ -285,8 +285,11 @@ def test_api_dataobj_evolvename(use_bytes, res_cmp):
     obj2 = obj.evolve(name=newname)
     obj3 = obj2.evolve(name=oldname)
 
-    assert obj == obj3
-    assert obj2.name == newname
+    with subtests.test(msg="old_new_match"):
+        assert obj == obj3
+
+    with subtests.test(msg="name_is_changed"):
+        assert obj2.name == newname
 
 
 def test_api_inventory_default_none_instantiation(subtests):
