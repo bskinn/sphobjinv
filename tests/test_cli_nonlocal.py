@@ -29,23 +29,14 @@ import os.path as osp
 import re
 import unittest as ut
 
-try:
-    from signal import SIGALRM
+# Temp dummy decorator until all tests converted
+def timeout(dummy_sec):
+    """Decorate the function with a null transform."""
 
-    SIGALRM  # Placate flake8
-except ImportError:
-    # Probably running on Windows; timeout-decorator won't work
-    def timeout(dummy_sec):
-        """Decorate the function with a null transform."""
+    def null_dec(func):
+        return func
 
-        def null_dec(func):
-            return func
-
-        return null_dec
-
-
-else:
-    from timeout_decorator import timeout
+    return null_dec
 
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
@@ -63,7 +54,6 @@ from stdio_mgr import stdio_mgr
 
 
 CLI_TIMEOUT = 2
-
 
 
 from time import sleep
@@ -160,7 +150,6 @@ class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
         file_exists_test(self, dest_path)
 
 
-
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
     """Check expect-fail cases with non-local sources/effects."""
@@ -209,7 +198,6 @@ class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
 
             with self.subTest("stdout_match"):
                 self.assertIn("No inventory at provided URL.", out_.getvalue())
-
 
 
 if __name__ == "__main__":

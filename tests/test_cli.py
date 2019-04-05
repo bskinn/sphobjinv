@@ -29,23 +29,14 @@ import os.path as osp
 import re
 import unittest as ut
 
-try:
-    from signal import SIGALRM
+# Temp dummy decorator until code is all converted
+def timeout(dummy_sec):
+    """Decorate the function with a null transform."""
 
-    SIGALRM  # Placate flake8
-except ImportError:
-    # Probably running on Windows; timeout-decorator won't work
-    def timeout(dummy_sec):
-        """Decorate the function with a null transform."""
+    def null_dec(func):
+        return func
 
-        def null_dec(func):
-            return func
-
-        return null_dec
-
-
-else:
-    from timeout_decorator import timeout
+    return null_dec
 
 
 from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
@@ -65,7 +56,6 @@ from stdio_mgr import stdio_mgr
 CLI_TIMEOUT = 2
 
 
-
 from time import sleep
 
 import pytest
@@ -75,20 +65,31 @@ CLI_TEST_TIMEOUT = 2
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
-@pytest.mark.parametrize(['out_ext', 'cli_arg'], [('.txt', 'plain'), ('.inv', 'zlib'), ('.json', 'json')], ids=(lambda i: i.split('.')[-1]))
-@pytest.mark.parametrize('in_ext', ['.txt', '.inv', '.json'], ids=(lambda i: i.split('.')[-1]))
+@pytest.mark.parametrize(
+    ["out_ext", "cli_arg"],
+    [(".txt", "plain"), (".inv", "zlib"), (".json", "json")],
+    ids=(lambda i: i.split(".")[-1]),
+)
+@pytest.mark.parametrize(
+    "in_ext", [".txt", ".inv", ".json"], ids=(lambda i: i.split(".")[-1])
+)
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-def test_cli_convert_default_outname(in_ext, out_ext, cli_arg, scratch_path, run_cmdline_test, decomp_cmp_test, sphinx_load_test, misc_info):
+def test_cli_convert_default_outname(
+    in_ext,
+    out_ext,
+    cli_arg,
+    scratch_path,
+    run_cmdline_test,
+    decomp_cmp_test,
+    sphinx_load_test,
+    misc_info,
+):
     """Confirm cmdline conversions with only input file arg."""
     if in_ext == out_ext:
         pytest.skip("Ignore no-change conversions")
 
-    src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + in_ext
-    )
-    dest_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + out_ext
-    )
+    src_path = scratch_path / (misc_info.FNames.INIT_FNAME_BASE.value + in_ext)
+    dest_path = scratch_path / (misc_info.FNames.INIT_FNAME_BASE.value + out_ext)
 
     assert src_path.is_file()
     assert dest_path.is_file()
@@ -101,9 +102,9 @@ def test_cli_convert_default_outname(in_ext, out_ext, cli_arg, scratch_path, run
 
     assert dest_path.is_file()
 
-    if cli_arg == 'zlib':
+    if cli_arg == "zlib":
         sphinx_load_test(dest_path)
-    if cli_arg == 'plain':
+    if cli_arg == "plain":
         decomp_cmp_test(dest_path)
 
 
@@ -495,8 +496,6 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertIn("usage: sphobjinv", out_.getvalue())
 
 
-
-
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
@@ -578,8 +577,6 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
 
         file_url = "file:///" + os.path.abspath(in_path)
         run_cmdline_test(self, ["convert", "plain", "-u", file_url], expect=1)
-
-
 
 
 if __name__ == "__main__":
