@@ -59,16 +59,21 @@ CLI_TIMEOUT = 2
 from time import sleep
 
 import pytest
+from pathlib import Path
+
 
 CLI_TEST_TIMEOUT = 2
 
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
+# ====  EXPECT GOOD CONVERT TESTS  ====
+
+
 @pytest.mark.parametrize(
     ["out_ext", "cli_arg"],
     [(".txt", "plain"), (".inv", "zlib"), (".json", "json")],
-    ids=(lambda i: i.split(".")[-1]),
+    ids=(lambda i: "" if i.startswith(".") else i),
 )
 @pytest.mark.parametrize(
     "in_ext", [".txt", ".inv", ".json"], ids=(lambda i: i.split(".")[-1])
@@ -108,96 +113,52 @@ def test_cli_convert_default_outname(
         decomp_cmp_test(dest_path)
 
 
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 2)
+def test_cli_convert_expandcontract(scratch_path, misc_info, run_cmdline_test):
+    """Confirm cmdline contract decompress of zlib with input file arg."""
+    cmp_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    )
+    dec_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+    )
+    recmp_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    )
+
+    run_cmdline_test(["convert", "plain", "-e", str(cmp_path), str(dec_path)])
+    assert dec_path.is_file()
+
+    run_cmdline_test(["convert", "zlib", "-c", str(dec_path), str(recmp_path)])
+    assert recmp_path.is_file()
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_convert_to_new_name_same_dir(
+    scratch_path, misc_info, run_cmdline_test, decomp_cmp_test, monkeypatch
+):
+    """Confirm plaintext convert to custom target name **in same dir**."""
+    src_fname = (
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    )
+    dest_fname = (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+    )
+
+    with monkeypatch.context() as m:
+        m.chdir(scratch_path)
+        dest_path = Path(".").resolve() / dest_fname
+
+        run_cmdline_test(["convert", "plain", src_fname, dest_fname])
+
+        assert dest_path.is_file()
+
+    decomp_cmp_test(dest_path)
+
+
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineZlibToPlaintextSrcFileOnlyExpandContract(self):
-        """Confirm cmdline contract decompress of zlib with input file arg."""
-        copy_cmp()
-
-        cmp_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        dec_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        recmp_path = scr_path(MOD_FNAME_BASE + CMP_EXT)
-
-        run_cmdline_test(self, ["convert", "plain", "-e", cmp_path])
-        file_exists_test(self, dec_path)
-
-        run_cmdline_test(self, ["convert", "zlib", "-c", dec_path, recmp_path])
-        file_exists_test(self, recmp_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineZlibToJSONSrcFileOnly(self):
-        """Confirm cmdline JSON convert of zlib with input file arg."""
-        copy_cmp()
-        dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
-        run_cmdline_test(self, ["convert", "json", scr_path(INIT_FNAME_BASE + CMP_EXT)])
-
-        file_exists_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineJSONToPlaintextSrcFileOnly(self):
-        """Confirm cmdline convert of flat JSON with input file arg."""
-        copy_json()
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(
-            self, ["convert", "plain", scr_path(INIT_FNAME_BASE + JSON_EXT)]
-        )
-
-        file_exists_test(self, dest_path)
-
-        decomp_cmp_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineJSONToZlibSrcFileOnly(self):
-        """Confirm cmdline convert of JSON to zlib with input file arg."""
-        copy_json()
-        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        run_cmdline_test(
-            self, ["convert", "zlib", scr_path(INIT_FNAME_BASE + JSON_EXT)]
-        )
-
-        file_exists_test(self, dest_path)
-
-        sphinx_load_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextToZlibSrcFileOnly(self):
-        """Confirm cmdline convert of plaintext to zlib with input file arg."""
-        copy_dec()
-        dest_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
-        run_cmdline_test(self, ["convert", "zlib", scr_path(INIT_FNAME_BASE + DEC_EXT)])
-
-        file_exists_test(self, dest_path)
-
-        sphinx_load_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextToJSONSrcFileOnly(self):
-        """Confirm cmdline convert of plaintext to JSON with input file arg."""
-        copy_dec()
-        dest_path = scr_path(INIT_FNAME_BASE + JSON_EXT)
-        run_cmdline_test(self, ["convert", "json", scr_path(INIT_FNAME_BASE + DEC_EXT)])
-
-        file_exists_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextTgtNewName(self):
-        """Confirm plaintext convert to custom target name in same dir."""
-        copy_cmp()
-        dest_fname = MOD_FNAME_BASE + DEC_EXT
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    run_cmdline_test(
-                        self,
-                        ["convert", "plain", INIT_FNAME_BASE + CMP_EXT, dest_fname],
-                    )
-
-                    file_exists_test(self, dest_fname)
-
-                    decomp_cmp_test(self, dest_fname)
 
     @timeout(CLI_TIMEOUT)
     def test_CmdlineDecompDiffSrcPathNewNameThere(self):
