@@ -1,19 +1,28 @@
-# ------------------------------------------------------------------------------
-# Name:        sphobjinv_cli
-# Purpose:     Module for sphobjinv command line tests
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     18 Dec 2017
-# Copyright:   (c) Brian Skinn 2016-2019
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#            https://www.github.com/bskinn/sphobjinv
-#
-# ------------------------------------------------------------------------------
+r"""*CLI tests for* ``sphobjinv``.
 
-"""Module for sphobjinv command line tests."""
+``sphobjinv`` is a toolkit for manipulation and inspection of
+Sphinx |objects.inv| files.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    20 Mar 2019
+
+**Copyright**
+    \(c) Brian Skinn 2016-2019
+
+**Source Repository**
+    http://www.github.com/bskinn/sphobjinv
+
+**Documentation**
+    http://sphobjinv.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+**Members**
+"""
 
 import os
 import os.path as osp
@@ -53,24 +62,54 @@ from .sphobjinv_base import dir_change
 from stdio_mgr import stdio_mgr
 
 
-CLI_TIMEOUT = 2.0
+CLI_TIMEOUT = 2
 
 
+
+from time import sleep
+
+import pytest
+
+CLI_TEST_TIMEOUT = 2
+
+pytestmark = [pytest.mark.cli, pytest.mark.local]
+
+
+@pytest.mark.parametrize(['out_ext', 'cli_arg'], [('.txt', 'plain'), ('.inv', 'zlib'), ('.json', 'json')], ids=(lambda i: i.split('.')[-1]))
+@pytest.mark.parametrize('in_ext', ['.txt', '.inv', '.json'], ids=(lambda i: i.split('.')[-1]))
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_convert_default_outname(in_ext, out_ext, cli_arg, scratch_path, run_cmdline_test, decomp_cmp_test, sphinx_load_test, misc_info):
+    """Confirm cmdline conversions with only input file arg."""
+    if in_ext == out_ext:
+        pytest.skip("Ignore no-change conversions")
+
+    src_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value + in_ext
+    )
+    dest_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value + out_ext
+    )
+
+    assert src_path.is_file()
+    assert dest_path.is_file()
+
+    dest_path.unlink()
+
+    cli_arglist = ["convert", cli_arg, str(src_path)]
+
+    run_cmdline_test(cli_arglist)
+
+    assert dest_path.is_file()
+
+    if cli_arg == 'zlib':
+        sphinx_load_test(dest_path)
+    if cli_arg == 'plain':
+        decomp_cmp_test(dest_path)
+
+
+@pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineZlibToPlaintextSrcFileOnly(self):
-        """Confirm cmdline decompress of zlib with input file arg."""
-        copy_cmp()
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(
-            self, ["convert", "plain", scr_path(INIT_FNAME_BASE + CMP_EXT)]
-        )
-
-        file_exists_test(self, dest_path)
-
-        decomp_cmp_test(self, dest_path)
 
     @timeout(CLI_TIMEOUT)
     def test_CmdlineZlibToPlaintextSrcFileOnlyExpandContract(self):
@@ -456,89 +495,9 @@ class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
                 self.assertIn("usage: sphobjinv", out_.getvalue())
 
 
-class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
-    """Testing nonlocal code expecting to work properly."""
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromInventoryURL(self):
-        """Confirm name-only suggest works from URL."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["suggest", "-u", REMOTE_URL.format("attrs"), "instance", "-t", "50"],
-            )
-
-            p = re.compile("^.*instance_of.*$", re.M)
-
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromDirURLNoAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/"
-
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
-
-            p = re.compile("^.*nventory.*$", re.I | re.M)
-
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromPageURLNoAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/cmdline.html"
-
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
-
-            p = re.compile("^.*nventory.*$", re.I | re.M)
-
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromPageURLWithAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = (
-            "http://sphobjinv.readthedocs.io/en/v2.0rc1/modules/"
-            "cmdline.html#sphobjinv.cmdline.do_convert"
-        )
-
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
-
-            p = re.compile("^.*nventory.*$", re.I | re.M)
-
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextOutfileProvided(self):
-        """Confirm CLI URL D/L, convert works w/outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        run_cmdline_test(
-            self, ["convert", "plain", "-u", REMOTE_URL.format("attrs"), dest_path]
-        )
-
-        file_exists_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextNoOutfile(self):
-        """Confirm CLI URL D/L, convert works w/o outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    run_cmdline_test(
-                        self, ["convert", "plain", "-u", REMOTE_URL.format("attrs")]
-                    )
-
-        file_exists_test(self, dest_path)
 
 
+@pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
@@ -621,89 +580,6 @@ class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
         run_cmdline_test(self, ["convert", "plain", "-u", file_url], expect=1)
 
 
-class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
-    """Check expect-fail cases with non-local sources/effects."""
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_BadURLArg(self):
-        """Confirm proper error behavior when a bad URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["convert", "plain", "-u", REMOTE_URL.format("blarghers"), scr_path()],
-                expect=1,
-            )
-
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_NotSphinxURLArg(self):
-        """Confirm proper error behavior when a non-Sphinx URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["convert", "plain", "-u", "http://www.google.com", scr_path()],
-                expect=1,
-            )
-
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_NoHTTPURLArg(self):
-        """Confirm proper error behavior when a non-Sphinx URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                [
-                    "convert",
-                    "plain",
-                    "-u",
-                    "sphobjinv.readthedocs.io/en/latest",
-                    scr_path(),
-                ],
-                expect=1,
-            )
-
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
-
-
-def suite_cli_expect_good():
-    """Create and return the test suite for CLI expect-good cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGood)])
-
-    return s
-
-
-def suite_cli_expect_good_nonlocal():
-    """Create and return the test suite for nonlocal CLI expect-good cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectGoodNonlocal)])
-
-    return s
-
-
-def suite_cli_expect_fail():
-    """Create and return the test suite for CLI expect-fail cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFail)])
-
-    return s
-
-
-def suite_cli_expect_fail_nonlocal():
-    """Create and return the test suite for nonlocal CLI expect-fail cases."""
-    s = ut.TestSuite()
-    tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestSphobjinvCmdlineExpectFailNonlocal)])
-
-    return s
 
 
 if __name__ == "__main__":

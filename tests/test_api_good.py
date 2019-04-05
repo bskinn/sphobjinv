@@ -34,7 +34,7 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.local]
+pytestmark = [pytest.mark.api, pytest.mark.local]
 
 
 testall_inv_paths = (

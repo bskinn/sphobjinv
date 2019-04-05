@@ -30,7 +30,7 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.fail]
+pytestmark = [pytest.mark.api, pytest.mark.local]
 
 
 def test_apifail_readbytes_missing_input_file(scratch_path):

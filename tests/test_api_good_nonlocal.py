@@ -32,7 +32,7 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.nonloc]
+pytestmark = [pytest.mark.api, pytest.mark.nonloc]
 
 
 testall_inv_paths = (

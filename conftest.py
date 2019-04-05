@@ -196,7 +196,7 @@ def run_cmdline_test(monkeypatch):
         assert ok, "SystemExit not raised on termination."
 
         # Test that execution completed w/indicated exit code
-        assert retcode == expect
+        assert retcode == expect, runargs
 
     return func
 
