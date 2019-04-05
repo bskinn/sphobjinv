@@ -50,5 +50,7 @@ def test_two_st_one_mt_xfail(st_1, st_2, mt, subtests):
 
 
 @pytest.mark.xfail(reason="Testing XPASS")
-def test_xpass():
-    assert True
+def test_xfail_subtest(subtests):
+    with subtests.test():
+        assert False
+
