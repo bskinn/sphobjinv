@@ -53,18 +53,22 @@ from .sphobjinv_base import dir_change
 from stdio_mgr import stdio_mgr
 
 
-CLI_TIMEOUT = 2
+CLI_TIMEOUT = 2  # REMOVE once all tests converted to pytest
 
 
+from pathlib import Path
 from time import sleep
 
 import pytest
-from pathlib import Path
 
 
 CLI_TEST_TIMEOUT = 2
 
 pytestmark = [pytest.mark.cli, pytest.mark.local]
+
+
+with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
+    exec(f.read())
 
 
 # ====  EXPECT GOOD CONVERT TESTS  ====
@@ -133,90 +137,61 @@ def test_cli_convert_expandcontract(scratch_path, misc_info, run_cmdline_test):
     assert recmp_path.is_file()
 
 
+@pytest.mark.parametrize(
+    "dst_name", [True, False], ids=(lambda v: "dst_name" if v else "no_dst_name")
+)
+@pytest.mark.parametrize(
+    "dst_path", [True, False], ids=(lambda v: "dst_path" if v else "no_dst_path")
+)
+@pytest.mark.parametrize(
+    "src_path", [True, False], ids=(lambda v: "src_path" if v else "no_src_path")
+)
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-def test_cli_convert_to_new_name_same_dir(
-    scratch_path, misc_info, run_cmdline_test, decomp_cmp_test, monkeypatch
+def test_cli_convert_various_pathargs(
+    src_path,
+    dst_path,
+    dst_name,
+    scratch_path,
+    misc_info,
+    run_cmdline_test,
+    decomp_cmp_test,
+    monkeypatch,
 ):
-    """Confirm plaintext convert to custom target name **in same dir**."""
-    src_fname = (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    """Confirm the various src/dest path/file combinations work."""
+    init_dst_fname = (
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
     )
-    dest_fname = (
+    mod_dst_fname = (
         misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
     )
 
+    src_path = (scratch_path.resolve() if src_path else Path(".")) / (
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    )
+    dst_path = (scratch_path.resolve() if dst_path else Path(".")) / (
+        mod_dst_fname if dst_name else ""
+    )
+
+    full_dst_path = scratch_path.resolve() / (
+        mod_dst_fname if dst_name else init_dst_fname
+    )
+
+    assert (scratch_path / init_dst_fname).is_file()
+    (scratch_path / init_dst_fname).unlink()
+
     with monkeypatch.context() as m:
         m.chdir(scratch_path)
-        dest_path = Path(".").resolve() / dest_fname
 
-        run_cmdline_test(["convert", "plain", src_fname, dest_fname])
+        run_cmdline_test(["convert", "plain", str(src_path), str(dst_path)])
 
-        assert dest_path.is_file()
+        assert full_dst_path.is_file()
 
-    decomp_cmp_test(dest_path)
+    decomp_cmp_test(full_dst_path)
 
 
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineDecompDiffSrcPathNewNameThere(self):
-        """Confirm decomp in other path outputs there if only name passed."""
-        copy_cmp()
-        dest_fname = MOD_FNAME_BASE + DEC_EXT
-        run_cmdline_test(
-            self, ["convert", "plain", scr_path(INIT_FNAME_BASE + CMP_EXT), dest_fname]
-        )
-
-        file_exists_test(self, scr_path(dest_fname))
-
-        decomp_cmp_test(self, scr_path(dest_fname))
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineDecompressDiffSrcTgtPaths(self):
-        """Confirm decompress from other path to new path."""
-        copy_cmp()
-        dest_path = osp.join(os.curdir, MOD_FNAME_BASE + DEC_EXT)
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    with dir_change("tempy"):
-                        run_cmdline_test(
-                            self,
-                            [
-                                "convert",
-                                "plain",
-                                osp.join(os.pardir, INIT_FNAME_BASE + CMP_EXT),
-                                dest_path,
-                            ],
-                        )
-
-                        file_exists_test(self, dest_path)
-
-                        decomp_cmp_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineDecompressTgtBarePath(self):
-        """Confirm decompress to target as bare path (no filename)."""
-        copy_cmp()
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    with dir_change("tempy"):
-                        run_cmdline_test(
-                            self,
-                            [
-                                "convert",
-                                "plain",
-                                osp.join(os.pardir, INIT_FNAME_BASE + CMP_EXT),
-                                ".",
-                            ],
-                        )
-
-                        file_exists_test(self, INIT_FNAME_BASE + DEC_EXT)
-
-                        decomp_cmp_test(self, INIT_FNAME_BASE + DEC_EXT)
 
     @timeout(CLI_TIMEOUT * 52 * 3)
     def test_CmdlineCycleConvert(self):

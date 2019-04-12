@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from setuptools import find_packages, setup
 
-# from sphobjinv import __version__
+
 with (Path(".") / "src" / "sphobjinv" / "version.py").open() as f:
     exec(f.read())
 

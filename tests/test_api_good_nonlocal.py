@@ -35,11 +35,8 @@ import sphobjinv as soi
 pytestmark = [pytest.mark.api, pytest.mark.nonloc]
 
 
-testall_inv_paths = (
-    p
-    for p in (Path(__file__).parent / "resource").iterdir()
-    if p.name.startswith("objects_") and p.name.endswith(".inv")
-)
+with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
+    exec(f.read())
 
 
 @pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
