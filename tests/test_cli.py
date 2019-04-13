@@ -29,6 +29,7 @@ import os.path as osp
 import re
 import unittest as ut
 
+
 # Temp dummy decorator until code is all converted
 def timeout(dummy_sec):
     """Decorate the function with a null transform."""
@@ -56,10 +57,14 @@ from stdio_mgr import stdio_mgr
 CLI_TIMEOUT = 2  # REMOVE once all tests converted to pytest
 
 
+import json
+import re
+from itertools import product
 from pathlib import Path
 from time import sleep
 
 import pytest
+from stdio_mgr import stdio_mgr
 
 
 CLI_TEST_TIMEOUT = 2
@@ -189,70 +194,60 @@ def test_cli_convert_various_pathargs(
     decomp_cmp_test(full_dst_path)
 
 
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * len(testall_inv_paths) * 3)  # noqa: F821
+@pytest.mark.parametrize(
+    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
+)
+@pytest.mark.testall
+def test_cli_convert_cycle_formats(
+    inv_path,
+    res_path,
+    scratch_path,
+    run_cmdline_test,
+    misc_info,
+    pytestconfig,
+    subtests,
+):
+    """Confirm conversion in a loop, reading/writing all formats."""
+    from sphobjinv import HeaderFields as HF
+    from sphobjinv import Inventory as Inv
+
+    res_src_path = res_path / inv_path
+    plain_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+    )
+    json_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.JSON_EXT.value
+    )
+    zlib_path = scratch_path / (
+        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+    )
+
+    if not pytestconfig.getoption("--testall") and inv_path.name != "objects_attrs.inv":
+        pytest.skip("'--testall' not specified")
+
+    run_cmdline_test(["convert", "plain", str(res_src_path), str(plain_path)])
+    run_cmdline_test(["convert", "json", str(plain_path), str(json_path)])
+    run_cmdline_test(["convert", "zlib", str(json_path), str(zlib_path)])
+
+    invs = {
+        "orig": Inv(str(res_src_path)),
+        "plain": Inv(str(plain_path)),
+        "zlib": Inv(str(zlib_path)),
+    }
+    with json_path.open() as f:
+        invs.update({"json": Inv(json.load(f))})
+
+    for fmt, attrib in product(
+        ("plain", "zlib", "json"), (HF.Project.value, HF.Version.value, HF.Count.value)
+    ):
+        with subtests.test(msg="{}_{}".format(fmt, attrib)):
+            assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)
+
+
 @pytest.mark.skip("Un-converted tests")
 class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
-
-    @timeout(CLI_TIMEOUT * 52 * 3)
-    def test_CmdlineCycleConvert(self):
-        """Confirm conversion in a loop, reading all formats."""
-        from itertools import product
-        import json
-        import re
-
-        from sphobjinv import Inventory as Inv
-        from sphobjinv import HeaderFields as HF
-
-        src_fname = res_path("objects_{0}.inv")
-        plain_fname = scr_path("objects_{0}.txt")
-        json_fname = scr_path("objects_{0}.json")
-        zlib_fname = scr_path("objects_{0}.inv")
-
-        sfx_fmt = "{0}_{1}"
-
-        for fn in os.listdir(res_path()):
-            # Drop unless testall
-            if not os.environ.get(TESTALL, False) and fn != "objects_attrs.inv":
-                continue
-
-            # Only .inv
-            if not fn.endswith(".inv"):
-                continue
-
-            proj = re.match("^objects_(.+?)\\.inv$", fn).group(1)
-
-            run_cmdline_test(
-                self,
-                ["convert", "plain", src_fname.format(proj), plain_fname.format(proj)],
-                suffix=sfx_fmt.format(proj, "plain"),
-            )
-
-            run_cmdline_test(
-                self,
-                ["convert", "json", plain_fname.format(proj), json_fname.format(proj)],
-                suffix=sfx_fmt.format(proj, "json"),
-            )
-
-            run_cmdline_test(
-                self,
-                ["convert", "zlib", json_fname.format(proj), zlib_fname.format(proj)],
-                suffix=sfx_fmt.format(proj, "zlib"),
-            )
-
-            # Reimport all and check header info
-            invs = {}
-            invs.update({"orig": Inv(src_fname.format(proj))})
-            invs.update({"plain": Inv(plain_fname.format(proj))})
-            invs.update({"zlib": Inv(zlib_fname.format(proj))})
-            with open(json_fname.format(proj)) as f:
-                invs.update({"json": Inv(json.load(f))})
-
-            for t, a in product(
-                ("plain", "zlib", "json"),
-                (HF.Project.value, HF.Version.value, HF.Count.value),
-            ):
-                with self.subTest(sfx_fmt.format(t, a)):
-                    self.assertEqual(getattr(invs[t], a), getattr(invs["orig"], a))
 
     @timeout(CLI_TIMEOUT)
     def test_Cmdline_OverwritePromptAndBehavior(self):

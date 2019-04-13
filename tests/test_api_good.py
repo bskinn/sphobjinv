@@ -459,7 +459,9 @@ def test_api_fuzzywuzzy_warningcheck():
         ), "Warning raised for unexpected reason"
 
 
-@pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
+@pytest.mark.parametrize(
+    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
+)
 @pytest.mark.testall
 def test_api_inventory_datafile_gen_and_reimport(
     inv_path,

@@ -27,7 +27,7 @@ Sphinx |objects.inv| files.
 
 from pathlib import Path
 
-testall_inv_paths = (
+testall_inv_paths = list(
     p
     for p in (Path(__file__).parent / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
