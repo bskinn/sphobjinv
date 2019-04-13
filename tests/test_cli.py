@@ -66,6 +66,7 @@ from time import sleep
 import pytest
 from stdio_mgr import stdio_mgr
 
+from sphobjinv import Inventory as Inv
 
 CLI_TEST_TIMEOUT = 2
 
@@ -76,7 +77,25 @@ with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
     exec(f.read())
 
 
-# ====  EXPECT GOOD CONVERT TESTS  ====
+# ====  EXPECT-GOOD MISC TESTS  ====
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_version_exits_ok(run_cmdline_test):
+    """Confirm --version exits cleanly."""
+    run_cmdline_test(["-v"])
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_noargs_shows_help(run_cmdline_test):
+    """Confirm help shown when invoked with no arguments."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test([])
+
+        assert "usage: sphobjinv" in out_.getvalue()
+
+
+# ====  EXPECT-GOOD CONVERT TESTS  ====
 
 
 @pytest.mark.parametrize(
@@ -111,9 +130,7 @@ def test_cli_convert_default_outname(
     dest_path.unlink()
 
     cli_arglist = ["convert", cli_arg, str(src_path)]
-
     run_cmdline_test(cli_arglist)
-
     assert dest_path.is_file()
 
     if cli_arg == "zlib":
@@ -186,9 +203,7 @@ def test_cli_convert_various_pathargs(
 
     with monkeypatch.context() as m:
         m.chdir(scratch_path)
-
         run_cmdline_test(["convert", "plain", str(src_path), str(dst_path)])
-
         assert full_dst_path.is_file()
 
     decomp_cmp_test(full_dst_path)
@@ -210,7 +225,6 @@ def test_cli_convert_cycle_formats(
 ):
     """Confirm conversion in a loop, reading/writing all formats."""
     from sphobjinv import HeaderFields as HF
-    from sphobjinv import Inventory as Inv
 
     res_src_path = res_path / inv_path
     plain_path = scratch_path / (
@@ -245,186 +259,110 @@ def test_cli_convert_cycle_formats(
             assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvCmdlineExpectGood(SuperSphobjinv, ut.TestCase):
-    """Testing code accuracy under good params & expected behavior."""
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_overwrite_prompt_and_behavior(
+    res_path, scratch_path, misc_info, run_cmdline_test
+):
+    """Confirm overwrite prompt works properly."""
+    src_path_1 = res_path / "objects_attrs.inv"
+    src_path_2 = res_path / "objects_sarge.inv"
+    dst_path = scratch_path / (
+        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+    )
+    dst_path.unlink()
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_OverwritePromptAndBehavior(self):
-        """Confirm overwrite prompt works properly."""
-        from sphobjinv import Inventory as Inv
+    args = ["convert", "plain", None, str(dst_path)]
 
-        src1 = res_path("objects_attrs.inv")
-        src2 = res_path("objects_sarge.inv")
-        dst = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        args = ["convert", "plain", src1, dst]
+    # Initial decompress
+    args[2] = str(src_path_1)
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(args)
 
-        # Initial decompress
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, args, suffix="initial")
+        assert "converted" in out_.getvalue()
+        assert "(plain)" in out_.getvalue()
 
-            with self.subTest("initial_stdout"):
-                self.assertIn("converted", out_.getvalue())
-                self.assertIn("(plain)", out_.getvalue())
+    # First overwrite, declining clobber
+    args[2] = str(src_path_2)
+    with stdio_mgr("n\n") as (in_, out_, err_):
+        run_cmdline_test(args)
 
-        # First overwrite, declining clobber
-        args[2] = src2
-        with stdio_mgr() as (in_, out_, err_):
-            in_.append("n\n")
-            run_cmdline_test(self, args, suffix="no_overwrite")
+        assert "(Y/N)? n" in out_.getvalue()
 
-            with self.subTest("no_overwrite_stdout"):
-                self.assertIn("(Y/N)? n", out_.getvalue())
+    assert "attrs" == Inv(str(dst_path)).project
 
-        with self.subTest("no_overwrite_project"):
-            self.assertEqual("attrs", Inv(dst).project)
+    # Second overwrite, with clobber
+    with stdio_mgr("y\n") as (in_, out_, err_):
+        run_cmdline_test(args)
 
-        # Second overwrite, with clobber
-        with stdio_mgr() as (in_, out_, err_):
-            in_.append("y\n")
-            run_cmdline_test(self, args, suffix="overwrite")
+        assert "(Y/N)? y" in out_.getvalue()
 
-            with self.subTest("overwrite_stdout"):
-                self.assertIn("(Y/N)? y", out_.getvalue())
+    assert "Sarge" == Inv(str(dst_path)).project
 
-        with self.subTest("overwrite_project"):
-            self.assertEqual("Sarge", Inv(dst).project)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestNoResults(self):
-        """Confirm suggest w/no found results works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "99"],
-            )
+# ====  EXPECT-GOOD SUGGEST TESTS  ====
 
-            with self.subTest("nothing_found_msg"):
-                self.assertIn("No results found.", out_.getvalue())
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestNameOnly(self):
-        """Confirm name-only suggest works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "50"],
-            )
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_noresults(run_cmdline_test, res_cmp):
+    """Confirm suggest w/no found results works."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", "-t", "99"])
+        assert "No results found." in out_.getvalue()
 
-            p = re.compile("^.*instance_of.*$", re.M)
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_nameonly(run_cmdline_test, res_cmp):
+    """Confirm name-only suggest works."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", "-t", "50"])
+        assert re.search("^.*instance_of.*$", out_.getvalue(), re.M)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestWithIndex(self):
-        """Confirm with_index suggest works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-it",
-                    "50",
-                ],
-            )
 
-            p = re.compile("^.*instance_of\\S*\\s+23\\s*$", re.M)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_withindex(run_cmdline_test, res_cmp):
+    """Confirm with_index suggest works."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", "-it", "50"])
+        assert re.search("^.*instance_of\\S*\\s+23\\s*$", out_.getvalue(), re.M)
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestWithScore(self):
-        """Confirm with_index suggest works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-st",
-                    "50",
-                ],
-            )
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_withscore(run_cmdline_test, res_cmp):
+    """Confirm with_index suggest works."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", "-st", "50"])
+        re.search("^.*instance_of\\S*\\s+\\d+\\s*$", out_.getvalue(), re.M)
 
-            p = re.compile("^.*instance_of\\S*\\s+\\d+\\s*$", re.M)
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_withscoreandindex(run_cmdline_test, res_cmp):
+    """Confirm with_index suggest works."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", "-sit", "50"])
+        re.search("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", out_.getvalue(), re.M)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestWithScoreAndIndex(self):
-        """Confirm with_index suggest works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                [
-                    "suggest",
-                    res_path(RES_FNAME_BASE + CMP_EXT),
-                    "instance",
-                    "-sit",
-                    "50",
-                ],
-            )
 
-            p = re.compile("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", re.M)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_cli_suggest_long_list(run_cmdline_test, res_cmp, subtests):
+    """Confirm with_index suggest works."""
+    with stdio_mgr() as (in_, out_, err_):
+        with subtests.test(msg="with_all_arg"):
+            run_cmdline_test(["suggest", res_cmp, "instance", "-at", "1"])
+            assert out_.getvalue().count("\n") == 57
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
+    with stdio_mgr("y\n") as (in_, out_, err_):
+        with subtests.test(msg="no_arg_confirm_print"):
+            run_cmdline_test(["suggest", res_cmp, "instance", "-t", "1"])
+            # Extra newline due to input() query
+            assert out_.getvalue().count("\n") == 58
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_SuggestLongListLinesCount(self):
-        """Confirm with_index suggest works."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-at", "1"],
-                suffix="all_arg",
-            )
+    with stdio_mgr("n\n") as (in_, out_, err_):
+        with subtests.test(msg="no_arg_cancel_print"):
+            run_cmdline_test(["suggest", res_cmp, "instance", "-t", "1"])
+            assert out_.getvalue().count("\n") == 4
 
-            with self.subTest("count_all_arg"):
-                self.assertEqual(out_.getvalue().count("\n"), 57)
 
-        with stdio_mgr() as (in_, out_, err_):
-            in_.append("y\n")
-            run_cmdline_test(
-                self,
-                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "1"],
-                suffix="no_arg",
-            )
-
-            with self.subTest("count_no_arg"):
-                # Extra newline due to input() query
-                self.assertEqual(out_.getvalue().count("\n"), 58)
-
-        with stdio_mgr() as (in_, out_, err_):
-            in_.append("n\n")
-            run_cmdline_test(
-                self,
-                ["suggest", res_path(RES_FNAME_BASE + CMP_EXT), "instance", "-t", "1"],
-                suffix="no_print",
-            )
-
-            with self.subTest("count_no_print"):
-                self.assertEqual(out_.getvalue().count("\n"), 4)
-
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_VersionExitsOK(self):
-        """Confirm --version exits cleanly."""
-        run_cmdline_test(self, ["-v"])
-
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_NoArgsShowsHelp(self):
-        """Confirm help shown when invoked with no arguments."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, [])
-
-            with self.subTest("help_displayed"):
-                self.assertIn("usage: sphobjinv", out_.getvalue())
+# ====  EXPECT-FAIL TESTS  ====
 
 
 @pytest.mark.skip("Un-converted tests")
