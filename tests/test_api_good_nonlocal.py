@@ -32,17 +32,27 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.nonloc]
+pytestmark = [pytest.mark.api, pytest.mark.nonloc]
 
 
-testall_inv_paths = (
-    p
-    for p in (Path(__file__).parent / "resource").iterdir()
-    if p.name.startswith("objects_") and p.name.endswith(".inv")
+with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
+    exec(f.read())
+
+
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_nonloc(pytestconfig):
+    """Skip test if --nonloc not provided.
+
+    Auto-applied to all functions in module, since module is nonlocal.
+
+    """
+    if not pytestconfig.getoption("--nonloc"):
+        pytest.skip("'--nonloc' not specified")
+
+
+@pytest.mark.parametrize(
+    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
 )
-
-
-@pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
 @pytest.mark.testall
 @pytest.mark.timeout(20)
 def test_api_inventory_many_url_imports(
@@ -63,10 +73,6 @@ def test_api_inventory_many_url_imports(
     """
     fname = inv_path.name
     scr_fpath = scratch_path / fname
-
-    # Drop unless nonlocal
-    if not pytestconfig.getoption("--nonloc"):
-        pytest.skip("'--nonloc' not specified")
 
     # Drop most unless testall
     if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":

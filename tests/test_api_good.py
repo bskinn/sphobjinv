@@ -34,14 +34,11 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.good, pytest.mark.local]
+pytestmark = [pytest.mark.api, pytest.mark.local]
 
 
-testall_inv_paths = (
-    p
-    for p in (Path(__file__).parent / "resource").iterdir()
-    if p.name.startswith("objects_") and p.name.endswith(".inv")
-)
+with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
+    exec(f.read())
 
 
 @pytest.mark.parametrize(
@@ -71,10 +68,10 @@ def test_source_types_iteration(actual, expect):
 def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
     try:
@@ -92,10 +89,10 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
 def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
 
     try:
@@ -320,12 +317,12 @@ def test_api_inventory_bytes_fname_instantiation(
     source_type, inv_arg, res_path, misc_info, attrs_inventory_test, subtests
 ):
     """Check bytes and filename modes for Inventory instantiation."""
-    source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
+    source = str(res_path / misc_info.FNames.RES.value)
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.FnamePlaintext):
-        source += misc_info.Extensions.DEC_EXT.value
+        source += misc_info.Extensions.DEC.value
     else:
-        source += misc_info.Extensions.CMP_EXT.value
+        source += misc_info.Extensions.CMP.value
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.BytesZlib):
         source = soi.readbytes(source)
@@ -462,7 +459,9 @@ def test_api_fuzzywuzzy_warningcheck():
         ), "Warning raised for unexpected reason"
 
 
-@pytest.mark.parametrize("inv_path", list(testall_inv_paths), ids=(lambda p: p.name))
+@pytest.mark.parametrize(
+    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
+)
 @pytest.mark.testall
 def test_api_inventory_datafile_gen_and_reimport(
     inv_path,
