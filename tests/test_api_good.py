@@ -68,10 +68,10 @@ def test_source_types_iteration(actual, expect):
 def test_api_compress(scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
     try:
@@ -89,10 +89,10 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
 def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
     src_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
     )
     dest_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
 
     try:
@@ -317,12 +317,12 @@ def test_api_inventory_bytes_fname_instantiation(
     source_type, inv_arg, res_path, misc_info, attrs_inventory_test, subtests
 ):
     """Check bytes and filename modes for Inventory instantiation."""
-    source = str(res_path / misc_info.FNames.RES_FNAME_BASE.value)
+    source = str(res_path / misc_info.FNames.RES.value)
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.FnamePlaintext):
-        source += misc_info.Extensions.DEC_EXT.value
+        source += misc_info.Extensions.DEC.value
     else:
-        source += misc_info.Extensions.CMP_EXT.value
+        source += misc_info.Extensions.CMP.value
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.BytesZlib):
         source = soi.readbytes(source)

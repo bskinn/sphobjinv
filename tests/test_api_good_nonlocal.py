@@ -39,6 +39,17 @@ with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
     exec(f.read())
 
 
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_nonloc(pytestconfig):
+    """Skip test if --nonloc not provided.
+
+    Auto-applied to all functions in module, since module is nonlocal.
+
+    """
+    if not pytestconfig.getoption("--nonloc"):
+        pytest.skip("'--nonloc' not specified")
+
+
 @pytest.mark.parametrize(
     "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
 )
@@ -62,10 +73,6 @@ def test_api_inventory_many_url_imports(
     """
     fname = inv_path.name
     scr_fpath = scratch_path / fname
-
-    # Drop unless nonlocal
-    if not pytestconfig.getoption("--nonloc"):
-        pytest.skip("'--nonloc' not specified")
 
     # Drop most unless testall
     if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":

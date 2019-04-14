@@ -58,32 +58,26 @@ def res_path():
 
 @pytest.fixture(scope="session")
 def res_cmp(res_path, misc_info):
-    return str(
-        res_path
-        / (misc_info.FNames.RES_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value)
-    )
+    return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.CMP.value))
 
 
 @pytest.fixture(scope="session")
 def res_dec(res_path, misc_info):
-    return str(
-        res_path
-        / (misc_info.FNames.RES_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value)
-    )
+    return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value))
 
 
 @pytest.fixture(scope="session")
 def misc_info(res_path):
     class Info:
         class FNames(Enum):
-            RES_FNAME_BASE = "objects_attrs"
-            INIT_FNAME_BASE = "objects"
-            MOD_FNAME_BASE = "objects_mod"
+            RES = "objects_attrs"
+            INIT = "objects"
+            MOD = "objects_mod"
 
         class Extensions(Enum):
-            CMP_EXT = ".inv"
-            DEC_EXT = ".txt"
-            JSON_EXT = ".json"
+            CMP = ".inv"
+            DEC = ".txt"
+            JSON = ".json"
 
         invalid_filename = "*?*?.txt" if sys.platform == "win32" else "/"
 
@@ -107,7 +101,7 @@ def misc_info(res_path):
     # Standard location for the already-decompressed object in resource folder,
     # for comparison to a freshly generated decompressed file
     Info.res_decomp_path = res_path / (
-        Info.FNames.RES_FNAME_BASE.value + Info.Extensions.DEC_EXT.value
+        Info.FNames.RES.value + Info.Extensions.DEC.value
     )
 
     # String version of the sample object lines
@@ -118,8 +112,8 @@ def misc_info(res_path):
 
 @pytest.fixture()
 def scratch_path(tmp_path, res_path, misc_info):
-    res_base = misc_info.FNames.RES_FNAME_BASE.value
-    scr_base = misc_info.FNames.INIT_FNAME_BASE.value
+    res_base = misc_info.FNames.RES.value
+    scr_base = misc_info.FNames.INIT.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
         shutil.copy(
@@ -140,13 +134,7 @@ def ensure_doc_scratch():
 def bytes_txt(misc_info, res_path):
     """Load and return the contents of the example objects_attrs.txt as bytes."""
     return soi.fileops.readbytes(
-        str(
-            res_path
-            / (
-                misc_info.FNames.RES_FNAME_BASE.value
-                + misc_info.Extensions.DEC_EXT.value
-            )
-        )
+        str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value))
     )
 
 

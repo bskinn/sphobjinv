@@ -52,11 +52,8 @@ p_shell = re.compile(
 )
 
 
-py_ver = sys.version_info
-
-
 @pytest.mark.skipif(
-    py_ver[0] < 3 or (py_ver[0] == 3 and py_ver[1] < 5) or sphinx_ver != sphinx_req,
+    sys.version_info < (3, 5) or sphinx_ver != sphinx_req,
     reason="Skip on Python 3.4 and below due to variant subprocess behavior, "
     "and skip if Sphinx version mismatches current dev version.",
 )

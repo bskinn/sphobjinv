@@ -24,44 +24,11 @@ Sphinx |objects.inv| files.
 **Members**
 """
 
-import os
-import os.path as osp
-import re
-import unittest as ut
-
-
-# Temp dummy decorator until code is all converted
-def timeout(dummy_sec):
-    """Decorate the function with a null transform."""
-
-    def null_dec(func):
-        return func
-
-    return null_dec
-
-
-from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
-from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import RES_FNAME_BASE
-from .sphobjinv_base import INVALID_FNAME, TESTALL
-from .sphobjinv_base import REMOTE_URL
-from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
-from .sphobjinv_base import copy_json
-from .sphobjinv_base import decomp_cmp_test, file_exists_test
-from .sphobjinv_base import run_cmdline_test, sphinx_load_test
-from .sphobjinv_base import dir_change
-from stdio_mgr import stdio_mgr
-
-
-CLI_TIMEOUT = 2  # REMOVE once all tests converted to pytest
-
 
 import json
 import re
 from itertools import product
 from pathlib import Path
-from time import sleep
 
 import pytest
 from stdio_mgr import stdio_mgr
@@ -121,8 +88,8 @@ def test_cli_convert_default_outname(
     if in_ext == out_ext:
         pytest.skip("Ignore no-change conversions")
 
-    src_path = scratch_path / (misc_info.FNames.INIT_FNAME_BASE.value + in_ext)
-    dest_path = scratch_path / (misc_info.FNames.INIT_FNAME_BASE.value + out_ext)
+    src_path = scratch_path / (misc_info.FNames.INIT.value + in_ext)
+    dest_path = scratch_path / (misc_info.FNames.INIT.value + out_ext)
 
     assert src_path.is_file()
     assert dest_path.is_file()
@@ -143,13 +110,13 @@ def test_cli_convert_default_outname(
 def test_cli_convert_expandcontract(scratch_path, misc_info, run_cmdline_test):
     """Confirm cmdline contract decompress of zlib with input file arg."""
     cmp_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
     )
     dec_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
     recmp_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
     run_cmdline_test(["convert", "plain", "-e", str(cmp_path), str(dec_path)])
@@ -180,15 +147,11 @@ def test_cli_convert_various_pathargs(
     monkeypatch,
 ):
     """Confirm the various src/dest path/file combinations work."""
-    init_dst_fname = (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
-    )
-    mod_dst_fname = (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
-    )
+    init_dst_fname = misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
+    mod_dst_fname = misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
 
     src_path = (scratch_path.resolve() if src_path else Path(".")) / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
     )
     dst_path = (scratch_path.resolve() if dst_path else Path(".")) / (
         mod_dst_fname if dst_name else ""
@@ -228,13 +191,13 @@ def test_cli_convert_cycle_formats(
 
     res_src_path = res_path / inv_path
     plain_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
     json_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.JSON_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.JSON.value
     )
     zlib_path = scratch_path / (
-        misc_info.FNames.MOD_FNAME_BASE.value + misc_info.Extensions.CMP_EXT.value
+        misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
     if not pytestconfig.getoption("--testall") and inv_path.name != "objects_attrs.inv":
@@ -267,7 +230,7 @@ def test_cli_overwrite_prompt_and_behavior(
     src_path_1 = res_path / "objects_attrs.inv"
     src_path_2 = res_path / "objects_sarge.inv"
     dst_path = scratch_path / (
-        misc_info.FNames.INIT_FNAME_BASE.value + misc_info.Extensions.DEC_EXT.value
+        misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
     )
     dst_path.unlink()
 
@@ -365,87 +328,91 @@ def test_cli_suggest_long_list(run_cmdline_test, res_cmp, subtests):
 # ====  EXPECT-FAIL TESTS  ====
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvCmdlineExpectFail(SuperSphobjinv, ut.TestCase):
-    """Testing that code raises expected errors when invoked improperly."""
+@pytest.mark.parametrize("with_format", [True, False])
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 2)
+def test_clifail_convert_nosrc(
+    with_format, scratch_path, run_cmdline_test, monkeypatch
+):
+    """Confirm commandline convert w/o enough args fails."""
+    monkeypatch.chdir(scratch_path)
+    if with_format:
+        run_cmdline_test(["convert", "plain"], expect=2)
+    else:
+        run_cmdline_test(["convert"], expect=2)
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextNoArgs(self):
-        """Confirm commandline plaintext convert w/no args fails."""
-        copy_cmp()
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    run_cmdline_test(self, ["convert", "plain"], expect=2)
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextWrongFileType(self):
-        """Confirm exit code 1 with invalid file format."""
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    fname = "testfile"
-                    with open(fname, "wb") as f:
-                        f.write(b"this is not objects.inv\n")
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_wrongfiletype(scratch_path, run_cmdline_test):
+    """Confirm exit code 1 with invalid file format."""
+    fname = "testfile"
+    with (scratch_path / fname).open("wb") as f:
+        f.write(b"this is not objects.inv\n")
 
-                    run_cmdline_test(self, ["convert", "plain", fname], expect=1)
+    run_cmdline_test(["convert", "plain", fname], expect=1)
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextMissingFile(self):
-        """Confirm exit code 1 with nonexistent file specified."""
-        run_cmdline_test(
-            self, ["convert", "plain", "thisfileshouldbeabsent.txt"], expect=1
-        )
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextBadOutputFilename(self):
-        """Confirm exit code 1 with invalid output file name."""
-        copy_cmp()
-        run_cmdline_test(
-            self,
-            ["convert", "plain", scr_path(INIT_FNAME_BASE + CMP_EXT), INVALID_FNAME],
-            expect=1,
-        )
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_missingfile(run_cmdline_test):
+    """Confirm exit code 1 with nonexistent file specified."""
+    run_cmdline_test(["convert", "plain", "thisfileshouldbeabsent.txt"], expect=1)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_BadOutputDir(self):
-        """Confirm exit code 1 when output location can't be created."""
-        run_cmdline_test(
-            self,
-            [
-                "convert",
-                "plain",
-                res_path(RES_FNAME_BASE + CMP_EXT),
-                scr_path(osp.join("nonexistent", "folder", "obj.txt")),
-            ],
-            expect=1,
-        )
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlineZlibNoArgs(self):
-        """Confirm commandline zlib convert with no args fails."""
-        copy_dec()
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    run_cmdline_test(self, ["convert", "zlib"], expect=2)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_badoutfilename(scratch_path, run_cmdline_test, misc_info):
+    """Confirm exit code 1 with invalid output file name."""
+    run_cmdline_test(
+        [
+            "convert",
+            "plain",
+            str(
+                scratch_path
+                / (misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value)
+            ),
+            misc_info.invalid_filename,
+        ],
+        expect=1,
+    )
 
-    @timeout(CLI_TIMEOUT)
-    def test_CmdlinePlaintextSrcPathOnly(self):
-        """Confirm cmdline plaintest convert with input directory arg fails."""
-        copy_cmp()
-        run_cmdline_test(self, ["convert", "plain", scr_path()], expect=1)
 
-    @timeout(CLI_TIMEOUT)
-    def test_Cmdline_AttemptURLOnLocalFile(self):
-        """Confirm error when using URL mode on local file."""
-        copy_cmp()
-        in_path = scr_path(INIT_FNAME_BASE + CMP_EXT)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_badoutputdir(res_cmp, scratch_path, run_cmdline_test):
+    """Confirm exit code 1 when output location can't be created."""
+    run_cmdline_test(
+        [
+            "convert",
+            "plain",
+            res_cmp,
+            str(scratch_path / "nonexistent" / "folder" / "obj.txt"),
+        ],
+        expect=1,
+    )
 
-        run_cmdline_test(self, ["convert", "plain", "-u", in_path], expect=1)
 
-        file_url = "file:///" + os.path.abspath(in_path)
-        run_cmdline_test(self, ["convert", "plain", "-u", file_url], expect=1)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_pathonlysrc(scratch_path, run_cmdline_test):
+    """Confirm cmdline plaintext convert with input directory arg fails."""
+    run_cmdline_test(["convert", "plain", str(scratch_path)], expect=1)
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+def test_clifail_convert_localfile_as_url(
+    scratch_path, misc_info, run_cmdline_test, subtests
+):
+    """Confirm error when using URL mode on local file."""
+    in_path = scratch_path / (
+        misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
+    )
+
+    (
+        scratch_path / (misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value)
+    ).unlink()
+
+    with subtests.test(msg="path-style"):
+        run_cmdline_test(["convert", "plain", "-u", str(in_path)], expect=1)
+
+    with subtests.test(msg="url-style"):
+        file_url = "file:///" + str(in_path.resolve())
+        run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
 
 
 if __name__ == "__main__":

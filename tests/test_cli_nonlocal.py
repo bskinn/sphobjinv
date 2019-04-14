@@ -24,180 +24,148 @@ Sphinx |objects.inv| files.
 **Members**
 """
 
-import os
-import os.path as osp
+
 import re
-import unittest as ut
 
-# Temp dummy decorator until all tests converted
-def timeout(dummy_sec):
-    """Decorate the function with a null transform."""
-
-    def null_dec(func):
-        return func
-
-    return null_dec
-
-
-from .sphobjinv_base import DEC_EXT, CMP_EXT, JSON_EXT
-from .sphobjinv_base import INIT_FNAME_BASE, MOD_FNAME_BASE
-from .sphobjinv_base import RES_FNAME_BASE
-from .sphobjinv_base import INVALID_FNAME, TESTALL
-from .sphobjinv_base import REMOTE_URL
-from .sphobjinv_base import SuperSphobjinv
-from .sphobjinv_base import copy_dec, copy_cmp, scr_path, res_path
-from .sphobjinv_base import copy_json
-from .sphobjinv_base import decomp_cmp_test, file_exists_test
-from .sphobjinv_base import run_cmdline_test, sphinx_load_test
-from .sphobjinv_base import dir_change
+import pytest
 from stdio_mgr import stdio_mgr
 
 
-CLI_TIMEOUT = 2
-
-
-from time import sleep
-
-import pytest
-
 CLI_TEST_TIMEOUT = 2
 
+p_instance_of = re.compile("^.*instance_of.*$", re.M)
+p_inventory = re.compile("^.*nventory.*$", re.I | re.M)
 
 pytestmark = [pytest.mark.cli, pytest.mark.nonloc]
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvCmdlineExpectGoodNonlocal(SuperSphobjinv, ut.TestCase):
-    """Testing nonlocal code expecting to work properly."""
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_nonloc(pytestconfig):
+    """Skip test if --nonloc not provided.
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromInventoryURL(self):
-        """Confirm name-only suggest works from URL."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["suggest", "-u", REMOTE_URL.format("attrs"), "instance", "-t", "50"],
-            )
+    Auto-applied to all functions in module, since module is nonlocal.
 
-            p = re.compile("^.*instance_of.*$", re.M)
+    """
+    if not pytestconfig.getoption("--nonloc"):
+        pytest.skip("'--nonloc' not specified")
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromDirURLNoAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/"
+# ====  NONLOCAL CONVERT TESTS  ====
 
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
 
-            p = re.compile("^.*nventory.*$", re.I | re.M)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_convert_from_url_with_dest(
+    scratch_path, misc_info, run_cmdline_test, monkeypatch
+):
+    """Confirm CLI URL D/L, convert works w/outfile supplied."""
+    monkeypatch.chdir(scratch_path)
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
+    dest_path = scratch_path / (
+        misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
+    )
+    run_cmdline_test(
+        ["convert", "plain", "-u", misc_info.remote_url.format("attrs"), str(dest_path)]
+    )
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromPageURLNoAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = "http://sphobjinv.readthedocs.io/en/v2.0rc1/" "modules/cmdline.html"
+    assert dest_path.is_file()
 
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
 
-            p = re.compile("^.*nventory.*$", re.I | re.M)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_convert_from_url_no_dest(
+    scratch_path, misc_info, run_cmdline_test, monkeypatch
+):
+    """Confirm CLI URL D/L, convert works w/o outfile supplied."""
+    monkeypatch.chdir(scratch_path)
+    dest_path = scratch_path / (
+        misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
+    )
+    dest_path.unlink()
+    run_cmdline_test(["convert", "plain", "-u", misc_info.remote_url.format("attrs")])
+    assert dest_path.is_file()
 
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_SuggestNameOnlyFromPageURLWithAnchor(self):
-        """Confirm name-only suggest works from docpage URL."""
-        URL = (
-            "http://sphobjinv.readthedocs.io/en/v2.0rc1/modules/"
-            "cmdline.html#sphobjinv.cmdline.do_convert"
-        )
-
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(self, ["suggest", "-u", URL, "inventory", "-at", "50"])
-
-            p = re.compile("^.*nventory.*$", re.I | re.M)
-
-            with self.subTest("found_object"):
-                self.assertRegex(out_.getvalue(), p)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextOutfileProvided(self):
-        """Confirm CLI URL D/L, convert works w/outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_clifail_bad_url(run_cmdline_test, misc_info, scratch_path):
+    """Confirm proper error behavior when a bad URL is passed."""
+    with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(
-            self, ["convert", "plain", "-u", REMOTE_URL.format("attrs"), dest_path]
+            [
+                "convert",
+                "plain",
+                "-u",
+                misc_info.remote_url.format("blarghers"),
+                str(scratch_path),
+            ],
+            expect=1,
         )
-
-        file_exists_test(self, dest_path)
-
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_ConvertURLToPlaintextNoOutfile(self):
-        """Confirm CLI URL D/L, convert works w/o outfile supplied."""
-        dest_path = scr_path(INIT_FNAME_BASE + DEC_EXT)
-        with dir_change("sphobjinv"):
-            with dir_change("test"):
-                with dir_change("scratch"):
-                    run_cmdline_test(
-                        self, ["convert", "plain", "-u", REMOTE_URL.format("attrs")]
-                    )
-
-        file_exists_test(self, dest_path)
+        assert "No inventory at provided URL." in out_.getvalue()
 
 
-@pytest.mark.skip("Un-converted tests")
-class TestSphobjinvCmdlineExpectFailNonlocal(SuperSphobjinv, ut.TestCase):
-    """Check expect-fail cases with non-local sources/effects."""
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_clifail_url_no_leading_http(run_cmdline_test, scratch_path):
+    """Confirm proper error behavior when a URL w/o leading 'http://' is passed."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(
+            [
+                "convert",
+                "plain",
+                "-u",
+                "sphobjinv.readthedocs.io/en/latest",
+                str(scratch_path),
+            ],
+            expect=1,
+        )
+        assert "No inventory at provided URL." in out_.getvalue()
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_BadURLArg(self):
-        """Confirm proper error behavior when a bad URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["convert", "plain", "-u", REMOTE_URL.format("blarghers"), scr_path()],
-                expect=1,
-            )
 
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
+# ====  NONLOCAL SUGGEST TESTS  ====
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_NotSphinxURLArg(self):
-        """Confirm proper error behavior when a non-Sphinx URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                ["convert", "plain", "-u", "http://www.google.com", scr_path()],
-                expect=1,
-            )
 
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_suggest_from_url(misc_info, run_cmdline_test):
+    """Confirm name-only suggest works from URL."""
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(
+            [
+                "suggest",
+                "-u",
+                misc_info.remote_url.format("attrs"),
+                "instance",
+                "-t",
+                "50",
+            ]
+        )
+        assert p_instance_of.search(out_.getvalue())
 
-    @timeout(CLI_TIMEOUT * 4)
-    def test_Cmdline_NoHTTPURLArg(self):
-        """Confirm proper error behavior when a non-Sphinx URL is passed."""
-        with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_test(
-                self,
-                [
-                    "convert",
-                    "plain",
-                    "-u",
-                    "sphobjinv.readthedocs.io/en/latest",
-                    scr_path(),
-                ],
-                expect=1,
-            )
 
-            with self.subTest("stdout_match"):
-                self.assertIn("No inventory at provided URL.", out_.getvalue())
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_suggest_from_dir_noanchor(run_cmdline_test):
+    """Confirm name-only suggest works from docpage URL."""
+    url = "http://sphobjinv.readthedocs.io/en/v2.0/modules/"
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
+        assert p_inventory.search(out_.getvalue())
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_suggest_from_page_noanchor(run_cmdline_test):
+    """Confirm name-only suggest works from docpage URL."""
+    url = "http://sphobjinv.readthedocs.io/en/v2.0/modules/cmdline.html"
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
+        assert p_inventory.search(out_.getvalue())
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+def test_cli_suggest_from_page_withanchor(run_cmdline_test):
+    """Confirm name-only suggest works from docpage URL."""
+    url = (
+        "http://sphobjinv.readthedocs.io/en/v2.0/modules/"
+        "cmdline.html#sphobjinv.cmdline.do_convert"
+    )
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
+        assert p_inventory.search(out_.getvalue())
 
 
 if __name__ == "__main__":
