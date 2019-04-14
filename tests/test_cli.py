@@ -342,13 +342,16 @@ def test_clifail_convert_nosrc(
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-def test_clifail_convert_wrongfiletype(scratch_path, run_cmdline_test):
+def test_clifail_convert_wrongfiletype(scratch_path, run_cmdline_test, monkeypatch):
     """Confirm exit code 1 with invalid file format."""
+    monkeypatch.chdir(scratch_path)
     fname = "testfile"
-    with (scratch_path / fname).open("wb") as f:
+    with Path(fname).open("wb") as f:
         f.write(b"this is not objects.inv\n")
 
-    run_cmdline_test(["convert", "plain", fname], expect=1)
+    with stdio_mgr() as (in_, out_, err_):
+        run_cmdline_test(["convert", "plain", fname], expect=1)
+        assert "Unrecognized" in out_.getvalue()
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
