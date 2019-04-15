@@ -49,13 +49,13 @@ def test_apifail_writebytes_badoutputfile(scratch_path, misc_info):
 
 def test_apifail_error_decompressing_plaintext(res_dec):
     """Confirm error raised on attempt to decompress plaintext."""
-    from zlib import error as ZlibError
+    from zlib import error as zlib_error
 
     # OS-dependent. VersionError on Windows b/c bytes import of the
     # text-file objects_attrs.txt has the first line ending with b'2\r\n',
     # whereas *nix will pass the version check but choke in the zlib
     # decompression process
-    with pytest.raises((ZlibError, soi.VersionError)):
+    with pytest.raises((zlib_error, soi.VersionError)):
         soi.Inventory(fname_zlib=res_dec)
 
 

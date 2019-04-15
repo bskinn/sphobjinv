@@ -187,7 +187,7 @@ def test_cli_convert_cycle_formats(
     subtests,
 ):
     """Confirm conversion in a loop, reading/writing all formats."""
-    from sphobjinv import HeaderFields as HF
+    from sphobjinv import HeaderFields as HFields
 
     res_src_path = res_path / inv_path
     plain_path = scratch_path / (
@@ -216,7 +216,8 @@ def test_cli_convert_cycle_formats(
         invs.update({"json": Inv(json.load(f))})
 
     for fmt, attrib in product(
-        ("plain", "zlib", "json"), (HF.Project.value, HF.Version.value, HF.Count.value)
+        ("plain", "zlib", "json"),
+        (HFields.Project.value, HFields.Version.value, HFields.Count.value),
     ):
         with subtests.test(msg="{}_{}".format(fmt, attrib)):
             assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)

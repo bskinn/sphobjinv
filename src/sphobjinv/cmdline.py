@@ -813,37 +813,37 @@ def do_suggest(inv, params):
             sys.exit(0)
 
     # Field widths in output
-    SCORE_WIDTH = 7
-    INDEX_WIDTH = 7
+    score_width = 7
+    index_width = 7
 
     if with_index or with_score:
-        RST_WIDTH = max(len(_[0]) for _ in results)
+        rst_width = max(len(_[0]) for _ in results)
     else:
-        RST_WIDTH = max(len(_) for _ in results)
+        rst_width = max(len(_) for _ in results)
 
-    RST_WIDTH += 2
+    rst_width += 2
 
     if with_index:
         if with_score:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
-                RST_WIDTH, SCORE_WIDTH, INDEX_WIDTH
+                rst_width, score_width, index_width
             )
             print("")
             print(fmt.format("  Name", "Score", "Index"))
-            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, INDEX_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, index_width)
             print("")
             print(fmt.format("  Name", "Index"))
-            print(fmt.format("-" * RST_WIDTH, "-" * INDEX_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, SCORE_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, score_width)
             print("")
             print(fmt.format("  Name", "Score"))
-            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * score_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
             print("\n".join(str(_) for _ in results))

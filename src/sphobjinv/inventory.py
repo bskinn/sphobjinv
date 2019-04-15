@@ -591,7 +591,7 @@ class Inventory(object):
 
     def _general_import(self):
         """Attempt sequence of all imports."""
-        from zlib import error as ZlibError
+        from zlib import error as zlib_error
 
         from jsonschema.exceptions import ValidationError
 
@@ -605,9 +605,9 @@ class Inventory(object):
         }
         import_errors = {
             SourceTypes.BytesPlaintext: TypeError,
-            SourceTypes.BytesZlib: (ZlibError, TypeError),
+            SourceTypes.BytesZlib: (zlib_error, TypeError),
             SourceTypes.FnamePlaintext: (OSError, TypeError),
-            SourceTypes.FnameZlib: (OSError, TypeError, ZlibError),
+            SourceTypes.FnameZlib: (OSError, TypeError, zlib_error),
             SourceTypes.DictJSON: (ValidationError),
         }
 
