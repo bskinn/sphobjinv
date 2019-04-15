@@ -1,0 +1,4 @@
+#! /bin/bash
+
+flake8 tests src conftest.py
+

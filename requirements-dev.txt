@@ -2,6 +2,7 @@ attrs>=17.4
 certifi
 coverage
 flake8
+flake8-colors
 flake8-docstrings
 fuzzywuzzy>=0.3
 ipython
