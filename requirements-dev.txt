@@ -2,15 +2,16 @@ attrs>=17.4
 certifi
 coverage
 flake8
+flake8-black
 flake8-bugbear
 flake8-builtins
 flake8-colors
+flake8-comprehensions
 flake8-docstrings
 flake8-eradicate
 flake8-import-order
 flake8-pie
 fuzzywuzzy>=0.3
-ipython
 jsonschema==2.6
 pep8-naming
 pytest>=4.4.0

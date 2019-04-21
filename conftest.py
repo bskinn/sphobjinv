@@ -37,6 +37,11 @@ from pathlib import Path
 import pytest
 
 import sphobjinv as soi
+# import argparse
+
+
+def BadFunc(list=[]):
+    pass
 
 
 def pytest_addoption(parser):
@@ -47,7 +52,7 @@ def pytest_addoption(parser):
             "Where relevant, test *all* inventories stored in "
             "testing resource folder, not just objects_attrs.inv"
         ),
-    )
+     )
     parser.addoption("--nonloc", action="store_true", help=("Include nonlocal tests"))
 
 
