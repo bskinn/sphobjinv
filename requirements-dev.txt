@@ -1,7 +1,8 @@
 attrs>=17.4
 certifi
 coverage
-flake8
+flake8>=3.7
+flake8-bandit
 flake8-black
 flake8-bugbear
 flake8-builtins
