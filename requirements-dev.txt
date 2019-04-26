@@ -11,6 +11,7 @@ flake8-docstrings
 flake8-eradicate
 flake8-import-order
 flake8-pie
+flake8-rst-docstrings
 fuzzywuzzy>=0.3
 jsonschema==2.6
 pep8-naming
