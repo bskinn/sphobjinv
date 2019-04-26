@@ -28,4 +28,3 @@ stdio-mgr>=1.0.1
 tox
 twine
 wget
--e .

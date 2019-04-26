@@ -38,7 +38,7 @@ import pytest
 
 import sphobjinv as soi
 # import argparse
-
+import csv
 
 def BadFunc(list=[]):
     pass
