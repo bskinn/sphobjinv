@@ -27,6 +27,7 @@ Sphinx |objects.inv| files.
 
 import re
 import subprocess as sp
+import sys
 import urllib.request as urlrq
 
 import certifi
@@ -65,6 +66,10 @@ def testmodule(tmp_path):
     yield testmod_path
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 6),
+    reason="Some flake8 extensions require Python 3.6 or later",
+)
 @pytest.mark.nonloc
 @pytest.mark.timeout(10)
 def test_flake8_extensions(testmodule, subtests, tmp_path):
