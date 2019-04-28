@@ -58,8 +58,8 @@ def testmodule(tmp_path):
     ).read()
     testmod_path = tmp_path / "flake8_ext_test.py"
 
-    with testmod_path.open("wb") as f:
-        f.write(module_contents)
+    with testmod_path.open("w") as f:
+        f.write(module_contents.decode())
 
     # ~ with testmod_path.open() as f:
     # ~ yield f
@@ -102,8 +102,7 @@ def test_flake8_extensions(testmodule, subtests, tmp_path):
     """
     try:
         sp.check_output(
-            ["flake8 --max-complexity 1 {}".format(str(testmodule.resolve()))],
-            shell=True,
+            "flake8 --max-complexity 1 {}".format(str(testmodule.resolve())), shell=True
         )
     except sp.CalledProcessError as e:
         retcode = e.returncode
