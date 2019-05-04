@@ -333,7 +333,7 @@ class Inventory(object):
             If both `expand` and `contract` are |True|
 
         """
-        return list(_.as_rst for _ in self.objects)
+        return [_.as_rst for _ in self.objects]
 
     def __str__(self):  # pragma: no cover
         """Return concise, readable description of contents."""
@@ -557,37 +557,37 @@ class Inventory(object):
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index
-        srch_list = list("{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst))
+        srch_list = ["{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst)]
 
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
-        results = list(
+        results = [
             "{0} {1}".format(*_)
             for _ in fwp.extract(name, srch_list, limit=None)
             if _[1] >= thresh
-        )
+        ]
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
         # result --> (rst, score, index)
         p_idx = re.compile("^(\\d+)\\s+(.+?)\\s+(\\d+)$")
-        results = list(
+        results = [
             (m.group(2), int(m.group(3)), int(m.group(1)))
             for m in map(p_idx.match, results)
-        )
+        ]
 
         # Return based on flags
         if with_score:
             if with_index:
                 return results
             else:
-                return list(tup[:2] for tup in results)
+                return [tup[:2] for tup in results]
         else:
             if with_index:
-                return list(tup[::2] for tup in results)
+                return [tup[::2] for tup in results]
             else:
-                return list(tup[0] for tup in results)
+                return [tup[0] for tup in results]
 
     def _general_import(self):
         """Attempt sequence of all imports."""
@@ -697,7 +697,7 @@ class Inventory(object):
 
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        resp = urlrq.urlopen(url, cafile=certifi.where())
+        resp = urlrq.urlopen(url, cafile=certifi.where())  # noqa: S310
         b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
@@ -742,7 +742,7 @@ class Inventory(object):
 
         # Complain if remaining objects are anything other than the
         # valid inventory-level header keys
-        hf_values = set(e.value for e in HeaderFields)
+        hf_values = {e.value for e in HeaderFields}
         check_value = self._count_error and set(d.keys()).difference(hf_values)
         if check_value:
             # A truthy value here will be the contents

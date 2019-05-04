@@ -40,10 +40,6 @@ CLI_TEST_TIMEOUT = 2
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
-with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
-    exec(f.read())
-
-
 # ====  EXPECT-GOOD MISC TESTS  ====
 
 
@@ -172,13 +168,10 @@ def test_cli_convert_various_pathargs(
     decomp_cmp_test(full_dst_path)
 
 
-@pytest.mark.timeout(CLI_TEST_TIMEOUT * len(testall_inv_paths) * 3)  # noqa: F821
-@pytest.mark.parametrize(
-    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
-)
+@pytest.mark.timeout(CLI_TEST_TIMEOUT * 50 * 3)  # noqa: F821
 @pytest.mark.testall
 def test_cli_convert_cycle_formats(
-    inv_path,
+    testall_inv_path,
     res_path,
     scratch_path,
     run_cmdline_test,
@@ -189,7 +182,7 @@ def test_cli_convert_cycle_formats(
     """Confirm conversion in a loop, reading/writing all formats."""
     from sphobjinv import HeaderFields as HFields
 
-    res_src_path = res_path / inv_path
+    res_src_path = res_path / testall_inv_path
     plain_path = scratch_path / (
         misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
@@ -200,7 +193,10 @@ def test_cli_convert_cycle_formats(
         misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
-    if not pytestconfig.getoption("--testall") and inv_path.name != "objects_attrs.inv":
+    if (
+        not pytestconfig.getoption("--testall")
+        and testall_inv_path.name != "objects_attrs.inv"
+    ):
         pytest.skip("'--testall' not specified")
 
     run_cmdline_test(["convert", "plain", str(res_src_path), str(plain_path)])

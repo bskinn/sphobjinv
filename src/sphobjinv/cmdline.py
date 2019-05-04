@@ -34,7 +34,7 @@ import argparse as ap
 import os
 import sys
 
-from . import __version__
+from sphobjinv import __version__
 
 # ### Version arg and helpers
 #: Optional argument name for use with the base
@@ -252,7 +252,7 @@ def yesno_prompt(prompt):
     """
     resp = ""
     while not (resp.lower() == "n" or resp.lower() == "y"):
-        resp = input(prompt)
+        resp = input(prompt)  # noqa: S322
     return resp
 
 
@@ -426,7 +426,7 @@ def resolve_inpath(in_path):
         |str| -- Path to desired input file
 
     Returns
-    ------
+    -------
     abs_path
 
         |str| -- Absolute path to indicated file
@@ -538,13 +538,15 @@ def import_infile(in_path):
         otherwise, |None|
 
     """
+    from json.decoder import JSONDecodeError
+
     from .fileops import readjson
     from .inventory import Inventory as Inv
 
     # Try general import, for zlib or plaintext files
     try:
         inv = Inv(in_path)
-    except Exception:
+    except AttributeError:
         pass  # Punt to JSON attempt
     else:
         return inv
@@ -552,7 +554,7 @@ def import_infile(in_path):
     # Maybe it's JSON
     try:
         inv = Inv(readjson(in_path))
-    except Exception:
+    except JSONDecodeError:
         return None
     else:
         return inv
@@ -924,8 +926,11 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
-    from .fileops import urlwalk
-    from .inventory import Inventory
+    from urllib.error import HTTPError
+
+    from sphobjinv.error import VersionError
+    from sphobjinv.fileops import urlwalk
+    from sphobjinv.inventory import Inventory
 
     in_file = params[INFILE]
 
@@ -940,7 +945,7 @@ def inv_url(params):
     # Try URL as provided
     try:
         inv = Inventory(url=in_file)
-    except Exception:
+    except (HTTPError, ValueError, VersionError):
         selective_print("No inventory at provided URL.", params)
     else:
         selective_print("Remote inventory found.", params)
@@ -952,7 +957,7 @@ def inv_url(params):
             selective_print('Attempting "{0}" ...'.format(url), params)
             try:
                 inv = Inventory(url=url)
-            except Exception:
+            except (ValueError, HTTPError):
                 pass
             else:
                 selective_print("Remote inventory found.", params)

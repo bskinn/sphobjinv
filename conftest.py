@@ -38,15 +38,9 @@ import pytest
 
 import sphobjinv as soi
 
-# import argparse
-import csv
-
-
-def BadFunc(list=[]):
-    pass
-
 
 def pytest_addoption(parser):
+    """Add custom CLI options to pytest."""
     parser.addoption(
         "--testall",
         action="store_true",
@@ -60,21 +54,26 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def res_path():
-    return Path(".") / "tests" / "resource"
+    """Provide Path object to the test resource directory."""
+    return Path("tests") / "resource"
 
 
 @pytest.fixture(scope="session")
 def res_cmp(res_path, misc_info):
+    """Provide string path to the compressed attrs inventory in resource."""
     return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.CMP.value))
 
 
 @pytest.fixture(scope="session")
 def res_dec(res_path, misc_info):
+    """Provide string path to the decompressed attrs inventory in resource."""
     return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value))
 
 
 @pytest.fixture(scope="session")
 def misc_info(res_path):
+    """Supply Info object with various test-relevant content."""
+
     class Info:
         class FNames(Enum):
             RES = "objects_attrs"
@@ -119,6 +118,7 @@ def misc_info(res_path):
 
 @pytest.fixture()
 def scratch_path(tmp_path, res_path, misc_info):
+    """Provision pre-populated scratch directory, returned as Path."""
     res_base = misc_info.FNames.RES.value
     scr_base = misc_info.FNames.INIT.value
 
@@ -148,7 +148,6 @@ def bytes_txt(misc_info, res_path):
 @pytest.fixture(scope="session")
 def sphinx_load_test():
     """Return function to perform 'live' Sphinx inventory load test."""
-
     from sphinx.util.inventory import InventoryFile as IFile
 
     def func(path):
@@ -198,7 +197,7 @@ def run_cmdline_test(monkeypatch):
 
 @pytest.fixture(scope="session")
 def decomp_cmp_test(misc_info):
-    """Return function to confirm indicated decompressed file is identical to resource."""
+    """Return function to confirm a decompressed file is identical to resource."""
 
     def func(path):
         assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
@@ -217,10 +216,22 @@ def attrs_inventory_test():
         `source_type` is a member of the `soi.inventory.SourceTypes` enum.
 
         """
-
         assert inv.project == "attrs"
         assert inv.version == "17.2"
         assert inv.count == 56
         assert inv.source_type
 
     return func
+
+
+testall_inv_paths = (
+    p
+    for p in (Path(__file__).parent / "tests" / "resource").iterdir()
+    if p.name.startswith("objects_") and p.name.endswith(".inv")
+)
+
+
+@pytest.fixture(params=testall_inv_paths)
+def testall_inv_path(request):
+    """Provide parametrized --testall inventory paths."""
+    return request.param

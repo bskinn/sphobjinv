@@ -25,36 +25,12 @@ Sphinx |objects.inv| files.
 
 """
 
-__all__ = [
-    "readbytes",
-    "writebytes",
-    "readjson",
-    "writejson",
-    "urlwalk",
-    "compress",
-    "decompress",
-    "pb_comments",
-    "pb_data",
-    "pb_version",
-    "pb_project",
-    "p_data",
-    "DataFields",
-    "HeaderFields",
-    "SourceTypes",
-    "SphobjinvError",
-    "VersionError",
-    "DataObjStr",
-    "DataObjBytes",
-    "Inventory",
-    "json_schema",
-]
 
-from sphobjinv.data import DataObjStr, DataObjBytes, DataFields
-from sphobjinv.inventory import Inventory, SourceTypes, HeaderFields
+from sphobjinv.data import DataFields, DataObjBytes, DataObjStr
 from sphobjinv.error import SphobjinvError, VersionError
-from sphobjinv.fileops import readbytes, writebytes, readjson, writejson, urlwalk
-from sphobjinv.re import pb_comments, pb_data, pb_version, pb_project
-from sphobjinv.re import p_data
+from sphobjinv.fileops import readbytes, readjson, urlwalk, writebytes, writejson
+from sphobjinv.inventory import HeaderFields, Inventory, SourceTypes
+from sphobjinv.re import p_data, pb_comments, pb_data, pb_project, pb_version
 from sphobjinv.schema import json_schema
 from sphobjinv.version import __version__  # noqa: F401
 from sphobjinv.zlib import compress, decompress

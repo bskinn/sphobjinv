@@ -35,10 +35,6 @@ import sphobjinv as soi
 pytestmark = [pytest.mark.api, pytest.mark.nonloc]
 
 
-with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
-    exec(f.read())
-
-
 @pytest.fixture(scope="module", autouse=True)
 def skip_if_no_nonloc(pytestconfig):
     """Skip test if --nonloc not provided.
@@ -50,13 +46,10 @@ def skip_if_no_nonloc(pytestconfig):
         pytest.skip("'--nonloc' not specified")
 
 
-@pytest.mark.parametrize(
-    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
-)
 @pytest.mark.testall
-@pytest.mark.timeout(20)
+@pytest.mark.timeout(30)
 def test_api_inventory_many_url_imports(
-    inv_path,
+    testall_inv_path,
     res_path,
     scratch_path,
     misc_info,
@@ -71,7 +64,7 @@ def test_api_inventory_many_url_imports(
     tests/resource.
 
     """
-    fname = inv_path.name
+    fname = testall_inv_path.name
     scr_fpath = scratch_path / fname
 
     # Drop most unless testall
