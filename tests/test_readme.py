@@ -53,9 +53,8 @@ p_shell = re.compile(
 
 
 @pytest.mark.skipif(
-    sys.version_info < (3, 5) or sphinx_ver != sphinx_req,
-    reason="Skip on Python 3.4 and below due to variant subprocess behavior, "
-    "and skip if Sphinx version mismatches current dev version.",
+    sphinx_ver != sphinx_req,
+    reason="Skip if Sphinx version mismatches current dev version.",
 )
 def test_readme_shell_cmds(ensure_doc_scratch, subtests):
     """Perform testing on README shell command examples."""

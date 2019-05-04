@@ -9,7 +9,6 @@ install:
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
 python:
- - 3.4
  - 3.5
  - 3.6
  - 3.7
