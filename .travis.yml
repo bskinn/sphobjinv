@@ -4,7 +4,7 @@ install:
  - PYTHON_MINOR=$( python -c 'import sys; print(sys.version_info.minor)' )
  - pip install -U setuptools
  - python -m pip install 'pip==19.1'
- - pip install -U --force-reinstall -r requirements-travis.txt
+ - pip install -U --no-use-pep517 --force-reinstall -r requirements-travis.txt
  - if (( $PYTHON_MAJOR > 3 || ( $PYTHON_MAJOR == 3 && $PYTHON_MINOR >= 6 ) )); then pip install -r requirements-flake8.txt; fi
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
