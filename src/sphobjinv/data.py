@@ -369,7 +369,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         Parameters
         ----------
-        **kwargs
+        kwargs
 
             |str| or |bytes| -- Revised value(s) to use in the new
             instance for the passed keyword argument(s).

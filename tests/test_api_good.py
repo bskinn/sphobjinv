@@ -27,7 +27,6 @@ Sphinx |objects.inv| files.
 
 import itertools as itt
 import re
-from pathlib import Path
 
 import pytest
 
@@ -165,10 +164,7 @@ def test_api_dataobjbytes_init(bytes_txt):
     assert b_dob == s_dob
 
     assert all(
-        [
-            getattr(b_dob, _) == getattr(b_dob.as_str, _).encode("utf-8")
-            for _ in b_mchdict
-        ]
+        getattr(b_dob, _) == getattr(b_dob.as_str, _).encode("utf-8") for _ in b_mchdict
     )
 
 
@@ -194,10 +190,8 @@ def test_api_dataobjstr_init(bytes_txt):
     assert b_dos == s_dos
 
     assert all(
-        [
-            getattr(s_dos, _) == getattr(b_dos.as_bytes, _).decode("utf-8")
-            for _ in s_mchdict
-        ]
+        getattr(s_dos, _) == getattr(b_dos.as_bytes, _).decode("utf-8")
+        for _ in s_mchdict
     )
 
 

@@ -26,7 +26,7 @@ Sphinx |objects.inv| files.
 """
 
 import re
-import subprocess as sp
+import subprocess as sp  # noqa: S404
 import sys
 import urllib.request as urlrq
 
@@ -48,12 +48,12 @@ def skip_if_no_nonloc(pytestconfig):
 @pytest.fixture()
 def testmodule(tmp_path):
     """Retrieve the flake8 extension test module as a BytesIO."""
-    main_page = urlrq.urlopen(
+    main_page = urlrq.urlopen(  # noqa: S310
         "https://gist.github.com/bskinn/ab328d0d9233586641455ac73056f946",
         cafile=certifi.where(),
     ).read()
     raw_url_tail = re.search(rb'"([^"]+/raw/[^"]+)"', main_page, re.I).group(1)
-    module_contents = urlrq.urlopen(
+    module_contents = urlrq.urlopen(  # noqa: S310
         "https://gist.github.com" + raw_url_tail.decode(), cafile=certifi.where()
     ).read()
     testmod_path = tmp_path / "flake8_ext_test.py"
@@ -102,7 +102,8 @@ def test_flake8_extensions(testmodule, subtests, tmp_path):
     """
     try:
         sp.check_output(
-            "flake8 --max-complexity 1 {}".format(str(testmodule.resolve())), shell=True
+            "flake8 --max-complexity 1 {}".format(str(testmodule.resolve())),
+            shell=True,  # noqa: S602
         )
     except sp.CalledProcessError as e:
         retcode = e.returncode

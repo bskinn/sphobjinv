@@ -28,8 +28,7 @@ Sphinx |objects.inv| files.
 import doctest as dt
 import re
 import shlex
-import subprocess as sp
-import sys
+import subprocess as sp  # noqa: S404
 
 
 import pytest
@@ -69,7 +68,9 @@ def test_readme_shell_cmds(ensure_doc_scratch, subtests):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
-        proc = sp.run(shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30)
+        proc = sp.run(  # noqa: S603
+            shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30
+        )
 
         result = proc.stdout.decode("utf-8")
 

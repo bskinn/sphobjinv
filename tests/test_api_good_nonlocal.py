@@ -25,8 +25,6 @@ Sphinx |objects.inv| files.
 
 """
 
-from pathlib import Path
-
 import pytest
 
 import sphobjinv as soi
