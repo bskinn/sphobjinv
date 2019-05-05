@@ -172,7 +172,3 @@ def test_apifail_inventory_no_object_invs(subtests):
     with subtests.test(msg="json"):
         with pytest.raises(ValueError):
             soi.Inventory(d)
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

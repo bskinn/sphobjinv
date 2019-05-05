@@ -25,82 +25,22 @@ Sphinx |objects.inv| files.
 
 """
 
-from enum import Enum
+import re
+import urllib.request as urlrq
+import warnings
+from zlib import error as zlib_error
 
 import attr
+import certifi
+import jsonschema
+from jsonschema.exceptions import ValidationError
 
-from .data import DataObjStr
-
-
-class HeaderFields(Enum):
-    """|Enum| for various inventory-level data items.
-
-    A subset of these |Enum| values is used in various Regex,
-    JSON, and string formatting contexts within :class:`Inventory`
-    and :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
-
-    """
-
-    #: Project name associated with an inventory
-    Project = "project"
-
-    #: Project version associated with an inventory
-    Version = "version"
-
-    #: Number of objects contained in the inventory
-    Count = "count"
-
-    #: The |str| value of this |Enum| member is accepted as a root-level
-    #: key in a |dict| to be imported into an :class:`Inventory`.
-    #: The corresponding value in the |dict| may contain any arbitrary data.
-    #: Its possible presence is accounted for in
-    #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
-    #:
-    #: The data associated with this key are **ignored**
-    #: during import into an :class:`Inventory`.
-    Metadata = "metadata"
-
-
-class SourceTypes(Enum):
-    """|Enum| for the import mode used in instantiating an |Inventory|.
-
-    Since |Enum| keys iterate in definition order, the
-    definition order here defines the order in which |Inventory|
-    objects attempt to parse a source object passed to
-    :class:`Inventory.__init__() <Inventory>` either as a positional argument
-    or via the generic `source` keyword argument.
-
-    This order **DIFFERS** from the documentation order, which is
-    alphabetical.
-
-    """
-
-    #: No source; |Inventory| was instantiated with
-    #: :data:`~Inventory.project` and :data:`~Inventory.version`
-    #: as empty strings and
-    #: :data:`~Inventory.objects` as an empty |list|.
-    Manual = "manual"
-
-    #: Instantiation from a plaintext |objects.inv| |bytes|.
-    BytesPlaintext = "bytes_plain"
-
-    #: Instantiation from a zlib-compressed
-    #: |objects.inv| |bytes|.
-    BytesZlib = "bytes_zlib"
-
-    #: Instantiation from a plaintext |objects.inv| file on disk.
-    FnamePlaintext = "fname_plain"
-
-    #: Instantiation from a zlib-compressed |objects.inv| file on disk.
-    FnameZlib = "fname_zlib"
-
-    #: Instantiation from a |dict| validated against
-    #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
-    DictJSON = "dict_json"
-
-    #: Instantiation from a zlib-compressed |objects.inv| file
-    #: downloaded from a URL.
-    URL = "url"
+from sphobjinv.data import _utf8_encode, DataObjStr
+from sphobjinv.enum import HeaderFields, SourceTypes
+from sphobjinv.fileops import readbytes
+from sphobjinv.re import pb_data, pb_project, pb_version
+from sphobjinv.schema import json_schema
+from sphobjinv.zlib import decompress
 
 
 @attr.s(slots=True, cmp=False)
@@ -348,8 +288,6 @@ class Inventory(object):
 
     def __attrs_post_init__(self):
         """Construct the inventory from the indicated source."""
-        from .data import _utf8_encode
-
         # List of sources
         src_list = (
             self._source,
@@ -543,9 +481,6 @@ class Inventory(object):
             |cour|\ (as_rst, score, index)\ |/cour|
 
         """
-        import re
-        import warnings
-
         # Suppress any UserWarning about the speed issue
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -587,10 +522,6 @@ class Inventory(object):
 
     def _general_import(self):
         """Attempt sequence of all imports."""
-        from zlib import error as zlib_error
-
-        from jsonschema.exceptions import ValidationError
-
         # Lookups for method names and expected import-failure errors
         importers = {
             SourceTypes.BytesPlaintext: self._import_plaintext_bytes,
@@ -640,8 +571,6 @@ class Inventory(object):
 
     def _import_plaintext_bytes(self, b_str):
         """Import an inventory from plaintext bytes."""
-        from .re import pb_data, pb_project, pb_version
-
         b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
         project = b_res.decode("utf-8")
 
@@ -662,8 +591,6 @@ class Inventory(object):
 
     def _import_zlib_bytes(self, b_str):
         """Import a zlib-compressed inventory."""
-        from .zlib import decompress
-
         b_plain = decompress(b_str)
         p, v, o = self._import_plaintext_bytes(b_plain)
 
@@ -671,26 +598,18 @@ class Inventory(object):
 
     def _import_plaintext_fname(self, fn):
         """Import a plaintext inventory file."""
-        from .fileops import readbytes
-
         b_plain = readbytes(fn)
 
         return self._import_plaintext_bytes(b_plain)
 
     def _import_zlib_fname(self, fn):
         """Import a zlib-compressed inventory file."""
-        from .fileops import readbytes
-
         b_zlib = readbytes(fn)
 
         return self._import_zlib_bytes(b_zlib)
 
     def _import_url(self, url):
         """Import a file from a remote URL."""
-        import urllib.request as urlrq
-
-        import certifi
-
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
         resp = urlrq.urlopen(url, cafile=certifi.where())  # noqa: S310
@@ -701,11 +620,6 @@ class Inventory(object):
 
     def _import_json_dict(self, d):
         """Import flat-dict composited data."""
-        import jsonschema
-
-        from .data import DataObjStr
-        from .schema import json_schema
-
         # Validate the dict against the schema. Schema
         # WILL allow an inventory with no objects here
         val = jsonschema.Draft4Validator(json_schema)
@@ -748,7 +662,3 @@ class Inventory(object):
 
         # Should be good to return
         return project, version, objects
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

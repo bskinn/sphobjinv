@@ -78,7 +78,3 @@ def test_readme_shell_cmds(ensure_doc_scratch, subtests):
 
         with subtests.test(i=i):
             assert chk.check_output(out, result, dt_flags), msg
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

@@ -166,7 +166,3 @@ def test_cli_suggest_from_page_withanchor(run_cmdline_test):
     with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
         assert p_inventory.search(out_.getvalue())
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

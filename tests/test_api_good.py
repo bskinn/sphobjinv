@@ -492,7 +492,3 @@ def test_api_inventory_datafile_gen_and_reimport(
     # Ensure sphinx likes the regenerated inventory
     with subtests.test(msg="sphinx_load"):
         sphinx_load_test(scr_fpath)
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

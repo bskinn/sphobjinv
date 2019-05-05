@@ -33,8 +33,13 @@ Sphinx |objects.inv| files.
 import argparse as ap
 import os
 import sys
+from json.decoder import JSONDecodeError
 
 from sphobjinv import __version__
+from sphobjinv.fileops import readjson, writebytes, writejson
+from sphobjinv.inventory import Inventory as Inv
+from sphobjinv.zlib import compress
+
 
 # ### Version arg and helpers
 #: Optional argument name for use with the base
@@ -538,11 +543,6 @@ def import_infile(in_path):
         otherwise, |None|
 
     """
-    from json.decoder import JSONDecodeError
-
-    from .fileops import readjson
-    from .inventory import Inventory as Inv
-
     # Try general import, for zlib or plaintext files
     try:
         inv = Inv(in_path)
@@ -598,8 +598,6 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writebytes
-
     b_str = inv.data_file(expand=expand, contract=contract)
     writebytes(path, b_str.replace(b"\n", os.linesep.encode("utf-8")))
 
@@ -639,9 +637,6 @@ def write_zlib(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writebytes
-    from .zlib import compress
-
     b_str = inv.data_file(expand=expand, contract=contract)
     bz_str = compress(b_str)
     writebytes(path, bz_str)
@@ -685,8 +680,6 @@ def write_json(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writejson
-
     json_dict = inv.json_dict(expand=expand, contract=contract)
     writejson(path, json_dict)
 

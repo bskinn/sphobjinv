@@ -413,7 +413,3 @@ def test_clifail_convert_localfile_as_url(
     with subtests.test(msg="url-style"):
         file_url = "file:///" + str(in_path.resolve())
         run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

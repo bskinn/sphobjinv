@@ -27,9 +27,10 @@ Sphinx |objects.inv| files.
 
 
 from sphobjinv.data import DataFields, DataObjBytes, DataObjStr
+from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.error import SphobjinvError, VersionError
 from sphobjinv.fileops import readbytes, readjson, urlwalk, writebytes, writejson
-from sphobjinv.inventory import HeaderFields, Inventory, SourceTypes
+from sphobjinv.inventory import Inventory
 from sphobjinv.re import p_data, pb_comments, pb_data, pb_project, pb_version
 from sphobjinv.schema import json_schema
 from sphobjinv.version import __version__  # noqa: F401

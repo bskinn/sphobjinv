@@ -464,7 +464,3 @@ class DataObjBytes(SuperDataObj):
     def _data_line_postprocess(self, s):
         """Encode to bytes before data_line return."""
         return s.encode("utf-8")
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

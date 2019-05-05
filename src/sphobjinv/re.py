@@ -27,8 +27,8 @@ Sphinx |objects.inv| files.
 
 import re
 
-from .data import DataFields
-from .inventory import HeaderFields
+from sphobjinv.data import DataFields
+from sphobjinv.enum import HeaderFields
 
 
 #: Compiled |re| |bytes|  pattern for comment lines in decompressed
@@ -98,7 +98,3 @@ pb_data = re.compile(ptn_data.encode(encoding="utf-8"), re.M | re.X)
 #: Compiled |re| |str| regex pattern for data lines in |str| decompressed
 #: inventory files
 p_data = re.compile(ptn_data, re.M | re.X)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")
