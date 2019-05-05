@@ -4,7 +4,7 @@ install:
  - PYTHON_MINOR=$( python -c 'import sys; print(sys.version_info.minor)' )
  - pip install -U pip setuptools
  - pip install -U --force-reinstall -r requirements-travis.txt
- - if (( $PYTHON_MAJOR > 3 || ( $PYTHON_MAJOR == 3 && $PYTHON_MINOR >= 6 ) )); then pip install -r requirements-flake8.txt; fi
+ - if (( ( $PYTHON_MAJOR > 3 ) || ( $PYTHON_MAJOR == 3 && $PYTHON_MINOR >= 6 ) )); then pip install -r requirements-flake8.txt; fi
  - python setup.py develop
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
@@ -17,7 +17,7 @@ script:
  - python --version
  - pip list
  - pytest --cov=src --testall --nonloc
- - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then pip install black; black --check .; else echo "No black."; fi
+ - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then tox -e flake8; else echo "No flake8."; fi
  - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 6 )); then sh -c 'cd doc; make doctest'; else echo "No doctest."; fi
  - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then codecov; else echo "No codecov."; fi
 
