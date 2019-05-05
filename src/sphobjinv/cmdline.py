@@ -34,7 +34,7 @@ import argparse as ap
 import os
 import sys
 
-from . import __version__
+from sphobjinv import __version__
 
 # ### Version arg and helpers
 #: Optional argument name for use with the base
@@ -252,7 +252,7 @@ def yesno_prompt(prompt):
     """
     resp = ""
     while not (resp.lower() == "n" or resp.lower() == "y"):
-        resp = input(prompt)
+        resp = input(prompt)  # noqa: S322
     return resp
 
 
@@ -426,7 +426,7 @@ def resolve_inpath(in_path):
         |str| -- Path to desired input file
 
     Returns
-    ------
+    -------
     abs_path
 
         |str| -- Absolute path to indicated file
@@ -538,13 +538,15 @@ def import_infile(in_path):
         otherwise, |None|
 
     """
+    from json.decoder import JSONDecodeError
+
     from .fileops import readjson
     from .inventory import Inventory as Inv
 
     # Try general import, for zlib or plaintext files
     try:
         inv = Inv(in_path)
-    except Exception:
+    except AttributeError:
         pass  # Punt to JSON attempt
     else:
         return inv
@@ -552,7 +554,7 @@ def import_infile(in_path):
     # Maybe it's JSON
     try:
         inv = Inv(readjson(in_path))
-    except Exception:
+    except JSONDecodeError:
         return None
     else:
         return inv
@@ -813,37 +815,37 @@ def do_suggest(inv, params):
             sys.exit(0)
 
     # Field widths in output
-    SCORE_WIDTH = 7
-    INDEX_WIDTH = 7
+    score_width = 7
+    index_width = 7
 
     if with_index or with_score:
-        RST_WIDTH = max(len(_[0]) for _ in results)
+        rst_width = max(len(_[0]) for _ in results)
     else:
-        RST_WIDTH = max(len(_) for _ in results)
+        rst_width = max(len(_) for _ in results)
 
-    RST_WIDTH += 2
+    rst_width += 2
 
     if with_index:
         if with_score:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
-                RST_WIDTH, SCORE_WIDTH, INDEX_WIDTH
+                rst_width, score_width, index_width
             )
             print("")
             print(fmt.format("  Name", "Score", "Index"))
-            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, INDEX_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, index_width)
             print("")
             print(fmt.format("  Name", "Index"))
-            print(fmt.format("-" * RST_WIDTH, "-" * INDEX_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, SCORE_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, score_width)
             print("")
             print(fmt.format("  Name", "Score"))
-            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * score_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
             print("\n".join(str(_) for _ in results))
@@ -924,8 +926,11 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
-    from .fileops import urlwalk
-    from .inventory import Inventory
+    from urllib.error import HTTPError
+
+    from sphobjinv.error import VersionError
+    from sphobjinv.fileops import urlwalk
+    from sphobjinv.inventory import Inventory
 
     in_file = params[INFILE]
 
@@ -940,7 +945,7 @@ def inv_url(params):
     # Try URL as provided
     try:
         inv = Inventory(url=in_file)
-    except Exception:
+    except (HTTPError, ValueError, VersionError):
         selective_print("No inventory at provided URL.", params)
     else:
         selective_print("Remote inventory found.", params)
@@ -952,7 +957,7 @@ def inv_url(params):
             selective_print('Attempting "{0}" ...'.format(url), params)
             try:
                 inv = Inventory(url=url)
-            except Exception:
+            except (ValueError, HTTPError):
                 pass
             else:
                 selective_print("Remote inventory found.", params)

@@ -48,7 +48,7 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     provides=["sphobjinv"],
-    python_requires=">=3.4",
+    python_requires=">=3.5",
     requires=["attrs (>=17.4)", "certifi", "fuzzywuzzy (>=0.3)", "jsonschema (>=2.0)"],
     install_requires=["attrs>=17.4", "certifi", "fuzzywuzzy>=0.3", "jsonschema>=2.0"],
     classifiers=[
@@ -62,7 +62,6 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",

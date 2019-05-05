@@ -4,8 +4,6 @@ codecov
 coverage
 fuzzywuzzy>=0.3
 jsonschema==2.6
-flake8
-flake8-docstrings
 pytest>=4.4.0
 pytest-cov
 pytest-ordering
@@ -15,5 +13,5 @@ sphinx==1.7.6
 sphinx-issues
 sphinx-rtd-theme==0.4.1
 stdio-mgr>=1.0.1
--e .
+tox
 

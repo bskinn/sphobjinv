@@ -28,8 +28,7 @@ Sphinx |objects.inv| files.
 import doctest as dt
 import re
 import shlex
-import subprocess as sp
-import sys
+import subprocess as sp  # noqa: S404
 
 
 import pytest
@@ -53,9 +52,8 @@ p_shell = re.compile(
 
 
 @pytest.mark.skipif(
-    sys.version_info < (3, 5) or sphinx_ver != sphinx_req,
-    reason="Skip on Python 3.4 and below due to variant subprocess behavior, "
-    "and skip if Sphinx version mismatches current dev version.",
+    sphinx_ver != sphinx_req,
+    reason="Skip if Sphinx version mismatches current dev version.",
 )
 def test_readme_shell_cmds(ensure_doc_scratch, subtests):
     """Perform testing on README shell command examples."""
@@ -70,7 +68,9 @@ def test_readme_shell_cmds(ensure_doc_scratch, subtests):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
-        proc = sp.run(shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30)
+        proc = sp.run(  # noqa: S603
+            shlex.split(cmd), stdout=sp.PIPE, stderr=sp.STDOUT, timeout=30
+        )
 
         result = proc.stdout.decode("utf-8")
 

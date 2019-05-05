@@ -27,7 +27,6 @@ Sphinx |objects.inv| files.
 
 import itertools as itt
 import re
-from pathlib import Path
 
 import pytest
 
@@ -35,10 +34,6 @@ import sphobjinv as soi
 
 
 pytestmark = [pytest.mark.api, pytest.mark.local]
-
-
-with (Path(__file__).resolve().parent / "testall_inv_paths.py").open() as f:
-    exec(f.read())
 
 
 @pytest.mark.parametrize(
@@ -169,10 +164,7 @@ def test_api_dataobjbytes_init(bytes_txt):
     assert b_dob == s_dob
 
     assert all(
-        [
-            getattr(b_dob, _) == getattr(b_dob.as_str, _).encode("utf-8")
-            for _ in b_mchdict
-        ]
+        getattr(b_dob, _) == getattr(b_dob.as_str, _).encode("utf-8") for _ in b_mchdict
     )
 
 
@@ -198,10 +190,8 @@ def test_api_dataobjstr_init(bytes_txt):
     assert b_dos == s_dos
 
     assert all(
-        [
-            getattr(s_dos, _) == getattr(b_dos.as_bytes, _).decode("utf-8")
-            for _ in s_mchdict
-        ]
+        getattr(s_dos, _) == getattr(b_dos.as_bytes, _).decode("utf-8")
+        for _ in s_mchdict
     )
 
 
@@ -459,12 +449,9 @@ def test_api_fuzzywuzzy_warningcheck():
         ), "Warning raised for unexpected reason"
 
 
-@pytest.mark.parametrize(
-    "inv_path", testall_inv_paths, ids=(lambda p: p.name)  # noqa: F821
-)
 @pytest.mark.testall
 def test_api_inventory_datafile_gen_and_reimport(
-    inv_path,
+    testall_inv_path,
     res_path,
     scratch_path,
     misc_info,
@@ -473,7 +460,7 @@ def test_api_inventory_datafile_gen_and_reimport(
     subtests,
 ):
     """Confirm integrated data_file export/import behavior."""
-    fname = inv_path.name
+    fname = testall_inv_path.name
     scr_fpath = scratch_path / fname
 
     # Drop most unless testall
