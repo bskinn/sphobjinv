@@ -18,3 +18,4 @@ tox
 twine
 wget
 -r requirements-flake8.txt
+-e .
