@@ -919,7 +919,7 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
-    from urllib.error import HTTPError
+    from urllib.error import HTTPError, URLError
 
     from sphobjinv.error import VersionError
     from sphobjinv.fileops import urlwalk
@@ -938,7 +938,7 @@ def inv_url(params):
     # Try URL as provided
     try:
         inv = Inventory(url=in_file)
-    except (HTTPError, ValueError, VersionError):
+    except (HTTPError, ValueError, VersionError, URLError):
         selective_print("No inventory at provided URL.", params)
     else:
         selective_print("Remote inventory found.", params)
