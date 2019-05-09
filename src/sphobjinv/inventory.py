@@ -165,7 +165,7 @@ class Inventory(object):
     #: of the elements is anything other than |DataObjStr|.
     objects = attr.ib(init=False, default=attr.Factory(list), repr=False)
 
-    #: :class:`SourceTypes` |Enum| value indicating the type of
+    #: :class:`~sphobjinv.enum.SourceTypes` |Enum| value indicating the type of
     #: source from which the instance was generated.
     source_type = attr.ib(init=False, default=None)
 

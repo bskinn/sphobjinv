@@ -34,7 +34,8 @@ class SourceTypes(Enum):
     Since |Enum| keys iterate in definition order, the
     definition order here defines the order in which |Inventory|
     objects attempt to parse a source object passed to
-    :class:`Inventory.__init__() <Inventory>` either as a positional argument
+    :class:`Inventory.__init__() <sphobjinv.inventory.Inventory>`
+    either as a positional argument
     or via the generic `source` keyword argument.
 
     This order **DIFFERS** from the documentation order, which is
@@ -43,9 +44,10 @@ class SourceTypes(Enum):
     """
 
     #: No source; |Inventory| was instantiated with
-    #: :data:`~Inventory.project` and :data:`~Inventory.version`
+    #: :data:`~sphobjinv.inventory.Inventory.project`
+    #: and :data:`~sphobjinv.inventory.Inventory.version`
     #: as empty strings and
-    #: :data:`~Inventory.objects` as an empty |list|.
+    #: :data:`~sphobjinv.inventory.Inventory.objects` as an empty |list|.
     Manual = "manual"
 
     #: Instantiation from a plaintext |objects.inv| |bytes|.
@@ -74,7 +76,8 @@ class HeaderFields(Enum):
     """|Enum| for various inventory-level data items.
 
     A subset of these |Enum| values is used in various Regex,
-    JSON, and string formatting contexts within :class:`Inventory`
+    JSON, and string formatting contexts within
+    class:`~sphobjinv.inventory.Inventory`
     and :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
 
     """
@@ -89,11 +92,13 @@ class HeaderFields(Enum):
     Count = "count"
 
     #: The |str| value of this |Enum| member is accepted as a root-level
-    #: key in a |dict| to be imported into an :class:`Inventory`.
+    #: key in a |dict| to be imported into an
+    #: :class:`~sphobjinv.inventory.Inventory`.
     #: The corresponding value in the |dict| may contain any arbitrary data.
     #: Its possible presence is accounted for in
     #: :data:`schema.json_schema <sphobjinv.schema.json_schema>`.
     #:
     #: The data associated with this key are **ignored**
-    #: during import into an :class:`Inventory`.
+    #: during import into an
+    #: :class:`~sphobjinv.inventory.Inventory`.
     Metadata = "metadata"
