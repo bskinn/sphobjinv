@@ -127,7 +127,7 @@ todo_include_todos = False
 
 
 # Epilogue for all files
-rst_epilog = """
+rst_epilog = r"""
 .. |extlink| image:: /_static/extlink.svg
 
 .. |dag| replace:: :math:`^\dagger`
