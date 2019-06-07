@@ -5,7 +5,7 @@ install:
  - pip install -U pip setuptools
  - pip install -U --force-reinstall -r requirements-travis.txt
  - if (( ( $PYTHON_MAJOR > 3 ) || ( $PYTHON_MAJOR == 3 && $PYTHON_MINOR >= 6 ) )); then pip install -r requirements-flake8.txt; fi
- - sh -c 'cd doc; env SPHINXOPTS=-Ean make html; mkdir scratch'
+ - sh -c 'cd doc; make html; mkdir scratch'
 language: python
 python:
  - 3.5
