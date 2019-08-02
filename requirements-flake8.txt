@@ -11,3 +11,4 @@ flake8-import-order
 flake8-pie
 flake8-rst-docstrings
 pep8-naming
+pydocstyle<4
