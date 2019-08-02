@@ -61,8 +61,6 @@ def testmodule(tmp_path):
     with testmod_path.open("w") as f:
         f.write(module_contents.decode())
 
-    # ~ with testmod_path.open() as f:
-    # ~ yield f
     yield testmod_path
 
 
