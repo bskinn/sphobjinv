@@ -31,7 +31,7 @@ import pytest
 from stdio_mgr import stdio_mgr
 
 
-CLI_TEST_TIMEOUT = 2
+CLI_TEST_TIMEOUT = 5
 
 p_instance_of = re.compile("^.*instance_of.*$", re.M)
 p_inventory = re.compile("^.*nventory.*$", re.I | re.M)
