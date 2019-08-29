@@ -85,6 +85,7 @@ def test_flake8_extensions(testmodule, subtests, tmp_path):
     mccabe                  C901
 
     (extensions)
+    flake8-2020             YTT101
     flake8-bandit           S110
     flake8-black            BLK100
     flake8-bugbear          B006
