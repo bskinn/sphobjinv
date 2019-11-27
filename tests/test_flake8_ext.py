@@ -85,7 +85,7 @@ def test_flake8_extensions(testmodule, subtests, tmp_path):
     mccabe                  C901
 
     (extensions)
-    flake8-2020             YTT101
+    flake8-2020             YTT303
     flake8-bandit           S110
     flake8-black            BLK100
     flake8-bugbear          B006
@@ -116,4 +116,4 @@ def test_flake8_extensions(testmodule, subtests, tmp_path):
         _.group(0) for _ in re.finditer(r"[A-Z]{1,3}[0-9]{1,3}", expected_errors)
     ):
         with subtests.test(id=code):
-            assert code in output
+            assert code in output, output
