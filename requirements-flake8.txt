@@ -1,5 +1,6 @@
 flake8>=3.7
 flake8-2020
+flake8-absolute-import
 flake8-bandit
 flake8-black
 flake8-bugbear
