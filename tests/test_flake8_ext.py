@@ -48,7 +48,7 @@ def test_flake8_version_output(subtests):
     plugins = [p.partition("-")[-1] for p in plugins]
 
     flake8_ver_output = sp.check_output(  # noqa: S607,S603
-        ["flake8", "--version"], text=True
+        ["flake8", "--version"], universal_newlines=True
     )  # noqa: S607,S603
 
     for i, p in enumerate(plugins):
