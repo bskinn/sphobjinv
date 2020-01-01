@@ -28,6 +28,7 @@ Sphinx |objects.inv| files.
 import re
 import urllib.request as urlrq
 import warnings
+from ssl import SSLContext
 from zlib import error as zlib_error
 
 import attr
@@ -612,7 +613,9 @@ class Inventory(object):
         """Import a file from a remote URL."""
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        resp = urlrq.urlopen(url, cafile=certifi.where())  # noqa: S310
+        resp = urlrq.urlopen(  # noqa: S310
+            url, context=SSLContext().load_verify_locations(cafile=certifi.where())
+        )
         b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
