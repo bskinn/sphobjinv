@@ -26,9 +26,9 @@ Sphinx |objects.inv| files.
 """
 
 import re
+import ssl
 import urllib.request as urlrq
 import warnings
-from ssl import SSLContext
 from zlib import error as zlib_error
 
 import attr
@@ -614,7 +614,7 @@ class Inventory(object):
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
         resp = urlrq.urlopen(  # noqa: S310
-            url, context=SSLContext().load_verify_locations(cafile=certifi.where())
+            url, context=ssl.create_default_context(cafile=certifi.where())
         )
         b_str = resp.read()
 
