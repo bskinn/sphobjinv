@@ -44,6 +44,21 @@ def skip_if_no_nonloc(pytestconfig):
         pytest.skip("'--nonloc' not specified")
 
 
+@pytest.mark.parametrize(
+    ["name", "url"],
+    [
+        ("flask", "http://flask.palletsprojects.com/en/1.1.x/objects.inv"),
+        ("h5py", "https://docs.h5py.org/en/stable/objects.inv"),
+    ],
+    ids=(lambda x: "" if "://" in x else x),
+)
+@pytest.mark.timeout(30)
+def test_api_inventory_known_header_required(name, url, subtests):
+    """Confirm URL load works on docs pages requiring HTTP header config."""
+    inv = soi.Inventory(url=url)
+    assert inv.count > 0
+
+
 @pytest.mark.testall
 @pytest.mark.timeout(30)
 def test_api_inventory_many_url_imports(
