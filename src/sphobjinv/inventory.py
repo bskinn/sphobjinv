@@ -183,6 +183,9 @@ class Inventory(object):
     #: zlib compression line for v2 |objects.inv| header
     header_zlib = "# The remainder of this file is compressed using zlib."
 
+    # Private class member for SSL context, since context creation is slow(?)
+    _sslcontext = ssl.create_default_context(cafile=certifi.where())
+
     @property
     def count(self):
         """Count of objects currently in inventory."""
@@ -613,9 +616,8 @@ class Inventory(object):
         """Import a file from a remote URL."""
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        resp = urlrq.urlopen(  # noqa: S310
-            url, context=ssl.create_default_context(cafile=certifi.where())
-        )
+        req = urlrq.Request(url, headers={"User-Agent": "Magic Browser"})
+        resp = urlrq.urlopen(req, context=self._sslcontext)  # noqa: S310
         b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
