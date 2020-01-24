@@ -18,6 +18,7 @@ both of the following will work to import the
     :maxdepth: 1
 
     data
+    enum
     error
     fileops
     inventory

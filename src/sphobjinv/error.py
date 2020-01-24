@@ -37,7 +37,3 @@ class VersionError(SphobjinvError):
     |objects.inv| files (see :doc:`here </syntax>`).
 
     """
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

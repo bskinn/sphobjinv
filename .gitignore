@@ -75,3 +75,6 @@ sphobjinv/test/scratch/*
 # Doctest scratch
 doc/scratch/*
 
+# Mutmut
+.mutmut-cache
+

@@ -94,7 +94,3 @@ def test_api_inventory_many_url_imports(
         cmp_data = soi.compress(data)
         soi.writebytes(str(scr_fpath), cmp_data)
         sphinx_load_test(scr_fpath)
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

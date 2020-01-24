@@ -25,6 +25,7 @@ Sphinx |objects.inv| files.
 
 """
 
+import io
 import os
 import zlib
 
@@ -53,9 +54,7 @@ def decompress(bstr):
         |objects.inv| content.
 
     """
-    import io
-
-    from .error import VersionError
+    from sphobjinv.error import VersionError
 
     def decompress_chunks(bstrm):
         """Handle chunk-wise zlib decompression.
@@ -115,7 +114,7 @@ def compress(bstr):
         content.
 
     """
-    from .re import pb_comments, pb_data
+    from sphobjinv.re import pb_comments, pb_data
 
     # Preconvert any DOS newlines to Unix
     s = bstr.replace(b"\r\n", b"\n")
@@ -138,7 +137,3 @@ def compress(bstr):
 
     # Return the composited bytestring
     return hb + dbc
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

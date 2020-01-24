@@ -66,19 +66,23 @@ changes the reporting threshold for the match score.
 For external references, just find the documentation wherever it lives on the web,
 and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
-cross-reference the ``redirect()`` function from Flask (see
-`here <http://flask.pocoo.org/docs/1.0/api/?highlight=redirect#flask.redirect>`__)::
+cross-reference the ``Axis`` class from matplotlib (see
+`here <https://matplotlib.org/api/axis_api.html?highlight=axis#module-matplotlib.axis>`__)::
 
-    $ sphobjinv suggest http://flask.pocoo.org/docs/1.0/views/#method-hints redirect -su
+    $ sphobjinv suggest https://matplotlib.org/api/ticker_api.html axis -su
 
     No inventory at provided URL.
-    Attempting "http://flask.pocoo.org/docs/1.0/views/objects.inv" ...
-    Attempting "http://flask.pocoo.org/docs/1.0/objects.inv" ...
+    Attempting "https://matplotlib.org/api/ticker_api.html/objects.inv" ...
+    Attempting "https://matplotlib.org/api/objects.inv" ...
+    Attempting "https://matplotlib.org/objects.inv" ...
     Remote inventory found.
 
-      Name                            Score
-    -------------------------------  -------
-    :py:function:`flask.redirect`      90
+
+      Name                           Score
+    ------------------------------  -------
+    :py:module:`matplotlib.axis`      90
+    :std:doc:`api/axis_api`           90
+    :std:label:`axis-container`       90
 
 .. end shell command
 
@@ -111,7 +115,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.0, 195 objects>
+    <Inventory (fname_zlib): sphobjinv v2.0, 197 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version

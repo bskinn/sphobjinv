@@ -21,7 +21,7 @@ import re
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, osp.abspath(osp.join(os.pardir, os.pardir)))
+#sys.path.insert(0, osp.abspath(osp.join(os.pardir, os.pardir)))
 
 # -- General configuration ------------------------------------------------
 
@@ -127,7 +127,7 @@ todo_include_todos = False
 
 
 # Epilogue for all files
-rst_epilog = """
+rst_epilog = r"""
 .. |extlink| image:: /_static/extlink.svg
 
 .. |dag| replace:: :math:`^\dagger`
@@ -168,7 +168,7 @@ rst_epilog = """
 
 .. |license_txt| replace:: LICENSE.txt
 
-.. _license_txt: https://github.com/bskinn/sphobjinv/blob/dev/LICENSE.txt
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 

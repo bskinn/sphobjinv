@@ -31,7 +31,7 @@ import pytest
 from stdio_mgr import stdio_mgr
 
 
-CLI_TEST_TIMEOUT = 2
+CLI_TEST_TIMEOUT = 5
 
 p_instance_of = re.compile("^.*instance_of.*$", re.M)
 p_inventory = re.compile("^.*nventory.*$", re.I | re.M)
@@ -166,7 +166,3 @@ def test_cli_suggest_from_page_withanchor(run_cmdline_test):
     with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
         assert p_inventory.search(out_.getvalue())
-
-
-if __name__ == "__main__":
-    print("Module not executable.")

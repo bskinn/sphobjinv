@@ -302,24 +302,15 @@ def test_cli_suggest_withscoreandindex(run_cmdline_test, res_cmp):
         re.search("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", out_.getvalue(), re.M)
 
 
+@pytest.mark.parametrize(
+    ["inp", "flags", "nlines"], [("", "-at", 57), ("y\n", "-t", 58), ("n\n", "-t", 4)]
+)  # Extra line for input() query in the "y\n" case
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-def test_cli_suggest_long_list(run_cmdline_test, res_cmp, subtests):
+def test_cli_suggest_long_list(inp, flags, nlines, run_cmdline_test, res_cmp):
     """Confirm with_index suggest works."""
-    with stdio_mgr() as (in_, out_, err_):
-        with subtests.test(msg="with_all_arg"):
-            run_cmdline_test(["suggest", res_cmp, "instance", "-at", "1"])
-            assert out_.getvalue().count("\n") == 57
-
-    with stdio_mgr("y\n") as (in_, out_, err_):
-        with subtests.test(msg="no_arg_confirm_print"):
-            run_cmdline_test(["suggest", res_cmp, "instance", "-t", "1"])
-            # Extra newline due to input() query
-            assert out_.getvalue().count("\n") == 58
-
-    with stdio_mgr("n\n") as (in_, out_, err_):
-        with subtests.test(msg="no_arg_cancel_print"):
-            run_cmdline_test(["suggest", res_cmp, "instance", "-t", "1"])
-            assert out_.getvalue().count("\n") == 4
+    with stdio_mgr(inp) as (in_, out_, err_):
+        run_cmdline_test(["suggest", res_cmp, "instance", flags, "1"])
+        assert nlines == out_.getvalue().count("\n")
 
 
 # ====  EXPECT-FAIL TESTS  ====
@@ -413,7 +404,3 @@ def test_clifail_convert_localfile_as_url(
     with subtests.test(msg="url-style"):
         file_url = "file:///" + str(in_path.resolve())
         run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
-
-
-if __name__ == "__main__":
-    print("Module not executable.")
