@@ -44,7 +44,14 @@ from sphobjinv.schema import json_schema
 from sphobjinv.zlib import decompress
 
 
-@attr.s(slots=True, cmp=False)
+# Cope with 'cmp' argument deprecation in attrs 19.2
+try:
+    _attr_wrapper = attr.s(slots=True, eq=False)
+except TypeError:  # pragma: no cover
+    _attr_wrapper = attr.s(slots=True, cmp=False)
+
+
+@_attr_wrapper
 class Inventory(object):
     r"""Entire contents of an |objects.inv| inventory.
 
