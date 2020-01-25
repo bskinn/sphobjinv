@@ -565,6 +565,6 @@ def isphx_subst(s):
     return isphx_objpath.format(isphx_objstr.format(s)) if isphx_local else None
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.5', isphx_subst('python')),
-    'sphinx': ('http://www.sphinx-doc.org/en/stable', isphx_subst('sphinx')),
+    'python': ('https://docs.python.org/3', isphx_subst('python')),
+    'sphinx': ('http://www.sphinx-doc.org/en/master', isphx_subst('sphinx')),
     }
