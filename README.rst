@@ -48,14 +48,12 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
 
-      Name                                                        Score
-    -----------------------------------------------------------  -------
-    :py:attribute:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :py:function:`sphobjinv.cmdline.getparser`                     50
-    :py:attribute:`sphobjinv.data.DataObjBytes.as_str`             50
-    :py:attribute:`sphobjinv.data.DataObjStr.as_str`               50
-    :py:attribute:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:attribute:`sphobjinv.inventory.Inventory.objects_rst`      50
+      Name                                                     Score
+    --------------------------------------------------------  -------
+    :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
+    :py:function:`sphobjinv.cmdline.getparser`                  50
+    :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
+    :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
 
 .. end shell command
 
@@ -115,7 +113,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.0, 197 objects>
+    <Inventory (fname_zlib): sphobjinv v2.0, 181 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
