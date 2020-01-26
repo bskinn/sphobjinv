@@ -139,7 +139,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2019
+Copyright (c) Brian Skinn 2016-2020
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
 for full license terms.

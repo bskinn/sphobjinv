@@ -69,7 +69,7 @@ The options for the parent |soi| command are:
     <BLANKLINE>
     sphobjinv v2.0.1.dev1
     <BLANKLINE>
-    Copyright (c) Brian Skinn 2016-2019
+    Copyright (c) Brian Skinn 2016-2020
     License: The MIT License
     <BLANKLINE>
     Bug reports & feature requests: https://github.com/bskinn/sphobjinv
