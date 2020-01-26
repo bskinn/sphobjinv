@@ -40,6 +40,7 @@ setup(
     version=__version__,
     description="Sphinx objects.inv Inspection/Manipulation Tool",
     long_description=readme(),
+    long_description_content_type="text/x-rst",
     url="https://github.com/bskinn/sphobjinv",
     license="MIT License",
     author="Brian Skinn",
