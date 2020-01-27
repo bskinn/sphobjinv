@@ -3,18 +3,18 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
 **Current Development Version:**
 
-.. image:: https://travis-ci.org/bskinn/sphobjinv.svg?branch=master
-    :target: https://travis-ci.org/bskinn/sphobjinv
+.. image:: https://img.shields.io/travis/com/bskinn/sphobjinv?label=travis-ci&logo=travis
+    :target: https://travis-ci.com/bskinn/sphobjinv
 
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
 **Most Recent Stable Release:**
 
-.. image:: https://img.shields.io/pypi/v/sphobjinv.svg
+.. image:: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi
     :target: https://pypi.org/project/sphobjinv
 
-.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg
+.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
 
 **Info:**
 
@@ -25,7 +25,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/ambv/black
+    :target: https://github.com/psf/black
 
 ----
 
