@@ -3,18 +3,18 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
 **Current Development Version:**
 
-.. image:: https://travis-ci.org/bskinn/sphobjinv.svg?branch=master
-    :target: https://travis-ci.org/bskinn/sphobjinv
+.. image:: https://img.shields.io/travis/com/bskinn/sphobjinv?label=travis-ci&logo=travis
+    :target: https://travis-ci.com/bskinn/sphobjinv
 
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
 **Most Recent Stable Release:**
 
-.. image:: https://img.shields.io/pypi/v/sphobjinv.svg
+.. image:: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi
     :target: https://pypi.org/project/sphobjinv
 
-.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg
+.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
 
 **Info:**
 
@@ -25,7 +25,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/ambv/black
+    :target: https://github.com/psf/black
 
 ----
 
@@ -48,14 +48,12 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
 
-      Name                                                        Score
-    -----------------------------------------------------------  -------
-    :py:attribute:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :py:function:`sphobjinv.cmdline.getparser`                     50
-    :py:attribute:`sphobjinv.data.DataObjBytes.as_str`             50
-    :py:attribute:`sphobjinv.data.DataObjStr.as_str`               50
-    :py:attribute:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:attribute:`sphobjinv.inventory.Inventory.objects_rst`      50
+      Name                                                     Score
+    --------------------------------------------------------  -------
+    :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
+    :py:function:`sphobjinv.cmdline.getparser`                  50
+    :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
+    :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
 
 .. end shell command
 
@@ -115,7 +113,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.0, 197 objects>
+    <Inventory (fname_zlib): sphobjinv v2.0, 181 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
@@ -141,7 +139,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2019
+Copyright (c) Brian Skinn 2016-2020
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
 for full license terms.

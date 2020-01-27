@@ -3,8 +3,8 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 
-with (Path(".") / "src" / "sphobjinv" / "version.py").open() as f:
-    exec(f.read())
+exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"))
+
 
 NAME = "sphobjinv"
 
@@ -13,8 +13,7 @@ version_override = "2.0"
 
 
 def readme():
-    with open("README.rst", "r") as f:
-        content = f.read()
+    content = Path("README.rst").read_text(encoding="utf-8")
 
     new_ver = version_override if version_override else __version__
 
@@ -41,6 +40,7 @@ setup(
     version=__version__,
     description="Sphinx objects.inv Inspection/Manipulation Tool",
     long_description=readme(),
+    long_description_content_type="text/x-rst",
     url="https://github.com/bskinn/sphobjinv",
     license="MIT License",
     author="Brian Skinn",
@@ -65,6 +65,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Utilities",
         "Development Status :: 5 - Production/Stable",
     ],

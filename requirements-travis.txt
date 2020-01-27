@@ -3,15 +3,15 @@ certifi
 codecov
 coverage
 fuzzywuzzy>=0.3
-jsonschema==2.6
+jsonschema
 pytest>=4.4.0
 pytest-cov
 pytest-ordering
 pytest-subtests
 pytest-timeout
-sphinx==1.7.6
+sphinx==2.3.1
 sphinx-issues
-sphinx-rtd-theme==0.4.1
+sphinx-rtd-theme
 stdio-mgr>=1.0.1
 tox
 -e .

@@ -18,6 +18,6 @@ script:
  - pytest --cov=src --testall --nonloc
  - tox -e sdist_install
  - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then tox -e flake8; else echo "No flake8."; fi
- - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 6 )); then sh -c 'cd doc; make doctest'; else echo "No doctest."; fi
+ - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then sh -c 'cd doc; make doctest'; else echo "No doctest."; fi
  - if (( $PYTHON_MAJOR == 3 && $PYTHON_MINOR == 7 )); then codecov; else echo "No codecov."; fi
 
