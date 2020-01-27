@@ -15,7 +15,7 @@ Sphinx |objects.inv| files.
     17 May 2016
 
 **Copyright**
-    \(c) Brian Skinn 2016-2019
+    \(c) Brian Skinn 2016-2020
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -33,8 +33,13 @@ Sphinx |objects.inv| files.
 import argparse as ap
 import os
 import sys
+from json.decoder import JSONDecodeError
 
-from . import __version__
+from sphobjinv import __version__
+from sphobjinv.fileops import readjson, writebytes, writejson
+from sphobjinv.inventory import Inventory as Inv
+from sphobjinv.zlib import compress
+
 
 # ### Version arg and helpers
 #: Optional argument name for use with the base
@@ -43,8 +48,7 @@ VERSION = "version"
 
 #: Version &c. output blurb
 VER_TXT = (
-    "\nsphobjinv v{0}\n\n".format(__version__)
-    + "Copyright (c) Brian Skinn 2016-2019\n"
+    "\nsphobjinv v{0}\n\n".format(__version__) + "Copyright (c) Brian Skinn 2016-2020\n"
     "License: The MIT License\n\n"
     "Bug reports & feature requests:"
     " https://github.com/bskinn/sphobjinv\n"
@@ -154,8 +158,7 @@ ALL = "all"
 # ### Helper strings
 #: Help text for the :data:`CONVERT` subparser
 HELP_CO_PARSER = (
-    "Convert intersphinx inventory to zlib-compressed, "
-    "plaintext, or JSON formats."
+    "Convert intersphinx inventory to zlib-compressed, " "plaintext, or JSON formats."
 )
 
 #: Help text for the :data:`SUGGEST` subparser
@@ -254,7 +257,7 @@ def yesno_prompt(prompt):
     """
     resp = ""
     while not (resp.lower() == "n" or resp.lower() == "y"):
-        resp = input(prompt)
+        resp = input(prompt)  # noqa: S322
     return resp
 
 
@@ -301,16 +304,10 @@ def getparser():
     sprs.required = False
 
     spr_convert = sprs.add_parser(
-        CONVERT,
-        aliases=[CONVERT[:2]],
-        help=HELP_CO_PARSER,
-        description=HELP_CO_PARSER,
+        CONVERT, aliases=[CONVERT[:2]], help=HELP_CO_PARSER, description=HELP_CO_PARSER
     )
     spr_suggest = sprs.add_parser(
-        SUGGEST,
-        aliases=[SUGGEST[:2]],
-        help=HELP_SU_PARSER,
-        description=HELP_SU_PARSER,
+        SUGGEST, aliases=[SUGGEST[:2]], help=HELP_SU_PARSER, description=HELP_SU_PARSER
     )
 
     # ### Args for conversion subparser
@@ -334,9 +331,7 @@ def getparser():
     )
 
     # Mutually exclusive group for --expand/--contract
-    gp_expcont = spr_convert.add_argument_group(
-        title="URI/display name " "conversions"
-    )
+    gp_expcont = spr_convert.add_argument_group(title="URI/display name " "conversions")
     meg_expcont = gp_expcont.add_mutually_exclusive_group()
     meg_expcont.add_argument(
         "-e",
@@ -379,9 +374,7 @@ def getparser():
     )
 
     # ### Args for suggest subparser
-    spr_suggest.add_argument(
-        INFILE, help="Path to inventory file to be searched"
-    )
+    spr_suggest.add_argument(INFILE, help="Path to inventory file to be searched")
     spr_suggest.add_argument(SEARCH, help="Search term for object suggestions")
     spr_suggest.add_argument(
         "-" + ALL[0],
@@ -394,8 +387,7 @@ def getparser():
     spr_suggest.add_argument(
         "-" + INDEX[0],
         "--" + INDEX,
-        help="Include Inventory.objects list indices "
-        "with the search results",
+        help="Include Inventory.objects list indices " "with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
@@ -439,7 +431,7 @@ def resolve_inpath(in_path):
         |str| -- Path to desired input file
 
     Returns
-    ------
+    -------
     abs_path
 
         |str| -- Absolute path to indicated file
@@ -551,13 +543,10 @@ def import_infile(in_path):
         otherwise, |None|
 
     """
-    from .fileops import readjson
-    from .inventory import Inventory as Inv
-
     # Try general import, for zlib or plaintext files
     try:
         inv = Inv(in_path)
-    except Exception:
+    except AttributeError:
         pass  # Punt to JSON attempt
     else:
         return inv
@@ -565,7 +554,7 @@ def import_infile(in_path):
     # Maybe it's JSON
     try:
         inv = Inv(readjson(in_path))
-    except Exception:
+    except JSONDecodeError:
         return None
     else:
         return inv
@@ -609,8 +598,6 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writebytes
-
     b_str = inv.data_file(expand=expand, contract=contract)
     writebytes(path, b_str.replace(b"\n", os.linesep.encode("utf-8")))
 
@@ -650,9 +637,6 @@ def write_zlib(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writebytes
-    from .zlib import compress
-
     b_str = inv.data_file(expand=expand, contract=contract)
     bz_str = compress(b_str)
     writebytes(path, bz_str)
@@ -696,8 +680,6 @@ def write_json(inv, path, *, expand=False, contract=False):
         If both `expand` and `contract` are |True|
 
     """
-    from .fileops import writejson
-
     json_dict = inv.json_dict(expand=expand, contract=contract)
     writejson(path, json_dict)
 
@@ -746,11 +728,7 @@ def do_convert(inv, in_path, params):
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
-    if (
-        os.path.isfile(out_path)
-        and not params[QUIET]
-        and not params[OVERWRITE]
-    ):
+    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
             print("\nExiting...")
@@ -759,17 +737,13 @@ def do_convert(inv, in_path, params):
     # Write the output file
     try:
         if mode == ZLIB:
-            write_zlib(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
-            )
+            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
         if mode == PLAIN:
             write_plaintext(
                 inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
             )
         if mode == JSON:
-            write_json(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
-            )
+            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)
@@ -828,49 +802,43 @@ def do_suggest(inv, params):
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
-        resp = yesno_prompt(
-            "Display all {0} results ".format(len(results)) + "(Y/N)? "
-        )
+        resp = yesno_prompt("Display all {0} results ".format(len(results)) + "(Y/N)? ")
         if resp.lower() == "n":
             print("\nExiting...")
             sys.exit(0)
 
     # Field widths in output
-    SCORE_WIDTH = 7
-    INDEX_WIDTH = 7
+    score_width = 7
+    index_width = 7
 
     if with_index or with_score:
-        RST_WIDTH = max(len(_[0]) for _ in results)
+        rst_width = max(len(_[0]) for _ in results)
     else:
-        RST_WIDTH = max(len(_) for _ in results)
+        rst_width = max(len(_) for _ in results)
 
-    RST_WIDTH += 2
+    rst_width += 2
 
     if with_index:
         if with_score:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
-                RST_WIDTH, SCORE_WIDTH, INDEX_WIDTH
+                rst_width, score_width, index_width
             )
             print("")
             print(fmt.format("  Name", "Score", "Index"))
-            print(
-                fmt.format(
-                    "-" * RST_WIDTH, "-" * SCORE_WIDTH, "-" * INDEX_WIDTH
-                )
-            )
+            print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, INDEX_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, index_width)
             print("")
             print(fmt.format("  Name", "Index"))
-            print(fmt.format("-" * RST_WIDTH, "-" * INDEX_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(RST_WIDTH, SCORE_WIDTH)
+            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, score_width)
             print("")
             print(fmt.format("  Name", "Score"))
-            print(fmt.format("-" * RST_WIDTH, "-" * SCORE_WIDTH))
+            print(fmt.format("-" * rst_width, "-" * score_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
             print("\n".join(str(_) for _ in results))
@@ -951,8 +919,11 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
-    from .fileops import urlwalk
-    from .inventory import Inventory
+    from urllib.error import HTTPError, URLError
+
+    from sphobjinv.error import VersionError
+    from sphobjinv.fileops import urlwalk
+    from sphobjinv.inventory import Inventory
 
     in_file = params[INFILE]
 
@@ -967,7 +938,7 @@ def inv_url(params):
     # Try URL as provided
     try:
         inv = Inventory(url=in_file)
-    except Exception:
+    except (HTTPError, ValueError, VersionError, URLError):
         selective_print("No inventory at provided URL.", params)
     else:
         selective_print("Remote inventory found.", params)
@@ -979,7 +950,7 @@ def inv_url(params):
             selective_print('Attempting "{0}" ...'.format(url), params)
             try:
                 inv = Inventory(url=url)
-            except Exception:
+            except (ValueError, HTTPError):
                 pass
             else:
                 selective_print("Remote inventory found.", params)

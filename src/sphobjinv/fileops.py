@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2019
+    \(c) Brian Skinn 2016-2020
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -146,7 +146,3 @@ def urlwalk(url):
         yield "/".join(urlparts)
         urlparts.pop()
         urlparts.pop()
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

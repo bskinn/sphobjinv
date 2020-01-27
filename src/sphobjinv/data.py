@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     7 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2019
+    \(c) Brian Skinn 2016-2020
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -29,14 +29,6 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 
 import attr
-
-
-# Handle attr's convert --> converter in v17.4
-_attr_ver = list(int(_) for _ in attr.__version__.split("."))
-if _attr_ver[0] > 17 or (_attr_ver[0] == 17 and _attr_ver[1] > 3):
-    CONVERTER = "converter"  # pragma: no cover
-else:
-    CONVERTER = "convert"  # pragma: no cover
 
 
 class DataFields(Enum):
@@ -121,9 +113,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
         """Return pretty string representation."""
         fmt_str = "<{0}:: :{1}:{2}:`{3}`>"
 
-        return fmt_str.format(
-            type(self).__name__, self.domain, self.role, self.name
-        )
+        return fmt_str.format(type(self).__name__, self.domain, self.role, self.name)
 
     @property
     @abstractmethod
@@ -379,7 +369,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         Parameters
         ----------
-        **kwargs
+        kwargs
 
             |str| or |bytes| -- Revised value(s) to use in the new
             instance for the passed keyword argument(s).
@@ -405,12 +395,12 @@ class DataObjStr(SuperDataObj):
     uri_abbrev = "$"
     dispname_abbrev = "-"
 
-    name = attr.ib(**{CONVERTER: _utf8_decode})
-    domain = attr.ib(**{CONVERTER: _utf8_decode})
-    role = attr.ib(**{CONVERTER: _utf8_decode})
-    priority = attr.ib(**{CONVERTER: _utf8_decode})
-    uri = attr.ib(**{CONVERTER: _utf8_decode})
-    dispname = attr.ib(**{CONVERTER: _utf8_decode})
+    name = attr.ib(converter=_utf8_decode)
+    domain = attr.ib(converter=_utf8_decode)
+    role = attr.ib(converter=_utf8_decode)
+    priority = attr.ib(converter=_utf8_decode)
+    uri = attr.ib(converter=_utf8_decode)
+    dispname = attr.ib(converter=_utf8_decode)
 
     as_bytes = attr.ib(repr=False)
 
@@ -444,12 +434,12 @@ class DataObjBytes(SuperDataObj):
     uri_abbrev = b"$"
     dispname_abbrev = b"-"
 
-    name = attr.ib(**{CONVERTER: _utf8_encode})
-    domain = attr.ib(**{CONVERTER: _utf8_encode})
-    role = attr.ib(**{CONVERTER: _utf8_encode})
-    priority = attr.ib(**{CONVERTER: _utf8_encode})
-    uri = attr.ib(**{CONVERTER: _utf8_encode})
-    dispname = attr.ib(**{CONVERTER: _utf8_encode})
+    name = attr.ib(converter=_utf8_encode)
+    domain = attr.ib(converter=_utf8_encode)
+    role = attr.ib(converter=_utf8_encode)
+    priority = attr.ib(converter=_utf8_encode)
+    uri = attr.ib(converter=_utf8_encode)
+    dispname = attr.ib(converter=_utf8_encode)
 
     as_str = attr.ib(repr=False)
 
@@ -474,7 +464,3 @@ class DataObjBytes(SuperDataObj):
     def _data_line_postprocess(self, s):
         """Encode to bytes before data_line return."""
         return s.encode("utf-8")
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

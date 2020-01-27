@@ -7,9 +7,14 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-### Unreleased Changes
+### [2.0.1] - 2020-01-26
 
-...
+#### Fixed
+
+ * attr.s usage on Inventory changed to use eq=False where possible,
+   per the deprecation of the cmp argument
+ * URL inventory retrieval now sends a User-Agent header, to avoid
+   403 FORBIDDEN errors on some docs servers
 
 
 ### [2.0.1rc1] - 2019-02-01

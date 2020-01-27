@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2019
+    \(c) Brian Skinn 2016-2020
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -25,6 +25,7 @@ Sphinx |objects.inv| files.
 
 """
 
+import io
 import os
 import zlib
 
@@ -53,16 +54,15 @@ def decompress(bstr):
         |objects.inv| content.
 
     """
-    import io
-
-    from .error import VersionError
+    from sphobjinv.error import VersionError
 
     def decompress_chunks(bstrm):
         """Handle chunk-wise zlib decompression.
 
         Internal function pulled from intersphinx.py@v1.4.1:
         https://github.com/sphinx-doc/sphinx/blob/1.4.1/sphinx/
-          ext/intersphinx.py#L79-L124.
+        ext/intersphinx.py#L79-L124.
+
         BUFSIZE taken as the default value from intersphinx signature
         Modified slightly to take the stream as a parameter,
         rather than assuming one from the parent namespace.
@@ -89,11 +89,8 @@ def decompress(bstr):
     for chunk in decompress_chunks(strm):
         out_b += chunk
 
-    # Replace newlines with the OS-local newlines
-    out_b = out_b.replace(b"\n", os.linesep.encode("utf-8"))
-
-    # Return the newline-composited result
-    return out_b
+    # Replace newlines with the OS-local newlines, and return
+    return out_b.replace(b"\n", os.linesep.encode("utf-8"))
 
 
 def compress(bstr):
@@ -117,7 +114,7 @@ def compress(bstr):
         content.
 
     """
-    from .re import pb_comments, pb_data
+    from sphobjinv.re import pb_comments, pb_data
 
     # Preconvert any DOS newlines to Unix
     s = bstr.replace(b"\r\n", b"\n")
@@ -140,7 +137,3 @@ def compress(bstr):
 
     # Return the composited bytestring
     return hb + dbc
-
-
-if __name__ == "__main__":  # pragma: no cover
-    print("Module not executable.")

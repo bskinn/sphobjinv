@@ -67,9 +67,9 @@ The options for the parent |soi| command are:
 
     >>> cli_run('sphobjinv --version')
     <BLANKLINE>
-    sphobjinv v2.0.1rc1
+    sphobjinv v2.0.1
     <BLANKLINE>
-    Copyright (c) Brian Skinn 2016-2019
+    Copyright (c) Brian Skinn 2016-2020
     License: The MIT License
     <BLANKLINE>
     Bug reports & feature requests: https://github.com/bskinn/sphobjinv
