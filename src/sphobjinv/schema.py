@@ -56,7 +56,7 @@ json_schema = {
         "metadata": {},
     },
     "patternProperties": {
-        "^\\d+": {
+        r"^\d+": {
             "type": "object",
             "properties": subschema_json,
             "additionalProperties": False,

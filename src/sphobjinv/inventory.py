@@ -513,7 +513,7 @@ class Inventory(object):
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
         # result --> (rst, score, index)
-        p_idx = re.compile("^(\\d+)\\s+(.+?)\\s+(\\d+)$")
+        p_idx = re.compile(r"^(\d+)\s+(.+?)\s+(\d+)$")
         results = [
             (m.group(2), int(m.group(3)), int(m.group(1)))
             for m in map(p_idx.match, results)
