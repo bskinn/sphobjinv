@@ -108,13 +108,9 @@ If download of JSON files by URL is desirable, please
 
 **Usage**
 
-.. doctest:: convert_usage
+.. command-output:: sphobjinv convert --help
+    :ellipsis: 4
 
-    >>> cli_run('sphobjinv convert --help', head=4)
-    usage: sphobjinv convert [-h] [-e | -c] [-o] [-q] [-u]
-                             {zlib,plain,json} infile [outfile]
-    <BLANKLINE>
-    Convert intersphinx inventory to zlib-compressed, plaintext, or JSON formats.
 
 **Positional Arguments**
 
