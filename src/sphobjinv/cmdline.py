@@ -18,10 +18,10 @@ Sphinx |objects.inv| files.
     \(c) Brian Skinn 2016-2020
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms
@@ -53,7 +53,7 @@ VER_TXT = (
     "Bug reports & feature requests:"
     " https://github.com/bskinn/sphobjinv\n"
     "Documentation:"
-    " http://sphobjinv.readthedocs.io\n"
+    " https://sphobjinv.readthedocs.io\n"
 )
 
 # ### Subparser selectors and argparse param for storing subparser name

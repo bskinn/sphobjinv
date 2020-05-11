@@ -71,10 +71,10 @@ can be found at the GitHub repo
 
             The `role` values here must be the **full** role names ("`block directives`"),
             described as the "directives" in the `Sphinx documentation for
-            domains <http://www.sphinx-doc.org/en/1.7/domains.html#the-python-domain>`__,
+            domains <https://www.sphinx-doc.org/en/1.7/domains.html#the-python-domain>`__,
             and not the abbreviated forms ("`inline directives`")
             `used when constructing cross-references
-            <http://www.sphinx-doc.org/en/1.7/domains.html#cross-referencing-python-objects>`__.
+            <https://www.sphinx-doc.org/en/1.7/domains.html#cross-referencing-python-objects>`__.
 
             Thus, for example, a :class:`~sphobjinv.data.DataObjStr` corresponding
             to a method on a class should be constructed with
@@ -146,10 +146,10 @@ can be found at the GitHub repo
                 'python': ('https://docs.python.org/3.5', None),
 
                 # Django puts its objects.inv file in a non-standard location
-                'django': ('http://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
+                'django': ('https://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
 
                 # Drawing the Sphinx objects.inv from a local copy, but referring to the 1.7 web docs
-                'sphinx': ('http://www.sphinx-doc.org/en/1.7/', '/path/to/local/objects.inv',
+                'sphinx': ('https://www.sphinx-doc.org/en/1.7/', '/path/to/local/objects.inv',
             }
 
     .. MAKE SURE TO UPDATE THESE TWO STEP REFERENCES IF NUMBERING CHANGES!!

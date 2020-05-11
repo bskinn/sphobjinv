@@ -154,5 +154,5 @@ as in :obj:`This is join! <str.join>`:
 
 .. |defdom| replace:: default domain
 
-.. _defdom: http://www.sphinx-doc.org/en/stable/domains.html
+.. _defdom: https://www.sphinx-doc.org/en/stable/domains.html
 
