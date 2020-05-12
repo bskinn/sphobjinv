@@ -46,7 +46,7 @@ accelerates the the "suggest" functionality; see
 :doc:`here <levenshtein>` for more information.
 
 The project source repository is on GitHub: `bskinn/sphobjinv
-<https://www.github.com/bskinn/sphobjinv>`__.
+<https://github.com/bskinn/sphobjinv>`__.
 
 
 .. Contents
