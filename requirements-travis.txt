@@ -12,6 +12,7 @@ pytest-timeout
 sphinx==2.3.1
 sphinx-issues
 sphinx-rtd-theme
+sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox
 -e .

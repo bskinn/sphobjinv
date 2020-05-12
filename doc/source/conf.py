@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.programoutput",
     "sphinx_issues",
 ]
 
@@ -63,7 +64,9 @@ pygments_style = "sphinx"
 # Ignore package prefix when sorting modules
 modindex_common_prefix = ["sphobjinv."]
 
-# Common epilogue
+
+# -- Common epilogue definition  ------------------------------------------------
+
 rst_epilog = r"""
 .. |extlink| image:: /_static/extlink.svg
 
@@ -135,7 +138,7 @@ rst_epilog = r"""
 
 .. |isphxmap| replace:: ``intersphinx_mapping``
 
-.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
+.. _isphxmap: https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_mapping
 
 .. |soi| raw:: html
 
@@ -147,7 +150,10 @@ rst_epilog = r"""
 
 """
 
-# Universal doctest setup code
+
+# -- doctest setup code  --------------------------------------------
+
+
 doctest_global_setup = """\
 import os
 from pathlib import Path
@@ -243,8 +249,13 @@ os.chdir(str(_start_dir))
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "sphinx": ("http://www.sphinx-doc.org/en/master", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master", None),
 }
+
+
+# -- Options for linkcheck  --------------------------------------------------
+
+linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -132,7 +132,7 @@ for more details.
 Full documentation is hosted at
 `Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
 
-Available on `PyPI <https://pypi.python.org/pypi/sphobjinv>`__
+Available on `PyPI <https://pypi.org/project/sphobjinv>`__
 (``pip install sphobjinv``).
 
 Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
