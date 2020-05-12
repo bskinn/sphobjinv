@@ -7,6 +7,13 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [unreleased changes]
+
+#### Refactored
+
+ * Patterns in regular expressions are now defined with raw strings
+   to improve readability
+
 ### [2.0.1] - 2020-01-26
 
 #### Fixed
