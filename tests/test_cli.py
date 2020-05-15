@@ -27,6 +27,8 @@ Sphinx |objects.inv| files.
 
 import json
 import re
+import shlex
+import subprocess as sp  # noqa: S404
 from itertools import product
 from pathlib import Path
 
@@ -36,11 +38,25 @@ from stdio_mgr import stdio_mgr
 from sphobjinv import Inventory as Inv
 
 CLI_TEST_TIMEOUT = 2
+CLI_CMDS = ["sphobjinv", "python -m sphobjinv"]
 
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
 # ====  EXPECT-GOOD MISC TESTS  ====
+
+
+@pytest.mark.timeout(CLI_TEST_TIMEOUT)
+@pytest.mark.parametrize("cmd", CLI_CMDS)
+def test_cli_invocations(cmd):
+    """Confirm that actual shell invocations do not error."""
+    runargs = shlex.split(cmd)
+    runargs.append("--help")
+
+    out = sp.check_output(runargs).decode()  # noqa: S603
+
+    assert "sphobjinv" in out
+    assert "suggest" in out
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
