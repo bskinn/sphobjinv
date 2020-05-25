@@ -10,7 +10,7 @@ pr:
 
 stages:
 - stage: code_quality
-  displayName: Checking code quality
+  displayName: Check blocking code quality metrics
 
   jobs:
   - job: flake8
@@ -46,7 +46,7 @@ stages:
 
 
 - stage: tests
-  displayName: Running tests
+  displayName: Run tests
 
   jobs:
   - template: azure-coretest.yml

@@ -33,7 +33,7 @@ jobs:
           displayName: Show full environment contents
 
         - script: cd doc; make html; mkdir scratch
-          displayName: Build  the documentation
+          displayName: Build  the documentation for tests to work against
 
         - script: pytest --testall --nonloc
           displayName: Run pytest (Python ${{ coalesce(python.value.spec, python.key) }})
