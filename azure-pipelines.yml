@@ -72,19 +72,19 @@ stages:
         displayName: Run doctests
 
 
-    - job: testdir_coverage
-      pool:
-        vmImage: 'Ubuntu-latest'
-      steps:
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '3.8'
+  - job: testdir_coverage
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
   
-        - script: pip install -r requirements-ci.txt
-          displayName: Install CI requirements
+      - script: pip install -r requirements-ci.txt
+        displayName: Install CI requirements
   
-        - script: pytest --cov=.
-          displayName: Run pytest with coverage
+      - script: pytest --cov=.
+        displayName: Run pytest with coverage
   
-        - script: coverage report --include="tests/*" --fail-under=100
-          displayName: Check 100% test execution
+      - script: coverage report --include="tests/*" --fail-under=100
+        displayName: Check 100% test execution
