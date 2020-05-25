@@ -1,0 +1,90 @@
+trigger:
+  - master
+  - release-*
+
+pr:
+  branches:
+    include:
+    - master
+
+
+stages:
+- stage: Code quality
+  jobs:
+  - job: flake8
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+
+      - script: pip install -U tox
+        displayName: Install tox
+
+      - script: pip install -r requirements-flake8.txt
+        displayName: Install flake8 & plugins
+
+      - script: tox -e flake8
+        displayName: Lint the codebase
+
+  - job: interrogate
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.8'
+
+      - script: pip install interrogate
+        displayName: Install interrogate
+
+      - script: interrogate -vv -f 100
+        displayName: Run interrogate
+
+
+- stage: Tests
+  jobs:
+  - template: azure-coretest.yml
+    parameters:
+      pythons:
+        py35:
+          spec: '3.5'
+        py36:
+          spec: '3.6'
+        py37:
+          spec: '3.7'
+        py38:
+          spec: '3.8'
+        pypy3:
+      platforms: [linux, windows, macOs]
+
+
+  - job: doctest
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.7'
+
+      - script: cd doc; make doctest
+        displayName: Run doctests
+
+
+    - job: testdir_coverage
+      pool:
+        vmImage: 'Ubuntu-latest'
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.8'
+  
+        - script: pip install -r requirements-ci.txt
+          displayName: Install CI requirements
+  
+        - script: pytest --cov=.
+          displayName: Run pytest with coverage
+  
+        - script: coverage report --include="tests/*" --fail-under=100
+          displayName: Check 100% test execution
