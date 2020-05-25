@@ -1,6 +1,6 @@
 trigger:
-  - master
-  - release-*
+- master
+- release-*
 
 pr:
   branches:
