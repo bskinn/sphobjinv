@@ -9,7 +9,9 @@ pr:
 
 
 stages:
-- stage: Code quality
+- stage: code_quality
+  displayName: Checking code quality
+
   jobs:
   - job: flake8
     pool:
@@ -43,7 +45,9 @@ stages:
       displayName: Run interrogate
 
 
-- stage: Tests
+- stage: tests
+  displayName: Running tests
+
   jobs:
   - template: azure-coretest.yml
     parameters:
