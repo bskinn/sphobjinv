@@ -41,7 +41,7 @@ stages:
     - script: pip install interrogate
       displayName: Install interrogate
 
-    - script: interrogate -vv -f 100
+    - script: interrogate -vv -f 100 src tests conftest.py
       displayName: Run interrogate
 
 
