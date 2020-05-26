@@ -34,11 +34,11 @@ jobs:
 
       - script: cd doc; make html; mkdir scratch
         displayName: Build  the documentation for tests to work against (Linux/macOs)
-        condition: ne(${{ platform }}, 'windows')
+        condition: ne('${{ platform }}', 'windows')
 
       - script: cd doc; make html; md scratch
         displayName: Build  the documentation for tests to work against (Windows)
-        condition: eq(${{ platform }}, 'windows')
+        condition: eq('${{ platform }}', 'windows')
 
       - script: pytest --testall --nonloc
         displayName: Run pytest (${{ coalesce(python.value.name, python.key) }})
