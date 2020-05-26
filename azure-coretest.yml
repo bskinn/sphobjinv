@@ -36,7 +36,7 @@ jobs:
         displayName: Build  the documentation for tests to work against (Linux/macOs)
         condition: ne('${{ platform }}', 'windows')
 
-      - script: cd doc; make html; md scratch
+      - script: cd doc & make html & md scratch
         displayName: Build  the documentation for tests to work against (Windows)
         condition: eq('${{ platform }}', 'windows')
 
