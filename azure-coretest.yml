@@ -5,7 +5,7 @@ parameters:
 jobs:
 - ${{ each python in parameters.pythons }}:
   - ${{ each platform in parameters.platforms }}:
-    - job: ${{ coalesce(python.value.name, python.key) }}_${{ coalesce(platform, 'linux') }}
+    - job: ${{ python.key }}_${{ coalesce(platform, 'linux') }}
       variables:
         ${{ if eq(platform, 'linux') }}:
           image: 'Ubuntu-latest'
@@ -20,20 +20,20 @@ jobs:
         vmImage: $[ variables.image ]
 
       steps:
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '${{ coalesce(python.value.spec, python.key) }}'
-            architecture: 'x64'
-          displayName: Use cached Python ${{ coalesce(python.value.spec, python.key) }} for tests.
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '${{ python.value.spec }}'
+          architecture: 'x64'
+        displayName: Use cached ${{ coalesce(python.value.name, python.key) }} for tests.
 
-        - script: pip install -U --force-reinstall -r requirements-ci.txt
-          displayName: Install CI requirements
+      - script: pip install -U --force-reinstall -r requirements-ci.txt
+        displayName: Install CI requirements
 
-        - script: pip list
-          displayName: Show full environment contents
+      - script: pip list
+        displayName: Show full environment contents
 
-        - script: cd doc; make html; mkdir scratch
-          displayName: Build  the documentation for tests to work against
+      - script: cd doc; make html; mkdir scratch
+        displayName: Build  the documentation for tests to work against
 
-        - script: pytest --testall --nonloc
-          displayName: Run pytest (Python ${{ coalesce(python.value.spec, python.key) }})
+      - script: pytest --testall --nonloc
+        displayName: Run pytest (${{ coalesce(python.value.name, python.key) }})

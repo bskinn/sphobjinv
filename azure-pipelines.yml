@@ -14,6 +14,8 @@ stages:
 
   jobs:
   - job: flake8
+    displayName: Run all flake8 checks
+
     pool:
       vmImage: 'Ubuntu-latest'
     steps:
@@ -31,6 +33,8 @@ stages:
       displayName: Lint the codebase
 
   - job: interrogate
+    displayName: Run interrogate docstrings check
+
     pool:
       vmImage: 'Ubuntu-latest'
     steps:
@@ -45,14 +49,15 @@ stages:
       displayName: Run interrogate
 
 
-- stage: tests
-  displayName: Run tests
+- stage: main_tests
+  displayName: Run main code tests
 
   jobs:
   - template: azure-coretest.yml
     parameters:
       pythons:
         py35:
+          name: 'Python 3.5'
           spec: '3.5'
         py36:
           spec: '3.6'
@@ -61,12 +66,35 @@ stages:
         py38:
           spec: '3.8'
         pypy3:
+          spec: 'pypy3'
       platforms: [linux, windows, macOs]
 
 
-  - job: doctest
+- stage: aux_tests
+  displayName: Run auxiliary tests
+
+  jobs:
+  - job: docs_build
+    displayName: Check for doc build warnings
+
     pool:
       vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.7'
+
+    - script: cd doc; make html -Wn --keep-going
+      displayName: Build docs with warnings as errors
+
+
+  - job: doctest
+    displayName: Run doctest suite
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
@@ -77,18 +105,21 @@ stages:
 
 
   - job: testdir_coverage
+    displayName: Confirm all test code was executed
+
     pool:
       vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.8'
-  
+
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
-  
+
     - script: pytest --cov=.
-      displayName: Run pytest with coverage
-  
+      displayName: Run pytest with coverage on the entire project tree
+
     - script: coverage report --include="tests/*" --fail-under=100
       displayName: Check 100% test execution
