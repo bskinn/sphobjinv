@@ -406,6 +406,7 @@ class DataObjStr(SuperDataObj):
 
     @as_bytes.default
     def _as_bytes_default(self):
+        """Create DataObjBytes equivalent."""
         return DataObjBytes(
             name=self.name,
             domain=self.domain,
@@ -420,6 +421,7 @@ class DataObjStr(SuperDataObj):
 
     @as_str.default
     def _as_str_default(self):
+        """Return this instance."""
         return self
 
     def _data_line_postprocess(self, s):
@@ -445,6 +447,7 @@ class DataObjBytes(SuperDataObj):
 
     @as_str.default
     def _as_str_default(self):
+        """Create DataObjStr equivalent."""
         return DataObjStr(
             name=self.name,
             domain=self.domain,
@@ -459,6 +462,7 @@ class DataObjBytes(SuperDataObj):
 
     @as_bytes.default
     def _as_bytes_default(self):
+        """Return this instance."""
         return self
 
     def _data_line_postprocess(self, s):

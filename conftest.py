@@ -75,12 +75,18 @@ def misc_info(res_path):
     """Supply Info object with various test-relevant content."""
 
     class Info:
+        """Monolithic test-information class."""
+
         class FNames(Enum):
+            """Enum of test-relevant file names."""
+
             RES = "objects_attrs"
             INIT = "objects"
             MOD = "objects_mod"
 
         class Extensions(Enum):
+            """Enum of test-relevant file extensions."""
+
             CMP = ".inv"
             DEC = ".txt"
             JSON = ".json"
@@ -151,6 +157,7 @@ def sphinx_load_test():
     from sphinx.util.inventory import InventoryFile as IFile
 
     def func(path):
+        """Perform the 'live' inventory load test."""
         # Easier to have the file open the whole time
         with path.open("rb") as f:
 
@@ -169,6 +176,7 @@ def run_cmdline_test(monkeypatch):
     from sphobjinv.cmdline import main
 
     def func(arglist, *, expect=0):  # , suffix=None):
+        """Perform the CLI exit-code test."""
 
         # Assemble execution arguments
         runargs = ["sphobjinv"]
@@ -200,6 +208,7 @@ def decomp_cmp_test(misc_info):
     """Return function to confirm a decompressed file is identical to resource."""
 
     def func(path):
+        """Perform the round-trip compress/decompress comparison test."""
         assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
 
     return func

@@ -589,6 +589,7 @@ class Inventory(object):
         version = b_res.decode("utf-8")
 
         def gen_dataobjs():
+            """Generate a data object for each line in the inventory."""
             for mch in pb_data.finditer(b_str):
                 yield DataObjStr(**mch.groupdict())
 
