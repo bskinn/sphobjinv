@@ -421,9 +421,12 @@ def test_api_inventory_namesuggest(res_cmp, subtests):
 # Must be run first, otherwise the fuzzywuzzy warning is consumed
 # inappropriately
 @pytest.mark.first
-def test_api_fuzzywuzzy_warningcheck():
+def test_api_fuzzywuzzy_warningcheck(misc_info):
     """Confirm only the Levenshtein warning is raised, if any are."""
     import warnings
+
+    if misc_info.IN_PYPY:
+        pytest.skip("Don't test warnings in PyPy")
 
     with warnings.catch_warnings(record=True) as wc:
         warnings.simplefilter("always")

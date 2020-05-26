@@ -96,6 +96,8 @@ def misc_info(res_path):
 
         invalid_filename = "*?*?.txt" if sys.platform == "win32" else "/"
 
+        IN_PYPY = "pypy" in sys.implementation.name
+
         # Sample object lines lines from an inventory, as bytes
         # False --> contracted abbreviations
         # True  --> expanded abbreviations
