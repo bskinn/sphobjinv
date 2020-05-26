@@ -32,6 +32,19 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = [pytest.mark.flake8_ext]
+
+
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_flake8_ext(pytestconfig):
+    """Skip test if --flake8_ext not provided.
+
+    Auto-applied to all functions in module.
+
+    """
+    if not pytestconfig.getoption("--flake8_ext"):
+        pytest.skip("'--flake8_ext' not specified")
+
 
 @pytest.mark.skipif(
     sys.version_info < (3, 6),

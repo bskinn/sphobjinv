@@ -29,6 +29,9 @@ stages:
     - script: pip install -r requirements-flake8.txt
       displayName: Install flake8 & plugins
 
+    - script: pytest -k flake8 --flake8_ext
+      displayName: Confirm all plugins active
+
     - script: tox -e flake8
       displayName: Lint the codebase
 
