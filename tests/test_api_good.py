@@ -69,12 +69,9 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
         misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
-    try:
-        b_dec = soi.readbytes(str(src_path))
-        b_cmp = soi.compress(b_dec)
-        soi.writebytes(str(dest_path), b_cmp)
-    except Exception:
-        pytest.fail("objects.txt compression failed.")
+    b_dec = soi.readbytes(str(src_path))
+    b_cmp = soi.compress(b_dec)
+    soi.writebytes(str(dest_path), b_cmp)
 
     assert dest_path.is_file()
 
@@ -90,12 +87,9 @@ def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
         misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
 
-    try:
-        b_cmp = soi.readbytes(str(src_path))
-        b_dec = soi.decompress(b_cmp)
-        soi.writebytes(str(dest_path), b_dec)
-    except Exception:
-        pytest.fail("objects.inv decompression failed.")
+    b_cmp = soi.readbytes(str(src_path))
+    b_dec = soi.decompress(b_cmp)
+    soi.writebytes(str(dest_path), b_dec)
 
     assert dest_path.is_file()
 
@@ -145,21 +139,15 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
 @pytest.mark.xfail(
     reason="Will fail until .as_xxx properties are removed from attrs cmp"
 )
-def test_api_dataobjbytes_init(bytes_txt):
+def test_api_dataobjbytes_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjBytes type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
     s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
 
-    try:
-        b_dob = soi.DataObjBytes(**b_mchdict)
-    except Exception:
-        pytest.fail("bytes instantiation failed")
+    b_dob = soi.DataObjBytes(**b_mchdict)
 
-    try:
-        s_dob = soi.DataObjBytes(**s_mchdict)
-    except Exception:
-        pytest.fail("str instantiation failed")
+    s_dob = soi.DataObjBytes(**s_mchdict)
 
     assert b_dob == s_dob
 
@@ -171,21 +159,15 @@ def test_api_dataobjbytes_init(bytes_txt):
 @pytest.mark.xfail(
     reason="Will fail until .as_xxx properties are removed from attrs cmp"
 )
-def test_api_dataobjstr_init(bytes_txt):
+def test_api_dataobjstr_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjStr type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
     b_mchdict = {_: mch.group(_) for _ in mch.groupdict()}
     s_mchdict = {_: b_mchdict[_].decode(encoding="utf-8") for _ in b_mchdict}
 
-    try:
-        b_dos = soi.DataObjStr(**b_mchdict)
-    except Exception:
-        pytest.fail("bytes instantiation failed")
+    b_dos = soi.DataObjStr(**b_mchdict)
 
-    try:
-        s_dos = soi.DataObjStr(**s_mchdict)
-    except Exception:
-        pytest.fail("str instantiation failed")
+    s_dos = soi.DataObjStr(**s_mchdict)
 
     assert b_dos == s_dos
 
@@ -262,7 +244,7 @@ def test_api_dataobj_datalinefxn(
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
-def test_api_dataobj_evolvename(use_bytes, res_cmp):
+def test_api_dataobj_evolvename(use_bytes, res_cmp):  # pragma: no cover
     """Confirm evolving new DataObj instances works properly."""
     inv = soi.Inventory(res_cmp)
     obj = inv.objects[5].as_bytes if use_bytes else inv.objects[5]  # Arbitrary choice
@@ -342,10 +324,8 @@ def test_api_inventory_flatdict_jsonvalidate(prop, res_cmp):
     val = jsonschema.Draft4Validator(soi.json_schema)
 
     kwarg = {} if prop == "none" else {prop: True}
-    try:
-        val.validate(inv.json_dict(**kwarg))
-    except jsonschema.ValidationError:
-        pytest.fail("'{}' JSON invalid".format(prop))
+
+    val.validate(inv.json_dict(**kwarg))
 
 
 def test_api_inventory_flatdict_reimport(res_dec, attrs_inventory_test):
@@ -369,10 +349,8 @@ def test_api_inventory_flatdict_reimportwithmetadata(
     d = inv.json_dict()
 
     d.update({"metadata": metadata})
-    try:
-        inv = soi.Inventory(d)
-    except Exception:
-        pytest.fail("Instantiation fail on metadata '{}'".format(metadata))
+
+    inv = soi.Inventory(d)
 
     attrs_inventory_test(inv, soi.SourceTypes.DictJSON)
 
@@ -426,7 +404,7 @@ def test_api_fuzzywuzzy_warningcheck(misc_info):
     import warnings
 
     if misc_info.IN_PYPY:
-        pytest.skip("Don't test warnings in PyPy")
+        pytest.skip("Don't test warnings in PyPy")  # pragma: no cover
 
     with warnings.catch_warnings(record=True) as wc:
         warnings.simplefilter("always")
@@ -438,7 +416,8 @@ def test_api_fuzzywuzzy_warningcheck(misc_info):
     except ImportError:
         lev_present = False
     else:
-        lev_present = True
+        # Standard testing setup is WITHOUT python-Levenshtein
+        lev_present = True  # pragma: no cover
 
     if lev_present:
         assert len(wc) == 0, "Warning unexpectedly raised"  # pragma: no cover

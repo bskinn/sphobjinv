@@ -47,7 +47,7 @@ def skip_if_no_nonloc(pytestconfig):
 
     """
     if not pytestconfig.getoption("--nonloc"):
-        pytest.skip("'--nonloc' not specified")
+        pytest.skip("'--nonloc' not specified")  # pragma: no cover
 
 
 # ====  NONLOCAL CONVERT TESTS  ====

@@ -54,6 +54,7 @@ stages:
 
 - stage: main_tests
   displayName: Run main code tests
+  condition: false  # Skip this for now, for speed
 
   jobs:
   - template: azure-coretest.yml
@@ -75,6 +76,7 @@ stages:
 
 - stage: aux_tests
   displayName: Run auxiliary tests
+  condition: always()
 
   jobs:
   - job: docs_build
@@ -118,13 +120,13 @@ stages:
       inputs:
         versionSpec: '3.8'
 
-    - script: pip install -r requirements-ci.txt
-      displayName: Install CI requirements
+    - script: pip install -r requirements-dev.txt
+      displayName: Install full dev requirements
 
     - script: cd doc; make html; mkdir scratch
       displayName: Build docset
 
-    - script: pytest --cov=. --nonloc
+    - script: pytest --cov=. --nonloc --flake8_ext
       displayName: Run pytest with coverage on the entire project tree
 
     - script: coverage report --include="tests/*" --fail-under=100

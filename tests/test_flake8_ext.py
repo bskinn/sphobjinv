@@ -43,7 +43,7 @@ def skip_if_no_flake8_ext(pytestconfig):
 
     """
     if not pytestconfig.getoption("--flake8_ext"):
-        pytest.skip("'--flake8_ext' not specified")
+        pytest.skip("'--flake8_ext' not specified")  # pragma: no cover
 
 
 @pytest.mark.skipif(
