@@ -1,11 +1,11 @@
 trigger:
-- master
 - release-*
 
 pr:
   branches:
     include:
     - master
+    - stable
 
 
 stages:
