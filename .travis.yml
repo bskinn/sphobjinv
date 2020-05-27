@@ -1,9 +1,9 @@
-dist: xenial
+dist: bionic
 install:
  - PYTHON_MAJOR=$( python -c 'import sys; print(sys.version_info.major)' )
  - PYTHON_MINOR=$( python -c 'import sys; print(sys.version_info.minor)' )
  - pip install -U pip setuptools
- - pip install -U --force-reinstall -r requirements-travis.txt
+ - pip install -U --force-reinstall -r requirements-ci.txt
  - if (( ( $PYTHON_MAJOR > 3 ) || ( $PYTHON_MAJOR == 3 && $PYTHON_MINOR >= 6 ) )); then pip install -r requirements-flake8.txt && flake8 --version; fi
  - sh -c 'cd doc; make html; mkdir scratch'
 language: python
@@ -11,7 +11,8 @@ python:
  - 3.5
  - 3.6
  - 3.7
- - 3.8-dev
+ - 3.8
+ - 3.9-dev
 script:
  - python --version
  - pip list

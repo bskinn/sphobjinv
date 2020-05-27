@@ -1,0 +1,44 @@
+parameters:
+  pythons: []
+  platforms: []
+
+jobs:
+- ${{ each python in parameters.pythons }}:
+  - ${{ each platform in parameters.platforms }}:
+    - job: ${{ python.key }}_${{ coalesce(platform, 'linux') }}
+      variables:
+        ${{ if eq(platform, 'linux') }}:
+          image: 'Ubuntu-latest'
+        ${{ if eq(platform, 'windows') }}:
+          image: 'windows-latest'
+        ${{ if eq(platform, 'macOs') }}:
+          image: 'macOS-latest'
+        ${{ if notIn(platform, 'macOs', 'linux', 'windows') }}:
+          image: 'Ubuntu-latest'
+
+      pool:
+        vmImage: $[ variables.image ]
+
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '${{ python.value.spec }}'
+          architecture: 'x64'
+        displayName: Use cached ${{ coalesce(python.value.name, python.key) }} for tests.
+
+      - script: pip install -U --force-reinstall -r requirements-ci.txt
+        displayName: Install CI requirements
+
+      - script: pip list
+        displayName: Show full environment contents
+
+      - script: cd doc; make html; mkdir scratch
+        displayName: Build  the documentation for tests to work against (Linux/macOs)
+        condition: ne('${{ platform }}', 'windows')
+
+      - script: cd doc & make html & md scratch
+        displayName: Build  the documentation for tests to work against (Windows)
+        condition: eq('${{ platform }}', 'windows')
+
+      - script: pytest --testall --nonloc
+        displayName: Run pytest (${{ coalesce(python.value.name, python.key) }})

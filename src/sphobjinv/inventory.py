@@ -494,7 +494,12 @@ class Inventory(object):
         """
         # Suppress any UserWarning about the speed issue
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            warnings.filterwarnings(
+                action="ignore",
+                message="Using slow.+levenshtein",
+                category=UserWarning,
+                module="fuzz",
+            )
             from fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
@@ -589,6 +594,7 @@ class Inventory(object):
         version = b_res.decode("utf-8")
 
         def gen_dataobjs():
+            """Generate a data object for each line in the inventory."""
             for mch in pb_data.finditer(b_str):
                 yield DataObjStr(**mch.groupdict())
 
