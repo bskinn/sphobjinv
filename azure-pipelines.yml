@@ -112,6 +112,23 @@ stages:
     - script: cd doc; make doctest
       displayName: Run doctests
 
+  - job: linkcheck
+    displayName: Run docs link-check suite
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.7'
+
+    - script: pip install . -r requirements-rtd.txt
+      displayName: Install doc requirements and local project
+
+    - script: cd doc; make linkcheck
+      displayName: Run link check
+
 
   - job: testdir_coverage
     displayName: Confirm all test code was executed
