@@ -90,6 +90,9 @@ stages:
       inputs:
         versionSpec: '3.7'
 
+    - script: pip install . -r requirements-rtd.txt
+      displayName: Install project, plus docs requirements
+
     - script: cd doc; make html -Wn --keep-going
       displayName: Build docs with warnings as errors
 
@@ -104,6 +107,9 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.7'
+
+    - script: pip install . -r requirements-rtd.txt
+      displayName: Install project, plus docs requirements
 
     - script: cd doc; make doctest
       displayName: Run doctests
