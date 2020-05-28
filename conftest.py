@@ -58,19 +58,19 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def res_path():
     """Provide Path object to the test resource directory."""
-    return Path("tests") / "resource"
+    return Path("tests", "resource")
 
 
 @pytest.fixture(scope="session")
 def res_cmp(res_path, misc_info):
-    """Provide string path to the compressed attrs inventory in resource."""
-    return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.CMP.value))
+    """Provide Path to the compressed attrs inventory in resource."""
+    return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.CMP.value)
 
 
 @pytest.fixture(scope="session")
 def res_dec(res_path, misc_info):
     """Provide string path to the decompressed attrs inventory in resource."""
-    return str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value))
+    return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value)
 
 
 @pytest.fixture(scope="session")
@@ -135,8 +135,8 @@ def scratch_path(tmp_path, res_path, misc_info):
 
     for ext in [_.value for _ in misc_info.Extensions]:
         shutil.copy(
-            str(res_path / "{}{}".format(res_base, ext)),
-            str(tmp_path / "{}{}".format(scr_base, ext)),
+            res_path / "{}{}".format(res_base, ext),
+            tmp_path / "{}{}".format(scr_base, ext),
         )
 
     yield tmp_path
@@ -152,7 +152,7 @@ def ensure_doc_scratch():
 def bytes_txt(misc_info, res_path):
     """Load and return the contents of the example objects_attrs.txt as bytes."""
     return soi.fileops.readbytes(
-        str(res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value))
+        res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value)
     )
 
 
@@ -185,7 +185,7 @@ def run_cmdline_test(monkeypatch):
 
         # Assemble execution arguments
         runargs = ["sphobjinv"]
-        runargs.extend(arglist)
+        runargs.extend(str(a) for a in arglist)
 
         # Mock sys.argv, run main, and restore sys.argv
         with monkeypatch.context() as m:
@@ -214,7 +214,7 @@ def decomp_cmp_test(misc_info):
 
     def func(path):
         """Perform the round-trip compress/decompress comparison test."""
-        assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
+        assert cmp(misc_info.res_decomp_path, path, shallow=False)
 
     return func
 
