@@ -214,7 +214,7 @@ def decomp_cmp_test(misc_info):
 
     def func(path):
         """Perform the round-trip compress/decompress comparison test."""
-        assert cmp(misc_info.res_decomp_path, path, shallow=False)
+        assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
 
     return func
 

@@ -42,7 +42,7 @@ def readbytes(path):
         |bytes| -- Contents of the indicated file.
 
     """
-    with open(path, "rb") as f:
+    with open(str(path), "rb") as f:
         return f.read()
 
 
@@ -62,7 +62,7 @@ def writebytes(path, contents):
         |bytes| -- Content to be written to file.
 
     """
-    with open(path, "wb") as f:
+    with open(str(path), "wb") as f:
         f.write(contents)
 
 
@@ -86,7 +86,7 @@ def readjson(path):
     """
     import json
 
-    with open(path, "r") as f:
+    with open(str(path), "r") as f:
         return json.load(f)
 
 
@@ -109,7 +109,7 @@ def writejson(path, d):
     """
     import json
 
-    with open(path, "w") as f:
+    with open(str(path), "w") as f:
         json.dump(d, f)
 
 
