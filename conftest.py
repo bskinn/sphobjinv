@@ -63,13 +63,13 @@ def res_path():
 
 @pytest.fixture(scope="session")
 def res_cmp(res_path, misc_info):
-    """Provide Path to the compressed attrs inventory in resource."""
+    """Provide Path object to the compressed attrs inventory in resource."""
     return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.CMP.value)
 
 
 @pytest.fixture(scope="session")
 def res_dec(res_path, misc_info):
-    """Provide string path to the decompressed attrs inventory in resource."""
+    """Provide Path object to the decompressed attrs inventory in resource."""
     return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value)
 
 
@@ -134,6 +134,7 @@ def scratch_path(tmp_path, res_path, misc_info):
     scr_base = misc_info.FNames.INIT.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
+        # The str() calls here are for Python 3.5 compat
         shutil.copy(
             str(res_path / "{}{}".format(res_base, ext)),
             str(tmp_path / "{}{}".format(scr_base, ext)),
@@ -145,7 +146,7 @@ def scratch_path(tmp_path, res_path, misc_info):
 @pytest.fixture(scope="session")
 def ensure_doc_scratch():
     """Ensure doc/scratch dir exists, for README shell examples."""
-    (Path(".") / "doc" / "scratch").mkdir(parents=True, exist_ok=True)
+    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture(scope="session")
@@ -214,6 +215,7 @@ def decomp_cmp_test(misc_info):
 
     def func(path):
         """Perform the round-trip compress/decompress comparison test."""
+        # The str() calls here are for Python 3.5 compat
         assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
 
     return func
