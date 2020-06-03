@@ -58,7 +58,6 @@ stages:
 
   jobs:
   - template: azure-coretest.yml
-    condition: not(contains($[ Build.SourceVersionMessage ], 'Skip core CI'))
     parameters:
       pythons:
         py35:
