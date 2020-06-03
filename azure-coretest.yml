@@ -2,6 +2,11 @@ parameters:
   pythons: []
   platforms: []
 
+
+variables:
+  do_run: not(contains(lower(variables['Build.SourceVersionMessage']), '[skip core ci]'))
+
+
 jobs:
 - ${{ each python in parameters.pythons }}:
   - ${{ each platform in parameters.platforms }}:
@@ -43,3 +48,4 @@ jobs:
 
       - script: pytest --testall --nonloc
         displayName: Run pytest (${{ coalesce(python.value.name, python.key) }})
+        condition: ${ variables.do_run ]
