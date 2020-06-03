@@ -1,13 +1,12 @@
 parameters:
   pythons: []
   platforms: []
-
+  do_run: 'not(contains(lower(variables[''Build.SourceVersionMessage'']), ''[skip core ci]''))'
 
 jobs:
 - ${{ each python in parameters.pythons }}:
   - ${{ each platform in parameters.platforms }}:
     - job: ${{ python.key }}_${{ coalesce(platform, 'linux') }}
-      condition: not(contains(lower(variables['Build.SourceVersionMessage']), '[skip core ci]'))
       variables:
         ${{ if eq(platform, 'linux') }}:
           image: 'Ubuntu-latest'
@@ -18,6 +17,7 @@ jobs:
         ${{ if notIn(platform, 'macOs', 'linux', 'windows') }}:
           image: 'Ubuntu-latest'
 
+
       pool:
         vmImage: $[ variables.image ]
 
@@ -27,12 +27,15 @@ jobs:
           versionSpec: '${{ python.value.spec }}'
           architecture: 'x64'
         displayName: Use cached ${{ coalesce(python.value.name, python.key) }} for tests.
+        condition: ${{ parameters.do_run }}
 
       - script: pip install -U --force-reinstall -r requirements-ci.txt
         displayName: Install CI requirements
+        condition: ${{ parameters.do_run }}
 
       - script: pip list
         displayName: Show full environment contents
+        condition: ${{ parameters.do_run }}
 
       - script: cd doc; make html; mkdir scratch
         displayName: Build  the documentation for tests to work against (Linux/macOs)
@@ -44,5 +47,5 @@ jobs:
 
       - script: pytest --testall --nonloc
         displayName: Run pytest (${{ coalesce(python.value.name, python.key) }})
-        condition: not(contains(lower(variables['Build.SourceVersionMessage']), '[skip core ci]'))
+        condition: ${{ parameters.do_run }}
 
