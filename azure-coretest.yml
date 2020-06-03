@@ -6,7 +6,7 @@ jobs:
 - ${{ each python in parameters.pythons }}:
   - ${{ each platform in parameters.platforms }}:
     - job: ${{ python.key }}_${{ coalesce(platform, 'linux') }}
-      condition: not(contains(variables['Build.SourceVersionMessage'], 'Skip core CI'))
+      condition: not(contains(lower(variables['Build.SourceVersionMessage']), '[skip core ci]'))
       variables:
         ${{ if eq(platform, 'linux') }}:
           image: 'Ubuntu-latest'
