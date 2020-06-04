@@ -96,6 +96,8 @@ rst_epilog = r"""
 
 .. |dict| replace:: :obj:`dict`
 
+.. |Path| replace:: :obj:`~pathlib.Path`
+
 .. |re.compile| replace:: :func:`re.compile`
 
 .. |re| replace:: :doc:`re <python:library/re>`
