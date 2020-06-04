@@ -9,6 +9,12 @@ and this project strives to adhere to
 
 ### [unreleased changes]
 
+#### Added
+
+ * The `fileops` and `inventory` APIs are now tested to work with
+   both strings and `pathlib.Path` objects, where they interact
+   with the filesystem
+
 #### Refactored
 
  * Patterns in regular expressions are now defined with raw strings
