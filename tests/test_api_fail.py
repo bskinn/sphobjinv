@@ -33,21 +33,33 @@ import sphobjinv as soi
 pytestmark = [pytest.mark.api, pytest.mark.local]
 
 
-def test_apifail_readbytes_missing_input_file(scratch_path):
+def no_op(val):
+    """No-op function to leave Path objects alone in tests."""
+    return val
+
+
+PATH_FXNS = (no_op, str)
+PATH_FXN_IDS = ("no_op", "str")
+
+
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_readbytes_missing_input_file(path_fxn, scratch_path):
     """Confirm that appropriate exception is raised w/no input file."""
     with pytest.raises(FileNotFoundError):
-        soi.readbytes(str(scratch_path / "thisfilewillneverexist.foo"))
+        soi.readbytes(path_fxn(scratch_path / "thisfilewillneverexist.foo"))
 
 
-def test_apifail_writebytes_badoutputfile(scratch_path, misc_info):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_writebytes_badoutputfile(path_fxn, scratch_path, misc_info):
     """Confirm OSError raised on bad filename (example of read error)."""
     b_str = b"This is a binary string!"
 
     with pytest.raises(OSError):
-        soi.writebytes(misc_info.invalid_filename, b_str)
+        soi.writebytes(path_fxn(scratch_path / misc_info.invalid_filename), b_str)
 
 
-def test_apifail_error_decompressing_plaintext(res_dec):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_error_decompressing_plaintext(path_fxn, res_dec):
     """Confirm error raised on attempt to decompress plaintext."""
     from zlib import error as zlib_error
 
@@ -56,7 +68,7 @@ def test_apifail_error_decompressing_plaintext(res_dec):
     # whereas *nix will pass the version check but choke in the zlib
     # decompression process
     with pytest.raises((zlib_error, soi.VersionError)):
-        soi.Inventory(fname_zlib=res_dec)
+        soi.Inventory(fname_zlib=path_fxn(res_dec))
 
 
 @pytest.mark.parametrize("dobj", [soi.DataObjBytes, soi.DataObjStr])
@@ -67,12 +79,13 @@ def test_apifail_bad_dataobj_init_types(dobj):
 
 
 @pytest.mark.xfail(reason="Made mutable to simplify Inventory revision by users")
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
 @pytest.mark.parametrize("use_bytes", [True, False])
-def test_apifail_changing_immutable_dataobj(use_bytes, res_cmp):
+def test_apifail_changing_immutable_dataobj(path_fxn, use_bytes, res_cmp):
     """Confirm DataObj's are immutable."""
     from attr.exceptions import FrozenInstanceError as FIError
 
-    inv = soi.Inventory(res_cmp)
+    inv = soi.Inventory(path_fxn(res_cmp))
 
     with pytest.raises(FIError):
         if use_bytes:
@@ -106,9 +119,10 @@ def test_apifail_inventory_dictimport_noitems():
         soi.Inventory()._import_json_dict(d)
 
 
-def test_apifail_inventory_dictimport_toosmall(res_dec):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_toosmall(path_fxn, res_dec):
     """Confirm error raised when JSON dict passed w/too few objects."""
-    inv = soi.Inventory(res_dec)
+    inv = soi.Inventory(path_fxn(res_dec))
     d = inv.json_dict()
     d.pop("12")
 
@@ -116,11 +130,12 @@ def test_apifail_inventory_dictimport_toosmall(res_dec):
         soi.Inventory(d)
 
 
-def test_apifail_inventory_dictimport_badobj(res_dec):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_badobj(path_fxn, res_dec):
     """Confirm error raised when JSON dict passed w/an invalid object."""
     from jsonschema.exceptions import ValidationError
 
-    inv = soi.Inventory(res_dec)
+    inv = soi.Inventory(path_fxn(res_dec))
     d = inv.json_dict()
     d.update({"112": "foobarbazquux"})
 
@@ -128,9 +143,10 @@ def test_apifail_inventory_dictimport_badobj(res_dec):
         soi.Inventory(dict_json=d)
 
 
-def test_apifail_inventory_dictimport_toobig(res_dec):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_toobig(path_fxn, res_dec):
     """Confirm error raised when JSON dict passed w/too many objects."""
-    inv = soi.Inventory(res_dec)
+    inv = soi.Inventory(path_fxn(res_dec))
     d = inv.json_dict()
     d.update({"57": d["23"]})
 
@@ -138,11 +154,12 @@ def test_apifail_inventory_dictimport_toobig(res_dec):
         soi.Inventory(dict_json=d)
 
 
-def test_apifail_inventory_dictimport_badrootobject(res_dec):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_badrootobject(path_fxn, res_dec):
     """Confirm error raised when spurious extra root object present."""
     from jsonschema.exceptions import ValidationError
 
-    inv = soi.Inventory(res_dec)
+    inv = soi.Inventory(path_fxn(res_dec))
     d = inv.json_dict()
     d.update({"bad_foo": "angry_bar"})
 
