@@ -83,23 +83,23 @@ class Inventory(object):
 
     `plaintext`
 
-        Object is to be parsed as the |bytes|
+        Object is to be parsed as the UTF-8 |bytes|
         plaintext contents of an |objects.inv| inventory.
 
     `zlib`
 
-        Object is to be parsed as the |bytes|
+        Object is to be parsed as the UTF-8 |bytes|
         zlib-compressed contents of an
         |objects.inv| inventory.
 
     `fname_plain`
 
-        Object is the |str| path to a file containing
+        Object is the |str| or |Path| path to a file containing
         the plaintext contents of an |objects.inv| inventory.
 
     `fname_zlib`
 
-        Object is the |str| path to a file containing
+        Object is the |str| or |Path| path to a file containing
         the zlib-compressed contents of an
         |objects.inv| inventory.
 
@@ -142,7 +142,7 @@ class Inventory(object):
     _plaintext = attr.ib(repr=False, default=None)
     _zlib = attr.ib(repr=False, default=None)
 
-    # Filename types (must be str)
+    # Filename types (must be str or Path)
     _fname_plain = attr.ib(repr=False, default=None)
     _fname_zlib = attr.ib(repr=False, default=None)
 
@@ -367,7 +367,7 @@ class Inventory(object):
                 return
 
     def data_file(self, *, expand=False, contract=False):
-        """Generate a plaintext |objects.inv| as |bytes|.
+        """Generate a plaintext |objects.inv| as UTF-8 |bytes|.
 
         |bytes| is used here as the output type
         since the most common use cases are anticipated to be
@@ -586,7 +586,7 @@ class Inventory(object):
         return True
 
     def _import_plaintext_bytes(self, b_str):
-        """Import an inventory from plaintext bytes."""
+        """Import an inventory from plaintext UTF-8 bytes."""
         b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
         project = b_res.decode("utf-8")
 

@@ -64,34 +64,39 @@ The ``-s`` argument in the above shell command indicates to print the
 ``fuzzywuzzy`` match score along with each search result, and ``-t 50``
 changes the reporting threshold for the match score.
 
-For external references, just find the documentation wherever it lives on the web,
+For external references, just find the API documentation wherever it lives on the web,
 and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
-cross-reference the ``Axis`` class from matplotlib (see
-`here <https://matplotlib.org/api/axis_api.html?highlight=axis#module-matplotlib.axis>`__)::
+cross-reference the ``linspace`` function from numpy (see
+`here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
 
-    $ sphobjinv suggest https://matplotlib.org/api/ticker_api.html axis -su
+    $ sphobjinv suggest https://numpy.org/doc/1.18/reference/index.html linspace -su
 
     No inventory at provided URL.
-    Attempting "https://matplotlib.org/api/ticker_api.html/objects.inv" ...
-    Attempting "https://matplotlib.org/api/objects.inv" ...
-    Attempting "https://matplotlib.org/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.18/reference/index.html/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.18/reference/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.18/objects.inv" ...
     Remote inventory found.
 
 
-      Name                           Score
-    ------------------------------  -------
-    :py:module:`matplotlib.axis`      90
-    :std:doc:`api/axis_api`           90
-    :std:label:`axis-container`       90
+      Name                                                           Score
+    --------------------------------------------------------------  -------
+    :py:function:`numpy.linspace`                                     90
+    :py:method:`numpy.polynomial.chebyshev.Chebyshev.linspace`        90
+    :py:method:`numpy.polynomial.hermite.Hermite.linspace`            90
+    :py:method:`numpy.polynomial.hermite_e.HermiteE.linspace`         90
+    :py:method:`numpy.polynomial.laguerre.Laguerre.linspace`          90
+    :py:method:`numpy.polynomial.legendre.Legendre.linspace`          90
+    :py:method:`numpy.polynomial.polynomial.Polynomial.linspace`      90
+    :std:doc:`reference/generated/numpy.linspace`                     90
 
 .. end shell command
 
 **NOTE** that the results from ``sphobjinv suggest`` are printed using the longer
 *block directives*, whereas cross-references must be composed using the
-*inline directives*. Thus, the above ``redirect()`` function must be
-cross-referenced as ``:func:`flask.redirect```, **not**
-``:function:`flask.redirect```.
+*inline directives*. Thus, the above ``linspace()`` function must be
+cross-referenced as ``:func:`numpy.linspace```, **not**
+``:function:`numpy.linspace```.
 
 **Need to edit an inventory after it's created, or compose one from scratch?**
 
@@ -116,11 +121,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.0, 181 objects>
+    <Inventory (fname_zlib): sphobjinv v2.1, 181 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.0'
+    '2.1'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cmdline', domain='py', role='module', priority='0', uri='cli/implementation.html#module-$', dispname='-')
 

@@ -36,6 +36,15 @@ import sphobjinv as soi
 pytestmark = [pytest.mark.api, pytest.mark.local]
 
 
+def no_op(val):
+    """No-op function to leave Path objects alone in tests."""
+    return val
+
+
+PATH_FXNS = (no_op, str)
+PATH_FXN_IDS = ("no_op", "str")
+
+
 @pytest.mark.parametrize(
     ["actual", "expect"],
     tuple(
@@ -60,7 +69,8 @@ def test_source_types_iteration(actual, expect):
     assert actual.value == expect.value
 
 
-def test_api_compress(scratch_path, misc_info, sphinx_load_test):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_api_compress(path_fxn, scratch_path, misc_info, sphinx_load_test):
     """Check that a compress attempt via API throws no errors."""
     src_path = scratch_path / (
         misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
@@ -69,16 +79,17 @@ def test_api_compress(scratch_path, misc_info, sphinx_load_test):
         misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
     )
 
-    b_dec = soi.readbytes(str(src_path))
+    b_dec = soi.readbytes(path_fxn(src_path))
     b_cmp = soi.compress(b_dec)
-    soi.writebytes(str(dest_path), b_cmp)
+    soi.writebytes(path_fxn(dest_path), b_cmp)
 
     assert dest_path.is_file()
 
     sphinx_load_test(dest_path)
 
 
-def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_api_decompress(path_fxn, scratch_path, misc_info, decomp_cmp_test):
     """Check that a decompress attempt via API throws no errors."""
     src_path = scratch_path / (
         misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
@@ -87,9 +98,9 @@ def test_api_decompress(scratch_path, misc_info, decomp_cmp_test):
         misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
     )
 
-    b_cmp = soi.readbytes(str(src_path))
+    b_cmp = soi.readbytes(path_fxn(src_path))
     b_dec = soi.decompress(b_cmp)
-    soi.writebytes(str(dest_path), b_dec)
+    soi.writebytes(path_fxn(dest_path), b_dec)
 
     assert dest_path.is_file()
 
@@ -285,18 +296,22 @@ def test_api_inventory_default_none_instantiation(subtests):
     ],
     ids=(lambda v: v if type(v) == str else ""),
 )
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
 def test_api_inventory_bytes_fname_instantiation(
-    source_type, inv_arg, res_path, misc_info, attrs_inventory_test, subtests
+    source_type, inv_arg, path_fxn, res_path, misc_info, attrs_inventory_test, subtests
 ):
     """Check bytes and filename modes for Inventory instantiation."""
-    source = str(res_path / misc_info.FNames.RES.value)
+    fname = misc_info.FNames.RES.value
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.FnamePlaintext):
-        source += misc_info.Extensions.DEC.value
+        fname += misc_info.Extensions.DEC.value
     else:
-        source += misc_info.Extensions.CMP.value
+        fname += misc_info.Extensions.CMP.value
+
+    source = path_fxn(res_path / fname)
 
     if source_type in (soi.SourceTypes.BytesPlaintext, soi.SourceTypes.BytesZlib):
+        # Passing in the actual inventory contents, and not just the location
         source = soi.readbytes(source)
 
     # General import, without a specified kwarg

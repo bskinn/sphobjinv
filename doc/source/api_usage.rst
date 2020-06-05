@@ -23,6 +23,14 @@ Inspecting the contents of an existing inventory is handled entirely by the
     >>> inv.count
     56
 
+The location of the inventory file to import can also be provided as
+a :class:`pathlib.Path`, instead of as a string:
+
+.. doctest:: api_inspect
+
+    >>> soi.Inventory(Path('objects_attrs.inv')).project
+    'attrs'
+
 The individual objects contained in the inventory are represented by instances
 of the :class:`~sphobjinv.data.DataObjStr` class, which are stored in
 a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
