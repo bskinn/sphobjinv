@@ -158,11 +158,11 @@ ALL = "all"
 # ### Helper strings
 #: Help text for the :data:`CONVERT` subparser
 HELP_CO_PARSER = (
-    "Convert intersphinx inventory to zlib-compressed, " "plaintext, or JSON formats."
+    "Convert intersphinx inventory to zlib-compressed, plaintext, or JSON formats."
 )
 
 #: Help text for the :data:`SUGGEST` subparser
-HELP_SU_PARSER = "Fuzzy-search intersphinx inventory " "for desired object(s)."
+HELP_SU_PARSER = "Fuzzy-search intersphinx inventory for desired object(s)."
 
 #: Help text for default extensions for the various conversion types
 HELP_CONV_EXTS = "'.inv/.txt/.json'"
@@ -331,19 +331,19 @@ def getparser():
     )
 
     # Mutually exclusive group for --expand/--contract
-    gp_expcont = spr_convert.add_argument_group(title="URI/display name " "conversions")
+    gp_expcont = spr_convert.add_argument_group(title="URI/display name conversions")
     meg_expcont = gp_expcont.add_mutually_exclusive_group()
     meg_expcont.add_argument(
         "-e",
         "--" + EXPAND,
-        help="Expand all URI and display name " "abbreviations",
+        help="Expand all URI and display name abbreviations",
         action="store_true",
     )
 
     meg_expcont.add_argument(
         "-c",
         "--" + CONTRACT,
-        help="Contract all URI and display name " "abbreviations",
+        help="Contract all URI and display name abbreviations",
         action="store_true",
     )
 
@@ -387,13 +387,13 @@ def getparser():
     spr_suggest.add_argument(
         "-" + INDEX[0],
         "--" + INDEX,
-        help="Include Inventory.objects list indices " "with the search results",
+        help="Include Inventory.objects list indices with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
         "-" + SCORE[0],
         "--" + SCORE,
-        help="Include fuzzywuzzy scores " "with the search results",
+        help="Include fuzzywuzzy scores with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
