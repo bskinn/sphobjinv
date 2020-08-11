@@ -102,7 +102,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
     #: Helper |str| for generating plaintext |objects.inv|
     #: data lines. The field names MUST match the |str| values
     #: of the :class:`~DataFields` members.
-    data_line_fmt = "{name} {domain}:{role} {priority} " "{uri} {dispname}"
+    data_line_fmt = "{name} {domain}:{role} {priority} {uri} {dispname}"
 
     #: |str.format| template for generating reST-like representations
     #: of object data for :data:`as_rst` (used with
@@ -288,7 +288,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         """
         if expand and contract:
-            raise ValueError("'expand' and 'contract' cannot " "both be true.")
+            raise ValueError("'expand' and 'contract' cannot both be true.")
 
         d = {a: getattr(self, a) for a in (e.value for e in DataFields)}
 

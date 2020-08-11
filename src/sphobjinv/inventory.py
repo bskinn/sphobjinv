@@ -313,7 +313,7 @@ class Inventory(object):
 
         # Complain if multiple sources provided
         if src_count > 1:
-            raise RuntimeError("At most one data source can " "be specified.")
+            raise RuntimeError("At most one data source can be specified.")
 
         # Leave uninitialized ("manual" init) if no source provided
         if src_count == 0:

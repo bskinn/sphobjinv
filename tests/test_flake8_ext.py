@@ -66,4 +66,4 @@ def test_flake8_version_output(subtests):
 
     for i, p in enumerate(plugins):
         with subtests.test(msg=p, i=i):
-            assert p in flake8_ver_output
+            assert p in flake8_ver_output.replace("_", "-")
