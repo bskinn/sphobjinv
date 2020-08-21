@@ -147,6 +147,26 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
     assert mchs[element].groupdict() == {_.value: datadict[_] for _ in datadict}
 
 
+def test_api_compress_win_eols(unix2dos, res_dec):
+    """Confirm the scrub for Windows EOLs is working.
+
+    Only a relevant passing test when starting with a decompressed inventory.
+
+    Written based on a surviving mutmut mutant munging the Windows EOL scrub in
+    zlib.compress.
+
+    The repeated application of unix2dos tests that the substitution ignores
+    existing Windows EOLs in the string.
+
+    """
+    b_dec = unix2dos(unix2dos(soi.readbytes(res_dec)))
+    b_cmp = soi.compress(b_dec)
+
+    b_dec_new = soi.decompress(b_cmp)
+
+    assert rb"\r\n" not in b_dec_new
+
+
 @pytest.mark.xfail(
     reason="Will fail until .as_xxx properties are removed from attrs cmp"
 )

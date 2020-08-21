@@ -27,11 +27,13 @@ Sphinx |objects.inv| files.
 
 
 import os.path as osp
+import platform
 import re
 import shutil
 import sys
 from enum import Enum
 from filecmp import cmp
+from functools import partial
 from pathlib import Path
 
 import pytest
@@ -53,6 +55,18 @@ def pytest_addoption(parser):
     parser.addoption(
         "--flake8_ext", action="store_true", help="Include flake8 extensions test"
     )
+
+
+@pytest.fixture(scope="session")
+def is_win():
+    """Report boolean of whether the current system is Windows."""
+    return platform.system().lower() == "windows"
+
+
+@pytest.fixture(scope="session")
+def unix2dos():
+    """Provide function for converting POSIX to Windows EOLs."""
+    return partial(re.sub, rb"(?<!\r)\n", b"\r\n")
 
 
 @pytest.fixture(scope="session")

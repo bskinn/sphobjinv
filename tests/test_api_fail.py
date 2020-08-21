@@ -58,6 +58,19 @@ def test_apifail_writebytes_badoutputfile(path_fxn, scratch_path, misc_info):
         soi.writebytes(path_fxn(scratch_path / misc_info.invalid_filename), b_str)
 
 
+def test_apifail_compressed_inv_with_win_newlines(unix2dos, res_cmp):
+    """Confirm that a compressed inventory with Windows newlines does not decompress.
+
+    This should *never* happen, except in a pathological circumstance where
+    unix2dos was specifically run on a compressed inventory.
+
+    """
+    b_cmp = soi.readbytes(res_cmp)
+
+    with pytest.raises(soi.VersionError):
+        soi.decompress(unix2dos(b_cmp))
+
+
 @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
 def test_apifail_error_decompressing_plaintext(path_fxn, res_dec):
     """Confirm error raised on attempt to decompress plaintext."""
