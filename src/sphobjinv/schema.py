@@ -47,7 +47,7 @@ subschema_json = {
 #: as generated from or expected by
 #: :class:`~sphobjinv.inventory.Inventory` classes.
 json_schema = {
-    "$schema": "https://json-schema.org/schema#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
         "project": {"type": "string"},

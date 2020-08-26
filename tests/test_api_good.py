@@ -25,15 +25,19 @@ Sphinx |objects.inv| files.
 
 """
 
+import copy
 import itertools as itt
 import re
 
+import jsonschema
 import pytest
 
 import sphobjinv as soi
 
 
 pytestmark = [pytest.mark.api, pytest.mark.local]
+
+JSONSCHEMA_VALIDATOR = jsonschema.Draft4Validator
 
 
 def no_op(val):
@@ -350,13 +354,21 @@ def test_api_inventory_bytes_fname_instantiation(
             attrs_inventory_test(inv, source_type)
 
 
+def test_flatdict_schema_valid():
+    """Confirm that the Inventory JSON schema is itself a valid schema."""
+    meta_schema = copy.deepcopy(JSONSCHEMA_VALIDATOR({}).META_SCHEMA)
+
+    # Forbid unrecognized keys
+    meta_schema.update({"additionalProperties": False})
+
+    assert JSONSCHEMA_VALIDATOR(meta_schema).is_valid(soi.json_schema)
+
+
 @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
 def test_api_inventory_flatdict_jsonvalidate(prop, res_cmp):
     """Confirm that the flat_dict properties generated valid JSON."""
-    import jsonschema
-
     inv = soi.Inventory(res_cmp)
-    val = jsonschema.Draft4Validator(soi.json_schema)
+    val = JSONSCHEMA_VALIDATOR(soi.json_schema)
 
     kwarg = {} if prop == "none" else {prop: True}
 
