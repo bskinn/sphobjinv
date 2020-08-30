@@ -26,6 +26,7 @@ Sphinx |objects.inv| files.
 """
 
 import pytest
+from jsonschema.exceptions import ValidationError
 
 import sphobjinv as soi
 
@@ -143,17 +144,48 @@ def test_apifail_inventory_dictimport_toosmall(path_fxn, res_dec):
         soi.Inventory(d)
 
 
+@pytest.mark.parametrize("bad_key", ("1112", "quux"), ids=("numeric", "non_numeric"))
 @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
-def test_apifail_inventory_dictimport_badobj(path_fxn, res_dec):
+def test_apifail_inventory_dictimport_badobj(
+    bad_key, path_fxn, res_dec, jsonschema_validator
+):
     """Confirm error raised when JSON dict passed w/an invalid object."""
-    from jsonschema.exceptions import ValidationError
-
     inv = soi.Inventory(path_fxn(res_dec))
     d = inv.json_dict()
-    d.update({"112": "foobarbazquux"})
+    d.update({bad_key: "foobarbazquux"})
 
     with pytest.raises(ValidationError):
         soi.Inventory(dict_json=d)
+
+
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_baddataobjmember(
+    res_cmp, jsonschema_validator, path_fxn
+):
+    """Confirm inventory load failure on spurious key in a data object."""
+    inv = soi.Inventory(path_fxn(res_cmp))
+    d = inv.json_dict()
+    d["0"].update({"foo": "bar"})
+
+    with pytest.raises(ValidationError):
+        soi.Inventory(dict_json=d)
+
+    assert not jsonschema_validator(soi.json_schema).is_valid(d)
+
+
+@pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+def test_apifail_inventory_dictimport_missingdataobjmember(
+    res_cmp, jsonschema_validator, path_fxn
+):
+    """Confirm inventory load failure on missing key in data object."""
+    inv = soi.Inventory(path_fxn(res_cmp))
+    d = inv.json_dict()
+    d["0"].pop("domain")
+
+    with pytest.raises(ValidationError):
+        soi.Inventory(dict_json=d)
+
+    assert not jsonschema_validator(soi.json_schema).is_valid(d)
 
 
 @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
