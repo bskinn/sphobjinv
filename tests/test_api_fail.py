@@ -42,6 +42,7 @@ def no_op(val):
 PATH_FXNS = (no_op, str)
 PATH_FXN_IDS = ("no_op", "str")
 
+DISALLOWED_INV_INIT_ARGS = ("project", "objects", "source_type", "data_file")
 
 @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
 def test_apifail_readbytes_missing_input_file(path_fxn, scratch_path):
@@ -119,6 +120,13 @@ def test_apifail_inventory_invalidsource():
     """Confirm error raised when invalid source provided."""
     with pytest.raises(TypeError):
         soi.Inventory("abcdefg")
+
+
+@pytest.mark.parametrize("bad_arg", DISALLOWED_INV_INIT_ARGS)
+def test_apifail_invalid_inventory_init_arg(bad_arg):
+    """Confirm non-__init__ Inventory members raise exceptions when passed."""
+    with pytest.raises(TypeError):
+        soi.Inventory(**{bad_arg: "foo"})
 
 
 def test_apifail_inventory_dictimport_noitems():
