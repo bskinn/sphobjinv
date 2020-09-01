@@ -399,6 +399,30 @@ def test_api_inventory_flatdict_reimportwithmetadata(
     attrs_inventory_test(inv, soi.SourceTypes.DictJSON)
 
 
+def test_api_inventory_one_object_flatdict():
+    """Confirm a flat dict inventory with one object imports ok.
+
+    Addresses edge case identified via mutation testing.
+
+    """
+    inv = soi.Inventory()
+    inv.project = "Foo"
+    inv.version = "1.2"
+    inv.objects.append(
+        soi.DataObjStr(
+            name="bar",
+            domain="py",
+            role="function",
+            priority="1",
+            uri="$",
+            dispname="-",
+        )
+    )
+
+    # Should not raise an exception; assert is to emphasize this is the check
+    assert soi.Inventory(inv.json_dict())
+
+
 def test_api_inventory_toosmallflatdict_importbutignore(res_dec):
     """Confirm no error when flat dict passed w/too few objs w/ignore."""
     inv = soi.Inventory(res_dec)

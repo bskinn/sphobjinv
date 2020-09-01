@@ -44,6 +44,7 @@ PATH_FXN_IDS = ("no_op", "str")
 
 DISALLOWED_INV_INIT_ARGS = ("project", "objects", "source_type", "data_file")
 
+
 @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
 def test_apifail_readbytes_missing_input_file(path_fxn, scratch_path):
     """Confirm that appropriate exception is raised w/no input file."""
