@@ -179,13 +179,11 @@ def sphinx_load_test():
 
     def func(path):
         """Perform the 'live' inventory load test."""
-        # Easier to have the file open the whole time
         with path.open("rb") as f:
-
-            # Attempt the load operation
             try:
                 IFile.load(f, "", osp.join)
-            except Exception as e:
+            except Exception as e:  # noqa: PIE786
+                # An exception here is a failing test, not a test error.
                 pytest.fail(e)
 
     return func
