@@ -101,7 +101,7 @@ If download of JSON files by URL is desirable, please
 
 .. option:: infile
 
-    Path (or URL, if :option:`--url` is specified) to file to be converted.
+    Path (or URL, if :option:`--url` is specified) to file to be searched.
 
 .. option:: search
 
