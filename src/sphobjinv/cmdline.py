@@ -339,7 +339,11 @@ def getparser():
             + ", as appropriate for the output format. "
             "A path to a directory is accepted here, "
             "in which case the default output file name will be used. "
-            "Passing '-' indicates to write to stdout."
+            "Passing '-' indicates to write to stdout. If "
+            + INFILE
+            + " is passed as '-', "
+            + OUTFILE
+            + " can be omitted and both stdin and stdout will be used."
         ),
         nargs="?",
         default=None,
@@ -509,7 +513,7 @@ def resolve_outpath(out_path, in_path, params):
     """
     mode = params[MODE]
 
-    if params[URL]:
+    if params[URL] or in_path is None:
         in_fld = os.getcwd()
         in_fname = DEF_BASENAME
     else:
@@ -773,7 +777,9 @@ def do_convert(inv, in_path, params):
     # Report success, if not QUIET
     selective_print(
         "Conversion completed.\n"
-        "'{0}' converted to '{1}' ({2}).".format(in_path, out_path, mode),
+        "'{0}' converted to '{1}' ({2}).".format(
+            in_path if in_path else "stdin", out_path, mode
+        ),
         params,
     )
 
@@ -988,7 +994,28 @@ def inv_url(params):
 
 
 def inv_stdin(params):
-    # TODO: ADD EXCEPTION HANDLING HERE AS THEY'RE FIGURED OUT
+    """Create |Inventory| from contents of stdin.
+
+    Due to stdin's encoding and formatting assumptions, only
+    text-based inventory formats can be sanely parsed.
+
+    Thus, only plaintext and JSON inventory formats can be
+    used as inputs here
+
+    Parameters
+    ==========
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    =======
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        provided at stdin
+
+    """
     data = sys.stdin.read()
 
     try:
