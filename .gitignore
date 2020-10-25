@@ -78,3 +78,6 @@ doc/scratch/*
 # Mutmut
 .mutmut-cache
 
+# VS Code
+.vscode
+
