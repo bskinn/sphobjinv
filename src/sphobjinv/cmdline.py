@@ -709,6 +709,39 @@ def write_json(inv, path, *, expand=False, contract=False):
     writejson(path, json_dict)
 
 
+def write_stdout(inv, params):
+    r"""Write the inventory contents to stdout.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written to stdout
+
+    params
+
+        dict -- `argparse` parameters
+
+    Raises
+    ------
+    ValueError
+
+        If both `params["expand"]` and `params["contract"]` are |True|
+
+    """
+    if params[MODE] == PLAIN:
+        print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
+    elif params[MODE] == JSON:
+        print(
+            json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
+        )
+    else:
+        selective_print(
+            "Error: Only plaintext and JSON can be emitted to stdout.", params
+        )
+        sys.exit(1)
+
+
 def do_convert(inv, in_path, params):
     r"""Carry out the conversion operation, including writing output.
 
@@ -741,6 +774,12 @@ def do_convert(inv, in_path, params):
         |dict| -- Parameters/values mapping from the active subparser
 
     """
+    # TODO: Refactor to-file output to new function
+    # TODO: Add tests for stdout output functionality
+    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
+        write_stdout(inv, params)
+        return
+
     mode = params[MODE]
 
     # Work up the output location
@@ -1003,13 +1042,13 @@ def inv_stdin(params):
     used as inputs here
 
     Parameters
-    ==========
+    ----------
     params
 
         |dict| -- Parameters/values mapping from the active subparser
 
     Returns
-    =======
+    -------
     inv
 
         |Inventory| -- Object representation of the inventory
@@ -1055,6 +1094,8 @@ def main():
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
+    # TODO: Per #131, force quiet mode if converting to stdout
+
     # Print version &c. and exit if indicated
     if params[VERSION]:
         print(VER_TXT)
@@ -1070,8 +1111,9 @@ def main():
     if params[URL]:
         inv, in_path = inv_url(params)
     elif params[INFILE] == "-":
+        # TODO: Add tests for stdin-read functionality
         inv = inv_stdin(params)
-        in_path = None  # TODO: THIS MAY NOT BE CORRECT
+        in_path = None
     else:
         inv, in_path = inv_local(params)
 
