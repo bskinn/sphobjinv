@@ -211,7 +211,7 @@ def selective_print(thing, params):
 
     """
     if not params[SUBPARSER_NAME][:2] == "co" or not params[QUIET]:
-        print(thing)
+        print(thing, file=sys.stderr)
 
 
 def err_format(exc):
@@ -585,7 +585,7 @@ def import_infile(in_path):
         return inv
 
 
-def write_plaintext(inv, path, *, expand=False, contract=False):
+def write_plaintext(inv, file, *, expand=False, contract=False):
     """Write an |Inventory| to plaintext.
 
     Newlines are inserted in an OS-aware manner,
@@ -599,9 +599,9 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
 
         |Inventory| -- Objects inventory to be written as plaintext
 
-    path
+    file
 
-        |str| -- Path to output file
+        |BytesIO| -- Output file opened in binary mode
 
     expand
 
@@ -624,10 +624,10 @@ def write_plaintext(inv, path, *, expand=False, contract=False):
 
     """
     b_str = inv.data_file(expand=expand, contract=contract)
-    writebytes(path, b_str.replace(b"\n", os.linesep.encode("utf-8")))
+    file.write(b_str.replace(b"\n", os.linesep.encode("utf-8")))
 
 
-def write_zlib(inv, path, *, expand=False, contract=False):
+def write_zlib(inv, file, *, expand=False, contract=False):
     """Write an |Inventory| to zlib-compressed format.
 
        Calling with both `expand` and `contract` as |True| is invalid.
@@ -638,9 +638,9 @@ def write_zlib(inv, path, *, expand=False, contract=False):
 
         |Inventory| -- Objects inventory to be written zlib-compressed
 
-    path
+    file
 
-        |str| -- Path to output file
+        |BytesIO| -- Output file opened in binary mode
 
     expand
 
@@ -664,10 +664,10 @@ def write_zlib(inv, path, *, expand=False, contract=False):
     """
     b_str = inv.data_file(expand=expand, contract=contract)
     bz_str = compress(b_str)
-    writebytes(path, bz_str)
+    file.write(bz_str)
 
 
-def write_json(inv, path, *, expand=False, contract=False):
+def write_json(inv, file, *, expand=False, contract=False):
     """Write an |Inventory| to JSON.
 
     Writes output via
@@ -681,9 +681,9 @@ def write_json(inv, path, *, expand=False, contract=False):
 
         |Inventory| -- Objects inventory to be written zlib-compressed
 
-    path
+    file
 
-        |str| -- Path to output file
+        |BytesIO| -- Output file opened in binary mode
 
     expand
 
@@ -706,40 +706,7 @@ def write_json(inv, path, *, expand=False, contract=False):
 
     """
     json_dict = inv.json_dict(expand=expand, contract=contract)
-    writejson(path, json_dict)
-
-
-def write_stdout(inv, params):
-    r"""Write the inventory contents to stdout.
-
-    Parameters
-    ----------
-    inv
-
-        |Inventory| -- Objects inventory to be written to stdout
-
-    params
-
-        dict -- `argparse` parameters
-
-    Raises
-    ------
-    ValueError
-
-        If both `params["expand"]` and `params["contract"]` are |True|
-
-    """
-    if params[MODE] == PLAIN:
-        print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
-    elif params[MODE] == JSON:
-        print(
-            json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
-        )
-    else:
-        selective_print(
-            "Error: Only plaintext and JSON can be emitted to stdout.", params
-        )
-        sys.exit(1)
+    file.write(json.dumps(json_dict).encode('utf-8'))  # JSON is always utf-8
 
 
 def do_convert(inv, in_path, params):
@@ -774,53 +741,55 @@ def do_convert(inv, in_path, params):
         |dict| -- Parameters/values mapping from the active subparser
 
     """
-    # TODO: Refactor to-file output to new function
-    # TODO: Add tests for stdout output functionality
-    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
-        write_stdout(inv, params)
-        return
-
     mode = params[MODE]
 
     # Work up the output location
-    try:
-        out_path = resolve_outpath(params[OUTFILE], in_path, params)
-    except Exception as e:  # pragma: no cover
-        # This may not actually be reachable except in exceptional situations
-        selective_print("\nError while constructing output file path:", params)
-        selective_print(err_format(e), params)
-        sys.exit(1)
+    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
+        file = sys.stdout.buffer
+        out_path = None
+    else:
+        try:
+            out_path = resolve_outpath(params[OUTFILE], in_path, params)
+        except Exception as e:  # pragma: no cover
+            # This may not actually be reachable except in exceptional situations
+            selective_print("\nError while constructing output file path:", params)
+            selective_print(err_format(e), params)
+            sys.exit(1)
+        file = open(out_path, 'wb')
 
     # If exists, confirm overwrite; clobber if QUIET
-    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
+    if out_path and os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
             print("\nExiting...")
             sys.exit(0)
 
-    # Write the output file
+    # Write the output
     try:
         if mode == ZLIB:
-            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_zlib(inv, file, expand=params[EXPAND], contract=params[CONTRACT])
         if mode == PLAIN:
-            write_plaintext(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
-            )
+            write_plaintext(inv, file, expand=params[EXPAND], contract=params[CONTRACT])
         if mode == JSON:
-            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_json(inv, file, expand=params[EXPAND], contract=params[CONTRACT])
+    except BrokenPipeError:
+        pass
     except Exception as e:
         selective_print("\nError during write of output file:", params)
         selective_print(err_format(e), params)
         sys.exit(1)
+    finally:
+        file.close()
 
-    # Report success, if not QUIET
-    selective_print(
-        "Conversion completed.\n"
-        "'{0}' converted to '{1}' ({2}).".format(
-            in_path if in_path else "stdin", out_path, mode
-        ),
-        params,
-    )
+    # Report success, if not QUIET or writing to stdout
+    if out_path:
+        selective_print(
+            "Conversion completed.\n"
+            "'{0}' converted to '{1}' ({2}).".format(
+                in_path if in_path else "stdin", out_path, mode
+            ),
+            params,
+        )
 
 
 def do_suggest(inv, params):
