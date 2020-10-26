@@ -402,7 +402,7 @@ class DataObjStr(SuperDataObj):
     uri = attr.ib(converter=_utf8_decode)
     dispname = attr.ib(converter=_utf8_decode)
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):
@@ -417,7 +417,7 @@ class DataObjStr(SuperDataObj):
             as_str=self,
         )
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
@@ -443,7 +443,7 @@ class DataObjBytes(SuperDataObj):
     uri = attr.ib(converter=_utf8_encode)
     dispname = attr.ib(converter=_utf8_encode)
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
@@ -458,7 +458,7 @@ class DataObjBytes(SuperDataObj):
             as_bytes=self,
         )
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):

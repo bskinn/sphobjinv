@@ -147,9 +147,6 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
     assert mchs[element].groupdict() == {_.value: datadict[_] for _ in datadict}
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 def test_api_dataobjbytes_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjBytes type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
@@ -167,9 +164,6 @@ def test_api_dataobjbytes_init(bytes_txt):  # pragma: no cover
     )
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 def test_api_dataobjstr_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjStr type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
@@ -249,9 +243,6 @@ def test_api_dataobj_datalinefxn(
         assert dl == lines_obj[init_expanded and not dataline_arg]
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
