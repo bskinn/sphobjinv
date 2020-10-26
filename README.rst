@@ -121,7 +121,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1, 181 objects>
+    <Inventory (fname_zlib): sphobjinv v2.1, 183 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version

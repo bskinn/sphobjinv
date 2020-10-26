@@ -31,12 +31,17 @@ Sphinx |objects.inv| files.
 """
 
 import argparse as ap
+import json
 import os
 import sys
 from json.decoder import JSONDecodeError
+from urllib.error import HTTPError, URLError
+
+from jsonschema.exceptions import ValidationError
 
 from sphobjinv import __version__
-from sphobjinv.fileops import readjson, writebytes, writejson
+from sphobjinv.error import VersionError
+from sphobjinv.fileops import readjson, urlwalk, writebytes, writejson
 from sphobjinv.inventory import Inventory as Inv
 from sphobjinv.zlib import compress
 
@@ -184,6 +189,7 @@ SUGGEST_CONFIRM_LENGTH = 30
 DEF_THRESH = 75
 
 
+# TODO: Expand/split selective/nonselective print, to stdout/stderr
 def selective_print(thing, params):
     """Print `thing` if not in quiet mode.
 
@@ -315,17 +321,30 @@ def getparser():
         MODE, help="Conversion output format", choices=(ZLIB, PLAIN, JSON)
     )
 
-    spr_convert.add_argument(INFILE, help="Path to file to be converted")
+    spr_convert.add_argument(
+        INFILE,
+        help=(
+            "Path to file to be converted. Passing '-' indicates to read from stdin "
+            "(plaintext/JSON only)."
+        ),
+    )
 
     spr_convert.add_argument(
         OUTFILE,
-        help="Path to desired output file. "
-        "Defaults to same directory and main "
-        "file name as input file but with extension "
-        + HELP_CONV_EXTS
-        + ", as appropriate for the output format. "
-        "A bare path is accepted here, "
-        "using the default output file names.",
+        help=(
+            "Path to desired output file. "
+            "Defaults to same directory and main "
+            "file name as input file but with extension "
+            + HELP_CONV_EXTS
+            + ", as appropriate for the output format. "
+            "A path to a directory is accepted here, "
+            "in which case the default output file name will be used. "
+            "Passing '-' indicates to write to stdout. If "
+            + INFILE
+            + " is passed as '-', "
+            + OUTFILE
+            + " can be omitted and both stdin and stdout will be used."
+        ),
         nargs="?",
         default=None,
     )
@@ -374,7 +393,13 @@ def getparser():
     )
 
     # ### Args for suggest subparser
-    spr_suggest.add_argument(INFILE, help="Path to inventory file to be searched")
+    spr_suggest.add_argument(
+        INFILE,
+        help=(
+            "Path to inventory file to be searched. "
+            "Passing '-' indicates to read from stdin (plaintext/JSON only)."
+        ),
+    )
     spr_suggest.add_argument(SEARCH, help="Search term for object suggestions")
     spr_suggest.add_argument(
         "-" + ALL[0],
@@ -488,7 +513,7 @@ def resolve_outpath(out_path, in_path, params):
     """
     mode = params[MODE]
 
-    if params[URL]:
+    if params[URL] or in_path is None:
         in_fld = os.getcwd()
         in_fname = DEF_BASENAME
     else:
@@ -684,6 +709,39 @@ def write_json(inv, path, *, expand=False, contract=False):
     writejson(path, json_dict)
 
 
+def write_stdout(inv, params):
+    r"""Write the inventory contents to stdout.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Objects inventory to be written to stdout
+
+    params
+
+        dict -- `argparse` parameters
+
+    Raises
+    ------
+    ValueError
+
+        If both `params["expand"]` and `params["contract"]` are |True|
+
+    """
+    if params[MODE] == PLAIN:
+        print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
+    elif params[MODE] == JSON:
+        print(
+            json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
+        )
+    else:
+        selective_print(
+            "Error: Only plaintext and JSON can be emitted to stdout.", params
+        )
+        sys.exit(1)
+
+
 def do_convert(inv, in_path, params):
     r"""Carry out the conversion operation, including writing output.
 
@@ -716,6 +774,12 @@ def do_convert(inv, in_path, params):
         |dict| -- Parameters/values mapping from the active subparser
 
     """
+    # TODO: Refactor to-file output to new function
+    # TODO: Add tests for stdout output functionality
+    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
+        write_stdout(inv, params)
+        return
+
     mode = params[MODE]
 
     # Work up the output location
@@ -752,7 +816,9 @@ def do_convert(inv, in_path, params):
     # Report success, if not QUIET
     selective_print(
         "Conversion completed.\n"
-        "'{0}' converted to '{1}' ({2}).".format(in_path, out_path, mode),
+        "'{0}' converted to '{1}' ({2}).".format(
+            in_path if in_path else "stdin", out_path, mode
+        ),
         params,
     )
 
@@ -919,12 +985,6 @@ def inv_url(params):
         If URL is longer than 45 characters, the central portion is elided.
 
     """
-    from urllib.error import HTTPError, URLError
-
-    from sphobjinv.error import VersionError
-    from sphobjinv.fileops import urlwalk
-    from sphobjinv.inventory import Inventory
-
     in_file = params[INFILE]
 
     # Disallow --url mode on local files
@@ -937,7 +997,7 @@ def inv_url(params):
 
     # Try URL as provided
     try:
-        inv = Inventory(url=in_file)
+        inv = Inv(url=in_file)
     except (HTTPError, ValueError, VersionError, URLError):
         selective_print("No inventory at provided URL.", params)
     else:
@@ -949,7 +1009,7 @@ def inv_url(params):
         for url in urlwalk(in_file):
             selective_print('Attempting "{0}" ...'.format(url), params)
             try:
-                inv = Inventory(url=url)
+                inv = Inv(url=url)
             except (ValueError, HTTPError):
                 pass
             else:
@@ -970,6 +1030,45 @@ def inv_url(params):
         ret_path = url
 
     return inv, ret_path
+
+
+def inv_stdin(params):
+    """Create |Inventory| from contents of stdin.
+
+    Due to stdin's encoding and formatting assumptions, only
+    text-based inventory formats can be sanely parsed.
+
+    Thus, only plaintext and JSON inventory formats can be
+    used as inputs here
+
+    Parameters
+    ----------
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    Returns
+    -------
+    inv
+
+        |Inventory| -- Object representation of the inventory
+        provided at stdin
+
+    """
+    data = sys.stdin.read()
+
+    try:
+        return Inv(dict_json=json.loads(data))
+    except (JSONDecodeError, ValidationError):
+        pass
+
+    try:
+        return Inv(plaintext=data)
+    except (AttributeError, UnicodeEncodeError):
+        pass
+
+    selective_print("Invalid plaintext or JSON inventory format.", params)
+    sys.exit(1)
 
 
 def main():
@@ -995,6 +1094,8 @@ def main():
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
+    # TODO: Per #131, force quiet mode if converting to stdout
+
     # Print version &c. and exit if indicated
     if params[VERSION]:
         print(VER_TXT)
@@ -1004,11 +1105,15 @@ def main():
     # for cosmetics
     selective_print(" ", params)
 
-    # Generate the input Inventory based on --url or not.
+    # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
     # sys.exit(n) internally in error-exit situations
     if params[URL]:
         inv, in_path = inv_url(params)
+    elif params[INFILE] == "-":
+        # TODO: Add tests for stdin-read functionality
+        inv = inv_stdin(params)
+        in_path = None
     else:
         inv, in_path = inv_local(params)
 

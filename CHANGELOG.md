@@ -11,6 +11,9 @@ and this project strives to adhere to
 
 #### Added
 
+ * A hyphen can now be passed as the CLI input and/or output file name
+   to instruct sphobjinv to use stdin and/or stdout, respectively.
+
  * The `fileops` and `inventory` APIs are now tested to work with
    both strings and `pathlib.Path` objects, where they interact
    with the filesystem
