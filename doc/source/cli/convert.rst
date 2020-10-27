@@ -30,6 +30,7 @@ Basic file conversion to the default output filename is straightforward:
     Conversion completed.
     '...objects_attrs.inv' converted to '...objects_attrs.txt' (plain).
     <BLANKLINE>
+    <BLANKLINE>
     >>> print(file_head('objects_attrs.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
@@ -44,8 +45,8 @@ file:
 .. doctest:: convert_main
 
     >>> cli_run('sphobjinv convert plain objects_attrs.inv', inp='n\n')
-    <BLANKLINE>
     File exists. Overwrite (Y/N)? n
+    <BLANKLINE>
     <BLANKLINE>
     Exiting...
     <BLANKLINE>
@@ -53,6 +54,7 @@ file:
     <BLANKLINE>
     Conversion completed.
     '...objects_attrs.inv' converted to '...objects_attrs_foo.txt' (plain).
+    <BLANKLINE>
     <BLANKLINE>
 
 If you don't provide an output file extension, the |soi| defaults
@@ -70,6 +72,7 @@ indicated URL):
     <BLANKLINE>
     Conversion completed.
     'https://github.com/b[...]ce/objects_attrs.inv' converted to '...objects.txt' (plain).
+    <BLANKLINE>
     <BLANKLINE>
     >>> print(file_head('objects.txt', head=6))
     # Sphinx inventory version 2
@@ -99,10 +102,11 @@ it will automatically find and use the correct |objects.inv|:
     Conversion completed.
     '...objects.inv' converted to '...objects.txt' (plain).
     <BLANKLINE>
+    <BLANKLINE>
 
 |soi| only supports download of zlib-compressed |objects.inv| files by URL.
 Plaintext download by URL is unreliable, presumably due to encoding problems.
-If download of JSON files by URL is desirable, please
+If processing of JSON files by API URL is desirable, please
 `submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
 
 
