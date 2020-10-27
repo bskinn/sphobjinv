@@ -254,8 +254,8 @@ def test_cli_overwrite_prompt_and_behavior(
     with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(args)
 
-        assert "converted" in out_.getvalue()
-        assert "(plain)" in out_.getvalue()
+        assert "converted" in err_.getvalue()
+        assert "(plain)" in err_.getvalue()
 
     # First overwrite, declining clobber
     args[2] = str(src_path_2)
@@ -283,7 +283,7 @@ def test_cli_suggest_noresults(run_cmdline_test, res_cmp):
     """Confirm suggest w/no found results works."""
     with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(["suggest", res_cmp, "instance", "-t", "99"])
-        assert "No results found." in out_.getvalue()
+        assert "No results found." in err_.getvalue()
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
@@ -319,7 +319,7 @@ def test_cli_suggest_withscoreandindex(run_cmdline_test, res_cmp):
 
 
 @pytest.mark.parametrize(
-    ["inp", "flags", "nlines"], [("", "-at", 57), ("y\n", "-t", 58), ("n\n", "-t", 4)]
+    ["inp", "flags", "nlines"], [("", "-at", 56), ("y\n", "-t", 57), ("n\n", "-t", 1)]
 )  # Extra line for input() query in the "y\n" case
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)
 def test_cli_suggest_long_list(inp, flags, nlines, run_cmdline_test, res_cmp):
@@ -355,7 +355,7 @@ def test_clifail_convert_wrongfiletype(scratch_path, run_cmdline_test, monkeypat
 
     with stdio_mgr() as (in_, out_, err_):
         run_cmdline_test(["convert", "plain", fname], expect=1)
-        assert "Unrecognized" in out_.getvalue()
+        assert "Unrecognized" in err_.getvalue()
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT)

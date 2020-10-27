@@ -736,9 +736,7 @@ def write_stdout(inv, params):
             json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
         )
     else:
-        log_print(
-            "Error: Only plaintext and JSON can be emitted to stdout.", params
-        )
+        log_print("Error: Only plaintext and JSON can be emitted to stdout.", params)
         sys.exit(1)
 
 
@@ -795,7 +793,7 @@ def do_convert(inv, in_path, params):
     if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
-            log_print("\nExiting...")
+            log_print("\nExiting...", params)
             sys.exit(0)
 
     # Write the output file
@@ -864,13 +862,13 @@ def do_suggest(inv, params):
     )
 
     if len(results) == 0:
-        log_print("No results found.")
+        log_print("No results found.", params)
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
-        resp = yesno_prompt("Display all {0} results ".format(len(results)) + "(Y/N)? ")
+        resp = yesno_prompt("Display all {0} results (Y/N)?".format(len(results)))
         if resp.lower() == "n":
-            print("\nExiting...")
+            log_print("\nExiting...", params)
             sys.exit(0)
 
     # Field widths in output
