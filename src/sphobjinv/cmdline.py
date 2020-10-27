@@ -211,7 +211,7 @@ def selective_print(thing, params):
 
     """
     if not params[SUBPARSER_NAME][:2] == "co" or not params[QUIET]:
-        print(thing)
+        print(thing, file=sys.stderr)
 
 
 def err_format(exc):
@@ -795,7 +795,7 @@ def do_convert(inv, in_path, params):
     if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
-            print("\nExiting...")
+            selective_print("\nExiting...")
             sys.exit(0)
 
     # Write the output file
@@ -864,7 +864,7 @@ def do_suggest(inv, params):
     )
 
     if len(results) == 0:
-        print("No results found.")
+        selective_print("No results found.")
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
@@ -1122,6 +1122,9 @@ def main():
         do_convert(inv, in_path, params)
     elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
         do_suggest(inv, params)
+
+    # Cosmetic final blank link
+    selective_print(" ", params)
 
     # Clean exit
     sys.exit(0)
