@@ -7,30 +7,38 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-### [unreleased changes]
+### [2.1.0a2] - 2020-10-27
 
 #### Added
 
  * A hyphen can now be passed as the CLI input and/or output file name
    to instruct sphobjinv to use stdin and/or stdout, respectively.
 
+ * When an inventory is retrieved from a remote URL with `-u`, the
+   resolved location of the inventory is included in generated JSON
+   at `json_dict.metadata.url`.
+
  * The `fileops` and `inventory` APIs are now tested to work with
    both strings and `pathlib.Path` objects, where they interact
-   with the filesystem
+   with the filesystem.
+
+#### Changed
+
+ * CLI logging messages are now emitted to stderr instead of stdout.
 
 #### Refactored
 
  * Patterns in regular expressions are now defined with raw strings
-   to improve readability
+   to improve readability.
 
 ### [2.0.1] - 2020-01-26
 
 #### Fixed
 
  * attr.s usage on Inventory changed to use eq=False where possible,
-   per the deprecation of the cmp argument
+   per the deprecation of the cmp argument.
  * URL inventory retrieval now sends a User-Agent header, to avoid
-   403 FORBIDDEN errors on some docs servers
+   403 FORBIDDEN errors on some docs servers.
 
 
 ### [2.0.1rc1] - 2019-02-01
@@ -65,7 +73,7 @@ and this project strives to adhere to
 #### Fixed
 
  * API code no longer contains any `sys.exit` calls;
-   CLI interactions should now be properly segregated from the internal API
+   CLI interactions should now be properly segregated from the internal API.
 
 #### Added
 

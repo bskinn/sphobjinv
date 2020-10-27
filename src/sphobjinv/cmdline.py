@@ -188,8 +188,10 @@ SUGGEST_CONFIRM_LENGTH = 30
 #: Default match threshold for :option:`sphobjinv suggest --thresh`
 DEF_THRESH = 75
 
+#: Dict key for URL at which an inventory was actually found
+FOUND_URL = "found_url"
 
-# TODO: Expand/split selective/nonselective print, to stdout/stderr
+
 def log_print(thing, params):
     """Print `thing` if not in quiet mode.
 
@@ -667,7 +669,7 @@ def write_zlib(inv, path, *, expand=False, contract=False):
     writebytes(path, bz_str)
 
 
-def write_json(inv, path, *, expand=False, contract=False):
+def write_json(inv, path, params):
     """Write an |Inventory| to JSON.
 
     Writes output via
@@ -685,27 +687,22 @@ def write_json(inv, path, *, expand=False, contract=False):
 
         |str| -- Path to output file
 
-    expand
+    params
 
-        |bool| *(optional)* -- Generate output with any
-        :data:`~sphobjinv.data.SuperDataObj.uri` or
-        :data:`~sphobjinv.data.SuperDataObj.dispname`
-        abbreviations expanded
-
-    contract
-
-        |bool| *(optional)* -- Generate output with abbreviated
-        :data:`~sphobjinv.data.SuperDataObj.uri` and
-        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+        dict -- `argparse` parameters
 
     Raises
     ------
     ValueError
 
-        If both `expand` and `contract` are |True|
+        If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    json_dict = inv.json_dict(expand=expand, contract=contract)
+    json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+
+    if params.get(FOUND_URL, False):
+        json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+
     writejson(path, json_dict)
 
 
@@ -732,9 +729,12 @@ def write_stdout(inv, params):
     if params[MODE] == PLAIN:
         print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
     elif params[MODE] == JSON:
-        print(
-            json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
-        )
+        json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+
+        if params.get(FOUND_URL, False):
+            json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+
+        print(json.dumps(json_dict))
     else:
         log_print("Error: Only plaintext and JSON can be emitted to stdout.", params)
         sys.exit(1)
@@ -805,7 +805,7 @@ def do_convert(inv, in_path, params):
                 inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
             )
         if mode == JSON:
-            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_json(inv, out_path, params)
     except Exception as e:
         log_print("\nError during write of output file:", params)
         log_print(err_format(e), params)
@@ -962,6 +962,9 @@ def inv_url(params):
     If an inventory is not found at that exact URL, progressively
     searches the directory tree of the URL for |objects.inv|.
 
+    Injects the URL at which an inventory was found into ``params``
+    under the ``found_url`` key.
+
     Calls :func:`sys.exit` internally in error-exit situations.
 
     Parameters
@@ -1022,6 +1025,7 @@ def inv_url(params):
         log_print("No inventory found!", params)
         sys.exit(1)
 
+    params.update({FOUND_URL: url})
     if len(url) > 45:
         ret_path = url[:20] + "[...]" + url[-20:]
     else:  # pragma: no cover
