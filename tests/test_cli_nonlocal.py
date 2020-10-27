@@ -98,7 +98,7 @@ def test_clifail_bad_url(run_cmdline_test, misc_info, scratch_path):
             ],
             expect=1,
         )
-        assert "No inventory at provided URL." in out_.getvalue()
+        assert "No inventory at provided URL." in err_.getvalue()
 
 
 @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
@@ -115,7 +115,7 @@ def test_clifail_url_no_leading_http(run_cmdline_test, scratch_path):
             ],
             expect=1,
         )
-        assert "No inventory at provided URL." in out_.getvalue()
+        assert "No inventory at provided URL." in err_.getvalue()
 
 
 # ====  NONLOCAL SUGGEST TESTS  ====

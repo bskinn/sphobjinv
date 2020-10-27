@@ -188,9 +188,11 @@ SUGGEST_CONFIRM_LENGTH = 30
 #: Default match threshold for :option:`sphobjinv suggest --thresh`
 DEF_THRESH = 75
 
+#: Dict key for URL at which an inventory was actually found
+FOUND_URL = "found_url"
 
-# TODO: Expand/split selective/nonselective print, to stdout/stderr
-def selective_print(thing, params):
+
+def log_print(thing, params):
     """Print `thing` if not in quiet mode.
 
     Quiet mode is indicated by the value at the :data:`QUIET` key
@@ -211,7 +213,7 @@ def selective_print(thing, params):
 
     """
     if not params[SUBPARSER_NAME][:2] == "co" or not params[QUIET]:
-        print(thing)
+        print(thing, file=sys.stderr)
 
 
 def err_format(exc):
@@ -667,7 +669,7 @@ def write_zlib(inv, path, *, expand=False, contract=False):
     writebytes(path, bz_str)
 
 
-def write_json(inv, path, *, expand=False, contract=False):
+def write_json(inv, path, params):
     """Write an |Inventory| to JSON.
 
     Writes output via
@@ -685,27 +687,22 @@ def write_json(inv, path, *, expand=False, contract=False):
 
         |str| -- Path to output file
 
-    expand
+    params
 
-        |bool| *(optional)* -- Generate output with any
-        :data:`~sphobjinv.data.SuperDataObj.uri` or
-        :data:`~sphobjinv.data.SuperDataObj.dispname`
-        abbreviations expanded
-
-    contract
-
-        |bool| *(optional)* -- Generate output with abbreviated
-        :data:`~sphobjinv.data.SuperDataObj.uri` and
-        :data:`~sphobjinv.data.SuperDataObj.dispname` values
+        dict -- `argparse` parameters
 
     Raises
     ------
     ValueError
 
-        If both `expand` and `contract` are |True|
+        If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    json_dict = inv.json_dict(expand=expand, contract=contract)
+    json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+
+    if params.get(FOUND_URL, False):
+        json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+
     writejson(path, json_dict)
 
 
@@ -732,13 +729,14 @@ def write_stdout(inv, params):
     if params[MODE] == PLAIN:
         print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
     elif params[MODE] == JSON:
-        print(
-            json.dumps(inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT]))
-        )
+        json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+
+        if params.get(FOUND_URL, False):
+            json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+
+        print(json.dumps(json_dict))
     else:
-        selective_print(
-            "Error: Only plaintext and JSON can be emitted to stdout.", params
-        )
+        log_print("Error: Only plaintext and JSON can be emitted to stdout.", params)
         sys.exit(1)
 
 
@@ -787,15 +785,15 @@ def do_convert(inv, in_path, params):
         out_path = resolve_outpath(params[OUTFILE], in_path, params)
     except Exception as e:  # pragma: no cover
         # This may not actually be reachable except in exceptional situations
-        selective_print("\nError while constructing output file path:", params)
-        selective_print(err_format(e), params)
+        log_print("\nError while constructing output file path:", params)
+        log_print(err_format(e), params)
         sys.exit(1)
 
     # If exists, confirm overwrite; clobber if QUIET
     if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
         resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
         if resp.lower() == "n":
-            print("\nExiting...")
+            log_print("\nExiting...", params)
             sys.exit(0)
 
     # Write the output file
@@ -807,14 +805,14 @@ def do_convert(inv, in_path, params):
                 inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
             )
         if mode == JSON:
-            write_json(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
+            write_json(inv, out_path, params)
     except Exception as e:
-        selective_print("\nError during write of output file:", params)
-        selective_print(err_format(e), params)
+        log_print("\nError during write of output file:", params)
+        log_print(err_format(e), params)
         sys.exit(1)
 
     # Report success, if not QUIET
-    selective_print(
+    log_print(
         "Conversion completed.\n"
         "'{0}' converted to '{1}' ({2}).".format(
             in_path if in_path else "stdin", out_path, mode
@@ -864,13 +862,13 @@ def do_suggest(inv, params):
     )
 
     if len(results) == 0:
-        print("No results found.")
+        log_print("No results found.", params)
         return
 
     if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
-        resp = yesno_prompt("Display all {0} results ".format(len(results)) + "(Y/N)? ")
+        resp = yesno_prompt("Display all {0} results (Y/N)?".format(len(results)))
         if resp.lower() == "n":
-            print("\nExiting...")
+            log_print("\nExiting...", params)
             sys.exit(0)
 
     # Field widths in output
@@ -941,14 +939,14 @@ def inv_local(params):
     try:
         in_path = resolve_inpath(params[INFILE])
     except Exception as e:
-        selective_print("\nError while parsing input file path:", params)
-        selective_print(err_format(e), params)
+        log_print("\nError while parsing input file path:", params)
+        log_print(err_format(e), params)
         sys.exit(1)
 
     # Attempt import
     inv = import_infile(in_path)
     if inv is None:
-        selective_print("\nError: Unrecognized file format", params)
+        log_print("\nError: Unrecognized file format", params)
         sys.exit(1)
 
     return inv, in_path
@@ -963,6 +961,9 @@ def inv_url(params):
 
     If an inventory is not found at that exact URL, progressively
     searches the directory tree of the URL for |objects.inv|.
+
+    Injects the URL at which an inventory was found into ``params``
+    under the ``found_url`` key.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -989,7 +990,7 @@ def inv_url(params):
 
     # Disallow --url mode on local files
     if in_file.startswith("file:/"):
-        selective_print("\nError: URL mode on local file is invalid", params)
+        log_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
     # Need to initialize the inventory variable
@@ -999,31 +1000,32 @@ def inv_url(params):
     try:
         inv = Inv(url=in_file)
     except (HTTPError, ValueError, VersionError, URLError):
-        selective_print("No inventory at provided URL.", params)
+        log_print("No inventory at provided URL.", params)
     else:
-        selective_print("Remote inventory found.", params)
+        log_print("Remote inventory found.", params)
         url = in_file
 
     # Keep searching if inv not found yet
     if not inv:
         for url in urlwalk(in_file):
-            selective_print('Attempting "{0}" ...'.format(url), params)
+            log_print('Attempting "{0}" ...'.format(url), params)
             try:
                 inv = Inv(url=url)
             except (ValueError, HTTPError):
                 pass
             else:
-                selective_print("Remote inventory found.", params)
+                log_print("Remote inventory found.", params)
                 break
 
     # Cosmetic line break
-    selective_print(" ", params)
+    log_print(" ", params)
 
     # Success or no?
     if not inv:
-        selective_print("No inventory found!", params)
+        log_print("No inventory found!", params)
         sys.exit(1)
 
+    params.update({FOUND_URL: url})
     if len(url) > 45:
         ret_path = url[:20] + "[...]" + url[-20:]
     else:  # pragma: no cover
@@ -1067,7 +1069,7 @@ def inv_stdin(params):
     except (AttributeError, UnicodeEncodeError):
         pass
 
-    selective_print("Invalid plaintext or JSON inventory format.", params)
+    log_print("Invalid plaintext or JSON inventory format.", params)
     sys.exit(1)
 
 
@@ -1103,7 +1105,7 @@ def main():
 
     # Regardless of mode, insert extra blank line
     # for cosmetics
-    selective_print(" ", params)
+    log_print(" ", params)
 
     # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
@@ -1122,6 +1124,9 @@ def main():
         do_convert(inv, in_path, params)
     elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
         do_suggest(inv, params)
+
+    # Cosmetic final blank link
+    log_print(" ", params)
 
     # Clean exit
     sys.exit(0)
