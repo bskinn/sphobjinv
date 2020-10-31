@@ -416,6 +416,10 @@ class DataObjStr(SuperDataObj):
         >>> obj == obj.evolve(name="quux")
         False
 
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
+
     """
 
     uri_abbrev = "$"
@@ -482,6 +486,10 @@ class DataObjBytes(SuperDataObj):
         True
         >>> obj == obj.evolve(name=b"quux")
         False
+
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
 
     """
 
