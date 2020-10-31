@@ -200,7 +200,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_contracted(self):
-        """Object relative URI, contracted with `uri_abbrev`."""
+        """Object-relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
             return self.uri[: -len(self.name)] + self.uri_abbrev
         else:
@@ -208,7 +208,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_expanded(self):
-        """Object relative URI, with `uri_abbrev` expanded."""
+        """Object-relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
             return self.uri[: -len(self.uri_abbrev)] + self.name
         else:
@@ -390,7 +390,33 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
 @attr.s(slots=True)
 class DataObjStr(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |str| object data."""
+    """:class:`SuperDataObj` subclass generating |str| object data.
+
+    Two :class:`DataObjStr` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjstr
+
+        >>> obj = soi.DataObjStr(
+        ...     name="foo",
+        ...     domain="py",
+        ...     role="method",
+        ...     priority="1",
+        ...     uri="$",
+        ...     dispname="-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name="quux")
+        False
+
+    """
 
     uri_abbrev = "$"
     dispname_abbrev = "-"
@@ -431,7 +457,33 @@ class DataObjStr(SuperDataObj):
 
 @attr.s(slots=True)
 class DataObjBytes(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |bytes| object data."""
+    """:class:`SuperDataObj` subclass generating |bytes| object data.
+
+    Two :class:`DataObjBytes` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjbytes
+
+        >>> obj = soi.DataObjBytes(
+        ...     name=b"foo",
+        ...     domain=b"py",
+        ...     role=b"method",
+        ...     priority=b"1",
+        ...     uri=b"$",
+        ...     dispname=b"-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name=b"quux")
+        False
+
+    """
 
     uri_abbrev = b"$"
     dispname_abbrev = b"-"

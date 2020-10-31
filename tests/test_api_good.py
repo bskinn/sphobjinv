@@ -350,6 +350,7 @@ def test_api_inventory_equality(res_cmp):
     """Confirm the attrs Inventory equality methods work as expected."""
     inv1 = soi.Inventory(res_cmp)
     inv2 = soi.Inventory(res_cmp)
+    # TODO: Test inequality when other Inventory properties are changed
 
     assert inv1 is inv1
     assert inv1 is not inv2

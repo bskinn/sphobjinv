@@ -1,4 +1,5 @@
 .. API usage page
+.. # TODO Add mention of equality testing
 
 API Usage
 =========
