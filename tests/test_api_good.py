@@ -260,6 +260,31 @@ def test_api_dataobj_evolvename(use_bytes, res_cmp):  # pragma: no cover
     assert obj2.name == newname
 
 
+def test_api_dataobj_equality(res_cmp):
+    """Confirm various aspects of DataObj equality behavior."""
+    inv = soi.Inventory(res_cmp)
+
+    obj1 = inv.objects[0]
+    obj2 = inv.objects[1]
+    obj3 = obj1.evolve()
+    obj4 = obj3.evolve(name="foobar")
+
+    assert obj1 is obj1
+    assert obj1 is not obj2
+    assert obj1 is not obj3
+    assert obj1 is not obj4
+
+    assert obj1 is not obj1.as_bytes
+    assert obj1 is obj1.as_bytes.as_str
+
+    assert obj1 == obj1
+    assert obj1 != obj2
+    assert obj1 == obj3
+    assert obj1 != obj4
+
+    assert obj1 != obj1.as_bytes
+
+
 def test_api_inventory_default_none_instantiation(subtests):
     """Confirm 'manual' instantiation with None."""
     inv = soi.Inventory()
