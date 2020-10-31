@@ -108,6 +108,12 @@ rst_epilog = r"""
 
 .. |Inventory| replace:: :class:`~sphobjinv.inventory.Inventory`
 
+.. |DataObjStr| replace:: :class:`~sphobjinv.data.DataObjStr`
+
+.. |DataObjBytes| replace:: :class:`~sphobjinv.data.DataObjBytes`
+
+.. |SuperDataObj| replace:: :class:`~sphobjinv.data.SuperDataObj`
+
 .. |license_txt| replace:: LICENSE.txt
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt

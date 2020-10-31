@@ -70,6 +70,44 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
     >>> print(inv4)
     <Inventory (url): attrs v17.2, 56 objects>
 
+Comparing inventories
+---------------------
+
+|Inventory| instances compare equal when they have the same :attr:`~sphobjinv.inventory.Inventory.project` and
+:attr:`~sphobjinv.inventory.Inventory.version`, and when all the members of
+:attr:`~sphobjinv.inventory.Inventory.objects` are identical between the two instances:
+
+.. doctest:: api_inspect
+
+    >>> inv is inv2
+    False
+    >>> inv == inv2 == inv3
+    True
+    >>> inv3.project = "foo"
+    >>> inv == inv3
+    False
+
+Individual |DataObjStr| and (|DataObjBytes|) instances compare equal if all of
+:attr:`~sphobjinv.data.SuperDataObj.name`, :attr:`~sphobjinv.data.SuperDataObj.domain`,
+:attr:`~sphobjinv.data.SuperDataObj.role`, :attr:`~sphobjinv.data.SuperDataObj.priority`,
+:attr:`~sphobjinv.data.SuperDataObj.uri`, and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+are equal:
+
+.. doctest:: api_inspect
+
+    >>> obj1 = inv.objects[0]
+    >>> obj2 = inv.objects[1]
+    >>> obj1 == obj1
+    True
+    >>> obj1 == obj2
+    False
+    >>> obj1 == obj1.evolve(name="foo")
+    False
+
+.. versionchanged:: 2.1
+    Previously, |Inventory| instances would only compare equal to themselves,
+    and comparison attempts on |SuperDataObj| subclass instances would raise :exc:`RecursionError`.
+
 Modifying an Inventory
 ----------------------
 
