@@ -200,7 +200,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_contracted(self):
-        """Object relative URI, contracted with `uri_abbrev`."""
+        """Object-relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
             return self.uri[: -len(self.name)] + self.uri_abbrev
         else:
@@ -208,7 +208,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_expanded(self):
-        """Object relative URI, with `uri_abbrev` expanded."""
+        """Object-relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
             return self.uri[: -len(self.uri_abbrev)] + self.name
         else:
@@ -390,7 +390,37 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
 @attr.s(slots=True)
 class DataObjStr(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |str| object data."""
+    """:class:`SuperDataObj` subclass generating |str| object data.
+
+    Two :class:`DataObjStr` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjstr
+
+        >>> obj = soi.DataObjStr(
+        ...     name="foo",
+        ...     domain="py",
+        ...     role="method",
+        ...     priority="1",
+        ...     uri="$",
+        ...     dispname="-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name="quux")
+        False
+
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
+
+    """
 
     uri_abbrev = "$"
     dispname_abbrev = "-"
@@ -402,7 +432,7 @@ class DataObjStr(SuperDataObj):
     uri = attr.ib(converter=_utf8_decode)
     dispname = attr.ib(converter=_utf8_decode)
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):
@@ -417,7 +447,7 @@ class DataObjStr(SuperDataObj):
             as_str=self,
         )
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
@@ -431,7 +461,37 @@ class DataObjStr(SuperDataObj):
 
 @attr.s(slots=True)
 class DataObjBytes(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |bytes| object data."""
+    """:class:`SuperDataObj` subclass generating |bytes| object data.
+
+    Two :class:`DataObjBytes` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjbytes
+
+        >>> obj = soi.DataObjBytes(
+        ...     name=b"foo",
+        ...     domain=b"py",
+        ...     role=b"method",
+        ...     priority=b"1",
+        ...     uri=b"$",
+        ...     dispname=b"-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name=b"quux")
+        False
+
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
+
+    """
 
     uri_abbrev = b"$"
     dispname_abbrev = b"-"
@@ -443,7 +503,7 @@ class DataObjBytes(SuperDataObj):
     uri = attr.ib(converter=_utf8_encode)
     dispname = attr.ib(converter=_utf8_encode)
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
@@ -458,7 +518,7 @@ class DataObjBytes(SuperDataObj):
             as_bytes=self,
         )
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):

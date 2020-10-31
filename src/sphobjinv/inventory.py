@@ -44,14 +44,7 @@ from sphobjinv.schema import json_schema
 from sphobjinv.zlib import decompress
 
 
-# Cope with 'cmp' argument deprecation in attrs 19.2
-try:
-    _attr_wrapper = attr.s(slots=True, eq=False)
-except TypeError:  # pragma: no cover
-    _attr_wrapper = attr.s(slots=True, cmp=False)
-
-
-@_attr_wrapper
+@attr.s(slots=True, eq=True, order=False)
 class Inventory(object):
     r"""Entire contents of an |objects.inv| inventory.
 
@@ -63,6 +56,29 @@ class Inventory(object):
     **At most ONE** of these source arguments may be other than |None|.
 
     The `count_error` argument is only relevant to the `dict_json` source type.
+
+    Equality comparisons between |Inventory| instances
+    will return |True| if
+    :attr:`~sphobjinv.inventory.Inventory.project`,
+    :attr:`~sphobjinv.inventory.Inventory.version`, and
+    **all** contents of :attr:`~sphobjinv.inventory.Inventory.objects`
+    are identical, even if the instances were created from different
+    sources:
+
+    .. doctest:: inventory-equality
+
+        >>> inv1 = soi.Inventory(
+        ...     url="https://sphobjinv.readthedocs.io/en/latest/objects.inv"
+        ... )
+        >>> inv2 = soi.Inventory(inv1.data_file())
+        >>> inv1 is inv2
+        False
+        >>> inv1 == inv2
+        True
+
+    .. versionchanged:: 2.1
+        Previously, an |Inventory| instance would compare equal only
+        to itself.
 
     `source`
 
@@ -136,25 +152,25 @@ class Inventory(object):
 
     # General source for try-most-types import
     # Needs to be first so it absorbs a positional arg
-    _source = attr.ib(repr=False, default=None)
+    _source = attr.ib(repr=False, default=None, eq=False)
 
     # Stringlike types (both accept str & bytes)
-    _plaintext = attr.ib(repr=False, default=None)
-    _zlib = attr.ib(repr=False, default=None)
+    _plaintext = attr.ib(repr=False, default=None, eq=False)
+    _zlib = attr.ib(repr=False, default=None, eq=False)
 
     # Filename types (must be str or Path)
-    _fname_plain = attr.ib(repr=False, default=None)
-    _fname_zlib = attr.ib(repr=False, default=None)
+    _fname_plain = attr.ib(repr=False, default=None, eq=False)
+    _fname_zlib = attr.ib(repr=False, default=None, eq=False)
 
     # dict types
-    _dict_json = attr.ib(repr=False, default=None)
+    _dict_json = attr.ib(repr=False, default=None, eq=False)
 
     # URL for remote retrieval of objects.inv/.txt
-    _url = attr.ib(repr=False, default=None)
+    _url = attr.ib(repr=False, default=None, eq=False)
 
     # Flag for whether to raise error on object count mismatch
     _count_error = attr.ib(
-        repr=False, default=True, validator=attr.validators.instance_of(bool)
+        repr=False, default=True, validator=attr.validators.instance_of(bool), eq=False
     )
 
     # Actual regular attributes
@@ -175,7 +191,7 @@ class Inventory(object):
 
     #: :class:`~sphobjinv.enum.SourceTypes` |Enum| value indicating the type of
     #: source from which the instance was generated.
-    source_type = attr.ib(init=False, default=None)
+    source_type = attr.ib(init=False, default=None, eq=False)
 
     # Helper strings for inventory datafile output
     #: Preamble line for v2 |objects.inv| header

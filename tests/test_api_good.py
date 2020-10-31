@@ -147,9 +147,6 @@ def test_api_data_regex(element, datadict, bytes_txt, misc_info):
     assert mchs[element].groupdict() == {_.value: datadict[_] for _ in datadict}
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 def test_api_dataobjbytes_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjBytes type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
@@ -167,9 +164,6 @@ def test_api_dataobjbytes_init(bytes_txt):  # pragma: no cover
     )
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 def test_api_dataobjstr_init(bytes_txt):  # pragma: no cover
     """Confirm the DataObjStr type functions correctly."""
     mch = soi.pb_data.search(bytes_txt)
@@ -249,9 +243,6 @@ def test_api_dataobj_datalinefxn(
         assert dl == lines_obj[init_expanded and not dataline_arg]
 
 
-@pytest.mark.xfail(
-    reason="Will fail until .as_xxx properties are removed from attrs cmp"
-)
 @pytest.mark.parametrize(
     "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
 )
@@ -267,6 +258,31 @@ def test_api_dataobj_evolvename(use_bytes, res_cmp):  # pragma: no cover
 
     assert obj == obj3
     assert obj2.name == newname
+
+
+def test_api_dataobj_equality(res_cmp):
+    """Confirm various aspects of DataObj equality behavior."""
+    inv = soi.Inventory(res_cmp)
+
+    obj1 = inv.objects[0]
+    obj2 = inv.objects[1]
+    obj3 = obj1.evolve()
+    obj4 = obj3.evolve(name="foobar")
+
+    assert obj1 is obj1
+    assert obj1 is not obj2
+    assert obj1 is not obj3
+    assert obj1 is not obj4
+
+    assert obj1 is not obj1.as_bytes
+    assert obj1 is obj1.as_bytes.as_str
+
+    assert obj1 == obj1
+    assert obj1 != obj2
+    assert obj1 == obj3
+    assert obj1 != obj4
+
+    assert obj1 != obj1.as_bytes
 
 
 def test_api_inventory_default_none_instantiation(subtests):
@@ -328,6 +344,30 @@ def test_api_inventory_bytes_fname_instantiation(
         with subtests.test(msg="plaintext_bytes"):
             inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
             attrs_inventory_test(inv, source_type)
+
+
+def test_api_inventory_equality(res_cmp):
+    """Confirm the attrs Inventory equality methods work as expected."""
+    inv1 = soi.Inventory(res_cmp)
+    inv2 = soi.Inventory(res_cmp)
+    inv3 = soi.Inventory(inv1.data_file())
+    inv4 = soi.Inventory(res_cmp)
+
+    assert inv1 is inv1
+    assert inv1 is not inv2
+    assert inv1 is not inv3
+
+    assert inv1 == inv1
+    assert inv1 == inv2
+    assert inv1 == inv3
+
+    inv2.objects[0].name = "foobar"
+    inv3.project = "quux"
+    inv4.version = "0.0"
+
+    assert inv1 != inv2
+    assert inv1 != inv3
+    assert inv1 != inv4
 
 
 @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
