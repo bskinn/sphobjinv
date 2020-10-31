@@ -350,17 +350,24 @@ def test_api_inventory_equality(res_cmp):
     """Confirm the attrs Inventory equality methods work as expected."""
     inv1 = soi.Inventory(res_cmp)
     inv2 = soi.Inventory(res_cmp)
-    # TODO: Test inequality when other Inventory properties are changed
+    inv3 = soi.Inventory(inv1.data_file())
+    inv4 = soi.Inventory(res_cmp)
 
     assert inv1 is inv1
     assert inv1 is not inv2
+    assert inv1 is not inv3
 
     assert inv1 == inv1
     assert inv1 == inv2
+    assert inv1 == inv3
 
     inv2.objects[0].name = "foobar"
+    inv3.project = "quux"
+    inv4.version = "0.0"
 
     assert inv1 != inv2
+    assert inv1 != inv3
+    assert inv1 != inv4
 
 
 @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
