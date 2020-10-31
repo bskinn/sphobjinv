@@ -321,6 +321,22 @@ def test_api_inventory_bytes_fname_instantiation(
             attrs_inventory_test(inv, source_type)
 
 
+def test_api_inventory_equality(res_cmp):
+    """Confirm the attrs Inventory equality methods work as expected."""
+    inv1 = soi.Inventory(res_cmp)
+    inv2 = soi.Inventory(res_cmp)
+
+    assert inv1 is inv1
+    assert inv1 is not inv2
+
+    assert inv1 == inv1
+    assert inv1 == inv2
+
+    inv2.objects[0].name = "foobar"
+
+    assert inv1 != inv2
+
+
 @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
 def test_api_inventory_flatdict_jsonvalidate(prop, res_cmp):
     """Confirm that the flat_dict properties generated valid JSON."""
