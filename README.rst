@@ -6,8 +6,9 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/azure-devops/build/brianskinn/09020ac4-1ef2-4890-8c23-c3128d2029e3/4?label=azure-pipelines&logo=azure-devops
     :target: https://dev.azure.com/brianskinn/sphobjinv/_build?definitionId=4
 
-.. image:: https://img.shields.io/travis/com/bskinn/sphobjinv?label=travis-ci&logo=travis
-    :target: https://travis-ci.com/bskinn/sphobjinv
+.. image:: https://img.shields.io/github/workflow/status/bskinn/sphobjinv/ci_tests?logo=github
+    :alt: GitHub Workflow Status
+    :target: https://github.com/bskinn/sphobjinv/actions
 
 .. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
