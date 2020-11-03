@@ -7,7 +7,7 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-### [2.1.0a2] - 2020-10-27
+### [2.1.0a3] - *pending*
 
 #### Added
 
@@ -25,6 +25,11 @@ and this project strives to adhere to
 #### Changed
 
  * CLI logging messages are now emitted to stderr instead of stdout.
+
+#### Fixed
+
+ * Equality tests on Inventory and DataObjStr/DataObjBytes instances
+   now work correctly.
 
 #### Refactored
 

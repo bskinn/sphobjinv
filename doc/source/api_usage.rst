@@ -77,14 +77,16 @@ Comparing inventories
 :attr:`~sphobjinv.inventory.Inventory.version`, and when all the members of
 :attr:`~sphobjinv.inventory.Inventory.objects` are identical between the two instances:
 
-.. doctest:: api_inspect
+.. doctest:: api_compare
 
+    >>> inv = soi.Inventory("objects_attrs.inv")
+    >>> inv2 = soi.Inventory(inv.data_file())
     >>> inv is inv2
     False
-    >>> inv == inv2 == inv3
+    >>> inv == inv2
     True
-    >>> inv3.project = "foo"
-    >>> inv == inv3
+    >>> inv2.project = "foo"
+    >>> inv == inv2
     False
 
 Individual |DataObjStr| and (|DataObjBytes|) instances compare equal if all of
@@ -93,7 +95,7 @@ Individual |DataObjStr| and (|DataObjBytes|) instances compare equal if all of
 :attr:`~sphobjinv.data.SuperDataObj.uri`, and :attr:`~sphobjinv.data.SuperDataObj.dispname`
 are equal:
 
-.. doctest:: api_inspect
+.. doctest:: api_compare
 
     >>> obj1 = inv.objects[0]
     >>> obj2 = inv.objects[1]

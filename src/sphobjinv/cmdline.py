@@ -193,7 +193,7 @@ FOUND_URL = "found_url"
 
 
 def log_print(thing, params):
-    """Print `thing` if not in quiet mode.
+    """Print `thing` to stderr if not in quiet mode.
 
     Quiet mode is indicated by the value at the :data:`QUIET` key
     within `params`.
@@ -962,8 +962,8 @@ def inv_url(params):
     If an inventory is not found at that exact URL, progressively
     searches the directory tree of the URL for |objects.inv|.
 
-    Injects the URL at which an inventory was found into ``params``
-    under the ``found_url`` key.
+    Injects the URL at which an inventory was found into `params`
+    under the :data:`FOUND_URL` key.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -1125,7 +1125,7 @@ def main():
     elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
         do_suggest(inv, params)
 
-    # Cosmetic final blank link
+    # Cosmetic final blank line
     log_print(" ", params)
 
     # Clean exit
