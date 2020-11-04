@@ -8,16 +8,14 @@ Command-Line Usage: "convert" Mode
 The |cour|\ convert\ |/cour| subparser is used for all conversions of
 "version 2" Sphinx inventory
 files among plaintext, zlib-compressed, and (unique to |soi|) JSON formats.
-Currently, the |soi| CLI can read inventory data from local files
-in any of these three formats, as well as the standard zlib-compressed format
+The |soi| CLI can read and write inventory data from local files
+in any of these three formats, as well as read the standard zlib-compressed format
 from files in remote locations (see :option:`--url`).
-At the moment, the only output
-method supported is writing to a local file, again in all three formats.
 
-.. note::
+As of v2.1, the |soi| CLI can also read/write inventories at ``stdin``/``stdout``
+in the plaintext and JSON formats; see :ref:`below <cli_usage_json_added>`.
 
-    If reading from |stdin| or writing to |stdout| would be useful to you,
-    please leave a note at :issue:`74` so I can gauge interest.
+----
 
 Basic file conversion to the default output filename is straightforward:
 
@@ -60,7 +58,7 @@ file:
 If you don't provide an output file extension, the |soi| defaults
 (`.inv`/`.txt`/`.json`) will be used.
 
-If you want to pull an input file directly from the Web, use
+If you want to pull an input file directly from the internet, use
 :option:`--url` (note that the base filename is **not** inferred from the
 indicated URL):
 
@@ -109,6 +107,37 @@ Plaintext download by URL is unreliable, presumably due to encoding problems.
 If processing of JSON files by API URL is desirable, please
 `submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
 
+.. versionadded:: 2.1
+    The URL at which a remote inventory is found is now included
+    in JSON output:
+
+    .. doctest:: json-url
+
+        >>> cli_run('sphobjinv convert json -qu https://docs.python.org/3/ objects.json')
+        <BLANKLINE>
+        >>> data = json.loads(Path('objects.json').read_text())
+        >>> data["metadata"]["url"]
+        'https://docs.python.org/3/objects.inv'
+
+.. _cli_usage_json_added:
+
+.. versionadded:: 2.1
+    JSON and plaintext inventories can now be read from ``stdin`` and
+    written to ``stdout``, by using the special value ``-`` in the invocation.
+    E.g., to print to ``stdout``:
+
+    .. doctest:: stdio
+
+        >>> cli_run('sphobjinv co plain objects_attrs.inv -')
+        # Sphinx inventory version 2
+        # Project: attrs
+        # Version: 17.2
+        # The remainder of this file is compressed using zlib.
+        attr.Attribute py:class 1 api.html#$ -
+        attr.Factory py:class 1 api.html#$ -
+        attr.asdict py:function 1 api.html#$ -
+        ...
+
 
 **Usage**
 
@@ -128,13 +157,21 @@ If processing of JSON files by API URL is desirable, please
 
     Path (or URL, if :option:`--url` is specified) to file to be converted.
 
+    If passed as ``-``, |soi| will attempt import of a plaintext or JSON
+    inventory from ``stdin``.
+
 .. option:: outfile
 
     *(Optional)* Path to desired output file. Defaults to same directory
     and main file name as input file but with extension
     |cour|\ .inv/.txt/.json\ |/cour|, as appropriate for the output format.
+
     A bare path is accepted here, using the default output
     file name/extension.
+
+    If passed as ``-``, or if omitted when `infile` is passed as ``-``,
+    |soi| will emit plaintext or JSON (but *not*
+    zlib-compressed) inventory contents to ``stdout``.
 
 **Flags**
 
@@ -149,7 +186,7 @@ If processing of JSON files by API URL is desirable, please
 
 .. option:: -q, --quiet
 
-    Suppress all output to `stdout`, regardless of success or failure.
+    Suppress all status message output, regardless of success or failure.
     Useful for scripting/automation.  Implies :option:`--overwrite`.
 
 .. option:: -u, --url

@@ -91,6 +91,27 @@ class TestConvert:
         assert dest_path.is_file()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    def test_cli_url_in_json(
+        self, scratch_path, misc_info, run_cmdline_test, monkeypatch
+    ):
+        """Confirm URL is present when using CLI URL mode."""
+        monkeypatch.chdir(scratch_path)
+        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
+        run_cmdline_test(
+            [
+                "convert",
+                "json",
+                "-u",
+                misc_info.remote_url.format("attrs"),
+                str(dest_path.resolve()),
+            ]
+        )
+
+        d = json.loads(dest_path.read_text())
+
+        assert "objects" in d.get("metadata", {}).get("url", {})
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_clifail_bad_url(self, run_cmdline_test, misc_info, scratch_path):
         """Confirm proper error behavior when a bad URL is passed."""
         with stdio_mgr() as (in_, out_, err_):

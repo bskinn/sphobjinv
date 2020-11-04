@@ -5,7 +5,7 @@ Command-Line Usage: "suggest" Mode
 
 .. program:: sphobjinv suggest
 
-The |cour|\ suggest\ |/cour| subparser is used to query an inventory for objects
+The |cour|\ suggest\ |/cour| subcommand is used to query an inventory for objects
 fuzzy-matching a given search string. Fuzzy-matching is carried out via the
 |fuzzywuzzy|_ library, against the Restructured Text-like representation of each
 object exposed by :attr:`SuperDataObj.as_rst <sphobjinv.data.SuperDataObj.as_rst>`:
@@ -35,7 +35,7 @@ Remote |objects.inv| files can be retrieved for inspection by passing the
 The URL provided **MUST** have the leading protocol specified (here,
 |cour|\ https\ ://\ |/cour|).
 
-It is not necessary to locate the |objects.inv| file before running |soi|;
+It is usually not necessary to locate the |objects.inv| file before running |soi|;
 for most Sphinx documentation sets, if you provide a URL to any page in the docs,
 it will automatically find and use the correct |objects.inv|:
 
@@ -47,6 +47,13 @@ Plaintext download by URL is unreliable, presumably due to encoding problems.
 If download of JSON files by URL is desirable, please
 `submit an issue <https://github.com/bskinn/sphobjinv/issues>`__.
 
+.. versionadded:: 2.1
+    The |soi| CLI can now read JSON and plaintext inventories from ``stdin``
+    by passing the special ``-`` argument for `infile`:
+
+    .. command-output:: sphobjinv suggest -s - valid < objects_attrs.txt
+        :cwd: /../../tests/resource
+        :shell:
 
 **Usage**
 
@@ -59,9 +66,12 @@ If download of JSON files by URL is desirable, please
 
     Path (or URL, if :option:`--url` is specified) to file to be converted.
 
+    If passed as ``-``, |soi| will attempt import of a plaintext or JSON
+    inventory from ``stdin``.
+
 .. option:: search
 
-    Search term for |fuzzywuzzy|_ matching
+    Search term for |fuzzywuzzy|_ matching.
 
 **Flags**
 

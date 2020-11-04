@@ -163,6 +163,7 @@ rst_epilog = r"""
 
 
 doctest_global_setup = """\
+import json
 import os
 from pathlib import Path
 import shutil as sh
