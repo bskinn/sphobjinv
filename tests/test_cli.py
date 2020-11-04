@@ -55,7 +55,7 @@ class TestMisc:
         runargs = shlex.split(cmd)
         runargs.append("--help")
 
-        out = sp.check_output(runargs, shell=True).decode()  # noqa: S602,S603
+        out = sp.check_output(" ".join(runargs), shell=True).decode()  # noqa: S602,S603
 
         assert "sphobjinv" in out
         assert "suggest" in out

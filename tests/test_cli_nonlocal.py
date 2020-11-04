@@ -25,6 +25,7 @@ Sphinx |objects.inv| files.
 """
 
 
+import json
 import re
 
 import pytest
@@ -96,7 +97,9 @@ class TestConvert:
     ):
         """Confirm URL is present when using CLI URL mode."""
         monkeypatch.chdir(scratch_path)
-        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
+        dest_path = scratch_path / (
+            misc_info.FNames.MOD.value + misc_info.Extensions.JSON.value
+        )
         run_cmdline_test(
             [
                 "convert",
