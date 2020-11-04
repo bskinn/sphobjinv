@@ -72,17 +72,13 @@ class TestCore:
     )
     def test_source_types_iteration(self, actual, expect):
         """Confirm that SourceTypes iterates in the expected order."""
-        assert actual.value == expect.value
+        assert actual == expect
 
     @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
     def test_api_compress(self, path_fxn, scratch_path, misc_info, sphinx_load_test):
         """Check that a compress attempt via API throws no errors."""
-        src_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
-        )
-        dest_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
-        )
+        src_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)
+        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
 
         b_dec = soi.readbytes(path_fxn(src_path))
         b_cmp = soi.compress(b_dec)
@@ -95,12 +91,8 @@ class TestCore:
     @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
     def test_api_decompress(self, path_fxn, scratch_path, misc_info, decomp_cmp_test):
         """Check that a decompress attempt via API throws no errors."""
-        src_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
-        )
-        dest_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
-        )
+        src_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
+        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
 
         b_cmp = soi.readbytes(path_fxn(src_path))
         b_dec = soi.decompress(b_cmp)
@@ -334,15 +326,15 @@ class TestInventory:
         subtests,
     ):
         """Check bytes and filename modes for Inventory instantiation."""
-        fname = misc_info.FNames.RES.value
+        fname = misc_info.FNames.RES
 
         if source_type in (
             soi.SourceTypes.BytesPlaintext,
             soi.SourceTypes.FnamePlaintext,
         ):
-            fname += misc_info.Extensions.DEC.value
+            fname += misc_info.Extensions.DEC
         else:
-            fname += misc_info.Extensions.CMP.value
+            fname += misc_info.Extensions.CMP
 
         source = path_fxn(res_path / fname)
 

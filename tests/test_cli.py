@@ -101,8 +101,8 @@ class TestConvertGood:
         if in_ext == out_ext:
             pytest.skip("Ignore no-change conversions")
 
-        src_path = scratch_path / (misc_info.FNames.INIT.value + in_ext)
-        dest_path = scratch_path / (misc_info.FNames.INIT.value + out_ext)
+        src_path = scratch_path / (misc_info.FNames.INIT + in_ext)
+        dest_path = scratch_path / (misc_info.FNames.INIT + out_ext)
 
         assert src_path.is_file()
         assert dest_path.is_file()
@@ -123,15 +123,9 @@ class TestConvertGood:
         self, scratch_path, misc_info, run_cmdline_test
     ):
         """Confirm cmdline contract decompress of zlib with input file arg."""
-        cmp_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
-        )
-        dec_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
-        )
-        recmp_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
-        )
+        cmp_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
+        dec_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
+        recmp_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
 
         run_cmdline_test(["convert", "plain", "-e", str(cmp_path), str(dec_path)])
         assert dec_path.is_file()
@@ -161,11 +155,11 @@ class TestConvertGood:
         monkeypatch,
     ):
         """Confirm the various src/dest path/file combinations work."""
-        init_dst_fname = misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
-        mod_dst_fname = misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
+        init_dst_fname = misc_info.FNames.INIT + misc_info.Extensions.DEC
+        mod_dst_fname = misc_info.FNames.MOD + misc_info.Extensions.DEC
 
         src_path = (scratch_path.resolve() if src_path else Path(".")) / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
+            misc_info.FNames.INIT + misc_info.Extensions.CMP
         )
         dst_path = (scratch_path.resolve() if dst_path else Path(".")) / (
             mod_dst_fname if dst_name else ""
@@ -199,15 +193,9 @@ class TestConvertGood:
     ):
         """Confirm conversion in a loop, reading/writing all formats."""
         res_src_path = res_path / testall_inv_path
-        plain_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
-        )
-        json_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.JSON.value
-        )
-        zlib_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.CMP.value
-        )
+        plain_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
+        json_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
+        zlib_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
 
         if (
             not pytestconfig.getoption("--testall")
@@ -241,9 +229,7 @@ class TestConvertGood:
         """Confirm overwrite prompt works properly."""
         src_path_1 = res_path / "objects_attrs.inv"
         src_path_2 = res_path / "objects_sarge.inv"
-        dst_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
-        )
+        dst_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)
         dst_path.unlink()
 
         args = ["convert", "plain", None, str(dst_path)]
@@ -367,10 +353,7 @@ class TestFail:
             [
                 "convert",
                 "plain",
-                str(
-                    scratch_path
-                    / (misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value)
-                ),
+                str(scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)),
                 misc_info.invalid_filename,
             ],
             expect=1,
@@ -401,14 +384,9 @@ class TestFail:
         self, scratch_path, misc_info, run_cmdline_test, subtests
     ):
         """Confirm error when using URL mode on local file."""
-        in_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.CMP.value
-        )
+        in_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
 
-        (
-            scratch_path
-            / (misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value)
-        ).unlink()
+        (scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)).unlink()
 
         with subtests.test(msg="path-style"):
             run_cmdline_test(["convert", "plain", "-u", str(in_path)], expect=1)

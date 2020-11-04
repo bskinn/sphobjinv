@@ -80,14 +80,14 @@ def misc_info(res_path):
     class Info:
         """Monolithic test-information class."""
 
-        class FNames(Enum):
+        class FNames(str, Enum):
             """Enum of test-relevant file names."""
 
             RES = "objects_attrs"
             INIT = "objects"
             MOD = "objects_mod"
 
-        class Extensions(Enum):
+        class Extensions(str, Enum):
             """Enum of test-relevant file extensions."""
 
             CMP = ".inv"

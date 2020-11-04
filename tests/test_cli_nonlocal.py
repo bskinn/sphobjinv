@@ -61,9 +61,7 @@ class TestConvert:
         """Confirm CLI URL D/L, convert works w/outfile supplied."""
         monkeypatch.chdir(scratch_path)
 
-        dest_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.DEC.value
-        )
+        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
         run_cmdline_test(
             [
                 "convert",
@@ -82,9 +80,7 @@ class TestConvert:
     ):
         """Confirm CLI URL D/L, convert works w/o outfile supplied."""
         monkeypatch.chdir(scratch_path)
-        dest_path = scratch_path / (
-            misc_info.FNames.INIT.value + misc_info.Extensions.DEC.value
-        )
+        dest_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)
         dest_path.unlink()
         run_cmdline_test(
             ["convert", "plain", "-u", misc_info.remote_url.format("attrs")]
@@ -97,9 +93,7 @@ class TestConvert:
     ):
         """Confirm URL is present when using CLI URL mode."""
         monkeypatch.chdir(scratch_path)
-        dest_path = scratch_path / (
-            misc_info.FNames.MOD.value + misc_info.Extensions.JSON.value
-        )
+        dest_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
         run_cmdline_test(
             [
                 "convert",
