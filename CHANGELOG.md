@@ -14,8 +14,8 @@ and this project strives to adhere to
  * A hyphen can now be passed as the CLI input and/or output file name
    to instruct sphobjinv to use stdin and/or stdout, respectively.
 
- * When an inventory is retrieved from a remote URL with `-u`, the
-   resolved location of the inventory is included in generated JSON
+ * When an inventory is retrieved via CLI from a remote URL with `-u`,
+   the resolved location of the inventory is included in generated JSON
    at `json_dict.metadata.url`.
 
  * The `fileops` and `inventory` APIs are now tested to work with
