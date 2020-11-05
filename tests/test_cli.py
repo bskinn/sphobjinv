@@ -264,6 +264,27 @@ class TestConvertGood:
 
         assert "Sarge" == Inventory(str(dst_path)).project
 
+    def test_cli_stdin_clobber(
+        self, res_path, scratch_path, misc_info, run_cmdline_test
+    ):
+        """Confirm clobber with stdin data only with --overwrite."""
+        src_path_sarge = res_path / "objects_sarge.inv"
+        dst_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
+
+        assert "attrs" == Inventory(dst_path).project
+
+        data = json.dumps(Inventory(src_path_sarge).json_dict())
+
+        args = ["convert", "plain", "-", str(dst_path)]
+        with stdio_mgr(data):
+            run_cmdline_test(args)
+        assert "attrs" == Inventory(dst_path).project
+
+        args.append("-o")
+        with stdio_mgr(data):
+            run_cmdline_test(args)
+        assert "Sarge" == Inventory(dst_path).project
+
 
 class TestSuggestGood:
     """Tests for expected-good suggest-mode functionality."""
@@ -313,6 +334,13 @@ class TestSuggestGood:
         with stdio_mgr(inp) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", flags, "1"])
             assert nlines == out_.getvalue().count("\n")
+
+    def test_cli_suggest_many_results_stdin(self, res_cmp, run_cmdline_test):
+        """Confirm suggest from stdin doesn't choke on a long list."""
+        data = json.dumps(Inventory(res_cmp).json_dict())
+
+        with stdio_mgr(data) as (in_, out_, err_):
+            run_cmdline_test(["suggest", "-", "py", "-t", "1"])
 
 
 class TestFail:
