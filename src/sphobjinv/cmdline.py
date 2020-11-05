@@ -1066,7 +1066,7 @@ def inv_stdin(params):
 
     try:
         return Inv(plaintext=data)
-    except (AttributeError, UnicodeEncodeError):
+    except (AttributeError, UnicodeEncodeError, TypeError):
         pass
 
     log_print("Invalid plaintext or JSON inventory format.", params)

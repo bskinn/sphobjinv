@@ -35,8 +35,9 @@ from pathlib import Path
 import pytest
 from stdio_mgr import stdio_mgr
 
-from sphobjinv import HeaderFields as HFields
+from sphobjinv import HeaderFields
 from sphobjinv import Inventory
+from sphobjinv import SourceTypes
 
 
 CLI_TEST_TIMEOUT = 2
@@ -217,7 +218,11 @@ class TestConvertGood:
 
         for fmt, attrib in product(
             ("plain", "zlib", "json"),
-            (HFields.Project.value, HFields.Version.value, HFields.Count.value),
+            (
+                HeaderFields.Project.value,
+                HeaderFields.Version.value,
+                HeaderFields.Count.value,
+            ),
         ):
             with subtests.test(msg="{}_{}".format(fmt, attrib)):
                 assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)
@@ -394,3 +399,69 @@ class TestFail:
         with subtests.test(msg="url-style"):
             file_url = "file:///" + str(in_path.resolve())
             run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
+
+
+class TestStdio:
+    """Tests for the stdin/stdout functionality."""
+
+    @pytest.mark.parametrize(
+        "data_format", [SourceTypes.DictJSON, SourceTypes.BytesPlaintext]
+    )
+    def test_cli_stdio_input(
+        self, scratch_path, res_cmp, misc_info, run_cmdline_test, data_format
+    ):
+        """Confirm that inventory data can be read on stdin."""
+        inv1 = Inventory(res_cmp)
+
+        if data_format is SourceTypes.DictJSON:
+            input_data = json.dumps(inv1.json_dict())
+        elif data_format is SourceTypes.BytesPlaintext:
+            input_data = inv1.data_file().decode("utf-8")
+
+        out_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
+
+        with stdio_mgr(input_data) as (in_, out_, err_):
+            run_cmdline_test(["convert", "plain", "-", str(out_path.resolve())])
+
+        inv2 = Inventory(out_path)
+
+        assert inv1 == inv2
+
+    def test_cli_stdio_zlib_input_fails(self, scratch_path, res_cmp, run_cmdline_test):
+        """Confirm that error response is made on attempt to pipe in zlib inventory."""
+        input_data = res_cmp.read_bytes().decode("latin-1")
+
+        with stdio_mgr(input_data) as (in_, out_, err_):
+            run_cmdline_test(
+                ["convert", "plain", "-", str(scratch_path.resolve())], expect=1
+            )
+
+            assert "Invalid" in err_.getvalue()
+
+    @pytest.mark.parametrize("format_arg", ["plain", "json"])
+    def test_cli_stdio_output(
+        self, scratch_path, res_cmp, run_cmdline_test, format_arg
+    ):
+        """Confirm that inventory data can be written to stdout."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", format_arg, str(res_cmp.resolve()), "-"])
+
+            result = out_.getvalue()
+
+        inv1 = Inventory(res_cmp)
+
+        if format_arg == "plain":
+            inv2 = Inventory(result.encode("utf-8"))
+        elif format_arg == "json":
+            inv2 = Inventory(json.loads(result))
+        else:
+            raise ValueError("Invalid parametrized format arg")
+
+        assert inv1 == inv2
+
+    def test_cli_stdio_zlib_output_fails(self, res_dec, run_cmdline_test):
+        """Confirm that error response is made on attempt to pipe in zlib inventory."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "zlib", str(res_dec.resolve()), "-"], expect=1)
+
+            assert "Error" in err_.getvalue(), err_
