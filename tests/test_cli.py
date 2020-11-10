@@ -285,6 +285,16 @@ class TestConvertGood:
             run_cmdline_test(args)
         assert "Sarge" == Inventory(dst_path).project
 
+    def test_cli_json_no_metadata_url(self, res_cmp, scratch_path, misc_info, run_cmdline_test):
+        """Confim JSON generated from local inventory has no url in metadata."""
+        json_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
+
+        run_cmdline_test(["convert", "json", str(res_cmp.resolve()), str(json_path.resolve())])
+
+        d = json.loads(json_path.read_text())
+
+        assert "url" not in d.get("metadata", {})
+
 
 class TestSuggestGood:
     """Tests for expected-good suggest-mode functionality."""
