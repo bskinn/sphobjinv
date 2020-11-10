@@ -789,12 +789,20 @@ def do_convert(inv, in_path, params):
         log_print(err_format(e), params)
         sys.exit(1)
 
-    # If exists, confirm overwrite; clobber if QUIET
-    if os.path.isfile(out_path) and not params[QUIET] and not params[OVERWRITE]:
-        resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
-        if resp.lower() == "n":
-            log_print("\nExiting...", params)
+    # If exists, must handle overwrite
+    if os.path.isfile(out_path) and not params[OVERWRITE]:
+        if params[INFILE] == "-":
+            # If reading from stdin, just alert and don't overwrite
+            log_print("\nFile exists. To overwrite, supply '-o'. Exiting...", params)
             sys.exit(0)
+        # This could be written w/o nesting via elif, but would be harder to read.
+        else:
+            if not params[QUIET]:
+                # If not a stdin read, confirm overwrite; or, just clobber if QUIET
+                resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
+                if resp.lower() == "n":
+                    log_print("\nExiting...", params)
+                    sys.exit(0)
 
     # Write the output file
     try:
@@ -865,7 +873,14 @@ def do_suggest(inv, params):
         log_print("No results found.", params)
         return
 
-    if len(results) > SUGGEST_CONFIRM_LENGTH and not params[ALL]:
+    # Query if the results are long enough, but not if '--all' has been
+    # passed or if the data is coming via stdin (reading from stdin breaks
+    # the terminal interactions)
+    if (
+        len(results) > SUGGEST_CONFIRM_LENGTH
+        and not params[ALL]
+        and params[INFILE] != "-"
+    ):
         resp = yesno_prompt("Display all {0} results (Y/N)?".format(len(results)))
         if resp.lower() == "n":
             log_print("\nExiting...", params)
@@ -1066,7 +1081,7 @@ def inv_stdin(params):
 
     try:
         return Inv(plaintext=data)
-    except (AttributeError, UnicodeEncodeError):
+    except (AttributeError, UnicodeEncodeError, TypeError):
         pass
 
     log_print("Invalid plaintext or JSON inventory format.", params)

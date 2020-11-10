@@ -35,8 +35,9 @@ from pathlib import Path
 import pytest
 from stdio_mgr import stdio_mgr
 
-from sphobjinv import HeaderFields as HFields
+from sphobjinv import HeaderFields
 from sphobjinv import Inventory
+from sphobjinv import SourceTypes
 
 
 CLI_TEST_TIMEOUT = 2
@@ -217,7 +218,11 @@ class TestConvertGood:
 
         for fmt, attrib in product(
             ("plain", "zlib", "json"),
-            (HFields.Project.value, HFields.Version.value, HFields.Count.value),
+            (
+                HeaderFields.Project.value,
+                HeaderFields.Version.value,
+                HeaderFields.Count.value,
+            ),
         ):
             with subtests.test(msg="{}_{}".format(fmt, attrib)):
                 assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)
@@ -258,6 +263,59 @@ class TestConvertGood:
             assert "(Y/N)? y" in out_.getvalue()
 
         assert "Sarge" == Inventory(str(dst_path)).project
+
+    def test_cli_stdin_clobber(
+        self, res_path, scratch_path, misc_info, run_cmdline_test
+    ):
+        """Confirm clobber with stdin data only with --overwrite."""
+        src_path_sarge = res_path / "objects_sarge.inv"
+        dst_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
+
+        assert "attrs" == Inventory(dst_path).project
+
+        data = json.dumps(Inventory(src_path_sarge).json_dict())
+
+        args = ["convert", "plain", "-", str(dst_path)]
+        with stdio_mgr(data):
+            run_cmdline_test(args)
+        assert "attrs" == Inventory(dst_path).project
+
+        args.append("-o")
+        with stdio_mgr(data):
+            run_cmdline_test(args)
+        assert "Sarge" == Inventory(dst_path).project
+
+    def test_cli_json_no_metadata_url(
+        self, res_cmp, scratch_path, misc_info, run_cmdline_test
+    ):
+        """Confim JSON generated from local inventory has no url in metadata."""
+        json_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
+
+        run_cmdline_test(
+            ["convert", "json", str(res_cmp.resolve()), str(json_path.resolve())]
+        )
+
+        d = json.loads(json_path.read_text())
+
+        assert "url" not in d.get("metadata", {})
+
+    def test_cli_json_export_import(
+        self, res_cmp, scratch_path, misc_info, run_cmdline_test, sphinx_load_test
+    ):
+        """Confirm JSON sent to stdout from local source imports ok."""
+        mod_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "json", str(res_cmp.resolve()), "-"])
+
+            data = out_.getvalue()
+
+        with stdio_mgr(data) as (in_, out_, err_):
+            run_cmdline_test(["convert", "zlib", "-", str(mod_path.resolve())])
+
+        assert Inventory(json.loads(data))
+        assert Inventory(mod_path)
+        sphinx_load_test(mod_path)
 
 
 class TestSuggestGood:
@@ -308,6 +366,13 @@ class TestSuggestGood:
         with stdio_mgr(inp) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", flags, "1"])
             assert nlines == out_.getvalue().count("\n")
+
+    def test_cli_suggest_many_results_stdin(self, res_cmp, run_cmdline_test):
+        """Confirm suggest from stdin doesn't choke on a long list."""
+        data = json.dumps(Inventory(res_cmp).json_dict())
+
+        with stdio_mgr(data) as (in_, out_, err_):
+            run_cmdline_test(["suggest", "-", "py", "-t", "1"])
 
 
 class TestFail:
@@ -394,3 +459,69 @@ class TestFail:
         with subtests.test(msg="url-style"):
             file_url = "file:///" + str(in_path.resolve())
             run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
+
+
+class TestStdio:
+    """Tests for the stdin/stdout functionality."""
+
+    @pytest.mark.parametrize(
+        "data_format", [SourceTypes.DictJSON, SourceTypes.BytesPlaintext]
+    )
+    def test_cli_stdio_input(
+        self, scratch_path, res_cmp, misc_info, run_cmdline_test, data_format
+    ):
+        """Confirm that inventory data can be read on stdin."""
+        inv1 = Inventory(res_cmp)
+
+        if data_format is SourceTypes.DictJSON:
+            input_data = json.dumps(inv1.json_dict())
+        elif data_format is SourceTypes.BytesPlaintext:
+            input_data = inv1.data_file().decode("utf-8")
+
+        out_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.DEC)
+
+        with stdio_mgr(input_data) as (in_, out_, err_):
+            run_cmdline_test(["convert", "plain", "-", str(out_path.resolve())])
+
+        inv2 = Inventory(out_path)
+
+        assert inv1 == inv2
+
+    def test_cli_stdio_zlib_input_fails(self, scratch_path, res_cmp, run_cmdline_test):
+        """Confirm that error response is made on attempt to pipe in zlib inventory."""
+        input_data = res_cmp.read_bytes().decode("latin-1")
+
+        with stdio_mgr(input_data) as (in_, out_, err_):
+            run_cmdline_test(
+                ["convert", "plain", "-", str(scratch_path.resolve())], expect=1
+            )
+
+            assert "Invalid" in err_.getvalue()
+
+    @pytest.mark.parametrize("format_arg", ["plain", "json"])
+    def test_cli_stdio_output(
+        self, scratch_path, res_cmp, run_cmdline_test, format_arg
+    ):
+        """Confirm that inventory data can be written to stdout."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", format_arg, str(res_cmp.resolve()), "-"])
+
+            result = out_.getvalue()
+
+        inv1 = Inventory(res_cmp)
+
+        if format_arg == "plain":
+            inv2 = Inventory(result.encode("utf-8"))
+        elif format_arg == "json":
+            inv2 = Inventory(json.loads(result))
+        else:  # pragma: no cover
+            raise ValueError("Invalid parametrized format arg")
+
+        assert inv1 == inv2
+
+    def test_cli_stdio_zlib_output_fails(self, res_dec, run_cmdline_test):
+        """Confirm that error response is made on attempt to pipe in zlib inventory."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "zlib", str(res_dec.resolve()), "-"], expect=1)
+
+            assert "Error" in err_.getvalue(), err_
