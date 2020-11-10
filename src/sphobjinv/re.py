@@ -77,7 +77,7 @@ ptn_data = (
     :                        # Dividing colon
     (?P<{2}>\w+)             # --> Role
     \s+                      # Dividing space
-    (?P<{3}>-?\d+)           # --> Priority
+    (?P<{3}>\S+)             # --> Priority
     \s+                      # Dividing space
     (?P<{4}>\S+)             # --> URI
     \s+                      # Dividing space
