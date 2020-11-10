@@ -285,15 +285,37 @@ class TestConvertGood:
             run_cmdline_test(args)
         assert "Sarge" == Inventory(dst_path).project
 
-    def test_cli_json_no_metadata_url(self, res_cmp, scratch_path, misc_info, run_cmdline_test):
+    def test_cli_json_no_metadata_url(
+        self, res_cmp, scratch_path, misc_info, run_cmdline_test
+    ):
         """Confim JSON generated from local inventory has no url in metadata."""
         json_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.JSON)
 
-        run_cmdline_test(["convert", "json", str(res_cmp.resolve()), str(json_path.resolve())])
+        run_cmdline_test(
+            ["convert", "json", str(res_cmp.resolve()), str(json_path.resolve())]
+        )
 
         d = json.loads(json_path.read_text())
 
         assert "url" not in d.get("metadata", {})
+
+    def test_cli_json_export_import(
+        self, res_cmp, scratch_path, misc_info, run_cmdline_test, sphinx_load_test
+    ):
+        """Confirm JSON sent to stdout from local source imports ok."""
+        mod_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "json", str(res_cmp.resolve()), "-"])
+
+            data = out_.getvalue()
+
+        with stdio_mgr(data) as (in_, out_, err_):
+            run_cmdline_test(["convert", "zlib", "-", str(mod_path.resolve())])
+
+        assert Inventory(json.loads(data))
+        assert Inventory(mod_path)
+        sphinx_load_test(mod_path)
 
 
 class TestSuggestGood:
@@ -492,7 +514,7 @@ class TestStdio:
             inv2 = Inventory(result.encode("utf-8"))
         elif format_arg == "json":
             inv2 = Inventory(json.loads(result))
-        else:
+        else:  # pragma: no cover
             raise ValueError("Invalid parametrized format arg")
 
         assert inv1 == inv2

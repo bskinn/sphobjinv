@@ -31,6 +31,7 @@ import re
 import pytest
 from stdio_mgr import stdio_mgr
 
+from sphobjinv import Inventory
 
 CLI_TEST_TIMEOUT = 5
 
@@ -139,6 +140,25 @@ class TestConvert:
                 expect=1,
             )
             assert "No inventory at provided URL." in err_.getvalue()
+
+    def test_cli_json_export_import(
+        self, res_cmp, scratch_path, misc_info, run_cmdline_test, sphinx_load_test
+    ):
+        """Confirm JSON sent to stdout from local source imports ok."""
+        inv_url = misc_info.remote_url.format("attrs")
+        mod_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "json", "-u", inv_url, "-"])
+
+            data = out_.getvalue()
+
+        with stdio_mgr(data) as (in_, out_, err_):
+            run_cmdline_test(["convert", "zlib", "-", str(mod_path.resolve())])
+
+        assert Inventory(json.loads(data))
+        assert Inventory(mod_path)
+        sphinx_load_test(mod_path)
 
 
 class TestSuggest:
