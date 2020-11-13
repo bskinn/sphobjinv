@@ -31,6 +31,10 @@ and this project strives to adhere to
  * Equality tests on Inventory and DataObjStr/DataObjBytes instances
    now work correctly.
 
+ * Non-integer and non-numeric values for `priority` are now accepted
+   during `Inventory` instantiation, consistent with what is allowed
+   by `DataObjStr` and `DataObjBytes` instantiation.
+
 #### Refactored
 
  * Patterns in regular expressions are now defined with raw strings

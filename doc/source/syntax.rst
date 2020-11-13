@@ -11,12 +11,16 @@ Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be accurate for all
 Sphinx versions >=1.0b1 that make use of this "version 2" |objects.inv| format.
 
+----
+
 **The first line** `must be exactly
 <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L105-L106>`__:
 
 .. code-block:: none
 
     # Sphinx inventory version 2
+
+----
 
 **The second and third lines** `must obey
 <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L133-L134>`__
@@ -27,12 +31,16 @@ the template:
     # Project: <project name>
     # Version: <full version number>
 
+The version number should *not* include a leading "v".
+
 .. _syntax-mouseover-example:
 
 The above project name and version are used to populate mouseovers for
 the |isphx| cross-references:
 
     .. image:: _static/mouseover_example.png
+
+----
 
 **The fourth line** `must contain
 <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L136-L137>`__
@@ -43,6 +51,7 @@ be exactly:
 
     # The remainder of this file is compressed using zlib.
 
+----
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
@@ -54,35 +63,87 @@ be exactly:
 
 ``{name}``
     The object name used when cross-referencing the object (falls between the
-    backticks)
+    backticks).
+
+    **Constraints**
+
+    * **MUST** have length greater than zero
+
+    * **MUST NOT** contain whitespace
 
 ``{domain}``
     The Sphinx domain used when cross-referencing the object (falls between
-    the first and second colons; omitted if using the |defdom|_)
+    the first and second colons; omitted if using the |defdom|_).
+
+    **Constraints**
+
+    * **MUST** have length greater than zero
+
+    * **MUST** match a built-in or installable Sphinx domain
+
+    * **MUST** consist of only |wordchars|_
+
+      * **RECOMMENDED** to consist of only ASCII word characters (``a-z``, ``A-Z``,
+        ``0-9``, and ``_``)
 
 ``{role}``
     The Sphinx role used when cross-referencing the object (falls between the
     second and third colons; or, between the first and second colons if
-    using the |defdom|_)
+    using the |defdom|_).
+
+    **Constraints**
+
+    * **MUST** have length greater than zero
+
+    * **MUST** match a role defined in the domain referenced by ``{domain}``
+
+    * **MUST** consist of only |wordchars|_
+
+      * **RECOMMENDED** to consist of only ASCII word characters (``a-z``, ``A-Z``,
+        ``0-9``, and ``_``)
+
 
 ``{priority}``
     Flag for `placement in search results
     <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/domains/
-    __init__.py#L319-L325>`__. Most will be 1 (standard priority) or
-    -1 (omit from results)
+    __init__.py#L319-L325>`__. Most will be ``1`` (standard priority) or
+    ``-1`` (omit from results) for documentation built by Sphinx.
+
+    To note, as of Nov 2020 this value is **not** used by ``intersphinx``;
+    it is only used internally within the search function of the static webpages
+    built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
+    inventories likely **MAY** use this field for arbitrary content, if desired.
+    This *would* run the risk of a future change to Sphinx/intersphinx causing
+    such custom |objects.inv| files to become incompatible.
+
+    **Constraints**
+
+    * **MUST** have length greater than zero
+
+    * **MUST NOT** contain whitespace
 
 ``{uri}``
     Relative URI for the location to which cross-references will point.
     The base URI is taken from the relevant element of the |isphxmap|
     configuration parameter of ``conf.py``.
 
+    **Constraints**
+
+    * **MUST** have length greater than zero
+
+    * **MUST NOT** contain whitespace
+
 ``{dispname}``
     Default cross-reference text to be displayed in compiled documentation.
 
-.. note::
+    **Constraints**
 
-    The above fields MUST NOT contain spaces,
-    except for ``{dispname}`` which MAY contain them.
+    * **MUST** have length greater than zero
+
+    * **MAY** contain internal whitespace (leading/trailing whitespace
+      is ignored)
+
+----
 
 **For illustration**, the following is the entry for the
 :meth:`join() <str.join>` method of the :class:`str` class in the
@@ -129,6 +190,8 @@ The cross-reference would show as :meth:`str.join` and link to the relative URI:
 
     library/stdtypes.html#str.join
 
+----
+
 **Other intersphinx Syntax Examples**
 
 To show as only :meth:`~str.join`:
@@ -152,7 +215,20 @@ as in :obj:`This is join! <str.join>`:
 
 
 
+.. ## Definitions ##
+
 .. |defdom| replace:: default domain
 
 .. _defdom: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html
 
+.. |wordchars| replace:: word characters
+
+.. _wordchars: https://docs.python.org/3.8/library/re.html#index-32
+
+.. |prio_js_search| replace:: here
+
+.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/d17563987a80007e2310102cfde673c651823a39/sphinx/themes/basic/static/searchtools.js#L26-L43
+
+.. |prio_py_search| replace:: here
+
+.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/624f6937194e1acfe7311faf6e27e370c3118e55/sphinx/search/__init__.py#L332

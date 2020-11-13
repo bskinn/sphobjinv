@@ -481,21 +481,10 @@ class TestInventory:
         inv2 = soi.Inventory(str(scr_fpath))
 
         # Test the things
-        with subtests.test(msg="content"):
-            assert inv1.project == inv2.project
-            assert inv1.version == inv2.version
-            assert inv1.count == inv2.count
-            for objs in zip(inv1.objects, inv2.objects):
-                assert objs[0].name == objs[1].name
-                assert objs[0].domain == objs[1].domain
-                assert objs[0].role == objs[1].role
-                assert objs[0].uri == objs[1].uri
-                assert objs[0].priority == objs[1].priority
-                assert objs[0].dispname == objs[1].dispname
+        assert inv1 == inv2
 
         # Ensure sphinx likes the regenerated inventory
-        with subtests.test(msg="sphinx_load"):
-            sphinx_load_test(scr_fpath)
+        sphinx_load_test(scr_fpath)
 
 
 class TestWarnings:
