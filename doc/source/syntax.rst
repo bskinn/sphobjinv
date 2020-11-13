@@ -113,6 +113,8 @@ be exactly:
     it is only used internally within the search function of the static webpages
     built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
     inventories likely **MAY** use this field for arbitrary content, if desired.
+    This *would* run the risk of a future change to Sphinx/intersphinx causing
+    such custom |objects.inv| files to become incompatible.
 
     **Constraints**
 
