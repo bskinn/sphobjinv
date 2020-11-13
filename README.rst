@@ -122,11 +122,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1a3, 185 objects>
+    <Inventory (fname_zlib): sphobjinv v2.1b1, 185 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.1a3'
+    '2.1b1'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cmdline', domain='py', role='module', priority='0', uri='cli/implementation.html#module-$', dispname='-')
 
