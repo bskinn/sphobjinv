@@ -29,13 +29,14 @@ import doctest as dt
 import re
 import shlex
 import subprocess as sp  # noqa: S404
+from pathlib import Path
 
 
 import pytest
 from sphinx import __version__ as sphinx_ver
 
-with open("requirements-dev.txt", "r") as f:
-    reqs = f.read()
+
+reqs = Path("requirements-dev.txt").read_text()
 
 m_sphinx_req = re.search("^sphinx==(.+)$", reqs, re.I | re.M)
 sphinx_req = m_sphinx_req.group(1)

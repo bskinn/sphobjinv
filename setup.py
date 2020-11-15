@@ -70,5 +70,5 @@ setup(
         "Topic :: Utilities",
         "Development Status :: 5 - Production/Stable",
     ],
-    entry_points={"console_scripts": ["sphobjinv = sphobjinv.cmdline:main"]},
+    entry_points={"console_scripts": ["sphobjinv = sphobjinv.cli.core:main"]},
 )

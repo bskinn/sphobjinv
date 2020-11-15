@@ -177,7 +177,7 @@ def sphinx_load_test():
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_test(monkeypatch):
     """Return function to perform command line exit code test."""
-    from sphobjinv.cmdline import main
+    from sphobjinv.cli.core import main
 
     def func(arglist, *, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""

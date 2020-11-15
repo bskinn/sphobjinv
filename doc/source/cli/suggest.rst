@@ -83,7 +83,7 @@ If download of JSON files by URL is desirable, please
 
     Display all search results without prompting, regardless of the number of hits.
     Otherwise, prompt if number of results exceeds
-    :data:`sphobjinv.cmdline.SUGGEST_CONFIRM_LENGTH`.
+    :attr:`~sphobjinv.cli.parser.PrsConst.SUGGEST_CONFIRM_LENGTH`.
 
 .. option:: -i, --index
 
@@ -99,7 +99,7 @@ If download of JSON files by URL is desirable, please
 
     Change the |fuzzywuzzy|_ match quality threshold (0-100; higher values
     yield fewer results). Default is specified in
-    :data:`sphobjinv.cmdline.DEF_THRESH`.
+    :attr:`~sphobjinv.cli.parser.PrsConst.DEF_THRESH`.
 
 .. option:: -u, --url
 
