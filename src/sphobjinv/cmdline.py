@@ -740,27 +740,14 @@ def write_stdout(inv, params):
         sys.exit(1)
 
 
-def do_convert(inv, in_path, params):
-    r"""Carry out the conversion operation, including writing output.
-
-    If :data:`OVERWRITE` is passed and the output file
-    (the default location, or as passed to :data:`OUTFILE`)
-    exists, it will be overwritten without a prompt. Otherwise,
-    the user will be queried if it is desired to overwrite
-    the existing file.
-
-    If :data:`QUIET` is passed, nothing will be
-    printed to |cour|\ stdout\ |/cour|
-    (potentially useful for scripting),
-    and any existing output file will be overwritten
-    without prompting.
+def write_file(inv, in_path, params):
+    r"""Write the inventory contents to a file on disk.
 
     Parameters
     ----------
     inv
 
-        |Inventory| -- Inventory object to be output in the format
-        indicated by :data:`MODE`.
+        |Inventory| -- Objects inventory to be written to stdout
 
     in_path
 
@@ -769,15 +756,15 @@ def do_convert(inv, in_path, params):
 
     params
 
-        |dict| -- Parameters/values mapping from the active subparser
+        dict -- `argparse` parameters
+
+    Raises
+    ------
+    ValueError
+
+        If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    # TODO: Refactor to-file output to new function
-    # TODO: Add tests for stdout output functionality
-    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
-        write_stdout(inv, params)
-        return
-
     mode = params[MODE]
 
     # Work up the output location
@@ -827,6 +814,44 @@ def do_convert(inv, in_path, params):
         ),
         params,
     )
+
+
+def do_convert(inv, in_path, params):
+    r"""Carry out the conversion operation, including writing output.
+
+    If :data:`OVERWRITE` is passed and the output file
+    (the default location, or as passed to :data:`OUTFILE`)
+    exists, it will be overwritten without a prompt. Otherwise,
+    the user will be queried if it is desired to overwrite
+    the existing file.
+
+    If :data:`QUIET` is passed, nothing will be
+    printed to |cour|\ stdout\ |/cour|
+    (potentially useful for scripting),
+    and any existing output file will be overwritten
+    without prompting.
+
+    Parameters
+    ----------
+    inv
+
+        |Inventory| -- Inventory object to be output in the format
+        indicated by :data:`MODE`.
+
+    in_path
+
+        |str| -- For a local input file, its absolute path.
+        For a URL, the (possibly truncated) URL text.
+
+    params
+
+        |dict| -- Parameters/values mapping from the active subparser
+
+    """
+    if params[OUTFILE] == "-" or (params[INFILE] == "-" and params[OUTFILE] is None):
+        write_stdout(inv, params)
+    else:
+        write_file(inv, in_path, params)
 
 
 def do_suggest(inv, params):
@@ -1111,8 +1136,6 @@ def main():
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
-    # TODO: Per #131, force quiet mode if converting to stdout
-
     # Print version &c. and exit if indicated
     if params[VERSION]:
         print(VER_TXT)
@@ -1128,7 +1151,6 @@ def main():
     if params[URL]:
         inv, in_path = inv_url(params)
     elif params[INFILE] == "-":
-        # TODO: Add tests for stdin-read functionality
         inv = inv_stdin(params)
         in_path = None
     else:
