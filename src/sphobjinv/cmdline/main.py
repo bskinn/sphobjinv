@@ -27,7 +27,8 @@ Sphinx |objects.inv| files.
 
 import sys
 
-from sphobjinv.cmdline.parser import getparser
+from sphobjinv.cmdline.parser import getparser, PrsConst
+
 
 def main():
     r"""Handle command line invocation.
@@ -53,8 +54,8 @@ def main():
     params = vars(ns)
 
     # Print version &c. and exit if indicated
-    if params[VERSION]:
-        print(VER_TXT)
+    if params[PrsConst.VERSION]:
+        print(PrsConst.VER_TXT)
         sys.exit(0)
 
     # Regardless of mode, insert extra blank line
@@ -64,18 +65,18 @@ def main():
     # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
     # sys.exit(n) internally in error-exit situations
-    if params[URL]:
+    if params[PrsConst.URL]:
         inv, in_path = inv_url(params)
-    elif params[INFILE] == "-":
+    elif params[PrsConst.INFILE] == "-":
         inv = inv_stdin(params)
         in_path = None
     else:
         inv, in_path = inv_local(params)
 
     # Perform action based upon mode
-    if params[SUBPARSER_NAME][:2] == CONVERT[:2]:
+    if params[PrsConst.SUBPARSER_NAME][:2] == PrsConst.CONVERT[:2]:
         do_convert(inv, in_path, params)
-    elif params[SUBPARSER_NAME][:2] == SUGGEST[:2]:
+    elif params[PrsConst.SUBPARSER_NAME][:2] == PrsConst.SUGGEST[:2]:
         do_suggest(inv, params)
 
     # Cosmetic final blank line

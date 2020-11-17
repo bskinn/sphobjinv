@@ -30,7 +30,7 @@ import argparse as ap
 from sphobjinv.version import __version__
 
 
-class Data:
+class PrsConst:
     """Container for CLI parser constants."""
 
     # ### Version arg and helpers
@@ -40,7 +40,8 @@ class Data:
 
     #: Version &c. output blurb
     VER_TXT = (
-        "\nsphobjinv v{0}\n\n".format(__version__) + "Copyright (c) Brian Skinn 2016-2020\n"
+        "\nsphobjinv v{0}\n\n".format(__version__)
+        + "Copyright (c) Brian Skinn 2016-2020\n"
         "License: The MIT License\n\n"
         "Bug reports & feature requests:"
         " https://github.com/bskinn/sphobjinv\n"
@@ -197,16 +198,16 @@ def getparser():
         "'objects.inv' files."
     )
     prs.add_argument(
-        "-" + VERSION[0],
-        "--" + VERSION,
+        "-" + PrsConst.VERSION[0],
+        "--" + PrsConst.VERSION,
         help="Print package version & other info",
         action="store_true",
     )
 
     sprs = prs.add_subparsers(
         title="Subcommands",
-        dest=SUBPARSER_NAME,
-        metavar="{{{0},{1}}}".format(CONVERT, SUGGEST),
+        dest=PrsConst.SUBPARSER_NAME,
+        metavar="{{{0},{1}}}".format(PrsConst.CONVERT, PrsConst.SUGGEST),
         help="Execution mode. Type "
         "'sphobjinv [mode] -h' "
         "for more information "
@@ -222,19 +223,27 @@ def getparser():
     sprs.required = False
 
     spr_convert = sprs.add_parser(
-        CONVERT, aliases=[CONVERT[:2]], help=HELP_CO_PARSER, description=HELP_CO_PARSER
+        PrsConst.CONVERT,
+        aliases=[PrsConst.CONVERT[:2]],
+        help=PrsConst.HELP_CO_PARSER,
+        description=PrsConst.HELP_CO_PARSER,
     )
     spr_suggest = sprs.add_parser(
-        SUGGEST, aliases=[SUGGEST[:2]], help=HELP_SU_PARSER, description=HELP_SU_PARSER
+        PrsConst.SUGGEST,
+        aliases=[PrsConst.SUGGEST[:2]],
+        help=PrsConst.HELP_SU_PARSER,
+        description=PrsConst.HELP_SU_PARSER,
     )
 
     # ### Args for conversion subparser
     spr_convert.add_argument(
-        MODE, help="Conversion output format", choices=(ZLIB, PLAIN, JSON)
+        PrsConst.MODE,
+        help="Conversion output format",
+        choices=(PrsConst.ZLIB, PrsConst.PLAIN, PrsConst.JSON),
     )
 
     spr_convert.add_argument(
-        INFILE,
+        PrsConst.INFILE,
         help=(
             "Path to file to be converted. Passing '-' indicates to read from stdin "
             "(plaintext/JSON only)."
@@ -242,19 +251,19 @@ def getparser():
     )
 
     spr_convert.add_argument(
-        OUTFILE,
+        PrsConst.OUTFILE,
         help=(
             "Path to desired output file. "
             "Defaults to same directory and main "
             "file name as input file but with extension "
-            + HELP_CONV_EXTS
+            + PrsConst.HELP_CONV_EXTS
             + ", as appropriate for the output format. "
             "A path to a directory is accepted here, "
             "in which case the default output file name will be used. "
             "Passing '-' indicates to write to stdout. If "
-            + INFILE
+            + PrsConst.INFILE
             + " is passed as '-', "
-            + OUTFILE
+            + PrsConst.OUTFILE
             + " can be omitted and both stdin and stdout will be used."
         ),
         nargs="?",
@@ -265,31 +274,31 @@ def getparser():
     gp_expcont = spr_convert.add_argument_group(title="URI/display name conversions")
     meg_expcont = gp_expcont.add_mutually_exclusive_group()
     meg_expcont.add_argument(
-        "-e",
-        "--" + EXPAND,
+        "-" + PrsConst.EXPAND[0],
+        "--" + PrsConst.EXPAND,
         help="Expand all URI and display name abbreviations",
         action="store_true",
     )
 
     meg_expcont.add_argument(
-        "-c",
-        "--" + CONTRACT,
+        "-" + PrsConst.CONTRACT[0],
+        "--" + PrsConst.CONTRACT,
         help="Contract all URI and display name abbreviations",
         action="store_true",
     )
 
     # Clobber argument
     spr_convert.add_argument(
-        "-" + OVERWRITE[0],
-        "--" + OVERWRITE,
+        "-" + PrsConst.OVERWRITE[0],
+        "--" + PrsConst.OVERWRITE,
         help="Overwrite output files without prompting",
         action="store_true",
     )
 
     # stdout suppressor option (e.g., for scripting)
     spr_convert.add_argument(
-        "-" + QUIET[0],
-        "--" + QUIET,
+        "-" + PrsConst.QUIET[0],
+        "--" + PrsConst.QUIET,
         help="Suppress printing of status messages "
         "and overwrite output files "
         "without prompting",
@@ -298,57 +307,57 @@ def getparser():
 
     # Flag to treat infile as a URL
     spr_convert.add_argument(
-        "-" + URL[0],
-        "--" + URL,
+        "-" + PrsConst.URL[0],
+        "--" + PrsConst.URL,
         help="Treat 'infile' as a URL for download",
         action="store_true",
     )
 
     # ### Args for suggest subparser
     spr_suggest.add_argument(
-        INFILE,
+        PrsConst.INFILE,
         help=(
             "Path to inventory file to be searched. "
             "Passing '-' indicates to read from stdin (plaintext/JSON only)."
         ),
     )
-    spr_suggest.add_argument(SEARCH, help="Search term for object suggestions")
+    spr_suggest.add_argument(PrsConst.SEARCH, help="Search term for object suggestions")
     spr_suggest.add_argument(
-        "-" + ALL[0],
-        "--" + ALL,
+        "-" + PrsConst.ALL[0],
+        "--" + PrsConst.ALL,
         help="Display all results "
         "regardless of the number returned "
         "without prompting for confirmation.",
         action="store_true",
     )
     spr_suggest.add_argument(
-        "-" + INDEX[0],
-        "--" + INDEX,
+        "-" + PrsConst.INDEX[0],
+        "--" + PrsConst.INDEX,
         help="Include Inventory.objects list indices with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
-        "-" + SCORE[0],
-        "--" + SCORE,
+        "-" + PrsConst.SCORE[0],
+        "--" + PrsConst.SCORE,
         help="Include fuzzywuzzy scores with the search results",
         action="store_true",
     )
     spr_suggest.add_argument(
-        "-" + THRESH[0],
-        "--" + THRESH,
+        "-" + PrsConst.THRESH[0],
+        "--" + PrsConst.THRESH,
         help="Match quality threshold, integer 0-100, "
         "default 75. Default is suitable when "
         "'search' is exactly a known object name. "
         "A value of 30-50 gives better results "
         "for approximate matches.",
-        default=DEF_THRESH,
+        default=PrsConst.DEF_THRESH,
         type=int,
         choices=range(101),
         metavar="{0-100}",
     )
     spr_suggest.add_argument(
-        "-" + URL[0],
-        "--" + URL,
+        "-" + PrsConst.URL[0],
+        "--" + PrsConst.URL,
         help="Treat 'infile' as a URL for download",
         action="store_true",
     )
