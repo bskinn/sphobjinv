@@ -25,9 +25,55 @@ Sphinx |objects.inv| files.
 
 """
 
+import json
 import sys
+from json.exceptions import JSONDecodeError
+from urllib import HTTPError, URLError
 
-from sphobjinv.cmdline.parser import PrsConst
+from jsonschema.exceptions import ValidationError
+
+from sphobjinv import Inventory, readjson, urlwalk, VersionError
+from sphobjinv.cli.disk import resolve_inpath
+from sphobjinv.cli.parser import PrsConst
+from sphobjinv.cli.ui import err_format, log_print
+
+
+def import_infile(in_path):
+    """Attempt import of indicated file.
+
+    Convenience function wrapping attempts to load an
+    |Inventory| from a local path.
+
+    Parameters
+    ----------
+    in_path
+
+        |str| -- Path to input file
+
+    Returns
+    -------
+    inv
+
+        |Inventory| or |None| -- If instantiation with the file at
+        `in_path` succeeds, the resulting |Inventory| instance;
+        otherwise, |None|
+
+    """
+    # Try general import, for zlib or plaintext files
+    try:
+        inv = Inventory(in_path)
+    except AttributeError:
+        pass  # Punt to JSON attempt
+    else:
+        return inv
+
+    # Maybe it's JSON
+    try:
+        inv = Inventory(readjson(in_path))
+    except JSONDecodeError:
+        return None
+    else:
+        return inv
 
 
 def inv_local(params):
@@ -120,7 +166,7 @@ def inv_url(params):
 
     # Try URL as provided
     try:
-        inv = Inv(url=in_file)
+        inv = Inventory(url=in_file)
     except (HTTPError, ValueError, VersionError, URLError):
         log_print("No inventory at provided URL.", params)
     else:
@@ -132,7 +178,7 @@ def inv_url(params):
         for url in urlwalk(in_file):
             log_print('Attempting "{0}" ...'.format(url), params)
             try:
-                inv = Inv(url=url)
+                inv = Inventory(url=url)
             except (ValueError, HTTPError):
                 pass
             else:
@@ -182,12 +228,12 @@ def inv_stdin(params):
     data = sys.stdin.read()
 
     try:
-        return Inv(dict_json=json.loads(data))
+        return Inventory(dict_json=json.loads(data))
     except (JSONDecodeError, ValidationError):
         pass
 
     try:
-        return Inv(plaintext=data)
+        return Inventory(plaintext=data)
     except (AttributeError, UnicodeEncodeError, TypeError):
         pass
 

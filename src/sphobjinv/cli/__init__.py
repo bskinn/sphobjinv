@@ -1,4 +1,4 @@
-r"""``sphobjinv.cmdline`` *subpackage definition module*.
+r"""``sphobjinv.cli`` *subpackage definition module*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
@@ -25,4 +25,4 @@ Sphinx |objects.inv| files.
 
 """
 
-from sphobjinv.cmdline.main import main
+from sphobjinv.cmdline.core import main
