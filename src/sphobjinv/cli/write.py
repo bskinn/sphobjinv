@@ -25,10 +25,15 @@ Sphinx |objects.inv| files.
 
 """
 
+import json
 import os
+import sys
 
-from sphobjinv.fileops import writebytes, writejson
 from sphobjinv.cli.parser import PrsConst
+from sphobjinv.cli.paths import resolve_outpath
+from sphobjinv.cli.ui import err_format, log_print, yesno_prompt
+from sphobjinv.fileops import writebytes, writejson
+from sphobjinv.zlib import compress
 
 
 def write_plaintext(inv, path, *, expand=False, contract=False):
@@ -142,10 +147,12 @@ def write_json(inv, path, params):
         If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+    json_dict = inv.json_dict(
+        expand=params[PrsConst.EXPAND], contract=params[PrsConst.CONTRACT]
+    )
 
-    if params.get(FOUND_URL, False):
-        json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+    if params.get(PrsConst.FOUND_URL, False):
+        json_dict.update({"metadata": {PrsConst.URL: params[PrsConst.FOUND_URL]}})
 
     writejson(path, json_dict)
 
@@ -170,13 +177,19 @@ def write_stdout(inv, params):
         If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    if params[MODE] == PLAIN:
-        print(inv.data_file(expand=params[EXPAND], contract=params[CONTRACT]).decode())
-    elif params[MODE] == JSON:
-        json_dict = inv.json_dict(expand=params[EXPAND], contract=params[CONTRACT])
+    if params[PrsConst.MODE] == PrsConst.PLAIN:
+        print(
+            inv.data_file(
+                expand=params[PrsConst.EXPAND], contract=params[PrsConst.CONTRACT]
+            ).decode()
+        )
+    elif params[PrsConst.MODE] == PrsConst.JSON:
+        json_dict = inv.json_dict(
+            expand=params[PrsConst.EXPAND], contract=params[PrsConst.CONTRACT]
+        )
 
-        if params.get(FOUND_URL, False):
-            json_dict.update({"metadata": {URL: params[FOUND_URL]}})
+        if params.get(PrsConst.FOUND_URL, False):
+            json_dict.update({"metadata": {PrsConst.URL: params[PrsConst.FOUND_URL]}})
 
         print(json.dumps(json_dict))
     else:
@@ -209,11 +222,11 @@ def write_file(inv, in_path, params):
         If both `params["expand"]` and `params["contract"]` are |True|
 
     """
-    mode = params[MODE]
+    mode = params[PrsConst.MODE]
 
     # Work up the output location
     try:
-        out_path = resolve_outpath(params[OUTFILE], in_path, params)
+        out_path = resolve_outpath(params[PrsConst.OUTFILE], in_path, params)
     except Exception as e:  # pragma: no cover
         # This may not actually be reachable except in exceptional situations
         log_print("\nError while constructing output file path:", params)
@@ -221,14 +234,14 @@ def write_file(inv, in_path, params):
         sys.exit(1)
 
     # If exists, must handle overwrite
-    if os.path.isfile(out_path) and not params[OVERWRITE]:
-        if params[INFILE] == "-":
+    if os.path.isfile(out_path) and not params[PrsConst.OVERWRITE]:
+        if params[PrsConst.INFILE] == "-":
             # If reading from stdin, just alert and don't overwrite
             log_print("\nFile exists. To overwrite, supply '-o'. Exiting...", params)
             sys.exit(0)
         # This could be written w/o nesting via elif, but would be harder to read.
         else:
-            if not params[QUIET]:
+            if not params[PrsConst.QUIET]:
                 # If not a stdin read, confirm overwrite; or, just clobber if QUIET
                 resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
                 if resp.lower() == "n":
@@ -237,13 +250,21 @@ def write_file(inv, in_path, params):
 
     # Write the output file
     try:
-        if mode == ZLIB:
-            write_zlib(inv, out_path, expand=params[EXPAND], contract=params[CONTRACT])
-        if mode == PLAIN:
-            write_plaintext(
-                inv, out_path, expand=params[EXPAND], contract=params[CONTRACT]
+        if mode == PrsConst.ZLIB:
+            write_zlib(
+                inv,
+                out_path,
+                expand=params[PrsConst.EXPAND],
+                contract=params[PrsConst.CONTRACT],
             )
-        if mode == JSON:
+        if mode == PrsConst.PLAIN:
+            write_plaintext(
+                inv,
+                out_path,
+                expand=params[PrsConst.EXPAND],
+                contract=params[PrsConst.CONTRACT],
+            )
+        if mode == PrsConst.JSON:
             write_json(inv, out_path, params)
     except Exception as e:
         log_print("\nError during write of output file:", params)

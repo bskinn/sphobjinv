@@ -27,7 +27,7 @@ Sphinx |objects.inv| files.
 
 import sys
 
-from sphobjinv.cmdline import main
+from sphobjinv.cli.core import main
 
 if __name__ == "__main__":
     # Spoof so 'help' usage display shows "sphobjinv" and

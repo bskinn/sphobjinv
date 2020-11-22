@@ -25,6 +25,10 @@ Sphinx |objects.inv| files.
 
 """
 
+import os
+
+from sphobjinv.cli.parser import PrsConst
+
 
 def resolve_inpath(in_path):
     """Resolve the input file, handling invalid values.
@@ -93,11 +97,11 @@ def resolve_outpath(out_path, in_path, params):
         |str| -- Absolute path to the target output file
 
     """
-    mode = params[MODE]
+    mode = params[PrsConst.MODE]
 
-    if params[URL] or in_path is None:
+    if params[PrsConst.URL] or in_path is None:
         in_fld = os.getcwd()
-        in_fname = DEF_BASENAME
+        in_fname = PrsConst.DEF_BASENAME
     else:
         in_fld, in_fname = os.path.split(in_path)
 
@@ -117,13 +121,13 @@ def resolve_outpath(out_path, in_path, params):
 
         # Use same base filename if not specified
         if not out_fname:
-            out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
+            out_fname = os.path.splitext(in_fname)[0] + PrsConst.DEF_OUT_EXT[mode]
 
         # Composite the full output path
         out_path = os.path.join(out_fld, out_fname)
     else:
         # No output location specified; use defaults
-        out_fname = os.path.splitext(in_fname)[0] + DEF_OUT_EXT[mode]
+        out_fname = os.path.splitext(in_fname)[0] + PrsConst.DEF_OUT_EXT[mode]
         out_path = os.path.join(in_fld, out_fname)
 
     return out_path

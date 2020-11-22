@@ -25,6 +25,8 @@ Sphinx |objects.inv| files.
 
 """
 
+import sys
+
 from sphobjinv.cli.parser import PrsConst
 
 

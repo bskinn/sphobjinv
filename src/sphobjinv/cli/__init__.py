@@ -25,4 +25,4 @@ Sphinx |objects.inv| files.
 
 """
 
-from sphobjinv.cmdline.core import main
+from sphobjinv.cli.core import main

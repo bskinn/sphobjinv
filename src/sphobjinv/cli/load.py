@@ -27,13 +27,13 @@ Sphinx |objects.inv| files.
 
 import json
 import sys
-from json.exceptions import JSONDecodeError
-from urllib import HTTPError, URLError
+from json import JSONDecodeError
+from urllib.error import HTTPError, URLError
 
 from jsonschema.exceptions import ValidationError
 
 from sphobjinv import Inventory, readjson, urlwalk, VersionError
-from sphobjinv.cli.disk import resolve_inpath
+from sphobjinv.cli.paths import resolve_inpath
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.ui import err_format, log_print
 
