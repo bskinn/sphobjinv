@@ -208,7 +208,7 @@ def cli_run(argstr, *, inp='', head=None):
     '''
     import sys
 
-    import sphobjinv.cmdline as cli
+    import sphobjinv.cli as cli
     from stdio_mgr import stdio_mgr
 
     old_argv = sys.argv
