@@ -7,7 +7,7 @@ Sphinx |objects.inv| files.
     Brian Skinn (bskinn@alum.mit.edu)
 
 **File Created**
-    17 May 2016
+    15 May 2020
 
 **Copyright**
     \(c) Brian Skinn 2016-2020
