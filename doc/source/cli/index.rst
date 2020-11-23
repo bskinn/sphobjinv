@@ -6,7 +6,7 @@ Command-Line Usage
 The CLI for |soi| is implemented using two subparsers, one each for the
 :doc:`convert <convert>` and :doc:`suggest <suggest>` sub-functions.
 More information about the implementation of these features can be
-found :doc:`here <implementation>` and in the documentation for the
+found :doc:`here <implementation/index>` and in the documentation for the
 :class:`~sphobjinv.inventory.Inventory` object, in particular the
 :meth:`~sphobjinv.inventory.Inventory.data_file` and
 :meth:`~sphobjinv.inventory.Inventory.suggest` methods.

@@ -55,7 +55,8 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
       Name                                                     Score
     --------------------------------------------------------  -------
     :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :py:function:`sphobjinv.cmdline.getparser`                  50
+    :std:doc:`cli/implementation/parser`                        57
+    :py:module:`sphobjinv.cli.parser`                           50
     :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
     :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
 
@@ -122,13 +123,13 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1b2, 185 objects>
+    <Inventory (fname_zlib): sphobjinv v2.1b2, 198 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
     '2.1b2'
     >>> inv.objects[0]
-    DataObjStr(name='sphobjinv.cmdline', domain='py', role='module', priority='0', uri='cli/implementation.html#module-$', dispname='-')
+    DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
 
 The API also enables straightforward re-export of an inventory,
 for subsequent use with ``intersphinx`` cross-references.

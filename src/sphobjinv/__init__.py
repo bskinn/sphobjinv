@@ -33,5 +33,5 @@ from sphobjinv.fileops import readbytes, readjson, urlwalk, writebytes, writejso
 from sphobjinv.inventory import Inventory
 from sphobjinv.re import p_data, pb_comments, pb_data, pb_project, pb_version
 from sphobjinv.schema import json_schema
-from sphobjinv.version import __version__  # noqa: F401
+from sphobjinv.version import __version__
 from sphobjinv.zlib import compress, decompress

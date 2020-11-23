@@ -1,4 +1,4 @@
-r"""``sphobjinv`` *package execution module*.
+r"""``sphobjinv.cli`` *subpackage definition module*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
@@ -7,7 +7,7 @@ Sphinx |objects.inv| files.
     Brian Skinn (bskinn@alum.mit.edu)
 
 **File Created**
-    15 May 2020
+    15 Nov 2020
 
 **Copyright**
     \(c) Brian Skinn 2016-2020
@@ -25,13 +25,4 @@ Sphinx |objects.inv| files.
 
 """
 
-import sys
-
 from sphobjinv.cli.core import main
-
-if __name__ == "__main__":
-    # Spoof so 'help' usage display shows "sphobjinv" and
-    # not "__main__.py"
-    sys.argv[0] = "sphobjinv"
-
-    sys.exit(main())
