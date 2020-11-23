@@ -156,6 +156,38 @@ rst_epilog = r"""
 
 .. |stdout| replace:: |cour|\ stdout\ |/cour|
 
+.. |cli:ALL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.ALL`
+
+.. |cli:DEF_BASENAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_BASENAME`
+
+.. |cli:DEF_OUT_EXT| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_OUT_EXT`
+
+.. |cli:FOUND_URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.FOUND_URL`
+
+.. |cli:INDEX| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INDEX`
+
+.. |cli:INFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INFILE`
+
+.. |cli:MODE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.MODE`
+
+.. |cli:OUTFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OUTFILE`
+
+.. |cli:OVERWRITE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OVERWRITE`
+
+.. |cli:QUIET| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.QUIET`
+
+.. |cli:SCORE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SCORE`
+
+.. |cli:SUBPARSER_NAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUBPARSER_NAME`
+
+.. |cli:SUGGEST_CONFIRM_LENGTH| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUGGEST_CONFIRM_LENGTH`
+
+.. |cli:URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.URL`
+
+.. |cli:VERSION| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.VERSION`
+
+.. |resolve_inpath| replace:: :func:`~sphobjinv.cli.paths.resolve_inpath`
+
 """
 
 
@@ -281,3 +313,6 @@ html_static_path = ['_static']
 
 # Output file basename
 htmlhelp_basename = "sphobjinv"
+
+# Location of the favicon image
+html_favicon = "_static/soi-logo.png"

@@ -33,8 +33,8 @@ from urllib.error import HTTPError, URLError
 from jsonschema.exceptions import ValidationError
 
 from sphobjinv import Inventory, readjson, urlwalk, VersionError
-from sphobjinv.cli.paths import resolve_inpath
 from sphobjinv.cli.parser import PrsConst
+from sphobjinv.cli.paths import resolve_inpath
 from sphobjinv.cli.ui import err_format, log_print
 
 
@@ -79,8 +79,8 @@ def import_infile(in_path):
 def inv_local(params):
     """Create |Inventory| from local source.
 
-    Uses :func:`resolve_inpath` to sanity-check and/or convert
-    :data:`INFILE`.
+    Uses |resolve_inpath| to sanity-check and/or convert
+    |cli:INFILE|.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -95,12 +95,12 @@ def inv_local(params):
     inv
 
         |Inventory| -- Object representation of the inventory
-        at :data:`INFILE`
+        at |cli:INFILE|
 
     in_path
 
         |str| -- Input file path as resolved/checked by
-        :func:`resolve_inpath`
+        |resolve_inpath|
 
     """
     # Resolve input file path
@@ -123,7 +123,7 @@ def inv_local(params):
 def inv_url(params):
     """Create |Inventory| from file downloaded from URL.
 
-    Initially, treats :data:`INFILE` as a download URL to be passed to
+    Initially, treats |cli:INFILE| as a download URL to be passed to
     the `url` initialization argument
     of :class:`~sphobjinv.inventory.Inventory`.
 
@@ -131,7 +131,7 @@ def inv_url(params):
     searches the directory tree of the URL for |objects.inv|.
 
     Injects the URL at which an inventory was found into `params`
-    under the :data:`FOUND_URL` key.
+    under the |cli:FOUND_URL| key.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -146,11 +146,11 @@ def inv_url(params):
     inv
 
         |Inventory| -- Object representation of the inventory
-        at :data:`INFILE`
+        at |cli:INFILE|
 
     ret_path
 
-        |str| -- URL from :data:`INFILE` used to construct `inv`.
+        |str| -- URL from |cli:INFILE| used to construct `inv`.
         If URL is longer than 45 characters, the central portion is elided.
 
     """
@@ -209,7 +209,7 @@ def inv_stdin(params):
     text-based inventory formats can be sanely parsed.
 
     Thus, only plaintext and JSON inventory formats can be
-    used as inputs here
+    used as inputs here.
 
     Parameters
     ----------

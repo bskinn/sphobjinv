@@ -33,7 +33,7 @@ from sphobjinv.cli.parser import PrsConst
 def log_print(thing, params):
     """Print `thing` to stderr if not in quiet mode.
 
-    Quiet mode is indicated by the value at the :data:`QUIET` key
+    Quiet mode is indicated by the value at the |cli:QUIET| key
     within `params`.
 
     Quiet mode is not implemented for the ":doc:`suggest </cli/suggest>`"

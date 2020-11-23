@@ -36,13 +36,13 @@ from sphobjinv.cli.write import write_file, write_stdout
 def do_convert(inv, in_path, params):
     r"""Carry out the conversion operation, including writing output.
 
-    If :data:`OVERWRITE` is passed and the output file
-    (the default location, or as passed to :data:`OUTFILE`)
+    If |cli:OVERWRITE| is passed and the output file
+    (the default location, or as passed to |cli:OUTFILE|)
     exists, it will be overwritten without a prompt. Otherwise,
     the user will be queried if it is desired to overwrite
     the existing file.
 
-    If :data:`QUIET` is passed, nothing will be
+    If |cli:QUIET| is passed, nothing will be
     printed to |cour|\ stdout\ |/cour|
     (potentially useful for scripting),
     and any existing output file will be overwritten
@@ -53,7 +53,7 @@ def do_convert(inv, in_path, params):
     inv
 
         |Inventory| -- Inventory object to be output in the format
-        indicated by :data:`MODE`.
+        indicated by |cli:MODE|.
 
     in_path
 
@@ -78,16 +78,16 @@ def do_suggest(inv, params):
 
     Results are printed one per line.
 
-    If neither :data:`INDEX` nor :data:`SCORE` is specified,
+    If neither |cli:INDEX| nor |cli:SCORE| is specified,
     the results are output without a header.
     If either or both are specified,
     the results are output in a lightweight tabular format.
 
     If the number of results exceeds
-    :data:`SUGGEST_CONFIRM_LENGTH`,
+    |cli:SUGGEST_CONFIRM_LENGTH|,
     the user will be queried whether to display
     all of the returned results
-    unless :data:`ALL` is specified.
+    unless |cli:ALL| is specified.
 
     No |cour|\ -\\-quiet\ |/cour| option is available here, since
     a silent mode for suggestion output is nonsensical.
@@ -97,7 +97,7 @@ def do_suggest(inv, params):
     inv
 
         |Inventory| -- Inventory object to be output in the format
-        indicated by :data:`MODE`.
+        indicated by |cli:MODE|.
 
     params
 
@@ -172,13 +172,13 @@ def main():
 
     Parses command line arguments,
     handling the no-arguments and
-    :data:`VERSION` cases.
+    |cli:VERSION| cases.
 
     Creates the |Inventory| from the indicated source
     and method.
 
     Invokes :func:`do_convert` or :func:`do_suggest`
-    per the subparser name stored in :data:`SUBPARSER_NAME`.
+    per the subparser name stored in |cli:SUBPARSER_NAME|.
 
     """
     # If no args passed, stick in '-h'
