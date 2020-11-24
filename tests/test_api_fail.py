@@ -45,6 +45,8 @@ def no_op(val):
 PATH_FXNS = (no_op, str)
 PATH_FXN_IDS = ("no_op", "str")
 
+DISALLOWED_INV_INIT_ARGS = ("project", "objects", "source_type", "data_file")
+
 
 class TestCore:
     """Tests for core sphobjinv functionality."""
@@ -119,12 +121,17 @@ class TestInventory:
         with pytest.raises(ValueError):
             soi.Inventory(d)
 
+    @pytest.mark.parametrize(
+        "bad_key", ("1112", "quux"), ids=("numeric", "non_numeric")
+    )
     @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
-    def test_apifail_inventory_dictimport_badobj(self, path_fxn, res_dec):
+    def test_apifail_inventory_dictimport_badobj(
+        self, bad_key, path_fxn, res_dec, jsonschema_validator
+    ):
         """Confirm error raised when JSON dict passed w/an invalid object."""
         inv = soi.Inventory(path_fxn(res_dec))
         d = inv.json_dict()
-        d.update({"112": "foobarbazquux"})
+        d.update({bad_key: "foobarbazquux"})
 
         with pytest.raises(ValidationError):
             soi.Inventory(dict_json=d)
@@ -172,6 +179,52 @@ class TestInventory:
         with subtests.test(msg="json"):
             with pytest.raises(ValueError):
                 soi.Inventory(d)
+
+    def test_apifail_compressed_inv_with_win_newlines(self, unix2dos, res_cmp):
+        """Confirm that a compressed inventory with Windows newlines does not decompress.
+
+        This should *never* happen, except in a pathological circumstance where
+        unix2dos was specifically run on a compressed inventory.
+
+        """
+        b_cmp = soi.readbytes(res_cmp)
+
+        with pytest.raises(soi.VersionError):
+            soi.decompress(unix2dos(b_cmp))
+
+    @pytest.mark.parametrize("bad_arg", DISALLOWED_INV_INIT_ARGS)
+    def test_apifail_invalid_inventory_init_arg(self, bad_arg):
+        """Confirm non-__init__ Inventory members raise exceptions when passed."""
+        with pytest.raises(TypeError):
+            soi.Inventory(**{bad_arg: "foo"})
+
+    @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+    def test_apifail_inventory_dictimport_baddataobjmember(
+        self, res_cmp, jsonschema_validator, path_fxn
+    ):
+        """Confirm inventory load failure on spurious key in a data object."""
+        inv = soi.Inventory(path_fxn(res_cmp))
+        d = inv.json_dict()
+        d["0"].update({"foo": "bar"})
+
+        with pytest.raises(ValidationError):
+            soi.Inventory(dict_json=d)
+
+        assert not jsonschema_validator(soi.json_schema).is_valid(d)
+
+    @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
+    def test_apifail_inventory_dictimport_missingdataobjmember(
+        self, res_cmp, jsonschema_validator, path_fxn
+    ):
+        """Confirm inventory load failure on missing key in data object."""
+        inv = soi.Inventory(path_fxn(res_cmp))
+        d = inv.json_dict()
+        d["0"].pop("domain")
+
+        with pytest.raises(ValidationError):
+            soi.Inventory(dict_json=d)
+
+        assert not jsonschema_validator(soi.json_schema).is_valid(d)
 
 
 @pytest.mark.xfail(reason="Made mutable to simplify Inventory revision by users")

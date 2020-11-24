@@ -27,13 +27,16 @@ Sphinx |objects.inv| files.
 
 
 import os.path as osp
+import platform
 import re
 import shutil
 import sys
 from enum import Enum
 from filecmp import cmp
+from functools import partial
 from pathlib import Path
 
+import jsonschema
 import pytest
 
 import sphobjinv as soi
@@ -249,3 +252,21 @@ testall_inv_paths = (
 def testall_inv_path(request):
     """Provide parametrized --testall inventory paths."""
     return request.param
+
+
+@pytest.fixture(scope="session")
+def is_win():
+    """Report boolean of whether the current system is Windows."""
+    return platform.system().lower() == "windows"
+
+
+@pytest.fixture(scope="session")
+def unix2dos():
+    """Provide function for converting POSIX to Windows EOLs."""
+    return partial(re.sub, rb"(?<!\r)\n", b"\r\n")
+
+
+@pytest.fixture(scope="session")
+def jsonschema_validator():
+    """Provide the standard JSON schema validator."""
+    return jsonschema.Draft4Validator

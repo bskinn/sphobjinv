@@ -25,12 +25,12 @@ Sphinx |objects.inv| files.
 
 """
 
+import copy
 import itertools as itt
 import re
 import warnings
 from numbers import Number
 
-import jsonschema
 import pytest
 
 import sphobjinv as soi
@@ -138,6 +138,34 @@ class TestCore:
         mchs = list(soi.re.pb_data.finditer(bytes_txt))
 
         assert mchs[element].groupdict() == {_.value: datadict[_] for _ in datadict}
+
+    def test_api_compress_win_eols(self, unix2dos, res_dec):
+        """Confirm the scrub for Windows EOLs is working.
+
+        Only a relevant passing test when starting with a decompressed inventory.
+
+        Written based on a surviving mutmut mutant munging the Windows EOL scrub in
+        zlib.compress.
+
+        The repeated application of unix2dos tests that the substitution ignores
+        existing Windows EOLs in the string.
+
+        """
+        b_dec = unix2dos(unix2dos(soi.readbytes(res_dec)))
+        b_cmp = soi.compress(b_dec)
+
+        b_dec_new = soi.decompress(b_cmp)
+
+        assert rb"\r\n" not in b_dec_new
+
+    def test_flatdict_schema_valid(self, jsonschema_validator):
+        """Confirm that the Inventory JSON schema is itself a valid schema."""
+        meta_schema = copy.deepcopy(jsonschema_validator({}).META_SCHEMA)
+
+        # Forbid unrecognized keys
+        meta_schema.update({"additionalProperties": False})
+
+        assert jsonschema_validator(meta_schema).is_valid(soi.json_schema)
 
 
 class TestDataObj:
@@ -381,10 +409,12 @@ class TestInventory:
         assert inv1 != inv4
 
     @pytest.mark.parametrize("prop", ("none", "expand", "contract"))
-    def test_api_inventory_flatdict_jsonvalidate(self, prop, res_cmp):
+    def test_api_inventory_flatdict_jsonvalidate(
+        self, prop, res_cmp, jsonschema_validator
+    ):
         """Confirm that the flat_dict properties generated valid JSON."""
         inv = soi.Inventory(res_cmp)
-        val = jsonschema.Draft4Validator(soi.json_schema)
+        val = jsonschema_validator(soi.json_schema)
 
         kwarg = {} if prop == "none" else {prop: True}
 
@@ -485,6 +515,29 @@ class TestInventory:
 
         # Ensure sphinx likes the regenerated inventory
         sphinx_load_test(scr_fpath)
+
+    def test_api_inventory_one_object_flatdict(self):
+        """Confirm a flat dict inventory with one object imports ok.
+
+        Addresses edge case identified via mutation testing.
+
+        """
+        inv = soi.Inventory()
+        inv.project = "Foo"
+        inv.version = "1.2"
+        inv.objects.append(
+            soi.DataObjStr(
+                name="bar",
+                domain="py",
+                role="function",
+                priority="1",
+                uri="$",
+                dispname="-",
+            )
+        )
+
+        # Should not raise an exception; assert is to emphasize this is the check
+        assert soi.Inventory(inv.json_dict())
 
 
 class TestWarnings:
