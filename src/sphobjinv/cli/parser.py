@@ -299,9 +299,8 @@ def getparser():
     spr_convert.add_argument(
         "-" + PrsConst.QUIET[0],
         "--" + PrsConst.QUIET,
-        help="Suppress printing of status messages "
-        "and overwrite output files "
-        "without prompting",
+        help="Suppress printing of status messages and "
+        "overwrite output files without prompting",
         action="store_true",
     )
 
@@ -309,7 +308,9 @@ def getparser():
     spr_convert.add_argument(
         "-" + PrsConst.URL[0],
         "--" + PrsConst.URL,
-        help="Treat 'infile' as a URL for download",
+        help="Treat 'infile' as a URL for download. Cannot be used with --{}.".format(
+            PrsConst.URL
+        ),
         action="store_true",
     )
 
@@ -358,7 +359,9 @@ def getparser():
     spr_suggest.add_argument(
         "-" + PrsConst.URL[0],
         "--" + PrsConst.URL,
-        help="Treat 'infile' as a URL for download",
+        help="Treat 'infile' as a URL for download. Cannot be used with --{}.".format(
+            PrsConst.URL
+        ),
         action="store_true",
     )
 
