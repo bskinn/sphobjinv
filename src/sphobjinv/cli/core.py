@@ -203,6 +203,8 @@ def main():
     # These inventory-load functions should call
     # sys.exit(n) internally in error-exit situations
     if params[PrsConst.URL]:
+        if params[PrsConst.INFILE] == "-":
+            prs.error("argument -u/--url not allowed with '-' as infile")
         inv, in_path = inv_url(params)
     elif params[PrsConst.INFILE] == "-":
         inv = inv_stdin(params)
