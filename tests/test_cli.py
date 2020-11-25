@@ -459,7 +459,7 @@ class TestFail:
         with subtests.test(msg="url-style"):
             file_url = "file:///" + str(in_path.resolve())
             run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
-    
+
     def test_clifail_no_url_with_stdin(self, run_cmdline_test):
         """Confirm parser exit when -u passed with "-" infile."""
         with stdio_mgr() as (in_, out_, err_):

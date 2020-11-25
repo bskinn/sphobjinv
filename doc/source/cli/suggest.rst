@@ -67,7 +67,7 @@ If download of JSON files by URL is desirable, please
     Path (or URL, if :option:`--url` is specified) to file to be searched.
 
     If passed as ``-``, |soi| will attempt import of a plaintext or JSON
-    inventory from ``stdin``.
+    inventory from ``stdin`` (incompatible with :option:`--url`).
 
 .. option:: search
 
@@ -103,7 +103,8 @@ If download of JSON files by URL is desirable, please
 
 .. option:: -u, --url
 
-    Treat :option:`infile` as a URL for download.
+    Treat :option:`infile` as a URL for download. Cannot be used when
+    :option:`infile` is passed as ``-``.
 
 
 
