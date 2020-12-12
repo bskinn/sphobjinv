@@ -6,6 +6,8 @@ jobs:
   all_checks:
     name: Run all tests, lints, etc. (Python 3.9)
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
@@ -58,6 +60,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.6', '3.7', '3.8']
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
