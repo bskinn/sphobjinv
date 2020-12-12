@@ -9,23 +9,6 @@ and this project strives to adhere to
 
 ### [2.1b1] - 2020-11-13
 
-#### Added
-
- * A hyphen can now be passed as the CLI input and/or output file name
-   to instruct sphobjinv to use stdin and/or stdout, respectively.
-
- * When an inventory is retrieved via CLI from a remote URL with `-u`,
-   the resolved location of the inventory is included in generated JSON
-   at `json_dict.metadata.url`.
-
- * The `fileops` and `inventory` APIs are now tested to work with
-   both strings and `pathlib.Path` objects, where they interact
-   with the filesystem.
-
-#### Changed
-
- * CLI logging messages are now emitted to stderr instead of stdout.
-
 #### Fixed
 
  * Equality tests on Inventory and DataObjStr/DataObjBytes instances
@@ -35,10 +18,36 @@ and this project strives to adhere to
    during `Inventory` instantiation, consistent with what is allowed
    by `DataObjStr` and `DataObjBytes` instantiation.
 
+
+### [2.1a2] - 2020-10-27
+
+#### Added
+
+ * When an inventory is retrieved via CLI from a remote URL with `-u`,
+   the resolved location of the inventory is included in generated JSON
+   at `json_dict.metadata.url`.
+
+#### Changed
+
+ * CLI logging messages are now emitted to stderr instead of stdout.
+
+
+### [2.1a1] - 2020-10-26
+
+#### Added
+
+ * A hyphen can now be passed as the CLI input and/or output file name
+   to instruct sphobjinv to use stdin and/or stdout, respectively.
+
+ * The `fileops` and `inventory` APIs are now tested to work with
+   both strings and `pathlib.Path` objects, where they interact
+   with the filesystem.
+
 #### Refactored
 
  * Patterns in regular expressions are now defined with raw strings
    to improve readability.
+
 
 ### [2.0.1] - 2020-01-26
 
