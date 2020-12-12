@@ -7,6 +7,14 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.1b2] - *(unreleased)*
+
+#### Changed
+
+ * The User-Agent header sent by `Inventory` when making an HTTP(S) request
+   now identifies `sphobjinv` and its version (anticipate no API or
+   behavior change)
+
 ### [2.1b1] - 2020-11-13
 
 #### Fixed
