@@ -41,6 +41,7 @@ from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.fileops import readbytes
 from sphobjinv.re import pb_data, pb_project, pb_version
 from sphobjinv.schema import json_schema
+from sphobjinv.version import __version__ as soi_version
 from sphobjinv.zlib import decompress
 
 
@@ -645,7 +646,7 @@ class Inventory(object):
         """Import a file from a remote URL."""
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        req = urlrq.Request(url, headers={"User-Agent": "Magic Browser"})
+        req = urlrq.Request(url, headers={"User-Agent": "sphobjinv URL/" + soi_version})
         resp = urlrq.urlopen(req, context=self._sslcontext)  # noqa: S310
         b_str = resp.read()
 
