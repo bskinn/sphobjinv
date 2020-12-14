@@ -7,7 +7,6 @@ jsonschema
 pytest>=4.4.0
 pytest-cov
 pytest-ordering
-pytest-subtests
 pytest-timeout
 sphinx==2.3.1
 sphinx-issues

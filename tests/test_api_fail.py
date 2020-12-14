@@ -163,22 +163,19 @@ class TestInventory:
         with pytest.raises(RuntimeError):
             soi.Inventory(source="foo", plaintext="bar")
 
-    def test_apifail_inventory_no_object_invs(self, subtests):
+    def test_apifail_inventory_no_object_invs(self, check):
         """Confirm no-objects inventories don't import."""
         inv = soi.Inventory()
 
-        with subtests.test(msg="plain"):
-            with pytest.raises(TypeError):
-                soi.Inventory(inv.data_file())
+        with pytest.raises(TypeError):
+            soi.Inventory(inv.data_file())
 
-        with subtests.test(msg="zlib"):
-            with pytest.raises((TypeError, ValueError)):
-                soi.Inventory(soi.compress(inv.data_file()))
+        with pytest.raises((TypeError, ValueError)):
+            soi.Inventory(soi.compress(inv.data_file()))
 
         d = {"project": "test", "version": "0.0", "count": 0}
-        with subtests.test(msg="json"):
-            with pytest.raises(ValueError):
-                soi.Inventory(d)
+        with pytest.raises(ValueError):
+            soi.Inventory(d)
 
     def test_apifail_compressed_inv_with_win_newlines(self, unix2dos, res_cmp):
         """Confirm that a compressed inventory with Windows newlines does not decompress.

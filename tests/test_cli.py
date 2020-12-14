@@ -190,7 +190,7 @@ class TestConvertGood:
         run_cmdline_test,
         misc_info,
         pytestconfig,
-        subtests,
+        check,
     ):
         """Confirm conversion in a loop, reading/writing all formats."""
         res_src_path = res_path / testall_inv_path
@@ -224,8 +224,7 @@ class TestConvertGood:
                 HeaderFields.Count.value,
             ),
         ):
-            with subtests.test(msg="{}_{}".format(fmt, attrib)):
-                assert getattr(invs[fmt], attrib) == getattr(invs["orig"], attrib)
+            check.equal(getattr(invs[fmt], attrib), getattr(invs["orig"], attrib))
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_overwrite_prompt_and_behavior(
