@@ -15,6 +15,10 @@ and this project strives to adhere to
    now identifies `sphobjinv` and its version (anticipate no API or
    behavior change)
 
+ * An extraneous newline was removed before tables printed in the 
+   'suggest' CLI mode (cosmetic change)
+
+
 ### [2.1b1] - 2020-11-13
 
 #### Fixed
