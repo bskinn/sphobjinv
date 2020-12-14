@@ -321,7 +321,7 @@ class TestInventory:
         check.is_none(inv.project)
         check.is_none(inv.version)
         check.equal(inv.count, 0)
-        check.is_true(inv.source_type is soi.SourceTypes.Manual)
+        check.is_(inv.source_type, soi.SourceTypes.Manual)
 
     @pytest.mark.parametrize(
         ["source_type", "inv_arg"],
