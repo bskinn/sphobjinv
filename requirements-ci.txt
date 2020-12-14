@@ -5,6 +5,7 @@ coverage
 fuzzywuzzy>=0.3
 jsonschema
 pytest>=4.4.0
+pytest-check
 pytest-cov
 pytest-ordering
 pytest-timeout

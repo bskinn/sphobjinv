@@ -56,7 +56,7 @@ p_shell = re.compile(
     sphinx_ver != sphinx_req,
     reason="Skip if Sphinx version mismatches current dev version.",
 )
-def test_readme_shell_cmds(ensure_doc_scratch, subtests):
+def test_readme_shell_cmds(ensure_doc_scratch, check):
     """Perform testing on README shell command examples."""
     with open("README.rst") as f:
         text = f.read()
@@ -77,5 +77,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, subtests):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with subtests.test(i=i):
+        with check.check(msg="match_{}".format(i)):
             assert chk.check_output(out, result, dt_flags), msg

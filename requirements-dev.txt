@@ -5,6 +5,7 @@ fuzzywuzzy>=0.3
 jsonschema
 pep517
 pytest>=4.4.0
+pytest-check
 pytest-cov
 pytest-ordering
 pytest-timeout

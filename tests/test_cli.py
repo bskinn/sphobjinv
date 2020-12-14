@@ -445,17 +445,17 @@ class TestFail:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_clifail_convert_localfile_as_url(
-        self, scratch_path, misc_info, run_cmdline_test, subtests
+        self, scratch_path, misc_info, run_cmdline_test, check
     ):
         """Confirm error when using URL mode on local file."""
         in_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
 
         (scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)).unlink()
 
-        with subtests.test(msg="path-style"):
+        with check.check(msg="path-style"):
             run_cmdline_test(["convert", "plain", "-u", str(in_path)], expect=1)
 
-        with subtests.test(msg="url-style"):
+        with check.check(msg="url-style"):
             file_url = "file:///" + str(in_path.resolve())
             run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
 
