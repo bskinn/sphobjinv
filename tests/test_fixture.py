@@ -36,12 +36,12 @@ def test_info_fixture(misc_info):
     assert True in misc_info.byte_lines
 
 
-def test_populate_scratch(misc_info, scratch_path, subtests):
+def test_populate_scratch(misc_info, scratch_path, check):
     """Ensure the scratch_path fixture populates the scratch dir correctly."""
     scr_base = misc_info.FNames.INIT
 
     for ext in [_.value for _ in misc_info.Extensions]:
-        with subtests.test(msg=ext):
+        with check.check(msg=ext):
             assert (scratch_path / "{}{}".format(scr_base, ext)).is_file(), ext
 
 

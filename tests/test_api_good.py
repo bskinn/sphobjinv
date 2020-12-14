@@ -242,7 +242,7 @@ class TestDataObj:
         init_expanded,
         dataline_arg,
         misc_info,
-        subtests,
+        check,
     ):
         """Confirm that data line formatting function works.
 
@@ -258,17 +258,15 @@ class TestDataObj:
         # If dataline_arg is False, should match the value of init_expanded.
         # If dataline_arg is True, should match the True (expanded) value.
         # Thus, the only False (contracted) situation is with both values False.
-        with subtests.test(msg="expand"):
-            dl = dobj.data_line(expand=dataline_arg)
-            assert dl == lines_obj[dataline_arg or init_expanded]
+        dl = dobj.data_line(expand=dataline_arg)
+        check.equal(dl, lines_obj[dataline_arg or init_expanded])
 
         # If dataline_arg is False, should match the value of init_expanded.
         # If dataline_arg is True, should match the False (contracted) value.
         # Thus, the only True (expanded) situation is when init_expanded == True
         # and and dataline_arg == False.
-        with subtests.test(msg="contract"):
-            dl = dobj.data_line(contract=dataline_arg)
-            assert dl == lines_obj[init_expanded and not dataline_arg]
+        dl = dobj.data_line(contract=dataline_arg)
+        check.equal(dl, lines_obj[init_expanded and not dataline_arg])
 
     @pytest.mark.parametrize(
         "use_bytes", (True, False), ids=(lambda b: "use_bytes_" + str(b))
@@ -316,21 +314,14 @@ class TestDataObj:
 class TestInventory:
     """Tests of the Inventory class."""
 
-    def test_api_inventory_default_none_instantiation(self, subtests):
+    def test_api_inventory_default_none_instantiation(self, check):
         """Confirm 'manual' instantiation with None."""
         inv = soi.Inventory()
 
-        with subtests.test(msg="project"):
-            assert inv.project is None
-
-        with subtests.test(msg="version"):
-            assert inv.version is None
-
-        with subtests.test(msg="count"):
-            assert inv.count == 0
-
-        with subtests.test(msg="source_type"):
-            assert inv.source_type is soi.SourceTypes.Manual
+        check.is_none(inv.project)
+        check.is_none(inv.version)
+        check.equal(inv.count, 0)
+        check.is_true(inv.source_type is soi.SourceTypes.Manual)
 
     @pytest.mark.parametrize(
         ["source_type", "inv_arg"],
@@ -351,7 +342,7 @@ class TestInventory:
         res_path,
         misc_info,
         attrs_inventory_test,
-        subtests,
+        check,
     ):
         """Check bytes and filename modes for Inventory instantiation."""
         fname = misc_info.FNames.RES
@@ -371,17 +362,17 @@ class TestInventory:
             source = soi.readbytes(source)
 
         # General import, without a specified kwarg
-        with subtests.test(msg="general"):
+        with check.check(msg="general"):
             attrs_inventory_test(soi.Inventory(source), source_type)
 
         # Importing with the respective kwarg for each source type
-        with subtests.test(msg="specific"):
+        with check.check(msg="specific"):
             inv = soi.Inventory(**{inv_arg: source})
             attrs_inventory_test(inv, source_type)
 
         # Special case for plaintext bytes, try decoding it
         if source_type is soi.SourceTypes.BytesPlaintext:
-            with subtests.test(msg="plaintext_bytes"):
+            with check.check(msg="plaintext_bytes"):
                 inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
                 attrs_inventory_test(inv, source_type)
 
@@ -456,7 +447,7 @@ class TestInventory:
         # 55 b/c the loop continues past missing elements
         assert inv2.count == 55
 
-    def test_api_inventory_namesuggest(self, res_cmp, subtests):
+    def test_api_inventory_namesuggest(self, res_cmp, check):
         """Confirm object name suggestion is nominally working."""
         rst = ":py:function:`attr.evolve`"
         idx = 6
@@ -465,22 +456,18 @@ class TestInventory:
 
         # No test on the exact fuzzywuzzy match score in these since
         # it could change as fw continues development
-        with subtests.test(msg="basic"):
-            assert inv.suggest("evolve")[0] == rst
+        check.equal(inv.suggest("evolve")[0], rst)
 
-        with subtests.test(msg="index"):
-            assert inv.suggest("evolve", with_index=True)[0] == (rst, idx)
+        check.equal(inv.suggest("evolve", with_index=True)[0], (rst, idx))
 
-        with subtests.test(msg="score"):
-            rec = inv.suggest("evolve", with_score=True)
-            assert rec[0][0] == rst
-            assert isinstance(rec[0][1], Number)
+        rec = inv.suggest("evolve", with_score=True)
+        check.equal(rec[0][0], rst)
+        check.is_instance(rec[0][1], Number)
 
-        with subtests.test(msg="index_and_score"):
-            rec = inv.suggest("evolve", with_index=True, with_score=True)
-            assert rec[0][0] == rst
-            assert isinstance(rec[0][1], Number)
-            assert rec[0][2] == idx
+        rec = inv.suggest("evolve", with_index=True, with_score=True)
+        check.equal(rec[0][0], rst)
+        check.is_instance(rec[0][1], Number)
+        check.equal(rec[0][2], idx)
 
     @pytest.mark.testall
     def test_api_inventory_datafile_gen_and_reimport(
@@ -491,7 +478,6 @@ class TestInventory:
         misc_info,
         sphinx_load_test,
         pytestconfig,
-        subtests,
     ):
         """Confirm integrated data_file export/import behavior."""
         fname = testall_inv_path.name

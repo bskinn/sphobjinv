@@ -146,20 +146,17 @@ def do_suggest(inv, params):
             fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
                 rst_width, score_width, index_width
             )
-            print("")
             print(fmt.format("  Name", "Score", "Index"))
             print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, index_width)
-            print("")
             print(fmt.format("  Name", "Index"))
             print(fmt.format("-" * rst_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
             fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, score_width)
-            print("")
             print(fmt.format("  Name", "Score"))
             print(fmt.format("-" * rst_width, "-" * score_width))
             print("\n".join(fmt.format(*_) for _ in results))
