@@ -13,10 +13,19 @@ and this project strives to adhere to
 
  * The User-Agent header sent by `Inventory` when making an HTTP(S) request
    now identifies `sphobjinv` and its version (anticipate no API or
-   behavior change)
+   behavior change).
 
  * An extraneous newline was removed before tables printed in the 
-   'suggest' CLI mode (cosmetic change)
+   'suggest' CLI mode (cosmetic change).
+
+#### Removed
+
+ * Python 3.5 is no longer supported.
+
+#### Internal
+
+ * Where possible, string interpolation has been refactored to use
+   f-strings.
 
 
 ### [2.1b1] - 2020-11-13
