@@ -521,15 +521,15 @@ class Inventory(object):
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index
-        srch_list = ["{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst)]
+        srch_list = [f"{i} {o}" for i, o in enumerate(self.objects_rst)]
 
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
         results = [
-            "{0} {1}".format(*_)
-            for _ in fwp.extract(name, srch_list, limit=None)
-            if _[1] >= thresh
+            f"{match} {score}"
+            for match, score in fwp.extract(name, srch_list, limit=None)
+            if score >= thresh
         ]
 
         # Define regex for splitting the three components, and
@@ -680,8 +680,7 @@ class Inventory(object):
             except KeyError as e:
                 if self._count_error:
                     err_str = (
-                        "Too few objects found in dict "
-                        "(halt at {0}, expect {1})".format(i, count)
+                        f"Too few objects found in dict (halt at {i}, expect {count})"
                     )
                     raise ValueError(err_str) from e
 
@@ -692,7 +691,7 @@ class Inventory(object):
         if check_value:
             # A truthy value here will be the contents
             # of the above set difference
-            err_str = "Too many objects in dict ({0})".format(check_value)
+            err_str = f"Too many objects in dict ({check_value})"
             raise ValueError(err_str)
 
         # Should be good to return

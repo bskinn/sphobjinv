@@ -27,8 +27,8 @@ Sphinx |objects.inv| files.
 
 import re
 
-from sphobjinv.data import DataFields
-from sphobjinv.enum import HeaderFields
+from sphobjinv.data import DataFields as DF  # noqa: N817
+from sphobjinv.enum import HeaderFields as HF  # noqa: N817
 
 
 #: Compiled |re| |bytes|  pattern for comment lines in decompressed
@@ -37,14 +37,12 @@ pb_comments = re.compile(b"^#.*$", re.M)
 
 #: Compiled |re| |bytes| pattern for project line
 pb_project = re.compile(
-    r"""
-    ^                        # Start of line
-    [#][ ]Project:[ ]        # Preamble
-    (?P<{}>.*?)              # Lazy rest of line is the project name
-    \r?$                     # Ignore possible CR at EOL
-    """.format(
-        HeaderFields.Project.value
-    ).encode(
+    rf"""
+    ^                            # Start of line
+    [#][ ]Project:[ ]            # Preamble
+    (?P<{HF.Project.value}>.*?)  # Lazy rest of line is project name
+    \r?$                         # Ignore possible CR at EOL
+    """.encode(
         encoding="utf-8"
     ),
     re.M | re.X,
@@ -52,14 +50,12 @@ pb_project = re.compile(
 
 #: Compiled |re| |bytes| pattern for version line
 pb_version = re.compile(
-    r"""
-    ^                        # Start of line
-    [#][ ]Version:[ ]        # Preamble
-    (?P<{}>.*?)              # Lazy rest of line is the version
-    \r?$                     # Ignore possible CR at EOL
-    """.format(
-        HeaderFields.Version.value
-    ).encode(
+    rf"""
+    ^                            # Start of line
+    [#][ ]Version:[ ]            # Preamble
+    (?P<{HF.Version.value}>.*?)  # Lazy rest of line is version
+    \r?$                         # Ignore possible CR at EOL
+    """.encode(
         encoding="utf-8"
     ),
     re.M | re.X,
@@ -68,30 +64,21 @@ pb_version = re.compile(
 #: Regex pattern string used to compile
 #: :data:`~sphobjinv.re.p_data` and
 #: :data:`~sphobjinv.re.pb_data`
-ptn_data = (
-    r"""
-    ^                        # Start of line
-    (?P<{0}>[^#]\S+)         # --> Name
-    \s+                      # Dividing space
-    (?P<{1}>\w+)             # --> Domain
-    :                        # Dividing colon
-    (?P<{2}>\w+)             # --> Role
-    \s+                      # Dividing space
-    (?P<{3}>\S+)             # --> Priority
-    \s+                      # Dividing space
-    (?P<{4}>\S+)             # --> URI
-    \s+                      # Dividing space
-    (?P<{5}>.+?)             # --> Display name, lazy b/c possible CR
-    \r?$                     # Ignore possible CR at EOL
+ptn_data = rf"""
+    ^                             # Start of line
+    (?P<{DF.Name.value}>[^#]\S+)  # --> Name
+    \s+                           # Dividing space
+    (?P<{DF.Domain.value}>\w+)    # --> Domain
+    :                             # Dividing colon
+    (?P<{DF.Role.value}>\w+)      # --> Role
+    \s+                           # Dividing space
+    (?P<{DF.Priority.value}>\S+)  # --> Priority
+    \s+                           # Dividing space
+    (?P<{DF.URI.value}>\S+)       # --> URI
+    \s+                           # Dividing space
+    (?P<{DF.DispName.value}>.+?)  # --> Display name, lazy b/c possible CR
+    \r?$                          # Ignore possible CR at EOL
     """
-).format(
-    DataFields.Name.value,
-    DataFields.Domain.value,
-    DataFields.Role.value,
-    DataFields.Priority.value,
-    DataFields.URI.value,
-    DataFields.DispName.value,
-)
 
 #: Compiled |re| |bytes| regex pattern for data lines in |bytes| decompressed
 #: inventory files

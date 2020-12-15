@@ -125,7 +125,7 @@ def do_suggest(inv, params):
         and not params[PrsConst.ALL]
         and params[PrsConst.INFILE] != "-"
     ):
-        resp = yesno_prompt("Display all {0} results (Y/N)?".format(len(results)))
+        resp = yesno_prompt(f"Display all {len(results)} results (Y/N)?")
         if resp.lower() == "n":
             log_print("\nExiting...", params)
             sys.exit(0)
@@ -143,20 +143,18 @@ def do_suggest(inv, params):
 
     if with_index:
         if with_score:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}  {{2: ^{2}}}".format(
-                rst_width, score_width, index_width
-            )
+            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
             print(fmt.format("  Name", "Score", "Index"))
             print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
         else:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, index_width)
+            fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
             print(fmt.format("  Name", "Index"))
             print(fmt.format("-" * rst_width, "-" * index_width))
             print("\n".join(fmt.format(*_) for _ in results))
     else:
         if with_score:
-            fmt = "{{0: <{0}}}  {{1: ^{1}}}".format(rst_width, score_width)
+            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
             print(fmt.format("  Name", "Score"))
             print(fmt.format("-" * rst_width, "-" * score_width))
             print("\n".join(fmt.format(*_) for _ in results))

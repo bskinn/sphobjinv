@@ -71,7 +71,7 @@ def err_format(exc):
         |cour|\ '{type}: {message}'\ |/cour|
 
     """
-    return "{0}: {1}".format(type(exc).__name__, str(exc))
+    return f"{type(exc).__name__}: {str(exc)}"
 
 
 def yesno_prompt(prompt):
