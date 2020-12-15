@@ -21,7 +21,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.8'
+        versionSpec: '3.9'
 
     - script: pip install -U tox
       displayName: Install tox
@@ -43,7 +43,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.8'
+        versionSpec: '3.9'
 
     - script: pip install interrogate
       displayName: Install interrogate
@@ -59,15 +59,14 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py35:
-          name: 'Python 3.5'
-          spec: '3.5'
         py36:
           spec: '3.6'
         py37:
           spec: '3.7'
         py38:
           spec: '3.8'
+        py39:
+          spec: '3.9'
         pypy3:
           spec: 'pypy3'
       platforms: [linux, windows, macOs]
@@ -86,7 +85,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.7'
+        versionSpec: '3.9'
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install project, plus docs requirements
@@ -104,7 +103,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.7'
+        versionSpec: '3.9'
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
@@ -121,7 +120,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.7'
+        versionSpec: '3.9'
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install doc requirements and local project
@@ -139,7 +138,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.8'
+        versionSpec: '3.9'
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements

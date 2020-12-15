@@ -176,7 +176,7 @@ def inv_url(params):
     # Keep searching if inv not found yet
     if not inv:
         for url in urlwalk(in_file):
-            log_print('Attempting "{0}" ...'.format(url), params)
+            log_print(f'Attempting "{url}" ...', params)
             try:
                 inv = Inventory(url=url)
             except (ValueError, HTTPError):

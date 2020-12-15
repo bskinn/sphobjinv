@@ -139,8 +139,8 @@ def scratch_path(tmp_path, res_path, misc_info):
     for ext in [_.value for _ in misc_info.Extensions]:
         # The str() calls here are for Python 3.5 compat
         shutil.copy(
-            str(res_path / "{}{}".format(res_base, ext)),
-            str(tmp_path / "{}{}".format(scr_base, ext)),
+            str(res_path / f"{res_base}{ext}"),
+            str(tmp_path / f"{scr_base}{ext}"),
         )
 
     yield tmp_path

@@ -15,4 +15,5 @@ sphinx-rtd-theme
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox
+wheel
 -e .

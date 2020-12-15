@@ -77,5 +77,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, check):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with check.check(msg="match_{}".format(i)):
+        with check.check(msg=f"match_{i}"):
             assert chk.check_output(out, result, dt_flags), msg

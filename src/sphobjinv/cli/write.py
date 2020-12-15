@@ -274,8 +274,6 @@ def write_file(inv, in_path, params):
     # Report success, if not QUIET
     log_print(
         "Conversion completed.\n"
-        "'{0}' converted to '{1}' ({2}).".format(
-            in_path if in_path else "stdin", out_path, mode
-        ),
+        f"'{in_path if in_path else 'stdin'}' converted to '{out_path}' ({mode}).",
         params,
     )

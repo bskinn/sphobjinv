@@ -9,7 +9,7 @@ exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"))
 NAME = "sphobjinv"
 
 
-version_override = "2.0"
+version_override = None
 
 
 def readme():
@@ -48,7 +48,7 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     provides=["sphobjinv"],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     requires=["attrs (>=19.2)", "certifi", "fuzzywuzzy (>=0.8)", "jsonschema (>=3.0)"],
     install_requires=["attrs>=19.2", "certifi", "fuzzywuzzy>=0.8", "jsonschema>=3.0"],
     classifiers=[
@@ -62,11 +62,11 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Utilities",
         "Development Status :: 5 - Production/Stable",
     ],

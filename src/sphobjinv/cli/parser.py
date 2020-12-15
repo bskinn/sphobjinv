@@ -40,8 +40,7 @@ class PrsConst:
 
     #: Version &c. output blurb
     VER_TXT = (
-        "\nsphobjinv v{0}\n\n".format(__version__)
-        + "Copyright (c) Brian Skinn 2016-2020\n"
+        f"\nsphobjinv v{__version__}\n\nCopyright (c) Brian Skinn 2016-2020\n"
         "License: The MIT License\n\n"
         "Bug reports & feature requests:"
         " https://github.com/bskinn/sphobjinv\n"
@@ -207,7 +206,7 @@ def getparser():
     sprs = prs.add_subparsers(
         title="Subcommands",
         dest=PrsConst.SUBPARSER_NAME,
-        metavar="{{{0},{1}}}".format(PrsConst.CONVERT, PrsConst.SUGGEST),
+        metavar=f"{{{PrsConst.CONVERT},{PrsConst.SUGGEST}}}",
         help="Execution mode. Type "
         "'sphobjinv [mode] -h' "
         "for more information "
@@ -308,8 +307,9 @@ def getparser():
     spr_convert.add_argument(
         "-" + PrsConst.URL[0],
         "--" + PrsConst.URL,
-        help="Treat 'infile' as a URL for download. Cannot be used with --{}.".format(
-            PrsConst.URL
+        help=(
+            "Treat 'infile' as a URL for download. "
+            f"Cannot be used with --{PrsConst.URL}."
         ),
         action="store_true",
     )
@@ -359,8 +359,9 @@ def getparser():
     spr_suggest.add_argument(
         "-" + PrsConst.URL[0],
         "--" + PrsConst.URL,
-        help="Treat 'infile' as a URL for download. Cannot be used with --{}.".format(
-            PrsConst.URL
+        help=(
+            "Treat 'infile' as a URL for download. "
+            f"Cannot be used with --{PrsConst.URL}."
         ),
         action="store_true",
     )
