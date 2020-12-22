@@ -43,10 +43,8 @@ setup(
     long_description_content_type="text/x-rst",
     url="https://github.com/bskinn/sphobjinv",
     project_urls={
-        "Home": "https://github.com/bskinn/sphobjinv",
         "Changelog": "https://github.com/bskinn/sphobjinv/blob/master/CHANGELOG.md",
         "Docs": "https://sphobjinv.readthedocs.io/en/stable/",
-        "Bugs": "https://github.com/bskinn/sphobjinv/issues",
         "Thank": "https://twitter.com/btskinn",
         "Donate": "https://github.com/sponsors/bskinn",
     },
