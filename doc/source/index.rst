@@ -31,11 +31,36 @@ In particular, |soi| was developed to satisfy two primary use cases:
  #. Assembly of new |objects.inv| files in order to allow |isphx| cross-referencing
     of other documentation sets that were not created by Sphinx.
 
+For more background on the mechanics of the Sphinx data model and
+Sphinx cross-references generally, see
+`this talk <https://www.youtube.com/watch?v=CfInPYkbTZE>`__ from PyOhio 2019.
+
 ----
 
 Install |soi| via |cour|\ pip\ |/cour|::
 
     $ pip install sphobjinv
+
+Alternatively, |soi| is packaged with
+`multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__,
+including:
+
+  * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
+
+  * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/community/any/python-sphobjinv/>`__)
+
+  * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
+
+  * Gentoo GURU: ``dev-python/sphobjinv`` (`info <https://gpo.zugaina.org/Overlays/guru/dev-python/sphobjinv>`__)
+
+  * Manjaro: ``python-sphobjinv``
+
+  * openSUSE: ``python-sphobjinv`` (`info <https://build.opensuse.org/package/show/openSUSE:Leap:15.2:Update/python-sphobjinv>`__)
+
+  * Parabola: ``python-sphobjinv`` (`info <https://www.parabola.nu/packages/?q=python-sphobjinv>`__)
+
+  * pkgsrc: ``textproc/py-sphobjinv`` (`info <http://pkgsrc.se/textproc/py-sphobjinv>`__)
+
 
 The package is configured for use both as a
 :doc:`command-line script <cli/index>` and as a
