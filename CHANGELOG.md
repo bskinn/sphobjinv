@@ -27,6 +27,10 @@ and this project strives to adhere to
  * Where possible, string interpolation has been refactored to use
    f-strings.
 
+ * A 'speedup' extras_require entry has been added to allow simple installation
+   of python-Levenshtein for Linux and MacOS platforms (Windows is excluded since
+   compilation machinery is anticipated not to be available for most users).
+
 
 ### [2.1b1] - 2020-11-13
 
