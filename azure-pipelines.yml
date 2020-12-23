@@ -72,7 +72,6 @@ stages:
       platforms: [linux, windows, macOs]
 
   - job: Levenshtein
-    displayName: Run test suite with python-Levenshtein installed
     strategy:
       matrix:
         linux:
@@ -90,7 +89,7 @@ stages:
         architecture: 'x64'
       displayName: Use Python 3.9
 
-    - script: pip install -U --force-reinstall -r requirements-ci.txt python-Levenshtein
+    - script: pip install -U --force-reinstall -r requirements-ci.txt -e .[speedup]
       displayName: Install CI requirements, plus python-Levenshtein
 
     - script: pip list
