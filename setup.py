@@ -58,7 +58,7 @@ setup(
     requires=["attrs (>=19.2)", "certifi", "fuzzywuzzy (>=0.8)", "jsonschema (>=3.0)"],
     install_requires=["attrs>=19.2", "certifi", "fuzzywuzzy>=0.8", "jsonschema>=3.0"],
     extras_require={
-        "speedup": ["python-Levenshtein"],
+        "speedup": ["python-Levenshtein; platform_system != 'Windows'"],
     },
     classifiers=[
         "License :: OSI Approved",
