@@ -71,6 +71,37 @@ stages:
           spec: 'pypy3'
       platforms: [linux, windows, macOs]
 
+  - job: Levenshtein
+    displayName: Run test suite with python-Levenshtein installed
+    strategy:
+      matrix:
+        linux:
+          platform: Ubuntu-latest
+        macOs:
+          platform: macOS-latest
+
+    pool:
+      vmImage: $[ variables.platform ]
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+        architecture: 'x64'
+      displayName: Use Python 3.9
+
+    - script: pip install -U --force-reinstall -r requirements-ci.txt python-Levenshtein
+      displayName: Install CI requirements, plus python-Levenshtein
+
+    - script: pip list
+      displayName: Show full environment contents
+
+    - script: cd doc; make html; mkdir scratch
+      displayName: Build  the documentation for tests to work against (Linux/macOs)
+
+    - script: pytest --nonloc -k "not readme"
+      displayName: Run pytest without README tests
+
 
 - stage: aux_tests
   displayName: Run auxiliary tests
