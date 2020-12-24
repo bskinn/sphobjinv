@@ -268,8 +268,7 @@ def file_head(fn, *, head=None):
     if not p.is_file():
         return "Not a file."
 
-    with p.open() as f:
-        text = f.read()
+    text = p.read_text()
 
     # If head==None, then just returns a complete slice
     lines = text.splitlines()[:head]

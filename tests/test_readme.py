@@ -58,8 +58,7 @@ p_shell = re.compile(
 )
 def test_readme_shell_cmds(ensure_doc_scratch, check):
     """Perform testing on README shell command examples."""
-    with open("README.rst") as f:
-        text = f.read()
+    text = Path("README.rst").read_text()
 
     chk = dt.OutputChecker()
 
