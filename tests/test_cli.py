@@ -212,9 +212,8 @@ class TestConvertGood:
             "orig": Inventory(str(res_src_path)),
             "plain": Inventory(str(plain_path)),
             "zlib": Inventory(str(zlib_path)),
+            "json": Inventory(json.loads(json_path.read_text())),
         }
-        with json_path.open() as f:
-            invs.update({"json": Inventory(json.load(f))})
 
         for fmt, attrib in product(
             ("plain", "zlib", "json"),
@@ -396,8 +395,7 @@ class TestFail:
         """Confirm exit code 1 with invalid file format."""
         monkeypatch.chdir(scratch_path)
         fname = "testfile"
-        with Path(fname).open("wb") as f:
-            f.write(b"this is not objects.inv\n")
+        Path(fname).write_bytes(b"this is not objects.inv\n")
 
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["convert", "plain", fname], expect=1)

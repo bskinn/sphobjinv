@@ -25,6 +25,9 @@ Sphinx |objects.inv| files.
 
 """
 
+import json
+from pathlib import Path
+
 
 def readbytes(path):
     """Read file contents and return as |bytes|.
@@ -42,8 +45,7 @@ def readbytes(path):
         |bytes| -- Contents of the indicated file.
 
     """
-    with open(str(path), "rb") as f:
-        return f.read()
+    return Path(path).read_bytes()
 
 
 def writebytes(path, contents):
@@ -62,8 +64,7 @@ def writebytes(path, contents):
         |bytes| -- Content to be written to file.
 
     """
-    with open(str(path), "wb") as f:
-        f.write(contents)
+    Path(path).write_bytes(contents)
 
 
 def readjson(path):
@@ -84,10 +85,7 @@ def readjson(path):
         |dict| -- Deserialized JSON.
 
     """
-    import json
-
-    with open(str(path), "r") as f:
-        return json.load(f)
+    return json.loads(Path(path).read_text())
 
 
 def writejson(path, d):
@@ -107,10 +105,7 @@ def writejson(path, d):
         |dict| -- Data structure to serialize.
 
     """
-    import json
-
-    with open(str(path), "w") as f:
-        json.dump(d, f)
+    Path(path).write_text(json.dumps(d))
 
 
 def urlwalk(url):
