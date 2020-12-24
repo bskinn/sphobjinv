@@ -55,6 +55,8 @@ including:
 
   * Manjaro: ``python-sphobjinv``
 
+  * OpenEuler: ``python-sphobjinv``
+
   * openSUSE: ``python-sphobjinv`` (`info <https://build.opensuse.org/package/show/openSUSE:Leap:15.2:Update/python-sphobjinv>`__)
 
   * Parabola: ``python-sphobjinv`` (`info <https://www.parabola.nu/packages/?q=python-sphobjinv>`__)
