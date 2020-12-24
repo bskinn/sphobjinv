@@ -132,7 +132,7 @@ rst_epilog = r"""
 
 .. |cour| raw:: html
 
-    <span style="font-family:courier;font-size:90%">
+    <span style="font-family:courier, monospace;font-size:90%">
 
 .. |/cour| raw:: html
 
@@ -150,7 +150,7 @@ rst_epilog = r"""
 
 .. |soi| raw:: html
 
-    <span style="font-family:courier; font-size: 90%; font-weight: bold;">sphobjinv</span>
+    <span style="font-family:courier, monospace; font-size: 90%; font-weight: bold;">sphobjinv</span>
 
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
