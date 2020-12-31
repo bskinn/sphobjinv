@@ -1,14 +1,26 @@
 Introduction
 ------------
 
-- Drop a line on Twitter @btskinn with questions,
-  or open an issue
+Thanks for your interest in contributing to `sphobjinv`!
+The aim of this document is to give you the information you need
+to get started smoothly on a contribution.
+
+If you have any questions, please drop me a line on Twitter
+([@btskinn](https://twitter.com/btskinn)) or open an
+[issue](https://github.com/bskinn/sphobjinv/issues).
 
 
 Project Setup
 -------------
 
-- Clone
+Start by forking the repo and cloning locally:
+
+```
+$ git clone https://github.com/{you}/sphobjinv
+```
+
+Then, create a virtual environment for the **RESUME**
+
 - Virtual environment
 - Install req'ts-dev
 - Build docs (needed for some tests)
