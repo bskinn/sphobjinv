@@ -2,7 +2,7 @@ Introduction
 ------------
 
 Thanks for your interest in contributing to `sphobjinv`!
-The aim of this document is to give you the information you need
+The aim of this document is to provide the information you need
 to get started smoothly on a contribution.
 
 If you have any questions, please drop me a line on Twitter
@@ -19,11 +19,46 @@ Start by forking the repo and cloning locally:
 $ git clone https://github.com/{you}/sphobjinv
 ```
 
-Then, create a virtual environment for the **RESUME**
+Then, create a virtual environment for the project,
+in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
 
-- Virtual environment
-- Install req'ts-dev
-- Build docs (needed for some tests)
+I prefer to use `virtualenv` and create in `./env`:
+
+```
+$ python3.9 -m virtualenv env --prompt="(sphobjinv) "
+```
+
+Activate the environment:
+
+```
+### Linux/Mac
+$ source env/bin/activate
+
+### Windows
+> env\scripts\activate
+```
+
+The next step is to install the development requirements:
+
+```
+(sphobjinv) $ pip install -r requirements-dev.txt
+```
+
+Finally, you'll need to build the Sphinx docs,
+as some of the tests interact with them:
+
+```
+(sphobjinv) $ cd doc
+(sphobjinv) doc $ make html
+```
+
+
+Working with git
+----------------
+
+There's no way I can fit a whole git **RESUME**
+- Create new branch for the feature
+- Link the main repo as `upstream` remote
 
 Tests
 -----
