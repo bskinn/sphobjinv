@@ -1,3 +1,9 @@
+Table of Contents
+-----------------
+
+<!--TOC-->
+
+
 Introduction
 ------------
 
@@ -38,9 +44,10 @@ $ source env/bin/activate
 > env\scripts\activate
 ```
 
-The next step is to install the development requirements:
+The next step is to upgrade/install the development requirements:
 
 ```
+(sphobjinv) $ python -m pip install -U pip setuptools wheel
 (sphobjinv) $ pip install -r requirements-dev.txt
 ```
 
