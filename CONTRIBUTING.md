@@ -3,9 +3,21 @@ Table of Contents
 
 <!--TOC-->
 
+- [Introduction](#introduction)
+- [Project Setup](#project-setup)
+- [Working with git](#working-with-git)
+- [Tests](#tests)
+- [Linting](#linting)
+- [Continuous Integration](#continuous-integration)
+- [Documentation](#documentation)
+- [Type Hints](#type-hints)
+- [CHANGELOG](#changelog)
+- [Issue & PR Templates](#issue--pr-templates)
 
-Introduction
-------------
+<!--TOC-->
+
+
+## Introduction
 
 Thanks for your interest in contributing to `sphobjinv`!
 The aim of this document is to provide the information you need
@@ -16,8 +28,7 @@ If you have any questions, please drop me a line on Twitter
 [issue](https://github.com/bskinn/sphobjinv/issues).
 
 
-Project Setup
--------------
+## Project Setup
 
 Start by forking the repo and cloning locally:
 
@@ -37,10 +48,10 @@ $ python3.9 -m virtualenv env --prompt="(sphobjinv) "
 Activate the environment:
 
 ```
-### Linux/Mac
+=== Linux/Mac
 $ source env/bin/activate
 
-### Windows
+=== Windows
 > env\scripts\activate
 ```
 
@@ -60,15 +71,14 @@ as some of the tests interact with them:
 ```
 
 
-Working with git
-----------------
+## Working with git
 
 There's no way I can fit a whole git **RESUME**
 - Create new branch for the feature
 - Link the main repo as `upstream` remote
 
-Tests
------
+
+## Tests
 
 - pytest
 - Defaults to only running tests not using network (local);
@@ -79,8 +89,8 @@ Tests
 - Maintain 100% test coverage in any PRs
   (discuss before using any pragma no cover)
 
-Linting
--------
+
+## Linting
 
 - Bunch of stuff in flake8 (tox -e flake8)
 - Docstring existence check via interrogate
@@ -88,16 +98,14 @@ Linting
 - Discuss before using any noqa or exclusions
 
 
-Continuous Integration
-----------------------
+## Continuous Integration
 
 - GHA for basic test runs on Linux, all commits
 - AP for extensive testing, only on PRs to master/stable
   and on release branches
 
 
-Documentation
--------------
+## Documentation
 
 - Docstrings on everything---numpy style
 - Add/change for functionality changes
@@ -107,14 +115,13 @@ Documentation
 - make linkcheck
 
 
-Type Hints
-----------
+## Type Hints
 
 - Future issue is adding types across the project
   (would be a great contribution?)
 
-CHANGELOG
----------
+
+## CHANGELOG
 
 - Anything that touches code or tests definitely
   needs a CHANGELOG bullet
@@ -122,8 +129,8 @@ CHANGELOG
   tooling, tool settings, etc.) may warrant a CHANGELOG bullet;
   depends
 
-Issue & PR Templates
---------------------
+
+## Issue & PR Templates
 
 - For most bug reports and feature requests,
   should use

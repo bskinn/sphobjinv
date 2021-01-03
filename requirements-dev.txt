@@ -3,6 +3,7 @@ certifi
 coverage
 fuzzywuzzy>=0.3
 jsonschema
+md-toc
 pep517
 pytest>=4.4.0
 pytest-check>=0.4
