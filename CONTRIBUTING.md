@@ -1,9 +1,20 @@
+Welcome!
+--------
+
+Thanks for your interest in contributing to `sphobjinv`!
+The aim of this document is to provide the information you need
+to get started smoothly on a contribution.
+
+If you have any questions, please drop me a line on Twitter
+([@btskinn](https://twitter.com/btskinn)) or open an
+[issue](https://github.com/bskinn/sphobjinv/issues).
+
+
 Table of Contents
 -----------------
 
 <!--TOC-->
 
-- [Introduction](#introduction)
 - [Project Setup](#project-setup)
 - [Working with git](#working-with-git)
 - [Tests](#tests)
@@ -13,19 +24,9 @@ Table of Contents
 - [Type Hints](#type-hints)
 - [CHANGELOG](#changelog)
 - [Issue & PR Templates](#issue--pr-templates)
+- [License](#license)
 
 <!--TOC-->
-
-
-## Introduction
-
-Thanks for your interest in contributing to `sphobjinv`!
-The aim of this document is to provide the information you need
-to get started smoothly on a contribution.
-
-If you have any questions, please drop me a line on Twitter
-([@btskinn](https://twitter.com/btskinn)) or open an
-[issue](https://github.com/bskinn/sphobjinv/issues).
 
 
 ## Project Setup
@@ -136,4 +137,9 @@ There's no way I can fit a whole git **RESUME**
   should use
 - Use judgment, though -- if the templates don't
   really fit, don't worry about using them.
+
+
+## License
+
+All contributions will take on the MIT License of the project at large.
 
