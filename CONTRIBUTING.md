@@ -74,21 +74,78 @@ as some of the tests interact with them:
 
 ## Working with git
 
-There's no way I can fit a whole git **RESUME**
-- Create new branch for the feature
-- Link the main repo as `upstream` remote
+There's no way I can fit a whole git tutorial in here, so this
+just highlights a couple of key functionalities you'll need.
+
+First, always hack on a bugfix or feature in a new branch:
+
+```
+$ git checkout -b description-of-change
+```
+
+This makes it a lot simpler to get your repo fork up to date
+when `master` inevitably moves on after you clone the repo.
+
+To bring your fork's `master` up to date, you first need to
+add the main repo as a new git remote (one-time task):
+
+```
+$ git remote add upstream https://github.com/bskinn/sphobjinv
+```
+
+Then, any time you need to refresh the fork's master:
+
+```
+$ git fetch --all
+$ git checkout master
+$ git merge upstream/master  # (*should* merge without incident)
+$ git push
+```
 
 
 ## Tests
 
-- pytest
-- Defaults to only running tests not using network (local);
-  do pytest --nonloc to test also  nonlocal things
-- tox is set up not to be the everyday test runner,
-  but instead to execute a detailed check of compatibility
-  of Python and package dependency versions
-- Maintain 100% test coverage in any PRs
-  (discuss before using any pragma no cover)
+`sphobjinv` uses the [`pytest`](https://github.com/pytest-dev/pytest)
+framework for most of its automated tests. From a properly configured
+virtual environment, a simple no-arguments invocation is all
+that is required:
+
+```
+$ pytest
+```
+
+The test suite defaults to running only local tests,
+those that do **NOT** require network access. To include
+the nonlocal tests, run with the `--nonloc` flag:
+
+```
+$ pytest --nonloc
+```
+
+At minimum, please add/augment the test suite as necessary
+to maintain 100% test coverage. To the extent possible,
+please go beyond this and add tests that check potential edge cases,
+bad/malformed/invalid inputs, etc. 
+
+There are some situations where it may make sense to use a
+`# pragma: no cover` to ignore coverage on certain line(s) of code.
+Please start a discussion in the issue or PR comments before
+adding such a pragma.
+
+Note that while [`tox`](https://github.com/tox-dev/tox/) *is*
+configured for the project, it is **not** set up to be an everyday test runner.
+Instead, it's used to execute a matrix of test environments
+checking for the compatibility of different Python and  dependency
+versions. You can run it if you want, but you'll need
+working versions of all of Python 3.6 through 3.10
+installed and on `PATH` as `python3.6`, `python3.7`, etc.
+The nonlocal test suite is run for each `tox` environment, so
+use at most two parallel sub-processes to avoid oversaturating
+your network bandwidth; e.g.:
+
+```
+$ tox -rp2
+```
 
 
 ## Linting
