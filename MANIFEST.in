@@ -1,1 +1,1 @@
-include LICENSE.txt README.rst CHANGELOG.md pyproject.toml
+include AUTHORS.md CHANGELOG.md CONTRIBUTING.md LICENSE.txt pyproject.toml README.rst
