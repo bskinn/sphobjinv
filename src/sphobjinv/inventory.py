@@ -29,6 +29,7 @@ import re
 import ssl
 import urllib.request as urlrq
 import warnings
+from multiprocessing import Pool
 from zlib import error as zlib_error
 
 import attr
@@ -526,11 +527,19 @@ class Inventory(object):
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
-        results = [
-            f"{match} {score}"
-            for match, score in fwp.extract(name, srch_list, limit=None)
-            if score >= thresh
-        ]
+        with Pool(processes=6) as pool:
+            # Have to put 'item' in an enclosing list, else fwp.extract
+            # goes character-by-character
+            searches = [
+                pool.apply_async(fwp.extract, (name, [item]), {"limit": None})
+                for item in srch_list
+            ]
+
+            # Must pop the result back out of its enclosing length-one list
+            results = [search.get(timeout=60)[0] for search in searches]
+            results = [
+                f"{match} {score}" for match, score in results if score >= thresh
+            ]
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
