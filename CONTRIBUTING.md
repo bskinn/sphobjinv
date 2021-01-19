@@ -150,13 +150,36 @@ $ tox -rp2
 
 ## Linting
 
-- Bunch of stuff in flake8 (tox -e flake8)
-- Docstring existence check via interrogate
-  (tox -e interrogate)
-- Discuss before using any noqa or exclusions
+The project uses a number of lints, which are checked using
+[`flake8`](https://gitlab.com/pycqa/flake8) in CI.
+To run the lints locally, it's easiest to use `tox`:
+
+```
+$ tox -e flake8
+```
+
+In some limited circumstances, it may be necessary to add 
+[`# noqa`](https://flake8.pycqa.org/en/stable/user/violations.html#in-line-ignoring-errors)
+or [`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
+exclusions to the `flake8` lints.
+Please note these for discussion in an issue/PR comment
+as soon as you think they might be needed.
+
+Additionally, the CI for pull requests is set up to check that all
+modules, functions, classes and methods have docstrings
+using the [`interrogate`](https://pypi.org/project/interrogate/) package.
+There's a `tox` environment for running this check, also:
+
+```
+$ tox -e interrogate
+```
 
 
 ## Continuous Integration
+
+Both Github Actions and Azure Pipelines are set up for the project,
+and should run on any forks of the repository. Github Actions mostly
+just runs the test suite for Python 3.6 through 3.9
 
 - GHA for basic test runs on Linux, all commits
 - AP for extensive testing, only on PRs to master/stable
