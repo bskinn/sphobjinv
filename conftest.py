@@ -42,6 +42,7 @@ import pytest
 import sphobjinv as soi
 
 
+
 def pytest_addoption(parser):
     """Add custom CLI options to pytest."""
     parser.addoption(
