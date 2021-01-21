@@ -61,7 +61,7 @@ including:
 
   * Parabola: ``python-sphobjinv`` (`info <https://www.parabola.nu/packages/?q=python-sphobjinv>`__)
 
-  * pkgsrc: ``textproc/py-sphobjinv`` (`info <http://pkgsrc.se/textproc/py-sphobjinv>`__)
+  * pkgsrc: ``textproc/py-sphobjinv`` (`info <https://pkgsrc.se/textproc/py-sphobjinv>`__)
 
 
 The package is configured for use both as a
