@@ -181,3 +181,24 @@ stages:
 
     - script: coverage report --include="tests/*" --fail-under=100
       displayName: Check 100% test execution
+
+  - job: contributing_toc
+    displayName: Confirm CONTRIBUTING.md TOC is up to date
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install -r requirements-ci.txt
+      displayName: Install CI requirements
+
+    - script: python -m md_toc -p github CONTRIBUTING.md
+      displayName: Run md-toc on CONTRIBUTING
+
+    - script: if [[ $( git status | grep modified | wc -l ) -ne 0 ]]; then exit 1; fi
+      displayName: Fail if md-toc modified CONTRIBUTING
+

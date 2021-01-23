@@ -4,6 +4,7 @@ codecov
 coverage
 fuzzywuzzy>=0.3
 jsonschema
+md-toc
 pytest>=4.4.0
 pytest-check>=0.4
 pytest-cov
