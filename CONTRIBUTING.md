@@ -19,9 +19,9 @@ Table of Contents
 - [Working with git](#working-with-git)
 - [Tests](#tests)
 - [Linting](#linting)
-- [Continuous Integration](#continuous-integration)
-- [Documentation](#documentation)
 - [Type Hints](#type-hints)
+- [Documentation](#documentation)
+- [Continuous Integration](#continuous-integration)
 - [CHANGELOG](#changelog)
 - [Issue & PR Templates](#issue--pr-templates)
 - [License](#license)
@@ -84,7 +84,7 @@ $ git checkout -b description-of-change
 ```
 
 This makes it a lot simpler to get your repo fork up to date
-when `master` inevitably moves on after you clone the repo.
+after `master` receives further commits.
 
 To bring your fork's `master` up to date, you first need to
 add the main repo as a new git remote (one-time task):
@@ -98,8 +98,8 @@ Then, any time you need to refresh the fork's master:
 ```
 $ git fetch --all
 $ git checkout master
-$ git merge upstream/master  # (*should* merge without incident)
-$ git push
+$ git merge upstream/master  # (should merge without incident)
+$ git push  # (should push to your fork without incident)
 ```
 
 
@@ -122,10 +122,11 @@ the nonlocal tests, run with the `--nonloc` flag:
 $ pytest --nonloc
 ```
 
-At minimum, please add/augment the test suite as necessary
-to maintain 100% test coverage. To the extent possible,
+When putting together a PR, at minimum, please add/augment the test suite
+as necessary to maintain 100% test coverage. To the extent possible,
 please go beyond this and add tests that check potential edge cases,
-bad/malformed/invalid inputs, etc. 
+bad/malformed/invalid inputs, etc. For bugfixes, add one or more
+focused regression tests that cover the bug behavior being fixed.
 
 There are some situations where it may make sense to use a
 `# pragma: no cover` to ignore coverage on certain line(s) of code.
@@ -140,7 +141,7 @@ versions. You can run it if you want, but you'll need
 working versions of all of Python 3.6 through 3.10
 installed and on `PATH` as `python3.6`, `python3.7`, etc.
 The nonlocal test suite is run for each `tox` environment, so
-use at most two parallel sub-processes to avoid oversaturating
+it's best to use at most two parallel sub-processes to avoid oversaturating
 your network bandwidth; e.g.:
 
 ```
@@ -175,48 +176,103 @@ $ tox -e interrogate
 ```
 
 
-## Continuous Integration
+## Type Hints
 
-Both Github Actions and Azure Pipelines are set up for the project,
-and should run on any forks of the repository. Github Actions mostly
-just runs the test suite for Python 3.6 through 3.9
-
-- GHA for basic test runs on Linux, all commits
-- AP for extensive testing, only on PRs to master/stable
-  and on release branches
+I'd like to [roll out typing](https://github.com/bskinn/sphobjinv/issues/132)
+on the project at some point in the near future, and add
+[`mypy`](https://github.com/python/mypy) checking to CI.
+(This would be a great PR to put together, for anyone interested....)
+For now, types on contributed code are welcomed, but optional.
+Once the codebase is typed, though, they will be a required part of
+any PR touching code.
 
 
 ## Documentation
 
-- Docstrings on everything---numpy style
-- Add/change for functionality changes
-- make clean html for POSIX/Mac
-- make html -Ean for Windows
-- make doctest
-- make linkcheck
+All of the project documentation (except the README) is
+generated via [Sphinx](https://github.com/sphinx-doc/sphinx),
+and should be updated for (at minimum) any behavior changes
+in the codebase. API changes should be documented in the
+relevant docstring(s), and possibly in the prose portions
+of the documentation as well. Please use the modified
+[NumPy-style](https://numpydoc.readthedocs.io/en/latest/format.html)
+formatting for docstrings that is already in use in the project.
+
+A large number of reStructuredText substitutions are defined in the `rst_epilog`
+setting within `conf.py`, to make the documentation source
+more readable. Feel free to add more entries there.
+
+To run any of the Sphinx builders, first change to the `/doc` directory
+in the repository tree. In most cases, a plain `make html` invocation
+is sufficient to build the docs properly,
+as Sphinx does its best to detect which files were changed and
+rebuild only the minimum portion of the documentation necessary.
+If the docs seem not to be rendering correctly, try a clean build:
+
+```
+=== Linux/Mac
+doc $ make clean html
+
+=== Windows
+doc> make -Ea
+```
+
+It's also a good idea to build the complete docs every once in a while with
+its ['nitpicky' option](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky),
+in order to detect any broken cross-references, as these will fail
+the [Azure CI pipeline](#continuous-integration):
+
+```
+=== Linux/Mac
+doc $ O=-n make clean  html
+
+=== Windows
+doc> make html -Ean
+```
+
+You can also run the doctests with `make doctest`
+and the link validity checker with `make linkcheck`.
 
 
-## Type Hints
+## Continuous Integration
 
-- Future issue is adding types across the project
-  (would be a great contribution?)
+Both Github Actions and Azure Pipelines are set up for the project,
+and should run on any forks of the repository.
+
+Github Actions runs the test suite on Linux for Python 3.6 through 3.9,
+as well as the `flake8` lints and the Sphinx doctests and link-validity testing,
+and is configured to run on all commits. The workflow can be skipped
+per-commit by including `[skip ci]` in the commit message.
+
+The Azure Pipelines CI runs an extensive matrix of cross-platform and
+cross-Python-version tests, as well as numerous other checks.
+Due to its length, it is configured to run only on release branches
+and PRs to `master` or `stable`. It cannot be skipped.
 
 
 ## CHANGELOG
 
-- Anything that touches code or tests definitely
-  needs a CHANGELOG bullet
-- Other changes of note (packaging, building, testing/linting
-  tooling, tool settings, etc.) may warrant a CHANGELOG bullet;
-  depends
+The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/master/CHANGELOG.md)
+should be updated for the majority of contributions. No tooling is in place
+(e.g., [`towncrier`](https://github.com/twisted/towncrier)) for automated collation
+of news items into `CHANGELOG`;
+all changes should be documented manually, directly in the `CHANGELOG`.
+
+Any PR that touches the project code *must* include a `CHANGELOG` entry.
+Contributions that make changes just to the test suite should usually also include
+a `CHANGELOG` entry, except for very minor or cosmetic changes. Other changes of note
+(packaging/build tooling, test/lint tooling/plugins, tool settings, etc.)
+may also warrant a `CHANGELOG` bullet, depending on the situation.
+When in doubt, ask!
 
 
 ## Issue & PR Templates
 
-- For most bug reports and feature requests,
-  should use
-- Use judgment, though -- if the templates don't
-  really fit, don't worry about using them.
+The project is configured with a PR template and a couple of
+issue templates, to hopefully make it easier to provide all
+the information needed to act on code contributions, bug reports,
+and feature requests. If the templates don't fit the issue/PR
+you want to create, though, then don't use them.
 
 
 ## License
