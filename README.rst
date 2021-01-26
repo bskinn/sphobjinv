@@ -123,11 +123,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1b2, 199 objects>
+    <Inventory (fname_zlib): sphobjinv v2.1, 199 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.1b2'
+    '2.1'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
 
@@ -149,7 +149,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2020
+Copyright (c) Brian Skinn 2016-2021
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
 for full license terms.

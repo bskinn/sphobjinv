@@ -18,11 +18,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'sphobjinv'
-copyright = '2016-2020, Brian Skinn'
+copyright = '2016-2021, Brian Skinn'
 author = 'Brian Skinn'
 
-# The full version, including alpha/beta/rc tags
+# The full version for `release`, including alpha/beta/rc tags
 from sphobjinv import __version__ as release
+
+# Just major.minor for `version`
 version = ".".join(release.split(".")[:2])
 
 
