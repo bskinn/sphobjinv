@@ -70,6 +70,13 @@ modindex_common_prefix = ["sphobjinv."]
 # -- Common epilogue definition  ------------------------------------------------
 
 rst_epilog = r"""
+
+.. raw:: html
+
+    <small><em>Logo adapted from freely-available image at
+    https://heypik.com/images/hand-drawn-cartoon-color-tourist-attraction-sphinx_8ZU4501.html
+    (retrieved July 2019; now defunct).</em></small>
+
 .. |extlink| image:: /_static/extlink.svg
 
 .. |dag| replace:: :math:`^\dagger`
@@ -316,5 +323,6 @@ html_static_path = ['_static']
 # Output file basename
 htmlhelp_basename = "sphobjinv"
 
-# Location of the favicon image
+# Location of the favicon and logo images
 html_favicon = "_static/soi-logo.png"
+html_logo = "_static/soi-logo_duo.png"
