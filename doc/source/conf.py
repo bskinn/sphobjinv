@@ -325,4 +325,4 @@ htmlhelp_basename = "sphobjinv"
 
 # Location of the favicon and logo images
 html_favicon = "_static/soi-logo.png"
-html_logo = "_static/soi-logo_duo.png"
+html_logo = "_static/soi-logo_duo_border.png"
