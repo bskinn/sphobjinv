@@ -3,9 +3,6 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
 **Current Development Version:**
 
-.. image:: https://img.shields.io/azure-devops/build/brianskinn/09020ac4-1ef2-4890-8c23-c3128d2029e3/4?label=azure-pipelines&logo=azure-devops
-    :target: https://dev.azure.com/brianskinn/sphobjinv/_build?definitionId=4
-
 .. image:: https://img.shields.io/github/workflow/status/bskinn/sphobjinv/ci-tests?logo=github
     :alt: GitHub Workflow Status
     :target: https://github.com/bskinn/sphobjinv/actions
@@ -72,12 +69,12 @@ with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
 `here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
 
-    $ sphobjinv suggest https://numpy.org/doc/1.18/reference/index.html linspace -su
+    $ sphobjinv suggest https://numpy.org/doc/1.19/reference/index.html linspace -su
 
     No inventory at provided URL.
-    Attempting "https://numpy.org/doc/1.18/reference/index.html/objects.inv" ...
-    Attempting "https://numpy.org/doc/1.18/reference/objects.inv" ...
-    Attempting "https://numpy.org/doc/1.18/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.19/reference/index.html/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.19/reference/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.19/objects.inv" ...
     Remote inventory found.
 
 
@@ -149,7 +146,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2020
+Copyright (c) Brian Skinn 2016-2021
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
 for full license terms.
