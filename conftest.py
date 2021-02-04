@@ -34,10 +34,12 @@ import sys
 from enum import Enum
 from filecmp import cmp
 from functools import partial
+from io import BytesIO
 from pathlib import Path
 
 import jsonschema
 import pytest
+from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
 
@@ -161,18 +163,27 @@ def bytes_txt(misc_info, res_path):
 
 
 @pytest.fixture(scope="session")
-def sphinx_load_test():
+def sphinx_ifile_load():
+    """Return helper function to load inventory via Sphinx InventoryFile."""
+
+    def func(path):
+        """Carry out inventory load via Sphinx InventoryFile."""
+        return IFile.load(BytesIO(path.read_bytes()), "", osp.join)
+
+    return func
+
+
+@pytest.fixture(scope="session")
+def sphinx_load_test(sphinx_ifile_load):
     """Return function to perform 'live' Sphinx inventory load test."""
-    from sphinx.util.inventory import InventoryFile as IFile
 
     def func(path):
         """Perform the 'live' inventory load test."""
-        with path.open("rb") as f:
-            try:
-                IFile.load(f, "", osp.join)
-            except Exception as e:  # noqa: PIE786
-                # An exception here is a failing test, not a test error.
-                pytest.fail(e)
+        try:
+            sphinx_ifile_load(path)
+        except Exception as e:  # noqa: PIE786
+            # An exception here is a failing test, not a test error.
+            pytest.fail(e)
 
     return func
 

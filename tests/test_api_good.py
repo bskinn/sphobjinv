@@ -31,6 +31,7 @@ import re
 import warnings
 from numbers import Number
 
+import dictdiffer
 import pytest
 
 import sphobjinv as soi
@@ -501,6 +502,26 @@ class TestInventory:
 
         # Ensure sphinx likes the regenerated inventory
         sphinx_load_test(scr_fpath)
+
+    @pytest.mark.testall
+    def test_api_inventory_matches_sphinx_ifile(
+        self, testall_inv_path, scratch_path, misc_info, pytestconfig, sphinx_ifile_load
+    ):
+        """Confirm no-op per Sphinx on passing through sphobjinv.Inventory."""
+        fname = testall_inv_path.name
+        scr_fpath = scratch_path / fname
+
+        # Drop most unless testall
+        if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
+            pytest.skip("'--testall' not specified")
+
+        original_ifile_data = sphinx_ifile_load(testall_inv_path)
+
+        inv = soi.Inventory(testall_inv_path)
+        soi.writebytes(scr_fpath, soi.compress(inv.data_file()))
+        soi_ifile_data = sphinx_ifile_load(scr_fpath)
+
+        assert list(dictdiffer.diff(soi_ifile_data, original_ifile_data)) == [], fname
 
     def test_api_inventory_one_object_flatdict(self):
         """Confirm a flat dict inventory with one object imports ok.

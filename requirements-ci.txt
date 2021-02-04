@@ -2,6 +2,7 @@ attrs>=17.4
 certifi
 codecov
 coverage
+dictdiffer
 fuzzywuzzy>=0.3
 jsonschema
 md-toc

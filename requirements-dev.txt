@@ -1,6 +1,7 @@
 attrs>=17.4
 certifi
 coverage
+dictdiffer
 fuzzywuzzy>=0.3
 jsonschema
 md-toc
