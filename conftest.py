@@ -174,6 +174,17 @@ def sphinx_ifile_load():
 
 
 @pytest.fixture(scope="session")
+def sphinx_ifile_data_count():
+    """Return helper function to report number of objects."""
+
+    def func(ifile_data):
+        """Report the total number of items in the InventoryFile data."""
+        return sum(len(ifile_data[k]) for k in ifile_data)
+
+    return func
+
+
+@pytest.fixture(scope="session")
 def sphinx_load_test(sphinx_ifile_load):
     """Return function to perform 'live' Sphinx inventory load test."""
 

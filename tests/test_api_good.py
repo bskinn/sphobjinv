@@ -505,7 +505,13 @@ class TestInventory:
 
     @pytest.mark.testall
     def test_api_inventory_matches_sphinx_ifile(
-        self, testall_inv_path, scratch_path, misc_info, pytestconfig, sphinx_ifile_load
+        self,
+        testall_inv_path,
+        scratch_path,
+        misc_info,
+        pytestconfig,
+        sphinx_ifile_load,
+        sphinx_ifile_data_count,
     ):
         """Confirm no-op per Sphinx on passing through sphobjinv.Inventory."""
         fname = testall_inv_path.name
@@ -521,7 +527,8 @@ class TestInventory:
         soi.writebytes(scr_fpath, soi.compress(inv.data_file()))
         soi_ifile_data = sphinx_ifile_load(scr_fpath)
 
-        assert list(dictdiffer.diff(soi_ifile_data, original_ifile_data)) == [], fname
+        assert not list(dictdiffer.diff(soi_ifile_data, original_ifile_data)), fname
+        assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
     def test_api_inventory_one_object_flatdict(self):
         """Confirm a flat dict inventory with one object imports ok.
