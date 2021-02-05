@@ -202,3 +202,21 @@ stages:
     - script: if [[ $( git status | grep modified | wc -l ) -ne 0 ]]; then exit 1; fi
       displayName: Fail if md-toc modified CONTRIBUTING
 
+  - job: noqa_info
+    displayName: Report flake8-noqa results for info (never fails)
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install tox flake8-noqa -r requirements-flake8.txt
+      displayName: Install requirements
+
+    - script: tox -e flake8-noqa
+      displayName: Run never-fail flake8 with noqa check
+
+

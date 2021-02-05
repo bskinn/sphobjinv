@@ -103,5 +103,5 @@ def yesno_prompt(prompt):
     """
     resp = ""
     while not (resp.lower() == "n" or resp.lower() == "y"):
-        resp = input(prompt)  # noqa: S322
+        resp = input(prompt)
     return resp
