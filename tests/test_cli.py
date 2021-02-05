@@ -56,7 +56,7 @@ class TestMisc:
         runargs = shlex.split(cmd)
         runargs.append("--help")
 
-        out = sp.check_output(" ".join(runargs), shell=True).decode()  # noqa: S602,S603
+        out = sp.check_output(" ".join(runargs), shell=True).decode()  # noqa: S602
 
         assert "sphobjinv" in out
         assert "suggest" in out
@@ -180,7 +180,7 @@ class TestConvertGood:
 
         decomp_cmp_test(full_dst_path)
 
-    @pytest.mark.timeout(CLI_TEST_TIMEOUT * 50 * 3)  # noqa: F821
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT * 50 * 3)
     @pytest.mark.testall
     def test_cli_convert_cycle_formats(
         self,
