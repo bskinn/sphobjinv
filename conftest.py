@@ -263,14 +263,15 @@ def attrs_inventory_test():
     return func
 
 
-testall_inv_paths = (
+testall_inv_paths = [
     p
     for p in (Path(__file__).parent / "tests" / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
-)
+]
+testall_inv_ids = [p.name[8:-4] for p in testall_inv_paths]
 
 
-@pytest.fixture(params=testall_inv_paths)
+@pytest.fixture(params=testall_inv_paths, ids=testall_inv_ids)
 def testall_inv_path(request):
     """Provide parametrized --testall inventory paths."""
     return request.param
