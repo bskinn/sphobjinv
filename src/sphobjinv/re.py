@@ -68,9 +68,9 @@ ptn_data = rf"""
     ^                               # Start of line
     (?P<{DF.Name.value}>.+?)        # --> Name
     \s+                             # Dividing space
-    (?P<{DF.Domain.value}>\S+)      # --> Domain
+    (?P<{DF.Domain.value}>[^\s:]+)  # --> Domain
     :                               # Dividing colon
-    (?P<{DF.Role.value}>\S+)        # --> Role
+    (?P<{DF.Role.value}>[^\s:]+)    # --> Role
     \s+                             # Dividing space
     (?P<{DF.Priority.value}>-?\d+)  # --> Priority
     \s+?                            # Dividing space
