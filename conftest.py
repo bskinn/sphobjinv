@@ -162,26 +162,35 @@ def bytes_txt(misc_info, res_path):
     )
 
 
-@pytest.fixture(scope="session")
-def sphinx_ifile_load():
+def sphinx_ifile_load(path):
+    """Carry out inventory load via Sphinx InventoryFile.
+
+    Defined as a standalone function to allow importing
+    during debugging.
+
+    """
+    return IFile.load(BytesIO(path.read_bytes()), "", osp.join)
+
+
+@pytest.fixture(scope="session", name="sphinx_ifile_load")
+def fixture_sphinx_ifile_load():
     """Return helper function to load inventory via Sphinx InventoryFile."""
-
-    def func(path):
-        """Carry out inventory load via Sphinx InventoryFile."""
-        return IFile.load(BytesIO(path.read_bytes()), "", osp.join)
-
-    return func
+    return sphinx_ifile_load
 
 
-@pytest.fixture(scope="session")
-def sphinx_ifile_data_count():
-    """Return helper function to report number of objects."""
+def sphinx_ifile_data_count(ifile_data):
+    """Report the total number of items in the InventoryFile data.
 
-    def func(ifile_data):
-        """Report the total number of items in the InventoryFile data."""
-        return sum(len(ifile_data[k]) for k in ifile_data)
+    Defined standalone to allow import during debugging.
 
-    return func
+    """
+    return sum(len(ifile_data[k]) for k in ifile_data)
+
+
+@pytest.fixture(scope="session", name="sphinx_ifile_data_count")
+def fixture_sphinx_ifile_data_count():
+    """Return helper function to report total number of objects."""
+    return sphinx_ifile_data_count
 
 
 @pytest.fixture(scope="session")
