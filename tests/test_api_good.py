@@ -528,7 +528,16 @@ class TestInventory:
         soi_ifile_data = sphinx_ifile_load(scr_fpath)
 
         assert not list(dictdiffer.diff(soi_ifile_data, original_ifile_data)), fname
-        assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+
+        if "celery" in fname:
+            # Celery inventory contains some exact domain:role:name duplicates
+            assert inv.count == 54 + sphinx_ifile_data_count(original_ifile_data), fname
+        elif "opencv" in fname:
+            # OpenCV inventory contains some lines that
+            # parse incorrectly after sphinx/#8225
+            assert inv.count == 13 + sphinx_ifile_data_count(original_ifile_data), fname
+        else:
+            assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
     def test_api_inventory_one_object_flatdict(self):
         """Confirm a flat dict inventory with one object imports ok.
