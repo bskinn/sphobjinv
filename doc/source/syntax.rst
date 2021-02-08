@@ -69,7 +69,7 @@ be exactly:
 
     * **MUST** have length greater than zero
 
-    * **MUST NOT** contain whitespace
+    * **MAY** contain internal whitespace, though most ``{name}`` values will not
 
 ``{domain}``
     The Sphinx domain used when cross-referencing the object (falls between
@@ -112,33 +112,40 @@ be exactly:
     To note, as of Nov 2020 this value is **not** used by ``intersphinx``;
     it is only used internally within the search function of the static webpages
     built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
-    inventories likely **MAY** use this field for arbitrary content, if desired.
-    This *would* run the risk of a future change to Sphinx/intersphinx causing
-    such custom |objects.inv| files to become incompatible.
+    inventories likely **MAY** use this field for arbitrary content, if desired,
+    as long as the integer constraint is observed.
+    Such use *would* run the risk of a future change to Sphinx/intersphinx causing
+    custom |objects.inv| files including non-standard ``{priority}`` values to become incompatible.
 
     **Constraints**
 
     * **MUST** have length greater than zero
+
+    * **MUST** be a positive or negative integer, or zero,
+      **without** a decimal point
 
     * **MUST NOT** contain whitespace
 
 ``{uri}``
     Relative URI for the location to which cross-references will point.
     The base URI is taken from the relevant element of the |isphxmap|
-    configuration parameter of ``conf.py``.
+    configuration parameter in ``conf.py``.
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MAY** be length-zero, but typically has length greater than zero
 
-    * **MUST NOT** contain whitespace
+      * A zero-length ``{uri}`` can occur in certain instances for the
+        root/index documentation page; see |sphinx_uri_issue|_
+
+    * **MUST NOT** contain whitespace if length is greater than zero
 
 ``{dispname}``
     Default cross-reference text to be displayed in compiled documentation.
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MAY** have zero length, but typically has length greater than zero
 
     * **MAY** contain internal whitespace (leading/trailing whitespace
       is ignored)
@@ -232,3 +239,7 @@ as in :obj:`This is join! <str.join>`:
 .. |prio_py_search| replace:: here
 
 .. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/624f6937194e1acfe7311faf6e27e370c3118e55/sphinx/search/__init__.py#L332
+
+.. |sphinx_uri_issue| replace:: sphinx-doc/sphinx#7096
+
+.. _sphinx_uri_issue: https://github.com/sphinx-doc/sphinx/issues/7096
