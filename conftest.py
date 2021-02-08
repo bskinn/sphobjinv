@@ -39,6 +39,7 @@ from pathlib import Path
 
 import jsonschema
 import pytest
+from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
@@ -206,6 +207,18 @@ def sphinx_load_test(sphinx_ifile_load):
             pytest.fail(e)
 
     return func
+
+
+@pytest.fixture(scope="session")
+def sphinx_version():
+    """Provide the installed Sphinx version as a tuple.
+
+    Returns (major, minor, patch).
+
+    """
+    p_version = re.compile(r"(\d+)[.]?(\d+)?[.]?(\d+)?")
+    mch = p_version.match(sphinx_version_str)
+    return tuple(map((lambda x: int(x) if x else 0), mch.groups()))
 
 
 @pytest.fixture()  # Must be function scope since uses monkeypatch

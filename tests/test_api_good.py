@@ -512,6 +512,7 @@ class TestInventory:
         pytestconfig,
         sphinx_ifile_load,
         sphinx_ifile_data_count,
+        sphinx_version,
     ):
         """Confirm no-op per Sphinx on passing through sphobjinv.Inventory."""
         fname = testall_inv_path.name
@@ -532,10 +533,29 @@ class TestInventory:
         if "celery" in fname:
             # Celery inventory contains some exact domain:role:name duplicates
             assert inv.count == 54 + sphinx_ifile_data_count(original_ifile_data), fname
+
         elif "opencv" in fname:
             # OpenCV inventory contains some lines that
-            # parse incorrectly after sphinx/#8225
-            assert inv.count == 13 + sphinx_ifile_data_count(original_ifile_data), fname
+            # parse incorrectly after sphinx/#8225, which was first
+            # incorporated into Sphinx 3.3.0
+            if sphinx_version < (3, 3, 0):
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+            else:
+                assert inv.count == 13 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
+
+        elif "jsonschema" in fname:
+            # The version of the jsonschema inventory held in tests/resource
+            # has an item with an empty uri. Sphinx<2.4 does not import this line
+            # correctly.
+            if sphinx_version < (2, 4, 0):
+                assert inv.count == 1 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
+            else:
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+
         else:
             assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
