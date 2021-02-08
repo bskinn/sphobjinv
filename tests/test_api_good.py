@@ -530,11 +530,11 @@ class TestInventory:
 
         assert not list(dictdiffer.diff(soi_ifile_data, original_ifile_data)), fname
 
-        if "celery" in fname:
+        if "celery" in fname:  # pragma: no cover
             # Celery inventory contains some exact domain:role:name duplicates
             assert inv.count == 54 + sphinx_ifile_data_count(original_ifile_data), fname
 
-        elif "opencv" in fname:
+        elif "opencv" in fname:  # pragma: no cover
             # OpenCV inventory contains some lines that
             # parse incorrectly after sphinx/#8225, which was first
             # incorporated into Sphinx 3.3.0
@@ -545,7 +545,7 @@ class TestInventory:
                     original_ifile_data
                 ), fname
 
-        elif "jsonschema" in fname:
+        elif "jsonschema" in fname:  # pragma: no cover
             # The version of the jsonschema inventory held in tests/resource
             # has an item with an empty uri. Sphinx<2.4 does not import this line
             # correctly.
