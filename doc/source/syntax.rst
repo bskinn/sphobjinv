@@ -52,8 +52,7 @@ the |isphx| cross-references:
 
 **The fourth line** `must contain
 <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L136-L137>`__
-the string 'zlib' somewhere in it, but for the purposes of consistency it should
-be exactly:
+the string ``zlib`` somewhere within it, but for consistency it should be exactly:
 
 .. code-block:: none
 
@@ -118,7 +117,7 @@ be exactly:
     __init__.py#L319-L325>`__. Most will be ``1`` (standard priority) or
     ``-1`` (omit from results) for documentation built by Sphinx.
 
-    To note, as of Nov 2020 this value is **not** used by ``intersphinx``;
+    To note, as of Feb 2021 this value is **not** used by ``intersphinx``;
     it is only used internally within the search function of the static webpages
     built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
     inventories likely **MAY** use this field for arbitrary content, if desired,
@@ -155,6 +154,9 @@ be exactly:
     **Constraints**
 
     * **MAY** have zero length, but typically has nonzero length
+
+      * A zero-length ``{dispname}`` is not particularly useful, as it
+        would lead to insertion of a cross-reference with no text
 
     * **MAY** contain internal whitespace (leading/trailing whitespace
       is ignored)
