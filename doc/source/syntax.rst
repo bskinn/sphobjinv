@@ -5,11 +5,19 @@ Sphinx objects.inv v2 Syntax
 
 After decompression, "version 2" Sphinx |objects.inv| files
 follow a syntax that, to the best of this author's ability to determine,
-is completely undocumented. The below
-syntax is believed to be accurate as of Jun 2018 (Sphinx v1.7.4).
+is not included in the Sphinx documentation. The below
+syntax is believed to be accurate as of Feb 2021 (Sphinx v3.4.3).
+
 Based upon a quick ``git diff`` of the `Sphinx repository
-<https://github.com/sphinx-doc/sphinx>`__, it is thought to be accurate for all
+<https://github.com/sphinx-doc/sphinx>`__, it is thought to be valid for all
 Sphinx versions >=1.0b1 that make use of this "version 2" |objects.inv| format.
+
+**NOTE** that the previous version of the syntax presented here has been
+shown to be inaccurate (see :issue:`181`), in that it *is*
+permitted for the ``{name}`` field to contain whitespace.
+The descriptions below have been updated to reflect this and to provide
+more detailed information on the constraints governing each field
+of an |objects.inv| data line.
 
 ----
 
@@ -69,7 +77,8 @@ be exactly:
 
     * **MUST** have length greater than zero
 
-    * **MAY** contain internal whitespace, though most ``{name}`` values will not
+    * **MAY** contain internal whitespace, though most ``{name}`` values
+      will have none
 
 ``{domain}``
     The Sphinx domain used when cross-referencing the object (falls between
@@ -77,7 +86,7 @@ be exactly:
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MUST** have nonzero length
 
     * **MUST** match a built-in or installable Sphinx domain
 
@@ -93,7 +102,7 @@ be exactly:
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MUST** have nonzero length
 
     * **MUST** match a role defined in the domain referenced by ``{domain}``
 
@@ -115,16 +124,16 @@ be exactly:
     inventories likely **MAY** use this field for arbitrary content, if desired,
     as long as the integer constraint is observed.
     Such use *would* run the risk of a future change to Sphinx/intersphinx causing
-    custom |objects.inv| files including non-standard ``{priority}`` values to become incompatible.
+    |objects.inv| files with non-standard ``{priority}`` values to become incompatible.
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MUST** have nonzero length
 
     * **MUST** be a positive or negative integer, or zero,
       **without** a decimal point
 
-    * **MUST NOT** contain whitespace
+    * **MUST NOT** contain whitespace (implicit in the integer constraint)
 
 ``{uri}``
     Relative URI for the location to which cross-references will point.
@@ -133,19 +142,19 @@ be exactly:
 
     **Constraints**
 
-    * **MAY** be length-zero, but typically has length greater than zero
+    * **MAY** have zero length, but typically has nonzero length
 
       * A zero-length ``{uri}`` can occur in certain instances for the
         root/index documentation page; see |sphinx_uri_issue|_
 
-    * **MUST NOT** contain whitespace if length is greater than zero
+    * **MUST NOT** contain whitespace if length is nonzero
 
 ``{dispname}``
     Default cross-reference text to be displayed in compiled documentation.
 
     **Constraints**
 
-    * **MAY** have zero length, but typically has length greater than zero
+    * **MAY** have zero length, but typically has nonzero length
 
     * **MAY** contain internal whitespace (leading/trailing whitespace
       is ignored)
@@ -154,7 +163,7 @@ be exactly:
 
 **For illustration**, the following is the entry for the
 :meth:`join() <str.join>` method of the :class:`str` class in the
-Python 3.5 |objects.inv|, broken out field-by-field:
+Python 3.9 |objects.inv|, broken out field-by-field:
 
 .. code-block:: none
 
@@ -234,11 +243,11 @@ as in :obj:`This is join! <str.join>`:
 
 .. |prio_js_search| replace:: here
 
-.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/d17563987a80007e2310102cfde673c651823a39/sphinx/themes/basic/static/searchtools.js#L26-L43
+.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/241577f65eea94a08944bf096bd704b495282373/sphinx/themes/basic/static/searchtools.js#L26-L43
 
 .. |prio_py_search| replace:: here
 
-.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/624f6937194e1acfe7311faf6e27e370c3118e55/sphinx/search/__init__.py#L332
+.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/241577f65eea94a08944bf096bd704b495282373/sphinx/search/__init__.py#L332
 
 .. |sphinx_uri_issue| replace:: sphinx-doc/sphinx#7096
 
