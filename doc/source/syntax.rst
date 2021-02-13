@@ -74,10 +74,13 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
     **Constraints**
 
-    * **MUST** have length greater than zero
+    * **MUST** have nonzero length
 
-    * **MAY** contain internal whitespace, though most ``{name}`` values
-      will have none
+    * **MUST NOT** start with ``#``
+
+    * **SHOULD** have no leading or trailing whitespace
+
+    * **MAY** contain internal whitespace
 
 ``{domain}``
     The Sphinx domain used when cross-referencing the object (falls between
@@ -89,9 +92,9 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
     * **MUST** match a built-in or installable Sphinx domain
 
-    * **MUST** consist of only |wordchars|_
+    * **MUST NOT** contain whitespace or a colon
 
-      * **RECOMMENDED** to consist of only ASCII word characters (``a-z``, ``A-Z``,
+      * **RECOMMENDED** to contain only ASCII word characters (``a-z``, ``A-Z``,
         ``0-9``, and ``_``)
 
 ``{role}``
@@ -105,7 +108,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
     * **MUST** match a role defined in the domain referenced by ``{domain}``
 
-    * **MUST** consist of only |wordchars|_
+    * **MUST NOT** contain whitespace or a colon
 
       * **RECOMMENDED** to consist of only ASCII word characters (``a-z``, ``A-Z``,
         ``0-9``, and ``_``)
@@ -122,15 +125,16 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
     built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
     inventories likely **MAY** use this field for arbitrary content, if desired,
     as long as the integer constraint is observed.
-    Such use *would* run the risk of a future change to Sphinx/intersphinx causing
-    |objects.inv| files with non-standard ``{priority}`` values to become incompatible.
+    Such use *would* run the risk of a future change to Sphinx/intersphinx
+    breaking compatibility with |objects.inv| files
+    having non-standard ``{priority}`` values.
 
     **Constraints**
 
     * **MUST** have nonzero length
 
     * **MUST** be a positive or negative integer, or zero,
-      **without** a decimal point
+      *without* a decimal point
 
     * **MUST NOT** contain whitespace (implicit in the integer constraint)
 
@@ -143,23 +147,24 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
     * **MAY** have zero length, but typically has nonzero length
 
-      * A zero-length ``{uri}`` can occur in certain instances for the
-        root/index documentation page; see |sphinx_uri_issue|_
+      * A zero-length ``{uri}`` can occur for the
+        root/index documentation page in certain instances;
+        see |sphinx_uri_issue|_
 
-    * **MUST NOT** contain whitespace if length is nonzero
+    * **MUST NOT** contain whitespace
 
 ``{dispname}``
     Default cross-reference text to be displayed in compiled documentation.
 
     **Constraints**
 
-    * **MAY** have zero length, but typically has nonzero length
-
-      * A zero-length ``{dispname}`` is not particularly useful, as it
-        would lead to insertion of a cross-reference with no text
+    * **MUST** have nonzero length
 
     * **MAY** contain internal whitespace (leading/trailing whitespace
       is ignored)
+
+Unicode characters appear to be valid for all fields except ``{{priority}}`.
+However, it is **RECOMMENDED** to *only* use them in ``{{dispname}}``.
 
 ----
 
