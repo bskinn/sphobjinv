@@ -42,8 +42,11 @@ def skip_on_sphinx_version(sphinx_version):
     Changes to the Sphinx InventoryFile regex &c. cause older
     versions of Sphinx to have different behavior.
 
+    This skip *should* only trigger during the tox matrix of
+    environments with various old dependency versions.
+
     """
-    if sphinx_version < (3, 3, 0):
+    if sphinx_version < (3, 3, 0):  # pragma: no cover
         pytest.skip("Sphinx version too low")
 
 
