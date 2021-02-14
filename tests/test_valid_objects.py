@@ -35,6 +35,18 @@ from sphinx.util.inventory import InventoryFile as IFile
 import sphobjinv as soi
 
 
+@pytest.fixture(autouse=True)
+def skip_on_sphinx_version(sphinx_version):
+    """Trigger test skip if Sphinx version is too low.
+
+    Changes to the Sphinx InventoryFile regex &c. cause older
+    versions of Sphinx to have different behavior.
+
+    """
+    if sphinx_version < (3, 3, 0):
+        pytest.skip("Sphinx version too low")
+
+
 # Once DataObjStr instance validation is in place, this will probably
 # be a good place to use hypothesis
 @pytest.mark.parametrize(
