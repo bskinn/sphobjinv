@@ -27,7 +27,7 @@ in the vast majority of cases::
     $ pip install sphobjinv[speedup]
 
 If you need to work with a version of |soi| prior to v2.1,
-the ``speedup`` extra is not avaialble and direct installation
+the ``speedup`` extra is not available and direct installation
 is required::
 
     $ pip install sphobjinv==2.0.1 python-Levenshtein
