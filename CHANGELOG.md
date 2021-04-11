@@ -22,9 +22,20 @@ and this project strives to adhere to
   * An extraneous newline was removed before tables printed in the
     'suggest' CLI mode (cosmetic change).
 
+#### Fixed
+
+  * Previously, `sphobjinv.Inventory` would ignore entries in `objects.inv`
+    that contained spaces within `name`
+    (see [#181](https://github.com/bskinn/sphobjinv/issues/181));
+    this is now fixed.
+
 #### Removed
 
   * Python 3.5 is no longer supported.
+
+  * The relaxation of the integer constraint on the `priority` field
+    introduced in v2.1b1 has been *reverted*, as `objects.inv` data lines
+    with such non-integer `priority` values are skipped by Sphinx.
 
 #### Internal
 
