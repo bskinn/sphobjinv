@@ -65,19 +65,19 @@ pb_version = re.compile(
 #: :data:`~sphobjinv.re.p_data` and
 #: :data:`~sphobjinv.re.pb_data`
 ptn_data = rf"""
-    ^                             # Start of line
-    (?P<{DF.Name.value}>[^#]\S+)  # --> Name
-    \s+                           # Dividing space
-    (?P<{DF.Domain.value}>\w+)    # --> Domain
-    :                             # Dividing colon
-    (?P<{DF.Role.value}>\w+)      # --> Role
-    \s+                           # Dividing space
-    (?P<{DF.Priority.value}>\S+)  # --> Priority
-    \s+                           # Dividing space
-    (?P<{DF.URI.value}>\S+)       # --> URI
-    \s+                           # Dividing space
-    (?P<{DF.DispName.value}>.+?)  # --> Display name, lazy b/c possible CR
-    \r?$                          # Ignore possible CR at EOL
+    ^                               # Start of line
+    (?P<{DF.Name.value}>.+?)        # --> Name
+    \s+                             # Dividing space
+    (?P<{DF.Domain.value}>[^\s:]+)  # --> Domain
+    :                               # Dividing colon
+    (?P<{DF.Role.value}>[^\s:]+)    # --> Role
+    \s+                             # Dividing space
+    (?P<{DF.Priority.value}>-?\d+)  # --> Priority
+    \s+?                            # Dividing space
+    (?P<{DF.URI.value}>\S*)         # --> URI
+    \s+                             # Dividing space
+    (?P<{DF.DispName.value}>.+?)    # --> Display name, lazy b/c possible CR
+    \r?$                            # Ignore possible CR at EOL
     """
 
 #: Compiled |re| |bytes| regex pattern for data lines in |bytes| decompressed

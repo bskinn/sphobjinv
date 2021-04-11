@@ -31,6 +31,7 @@ import re
 import warnings
 from numbers import Number
 
+import dictdiffer
 import pytest
 
 import sphobjinv as soi
@@ -501,6 +502,62 @@ class TestInventory:
 
         # Ensure sphinx likes the regenerated inventory
         sphinx_load_test(scr_fpath)
+
+    @pytest.mark.testall
+    def test_api_inventory_matches_sphinx_ifile(
+        self,
+        testall_inv_path,
+        scratch_path,
+        misc_info,
+        pytestconfig,
+        sphinx_ifile_load,
+        sphinx_ifile_data_count,
+        sphinx_version,
+    ):
+        """Confirm no-op per Sphinx on passing through sphobjinv.Inventory."""
+        fname = testall_inv_path.name
+        scr_fpath = scratch_path / fname
+
+        # Drop most unless testall
+        if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
+            pytest.skip("'--testall' not specified")
+
+        original_ifile_data = sphinx_ifile_load(testall_inv_path)
+
+        inv = soi.Inventory(testall_inv_path)
+        soi.writebytes(scr_fpath, soi.compress(inv.data_file()))
+        soi_ifile_data = sphinx_ifile_load(scr_fpath)
+
+        assert not list(dictdiffer.diff(soi_ifile_data, original_ifile_data)), fname
+
+        if "celery" in fname:  # pragma: no cover
+            # Celery inventory contains some exact domain:role:name duplicates
+            assert inv.count == 54 + sphinx_ifile_data_count(original_ifile_data), fname
+
+        elif "opencv" in fname:  # pragma: no cover
+            # OpenCV inventory contains some lines that
+            # parse incorrectly after sphinx/#8225, which was first
+            # incorporated into Sphinx 3.3.0
+            if sphinx_version < (3, 3, 0):
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+            else:
+                assert inv.count == 13 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
+
+        elif "jsonschema" in fname:  # pragma: no cover
+            # The version of the jsonschema inventory held in tests/resource
+            # has an item with an empty uri. Sphinx<2.4 does not import this line
+            # correctly.
+            if sphinx_version < (2, 4, 0):
+                assert inv.count == 1 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
+            else:
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+
+        else:
+            assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
     def test_api_inventory_one_object_flatdict(self):
         """Confirm a flat dict inventory with one object imports ok.

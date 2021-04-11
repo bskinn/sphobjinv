@@ -2,6 +2,7 @@ attrs>=17.4
 certifi
 codecov
 coverage
+dictdiffer
 fuzzywuzzy>=0.3
 jsonschema
 md-toc
@@ -10,7 +11,7 @@ pytest-check>=0.4
 pytest-cov
 pytest-ordering
 pytest-timeout
-sphinx==3.3.1
+sphinx==3.5.0
 sphinx-issues
 sphinx-rtd-theme
 sphinxcontrib-programoutput

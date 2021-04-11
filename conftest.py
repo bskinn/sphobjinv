@@ -34,10 +34,13 @@ import sys
 from enum import Enum
 from filecmp import cmp
 from functools import partial
+from io import BytesIO
 from pathlib import Path
 
 import jsonschema
 import pytest
+from sphinx import __version__ as sphinx_version_str
+from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
 
@@ -160,21 +163,62 @@ def bytes_txt(misc_info, res_path):
     )
 
 
+def sphinx_ifile_load(path):
+    """Carry out inventory load via Sphinx InventoryFile.
+
+    Defined as a standalone function to allow importing
+    during debugging.
+
+    """
+    return IFile.load(BytesIO(path.read_bytes()), "", osp.join)
+
+
+@pytest.fixture(scope="session", name="sphinx_ifile_load")
+def fixture_sphinx_ifile_load():
+    """Return helper function to load inventory via Sphinx InventoryFile."""
+    return sphinx_ifile_load
+
+
+def sphinx_ifile_data_count(ifile_data):
+    """Report the total number of items in the InventoryFile data.
+
+    Defined standalone to allow import during debugging.
+
+    """
+    return sum(len(ifile_data[k]) for k in ifile_data)
+
+
+@pytest.fixture(scope="session", name="sphinx_ifile_data_count")
+def fixture_sphinx_ifile_data_count():
+    """Return helper function to report total number of objects."""
+    return sphinx_ifile_data_count
+
+
 @pytest.fixture(scope="session")
-def sphinx_load_test():
+def sphinx_load_test(sphinx_ifile_load):
     """Return function to perform 'live' Sphinx inventory load test."""
-    from sphinx.util.inventory import InventoryFile as IFile
 
     def func(path):
         """Perform the 'live' inventory load test."""
-        with path.open("rb") as f:
-            try:
-                IFile.load(f, "", osp.join)
-            except Exception as e:  # noqa: PIE786
-                # An exception here is a failing test, not a test error.
-                pytest.fail(e)
+        try:
+            sphinx_ifile_load(path)
+        except Exception as e:  # noqa: PIE786
+            # An exception here is a failing test, not a test error.
+            pytest.fail(e)
 
     return func
+
+
+@pytest.fixture(scope="session")
+def sphinx_version():
+    """Provide the installed Sphinx version as a tuple.
+
+    Returns (major, minor, patch).
+
+    """
+    p_version = re.compile(r"(\d+)[.]?(\d+)?[.]?(\d+)?")
+    mch = p_version.match(sphinx_version_str)
+    return tuple(map((lambda x: int(x) if x else 0), mch.groups()))
 
 
 @pytest.fixture()  # Must be function scope since uses monkeypatch
@@ -241,14 +285,15 @@ def attrs_inventory_test():
     return func
 
 
-testall_inv_paths = (
+testall_inv_paths = [
     p
     for p in (Path(__file__).parent / "tests" / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
-)
+]
+testall_inv_ids = [p.name[8:-4] for p in testall_inv_paths]
 
 
-@pytest.fixture(params=testall_inv_paths)
+@pytest.fixture(params=testall_inv_paths, ids=testall_inv_ids)
 def testall_inv_path(request):
     """Provide parametrized --testall inventory paths."""
     return request.param
