@@ -231,7 +231,7 @@ class TestDataObj:
             [soi.DataObjBytes, soi.pb_data, "byte_lines"],
             [soi.DataObjStr, soi.p_data, "str_lines"],
         ),
-        ids=(lambda i: i if type(i) == str else ""),
+        ids=(lambda i: i if isinstance(i, str) else ""),
     )
     @pytest.mark.parametrize("dataline_arg", (True, False))
     @pytest.mark.parametrize("init_expanded", (True, False))
@@ -332,7 +332,7 @@ class TestInventory:
             (soi.SourceTypes.FnamePlaintext, "fname_plain"),
             (soi.SourceTypes.FnameZlib, "fname_zlib"),
         ],
-        ids=(lambda v: v if type(v) == str else ""),
+        ids=(lambda v: v if isinstance(v, str) else ""),
     )
     @pytest.mark.parametrize("path_fxn", PATH_FXNS, ids=PATH_FXN_IDS)
     def test_api_inventory_bytes_fname_instantiation(
