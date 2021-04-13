@@ -56,6 +56,8 @@ and this project strives to adhere to
   * The CLI functionality was refactored from the single `sphobjinv.cmdline` module
     into a dedicated set of `sphobjinv.cli.*` submodules.
 
+  * Some internal `type(...) is ...` checks were replaced with `isinstance(...)`
+
 #### Testing
 
   * Added *significant* body of new tests to confirm inventory compatibility

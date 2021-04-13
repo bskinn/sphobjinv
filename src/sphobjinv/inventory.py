@@ -46,7 +46,7 @@ from sphobjinv.zlib import decompress
 
 
 @attr.s(slots=True, eq=True, order=False)
-class Inventory(object):
+class Inventory:
     r"""Entire contents of an |objects.inv| inventory.
 
     All information is stored internally as |str|,

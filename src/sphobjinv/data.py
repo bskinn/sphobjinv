@@ -63,9 +63,9 @@ def _utf8_decode(b):
     Helper for type conversions among DataObjStr and DataObjBytes.
 
     """
-    if type(b) is bytes:
+    if isinstance(b, bytes):
         return b.decode(encoding="utf-8")
-    elif type(b) is str:
+    elif isinstance(b, str):
         return b
     else:
         raise TypeError("Argument must be 'bytes' or 'str'")
@@ -77,15 +77,15 @@ def _utf8_encode(s):
     Helper for type conversions among DataObjStr and DataObjBytes.
 
     """
-    if type(s) is str:
+    if isinstance(s, str):
         return s.encode(encoding="utf-8")
-    elif type(s) is bytes:
+    elif isinstance(s, bytes):
         return s
     else:
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
-class SuperDataObj(object, metaclass=ABCMeta):
+class SuperDataObj(metaclass=ABCMeta):
     """Abstract base superclass defining common methods &c. for data objects.
 
     Intended only to be subclassed
@@ -119,25 +119,21 @@ class SuperDataObj(object, metaclass=ABCMeta):
     @abstractmethod
     def name(self):
         r"""Object name, as recognized internally by Sphinx\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def domain(self):
         r"""Sphinx domain containing the object\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def role(self):
         r"""Sphinx role to be used when referencing the object\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def priority(self):
         r"""Object search priority\ |dag|."""
-        pass
 
     @property
     @abstractmethod
@@ -147,7 +143,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -157,7 +152,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -168,7 +162,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         for :doc:`version 2 </syntax>` |objects.inv| files.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -179,24 +172,20 @@ class SuperDataObj(object, metaclass=ABCMeta):
         for :doc:`version 2 </syntax>` |objects.inv| files.
 
         """
-        pass
 
     @property
     @abstractmethod
     def as_str(self, s):
         """:class:`DataObjStr` version of instance."""
-        pass
 
     @property
     @abstractmethod
     def as_bytes(self, s):
         """:class:`DataObjBytes` version of instance."""
-        pass
 
     @abstractmethod
     def _data_line_postprocess(self, s):
         """Post-process the data_line chars output."""
-        pass
 
     @property
     def uri_contracted(self):
