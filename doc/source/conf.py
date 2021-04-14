@@ -18,11 +18,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'sphobjinv'
-copyright = '2016-2020, Brian Skinn'
+copyright = '2016-2021, Brian Skinn'
 author = 'Brian Skinn'
 
-# The full version, including alpha/beta/rc tags
+# The full version for `release`, including alpha/beta/rc tags
 from sphobjinv import __version__ as release
+
+# Just major.minor for `version`
 version = ".".join(release.split(".")[:2])
 
 
@@ -36,6 +38,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.programoutput",
     "sphinx_issues",
 ]
 
@@ -63,8 +66,11 @@ pygments_style = "sphinx"
 # Ignore package prefix when sorting modules
 modindex_common_prefix = ["sphobjinv."]
 
-# Common epilogue
+
+# -- Common epilogue definition  ------------------------------------------------
+
 rst_epilog = r"""
+
 .. |extlink| image:: /_static/extlink.svg
 
 .. |dag| replace:: :math:`^\dagger`
@@ -93,6 +99,8 @@ rst_epilog = r"""
 
 .. |dict| replace:: :obj:`dict`
 
+.. |Path| replace:: :obj:`~pathlib.Path`
+
 .. |re.compile| replace:: :func:`re.compile`
 
 .. |re| replace:: :doc:`re <python:library/re>`
@@ -102,6 +110,12 @@ rst_epilog = r"""
 .. |isphx| replace:: :mod:`~sphinx.ext.intersphinx`
 
 .. |Inventory| replace:: :class:`~sphobjinv.inventory.Inventory`
+
+.. |DataObjStr| replace:: :class:`~sphobjinv.data.DataObjStr`
+
+.. |DataObjBytes| replace:: :class:`~sphobjinv.data.DataObjBytes`
+
+.. |SuperDataObj| replace:: :class:`~sphobjinv.data.SuperDataObj`
 
 .. |license_txt| replace:: LICENSE.txt
 
@@ -121,7 +135,7 @@ rst_epilog = r"""
 
 .. |cour| raw:: html
 
-    <span style="font-family:courier;font-size:90%">
+    <span style="font-family:courier, monospace;font-size:90%">
 
 .. |/cour| raw:: html
 
@@ -135,20 +149,56 @@ rst_epilog = r"""
 
 .. |isphxmap| replace:: ``intersphinx_mapping``
 
-.. _isphxmap: http://www.sphinx-doc.org/en/stable/ext/intersphinx.html#confval-intersphinx_mapping
+.. _isphxmap: https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_mapping
 
 .. |soi| raw:: html
 
-    <span style="font-family:courier; font-size: 90%; font-weight: bold;">sphobjinv</span>
+    <span style="font-family:courier, monospace; font-size: 90%; font-weight: bold;">sphobjinv</span>
 
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
 .. |stdout| replace:: |cour|\ stdout\ |/cour|
 
+.. |cli:ALL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.ALL`
+
+.. |cli:DEF_BASENAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_BASENAME`
+
+.. |cli:DEF_OUT_EXT| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_OUT_EXT`
+
+.. |cli:FOUND_URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.FOUND_URL`
+
+.. |cli:INDEX| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INDEX`
+
+.. |cli:INFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INFILE`
+
+.. |cli:MODE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.MODE`
+
+.. |cli:OUTFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OUTFILE`
+
+.. |cli:OVERWRITE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OVERWRITE`
+
+.. |cli:QUIET| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.QUIET`
+
+.. |cli:SCORE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SCORE`
+
+.. |cli:SUBPARSER_NAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUBPARSER_NAME`
+
+.. |cli:SUGGEST_CONFIRM_LENGTH| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUGGEST_CONFIRM_LENGTH`
+
+.. |cli:URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.URL`
+
+.. |cli:VERSION| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.VERSION`
+
+.. |resolve_inpath| replace:: :func:`~sphobjinv.cli.paths.resolve_inpath`
+
 """
 
-# Universal doctest setup code
+
+# -- doctest setup code  --------------------------------------------
+
+
 doctest_global_setup = """\
+import json
 import os
 from pathlib import Path
 import shutil as sh
@@ -193,7 +243,7 @@ def cli_run(argstr, *, inp='', head=None):
     '''
     import sys
 
-    import sphobjinv.cmdline as cli
+    import sphobjinv.cli as cli
     from stdio_mgr import stdio_mgr
 
     old_argv = sys.argv
@@ -221,8 +271,7 @@ def file_head(fn, *, head=None):
     if not p.is_file():
         return "Not a file."
 
-    with p.open() as f:
-        text = f.read()
+    text = p.read_text()
 
     # If head==None, then just returns a complete slice
     lines = text.splitlines()[:head]
@@ -243,8 +292,14 @@ os.chdir(str(_start_dir))
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "sphinx": ("http://www.sphinx-doc.org/en/master", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master", None),
 }
+
+
+# -- Options for linkcheck  --------------------------------------------------
+
+linkcheck_ignore = [r"^https?://(\w+[.])?twitter[.]com.*$"]
+linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -261,3 +316,7 @@ html_static_path = ['_static']
 
 # Output file basename
 htmlhelp_basename = "sphobjinv"
+
+# Location of the favicon and logo images
+html_favicon = "_static/soi-logo.png"
+html_logo = "_static/soi-logo_duo_border.png"

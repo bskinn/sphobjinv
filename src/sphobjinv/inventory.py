@@ -10,13 +10,13 @@ Sphinx |objects.inv| files.
     7 Dec 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms
@@ -41,18 +41,12 @@ from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.fileops import readbytes
 from sphobjinv.re import pb_data, pb_project, pb_version
 from sphobjinv.schema import json_schema
+from sphobjinv.version import __version__ as soi_version
 from sphobjinv.zlib import decompress
 
 
-# Cope with 'cmp' argument deprecation in attrs 19.2
-try:
-    _attr_wrapper = attr.s(slots=True, eq=False)
-except TypeError:  # pragma: no cover
-    _attr_wrapper = attr.s(slots=True, cmp=False)
-
-
-@_attr_wrapper
-class Inventory(object):
+@attr.s(slots=True, eq=True, order=False)
+class Inventory:
     r"""Entire contents of an |objects.inv| inventory.
 
     All information is stored internally as |str|,
@@ -63,6 +57,29 @@ class Inventory(object):
     **At most ONE** of these source arguments may be other than |None|.
 
     The `count_error` argument is only relevant to the `dict_json` source type.
+
+    Equality comparisons between |Inventory| instances
+    will return |True| if
+    :attr:`~sphobjinv.inventory.Inventory.project`,
+    :attr:`~sphobjinv.inventory.Inventory.version`, and
+    **all** contents of :attr:`~sphobjinv.inventory.Inventory.objects`
+    are identical, even if the instances were created from different
+    sources:
+
+    .. doctest:: inventory-equality
+
+        >>> inv1 = soi.Inventory(
+        ...     url="https://sphobjinv.readthedocs.io/en/latest/objects.inv"
+        ... )
+        >>> inv2 = soi.Inventory(inv1.data_file())
+        >>> inv1 is inv2
+        False
+        >>> inv1 == inv2
+        True
+
+    .. versionchanged:: 2.1
+        Previously, an |Inventory| instance would compare equal only
+        to itself.
 
     `source`
 
@@ -83,25 +100,33 @@ class Inventory(object):
 
     `plaintext`
 
-        Object is to be parsed as the |bytes|
+        Object is to be parsed as the UTF-8 |bytes|
         plaintext contents of an |objects.inv| inventory.
 
     `zlib`
 
-        Object is to be parsed as the |bytes|
+        Object is to be parsed as the UTF-8 |bytes|
         zlib-compressed contents of an
         |objects.inv| inventory.
 
     `fname_plain`
 
-        Object is the |str| path to a file containing
+        Object is the |str| or |Path| path to a file containing
         the plaintext contents of an |objects.inv| inventory.
+
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
 
     `fname_zlib`
 
-        Object is the |str| path to a file containing
+        Object is the |str| or |Path| path to a file containing
         the zlib-compressed contents of an
         |objects.inv| inventory.
+
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
 
     `dict_json`
 
@@ -136,25 +161,25 @@ class Inventory(object):
 
     # General source for try-most-types import
     # Needs to be first so it absorbs a positional arg
-    _source = attr.ib(repr=False, default=None)
+    _source = attr.ib(repr=False, default=None, eq=False)
 
     # Stringlike types (both accept str & bytes)
-    _plaintext = attr.ib(repr=False, default=None)
-    _zlib = attr.ib(repr=False, default=None)
+    _plaintext = attr.ib(repr=False, default=None, eq=False)
+    _zlib = attr.ib(repr=False, default=None, eq=False)
 
-    # Filename types (must be str)
-    _fname_plain = attr.ib(repr=False, default=None)
-    _fname_zlib = attr.ib(repr=False, default=None)
+    # Filename types (must be str or Path)
+    _fname_plain = attr.ib(repr=False, default=None, eq=False)
+    _fname_zlib = attr.ib(repr=False, default=None, eq=False)
 
     # dict types
-    _dict_json = attr.ib(repr=False, default=None)
+    _dict_json = attr.ib(repr=False, default=None, eq=False)
 
     # URL for remote retrieval of objects.inv/.txt
-    _url = attr.ib(repr=False, default=None)
+    _url = attr.ib(repr=False, default=None, eq=False)
 
     # Flag for whether to raise error on object count mismatch
     _count_error = attr.ib(
-        repr=False, default=True, validator=attr.validators.instance_of(bool)
+        repr=False, default=True, validator=attr.validators.instance_of(bool), eq=False
     )
 
     # Actual regular attributes
@@ -175,7 +200,7 @@ class Inventory(object):
 
     #: :class:`~sphobjinv.enum.SourceTypes` |Enum| value indicating the type of
     #: source from which the instance was generated.
-    source_type = attr.ib(init=False, default=None)
+    source_type = attr.ib(init=False, default=None, eq=False)
 
     # Helper strings for inventory datafile output
     #: Preamble line for v2 |objects.inv| header
@@ -313,7 +338,7 @@ class Inventory(object):
 
         # Complain if multiple sources provided
         if src_count > 1:
-            raise RuntimeError("At most one data source can " "be specified.")
+            raise RuntimeError("At most one data source can be specified.")
 
         # Leave uninitialized ("manual" init) if no source provided
         if src_count == 0:
@@ -367,7 +392,7 @@ class Inventory(object):
                 return
 
     def data_file(self, *, expand=False, contract=False):
-        """Generate a plaintext |objects.inv| as |bytes|.
+        """Generate a plaintext |objects.inv| as UTF-8 |bytes|.
 
         |bytes| is used here as the output type
         since the most common use cases are anticipated to be
@@ -494,26 +519,31 @@ class Inventory(object):
         """
         # Suppress any UserWarning about the speed issue
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+            warnings.filterwarnings(
+                action="ignore",
+                message="Using slow.+levenshtein",
+                category=UserWarning,
+                module="fuzz",
+            )
             from fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index
-        srch_list = ["{0} {1}".format(i, o) for i, o in enumerate(self.objects_rst)]
+        srch_list = [f"{i} {o}" for i, o in enumerate(self.objects_rst)]
 
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
         results = [
-            "{0} {1}".format(*_)
-            for _ in fwp.extract(name, srch_list, limit=None)
-            if _[1] >= thresh
+            f"{match} {score}"
+            for match, score in fwp.extract(name, srch_list, limit=None)
+            if score >= thresh
         ]
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
         # result --> (rst, score, index)
-        p_idx = re.compile("^(\\d+)\\s+(.+?)\\s+(\\d+)$")
+        p_idx = re.compile(r"^(\d+)\s+(.+?)\s+(\d+)$")
         results = [
             (m.group(2), int(m.group(3)), int(m.group(1)))
             for m in map(p_idx.match, results)
@@ -544,7 +574,7 @@ class Inventory(object):
         import_errors = {
             SourceTypes.BytesPlaintext: TypeError,
             SourceTypes.BytesZlib: (zlib_error, TypeError),
-            SourceTypes.FnamePlaintext: (OSError, TypeError),
+            SourceTypes.FnamePlaintext: (OSError, TypeError, UnicodeDecodeError),
             SourceTypes.FnameZlib: (OSError, TypeError, zlib_error),
             SourceTypes.DictJSON: (ValidationError),
         }
@@ -581,7 +611,7 @@ class Inventory(object):
         return True
 
     def _import_plaintext_bytes(self, b_str):
-        """Import an inventory from plaintext bytes."""
+        """Import an inventory from plaintext UTF-8 bytes."""
         b_res = pb_project.search(b_str).group(HeaderFields.Project.value)
         project = b_res.decode("utf-8")
 
@@ -589,6 +619,7 @@ class Inventory(object):
         version = b_res.decode("utf-8")
 
         def gen_dataobjs():
+            """Generate a data object for each line in the inventory."""
             for mch in pb_data.finditer(b_str):
                 yield DataObjStr(**mch.groupdict())
 
@@ -623,7 +654,7 @@ class Inventory(object):
         """Import a file from a remote URL."""
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
-        req = urlrq.Request(url, headers={"User-Agent": "Magic Browser"})
+        req = urlrq.Request(url, headers={"User-Agent": "sphobjinv URL/" + soi_version})
         resp = urlrq.urlopen(req, context=self._sslcontext)  # noqa: S310
         b_str = resp.read()
 
@@ -657,8 +688,7 @@ class Inventory(object):
             except KeyError as e:
                 if self._count_error:
                     err_str = (
-                        "Too few objects found in dict "
-                        "(halt at {0}, expect {1})".format(i, count)
+                        f"Too few objects found in dict (halt at {i}, expect {count})"
                     )
                     raise ValueError(err_str) from e
 
@@ -669,7 +699,7 @@ class Inventory(object):
         if check_value:
             # A truthy value here will be the contents
             # of the above set difference
-            err_str = "Too many objects in dict ({0})".format(check_value)
+            err_str = f"Too many objects in dict ({check_value})"
             raise ValueError(err_str)
 
         # Should be good to return

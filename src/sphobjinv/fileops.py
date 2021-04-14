@@ -10,13 +10,13 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms
@@ -25,15 +25,22 @@ Sphinx |objects.inv| files.
 
 """
 
+import json
+from pathlib import Path
+
 
 def readbytes(path):
     """Read file contents and return as |bytes|.
+
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
 
     Parameters
     ----------
     path
 
-        |str| -- Path to file to be opened.
+        |str| or |Path| -- Path to file to be opened.
 
     Returns
     -------
@@ -42,8 +49,7 @@ def readbytes(path):
         |bytes| -- Contents of the indicated file.
 
     """
-    with open(path, "rb") as f:
-        return f.read()
+    return Path(path).read_bytes()
 
 
 def writebytes(path, contents):
@@ -51,19 +57,22 @@ def writebytes(path, contents):
 
     Any existing file at `path` will be overwritten.
 
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
+
     Parameters
     ----------
     path
 
-        |str| -- Path to file to be written.
+        |str| or |Path| -- Path to file to be written.
 
     contents
 
         |bytes| -- Content to be written to file.
 
     """
-    with open(path, "wb") as f:
-        f.write(contents)
+    Path(path).write_bytes(contents)
 
 
 def readjson(path):
@@ -71,11 +80,15 @@ def readjson(path):
 
     No data or schema validation is performed.
 
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
+
     Parameters
     ----------
     path
 
-        |str| -- Path to JSON file to be read.
+        |str| or |Path| -- Path to JSON file to be read.
 
     Returns
     -------
@@ -84,10 +97,7 @@ def readjson(path):
         |dict| -- Deserialized JSON.
 
     """
-    import json
-
-    with open(path, "r") as f:
-        return json.load(f)
+    return json.loads(Path(path).read_text())
 
 
 def writejson(path, d):
@@ -96,21 +106,22 @@ def writejson(path, d):
     No data or schema validation is performed.
     Any existing file at `path` will be overwritten.
 
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
+
     Parameters
     ----------
     path
 
-        |str| -- Path to output JSON file.
+        |str| or |Path| -- Path to output JSON file.
 
     d
 
         |dict| -- Data structure to serialize.
 
     """
-    import json
-
-    with open(path, "w") as f:
-        json.dump(d, f)
+    Path(path).write_text(json.dumps(d))
 
 
 def urlwalk(url):

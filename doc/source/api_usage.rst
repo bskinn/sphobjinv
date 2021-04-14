@@ -23,6 +23,14 @@ Inspecting the contents of an existing inventory is handled entirely by the
     >>> inv.count
     56
 
+The location of the inventory file to import can also be provided as
+a :class:`pathlib.Path`, instead of as a string:
+
+.. doctest:: api_inspect
+
+    >>> soi.Inventory(Path('objects_attrs.inv')).project
+    'attrs'
+
 The individual objects contained in the inventory are represented by instances
 of the :class:`~sphobjinv.data.DataObjStr` class, which are stored in
 a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
@@ -60,6 +68,46 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
     >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/master/tests/resource/objects_attrs.inv')
     >>> print(inv4)
     <Inventory (url): attrs v17.2, 56 objects>
+
+Comparing Inventories
+---------------------
+
+|Inventory| instances compare equal when they have the same :attr:`~sphobjinv.inventory.Inventory.project` and
+:attr:`~sphobjinv.inventory.Inventory.version`, and when all the members of
+:attr:`~sphobjinv.inventory.Inventory.objects` are identical between the two instances:
+
+.. doctest:: api_compare
+
+    >>> inv = soi.Inventory("objects_attrs.inv")
+    >>> inv2 = soi.Inventory(inv.data_file())
+    >>> inv is inv2
+    False
+    >>> inv == inv2
+    True
+    >>> inv2.project = "foo"
+    >>> inv == inv2
+    False
+
+Individual |DataObjStr| and (|DataObjBytes|) instances compare equal if all of
+:attr:`~sphobjinv.data.SuperDataObj.name`, :attr:`~sphobjinv.data.SuperDataObj.domain`,
+:attr:`~sphobjinv.data.SuperDataObj.role`, :attr:`~sphobjinv.data.SuperDataObj.priority`,
+:attr:`~sphobjinv.data.SuperDataObj.uri`, and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+are equal:
+
+.. doctest:: api_compare
+
+    >>> obj1 = inv.objects[0]
+    >>> obj2 = inv.objects[1]
+    >>> obj1 == obj1
+    True
+    >>> obj1 == obj2
+    False
+    >>> obj1 == obj1.evolve(name="foo")
+    False
+
+.. versionchanged:: 2.1
+    Previously, |Inventory| instances would only compare equal to themselves,
+    and comparison attempts on |SuperDataObj| subclass instances would raise :exc:`RecursionError`.
 
 Modifying an Inventory
 ----------------------

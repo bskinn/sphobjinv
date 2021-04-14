@@ -10,13 +10,13 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms

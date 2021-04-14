@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     6 Aug 2018
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -29,13 +29,14 @@ import doctest as dt
 import re
 import shlex
 import subprocess as sp  # noqa: S404
+from pathlib import Path
 
 
 import pytest
 from sphinx import __version__ as sphinx_ver
 
-with open("requirements-dev.txt", "r") as f:
-    reqs = f.read()
+
+reqs = Path("requirements-dev.txt").read_text()
 
 m_sphinx_req = re.search("^sphinx==(.+)$", reqs, re.I | re.M)
 sphinx_req = m_sphinx_req.group(1)
@@ -55,10 +56,9 @@ p_shell = re.compile(
     sphinx_ver != sphinx_req,
     reason="Skip if Sphinx version mismatches current dev version.",
 )
-def test_readme_shell_cmds(ensure_doc_scratch, subtests):
+def test_readme_shell_cmds(ensure_doc_scratch, check):
     """Perform testing on README shell command examples."""
-    with open("README.rst") as f:
-        text = f.read()
+    text = Path("README.rst").read_text()
 
     chk = dt.OutputChecker()
 
@@ -76,5 +76,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, subtests):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with subtests.test(i=i):
+        with check.check(msg=f"match_{i}"):
             assert chk.check_output(out, result, dt_flags), msg

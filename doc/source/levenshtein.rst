@@ -20,14 +20,19 @@ used if it is available.
 Installation
 ------------
 
-On Linux, simple installation via
-|cour|\ pip install python-Levenshtein\ |/cour| should work
-properly in the vast majority of cases.
-This may work relatively smoothly for MacOS as well, but
-first-hand	confirmation was not (`yet <https://twitter.com/btskinn/status/1024503861443276801>`__)
-available as of this writing.
+On Linux and MacOS, installing |soi| with the ``speedup`` extra
+should work properly to install |python-Levenshtein|_
+in the vast majority of cases::
 
-On Windows, again as of this writing,
+    $ pip install sphobjinv[speedup]
+
+If you need to work with a version of |soi| prior to v2.1,
+the ``speedup`` extra is not available and direct installation
+is required::
+
+    $ pip install sphobjinv==2.0.1 python-Levenshtein
+
+On Windows, as of this writing
 `no binary wheel is available on PyPI <https://pypi.org/project/python-Levenshtein/0.12.0/#files>`__.
 So, the easiest way to install is to download a wheel from
 `Christoph Gohlke's repository <https://www.lfd.uci.edu/~gohlke/pythonlibs/#python-levenshtein>`__

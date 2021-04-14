@@ -11,13 +11,13 @@ Sphinx |objects.inv| files.
     7 Dec 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms
@@ -47,7 +47,7 @@ subschema_json = {
 #: as generated from or expected by
 #: :class:`~sphobjinv.inventory.Inventory` classes.
 json_schema = {
-    "$schema": "http://json-schema.org/schema#",
+    "$schema": "https://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
         "project": {"type": "string"},
@@ -56,7 +56,7 @@ json_schema = {
         "metadata": {},
     },
     "patternProperties": {
-        "^\\d+": {
+        r"^\d+": {
             "type": "object",
             "properties": subschema_json,
             "additionalProperties": False,

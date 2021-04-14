@@ -1,0 +1,222 @@
+trigger:
+- release-*
+
+pr:
+  branches:
+    include:
+    - master
+    - stable
+
+
+stages:
+- stage: code_quality
+  displayName: Check code quality
+
+  jobs:
+  - job: flake8
+    displayName: Run all flake8 checks
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install -U tox
+      displayName: Install tox
+
+    - script: pip install -r requirements-dev.txt
+      displayName: Install full dev requirements (CI & flake8)
+
+    - script: pytest -k flake8 --flake8_ext
+      displayName: Confirm all plugins active
+
+    - script: tox -e flake8
+      displayName: Lint the codebase
+
+  - job: interrogate
+    displayName: Run interrogate docstrings check
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install interrogate
+      displayName: Install interrogate
+
+    - script: interrogate -vv -f 100 src tests conftest.py
+      displayName: Run interrogate
+
+
+- stage: main_tests
+  displayName: Run main code tests
+
+  jobs:
+  - template: azure-coretest.yml
+    parameters:
+      pythons:
+        py36:
+          spec: '3.6'
+        py37:
+          spec: '3.7'
+        py38:
+          spec: '3.8'
+        py39:
+          spec: '3.9'
+        pypy3:
+          spec: 'pypy3'
+      platforms: [linux, windows, macOs]
+
+  - job: Levenshtein
+    strategy:
+      matrix:
+        linux:
+          platform: Ubuntu-latest
+        macOs:
+          platform: macOS-latest
+
+    pool:
+      vmImage: $[ variables.platform ]
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+        architecture: 'x64'
+      displayName: Use Python 3.9
+
+    - script: pip install -U --force-reinstall -r requirements-ci.txt -e .[speedup]
+      displayName: Install CI requirements, plus python-Levenshtein
+
+    - script: pip list
+      displayName: Show full environment contents
+
+    - script: cd doc; make html; mkdir scratch
+      displayName: Build  the documentation for tests to work against (Linux/macOs)
+
+    - script: pytest --nonloc -k "not readme"
+      displayName: Run pytest without README tests
+
+
+- stage: aux_tests
+  displayName: Run auxiliary tests
+
+  jobs:
+  - job: docs_build
+    displayName: Check for doc build warnings
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install . -r requirements-rtd.txt
+      displayName: Install project, plus docs requirements
+
+    - script: cd doc; make html -Wn --keep-going
+      displayName: Build docs with warnings as errors
+
+
+  - job: doctest
+    displayName: Run doctest suite
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install -r requirements-dev.txt
+      displayName: Install full dev requirements
+
+    - script: cd doc; make doctest
+      displayName: Run doctests
+
+  - job: linkcheck
+    displayName: Run docs link-check suite
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install . -r requirements-rtd.txt
+      displayName: Install doc requirements and local project
+
+    - script: cd doc; make linkcheck
+      displayName: Run link check
+
+
+  - job: testdir_coverage
+    displayName: Confirm all test code was executed
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install -r requirements-dev.txt
+      displayName: Install full dev requirements
+
+    - script: cd doc; make html; mkdir scratch
+      displayName: Build docset
+
+    - script: pytest --cov=. --nonloc --flake8_ext
+      displayName: Run pytest with coverage on the entire project tree
+
+    - script: coverage report --include="tests/*" --fail-under=100
+      displayName: Check 100% test execution
+
+  - job: contributing_toc
+    displayName: Confirm CONTRIBUTING.md TOC is up to date
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install -r requirements-ci.txt
+      displayName: Install CI requirements
+
+    - script: python -m md_toc -p github CONTRIBUTING.md
+      displayName: Run md-toc on CONTRIBUTING
+
+    - script: if [[ $( git status | grep modified | wc -l ) -ne 0 ]]; then exit 1; fi
+      displayName: Fail if md-toc modified CONTRIBUTING
+
+  - job: noqa_info
+    displayName: Report flake8-noqa results for info (never fails)
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+
+    - script: pip install tox flake8-noqa -r requirements-flake8.txt
+      displayName: Install requirements
+
+    - script: tox -e flake8-noqa
+      displayName: Run never-fail flake8 with noqa check
+
+

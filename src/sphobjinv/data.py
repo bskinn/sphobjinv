@@ -10,13 +10,13 @@ Sphinx |objects.inv| files.
     7 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/latest
 
 **License**
     The MIT License; see |license_txt|_ for full license terms
@@ -63,9 +63,9 @@ def _utf8_decode(b):
     Helper for type conversions among DataObjStr and DataObjBytes.
 
     """
-    if type(b) is bytes:
+    if isinstance(b, bytes):
         return b.decode(encoding="utf-8")
-    elif type(b) is str:
+    elif isinstance(b, str):
         return b
     else:
         raise TypeError("Argument must be 'bytes' or 'str'")
@@ -77,15 +77,15 @@ def _utf8_encode(s):
     Helper for type conversions among DataObjStr and DataObjBytes.
 
     """
-    if type(s) is str:
+    if isinstance(s, str):
         return s.encode(encoding="utf-8")
-    elif type(s) is bytes:
+    elif isinstance(s, bytes):
         return s
     else:
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
-class SuperDataObj(object, metaclass=ABCMeta):
+class SuperDataObj(metaclass=ABCMeta):
     """Abstract base superclass defining common methods &c. for data objects.
 
     Intended only to be subclassed
@@ -102,7 +102,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
     #: Helper |str| for generating plaintext |objects.inv|
     #: data lines. The field names MUST match the |str| values
     #: of the :class:`~DataFields` members.
-    data_line_fmt = "{name} {domain}:{role} {priority} " "{uri} {dispname}"
+    data_line_fmt = "{name} {domain}:{role} {priority} {uri} {dispname}"
 
     #: |str.format| template for generating reST-like representations
     #: of object data for :data:`as_rst` (used with
@@ -119,25 +119,21 @@ class SuperDataObj(object, metaclass=ABCMeta):
     @abstractmethod
     def name(self):
         r"""Object name, as recognized internally by Sphinx\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def domain(self):
         r"""Sphinx domain containing the object\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def role(self):
         r"""Sphinx role to be used when referencing the object\ |dag|."""
-        pass
 
     @property
     @abstractmethod
     def priority(self):
         r"""Object search priority\ |dag|."""
-        pass
 
     @property
     @abstractmethod
@@ -147,7 +143,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -157,7 +152,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -168,7 +162,6 @@ class SuperDataObj(object, metaclass=ABCMeta):
         for :doc:`version 2 </syntax>` |objects.inv| files.
 
         """
-        pass
 
     @property
     @abstractmethod
@@ -179,28 +172,24 @@ class SuperDataObj(object, metaclass=ABCMeta):
         for :doc:`version 2 </syntax>` |objects.inv| files.
 
         """
-        pass
 
     @property
     @abstractmethod
     def as_str(self, s):
         """:class:`DataObjStr` version of instance."""
-        pass
 
     @property
     @abstractmethod
     def as_bytes(self, s):
         """:class:`DataObjBytes` version of instance."""
-        pass
 
     @abstractmethod
     def _data_line_postprocess(self, s):
         """Post-process the data_line chars output."""
-        pass
 
     @property
     def uri_contracted(self):
-        """Object relative URI, contracted with `uri_abbrev`."""
+        """Object-relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
             return self.uri[: -len(self.name)] + self.uri_abbrev
         else:
@@ -208,7 +197,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
     @property
     def uri_expanded(self):
-        """Object relative URI, with `uri_abbrev` expanded."""
+        """Object-relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
             return self.uri[: -len(self.uri_abbrev)] + self.name
         else:
@@ -288,7 +277,7 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
         """
         if expand and contract:
-            raise ValueError("'expand' and 'contract' cannot " "both be true.")
+            raise ValueError("'expand' and 'contract' cannot both be true.")
 
         d = {a: getattr(self, a) for a in (e.value for e in DataFields)}
 
@@ -390,7 +379,37 @@ class SuperDataObj(object, metaclass=ABCMeta):
 
 @attr.s(slots=True)
 class DataObjStr(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |str| object data."""
+    """:class:`SuperDataObj` subclass generating |str| object data.
+
+    Two :class:`DataObjStr` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjstr
+
+        >>> obj = soi.DataObjStr(
+        ...     name="foo",
+        ...     domain="py",
+        ...     role="method",
+        ...     priority="1",
+        ...     uri="$",
+        ...     dispname="-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name="quux")
+        False
+
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
+
+    """
 
     uri_abbrev = "$"
     dispname_abbrev = "-"
@@ -402,10 +421,11 @@ class DataObjStr(SuperDataObj):
     uri = attr.ib(converter=_utf8_decode)
     dispname = attr.ib(converter=_utf8_decode)
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):
+        """Create DataObjBytes equivalent."""
         return DataObjBytes(
             name=self.name,
             domain=self.domain,
@@ -416,10 +436,11 @@ class DataObjStr(SuperDataObj):
             as_str=self,
         )
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
+        """Return this instance."""
         return self
 
     def _data_line_postprocess(self, s):
@@ -429,7 +450,37 @@ class DataObjStr(SuperDataObj):
 
 @attr.s(slots=True)
 class DataObjBytes(SuperDataObj):
-    """:class:`SuperDataObj` subclass generating |bytes| object data."""
+    """:class:`SuperDataObj` subclass generating |bytes| object data.
+
+    Two :class:`DataObjBytes` instances will test equal if all of
+    :attr:`~sphobjinv.data.SuperDataObj.name`,
+    :attr:`~sphobjinv.data.SuperDataObj.domain`,
+    :attr:`~sphobjinv.data.SuperDataObj.role`,
+    :attr:`~sphobjinv.data.SuperDataObj.priority`,
+    :attr:`~sphobjinv.data.SuperDataObj.uri`,
+    and :attr:`~sphobjinv.data.SuperDataObj.dispname`
+    are equal between them.
+
+    .. doctest:: dataobjbytes
+
+        >>> obj = soi.DataObjBytes(
+        ...     name=b"foo",
+        ...     domain=b"py",
+        ...     role=b"method",
+        ...     priority=b"1",
+        ...     uri=b"$",
+        ...     dispname=b"-",
+        ... )
+        >>> obj == obj
+        True
+        >>> obj == obj.evolve(name=b"quux")
+        False
+
+    .. versionchanged:: 2.1
+        Previously, attempts to compare instances resulted in a
+        :exc:`RecursionError`.
+
+    """
 
     uri_abbrev = b"$"
     dispname_abbrev = b"-"
@@ -441,10 +492,11 @@ class DataObjBytes(SuperDataObj):
     uri = attr.ib(converter=_utf8_encode)
     dispname = attr.ib(converter=_utf8_encode)
 
-    as_str = attr.ib(repr=False)
+    as_str = attr.ib(repr=False, eq=False)
 
     @as_str.default
     def _as_str_default(self):
+        """Create DataObjStr equivalent."""
         return DataObjStr(
             name=self.name,
             domain=self.domain,
@@ -455,10 +507,11 @@ class DataObjBytes(SuperDataObj):
             as_bytes=self,
         )
 
-    as_bytes = attr.ib(repr=False)
+    as_bytes = attr.ib(repr=False, eq=False)
 
     @as_bytes.default
     def _as_bytes_default(self):
+        """Return this instance."""
         return self
 
     def _data_line_postprocess(self, s):

@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     27 Apr 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -32,12 +32,25 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = [pytest.mark.flake8_ext]
+
+
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_flake8_ext(pytestconfig):
+    """Skip test if --flake8_ext not provided.
+
+    Auto-applied to all functions in module.
+
+    """
+    if not pytestconfig.getoption("--flake8_ext"):
+        pytest.skip("'--flake8_ext' not specified")  # pragma: no cover
+
 
 @pytest.mark.skipif(
     sys.version_info < (3, 6),
     reason="Some flake8 extensions require Python 3.6 or later",
 )
-def test_flake8_version_output(subtests):
+def test_flake8_version_output(check):
     """Confirm that all desired plugins actually report as loaded."""
     p_pkgname = re.compile("^[0-9a-z_-]+", re.I)
     plugins = Path("requirements-flake8.txt").read_text().splitlines()[1:]
@@ -51,6 +64,6 @@ def test_flake8_version_output(subtests):
         ["flake8", "--version"], universal_newlines=True
     )  # noqa: S607,S603
 
-    for i, p in enumerate(plugins):
-        with subtests.test(msg=p, i=i):
-            assert p in flake8_ver_output
+    for p in plugins:
+        with check.check(msg=p):
+            assert p in flake8_ver_output.replace("_", "-")

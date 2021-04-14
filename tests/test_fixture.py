@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2020
+    \(c) Brian Skinn 2016-2021
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -36,13 +36,13 @@ def test_info_fixture(misc_info):
     assert True in misc_info.byte_lines
 
 
-def test_populate_scratch(misc_info, scratch_path, subtests):
+def test_populate_scratch(misc_info, scratch_path, check):
     """Ensure the scratch_path fixture populates the scratch dir correctly."""
-    scr_base = misc_info.FNames.INIT.value
+    scr_base = misc_info.FNames.INIT
 
     for ext in [_.value for _ in misc_info.Extensions]:
-        with subtests.test(msg=ext):
-            assert (scratch_path / "{}{}".format(scr_base, ext)).is_file(), ext
+        with check.check(msg=ext):
+            assert (scratch_path / f"{scr_base}{ext}").is_file(), ext
 
 
 def test_sphinx_load(res_path, sphinx_load_test):
