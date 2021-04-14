@@ -32,6 +32,10 @@ from pathlib import Path
 def readbytes(path):
     """Read file contents and return as |bytes|.
 
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
+
     Parameters
     ----------
     path
@@ -53,6 +57,10 @@ def writebytes(path, contents):
 
     Any existing file at `path` will be overwritten.
 
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
+
     Parameters
     ----------
     path
@@ -71,6 +79,10 @@ def readjson(path):
     """Create |dict| from JSON file.
 
     No data or schema validation is performed.
+
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
 
     Parameters
     ----------
@@ -93,6 +105,10 @@ def writejson(path, d):
 
     No data or schema validation is performed.
     Any existing file at `path` will be overwritten.
+
+    .. versionchanged:: 2.1
+
+        `path` can now be |Path| or |str|. Previously, it had to be |str|.
 
     Parameters
     ----------

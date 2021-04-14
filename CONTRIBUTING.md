@@ -224,7 +224,7 @@ the [Azure CI pipeline](#continuous-integration):
 
 ```
 === Linux/Mac
-doc $ O=-n make clean  html
+doc $ O=-n make clean html
 
 === Windows
 doc> make html -Ean

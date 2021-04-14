@@ -114,11 +114,19 @@ class Inventory:
         Object is the |str| or |Path| path to a file containing
         the plaintext contents of an |objects.inv| inventory.
 
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
+
     `fname_zlib`
 
         Object is the |str| or |Path| path to a file containing
         the zlib-compressed contents of an
         |objects.inv| inventory.
+
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
 
     `dict_json`
 

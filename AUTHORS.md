@@ -16,8 +16,8 @@ As I started to use it regularly in my own documentation work, it became clear t
 from also implementing functionality to assist with object searches, especially in large documentation sets.
 Also, it seemed likely that a robust API for creation/manipulation of inventory contents would be useful, in order to
 assist with things like scraping a non-Sphinx website to generate an objects.inv for cross-referencing in other docs.
-This led to the current object-oriented API of `sphobjinv` v2.0.
+This led to the current object-oriented API of `sphobjinv` v2.x.
 
-While there are [a number](https://github.com/bskinn/sphobjinv/issues) of possible enhancements to the project,
+While there are [numerous](https://github.com/bskinn/sphobjinv/issues) possible enhancements to the project,
 I'm quite satisfied with its ease of use and usefulness, at least for my purposes, and thus consider it fully stable.
 I'm always glad to receive feature requests and (especially) bug reports, though.

@@ -69,7 +69,7 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
     >>> print(inv4)
     <Inventory (url): attrs v17.2, 56 objects>
 
-Comparing inventories
+Comparing Inventories
 ---------------------
 
 |Inventory| instances compare equal when they have the same :attr:`~sphobjinv.inventory.Inventory.project` and
