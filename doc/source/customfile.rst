@@ -15,7 +15,7 @@ can be found at the GitHub repo
 
 .. note::
 
-    These instructions are for |soi| v2.0;
+    These instructions are for |soi| v2.x;
     the prior instructions for v1.0 can be found
     `here <https://sphobjinv.readthedocs.io/en/v1.0.post1/customfile.html>`__.
 
@@ -149,7 +149,7 @@ can be found at the GitHub repo
                 'django': ('https://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
 
                 # Drawing the Sphinx objects.inv from a local copy, but referring to the 1.7 web docs
-                'sphinx': ('https://www.sphinx-doc.org/en/1.7/', '/path/to/local/objects.inv',
+                'sphinx': ('https://www.sphinx-doc.org/en/1.7/', '/path/to/local/objects.inv'),
             }
 
     .. MAKE SURE TO UPDATE THESE TWO STEP REFERENCES IF NUMBERING CHANGES!!
