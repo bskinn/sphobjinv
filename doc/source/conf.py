@@ -119,7 +119,7 @@ rst_epilog = r"""
 
 .. |license_txt| replace:: LICENSE.txt
 
-.. _license_txt: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
