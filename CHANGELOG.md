@@ -7,6 +7,13 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [unreleased]
+
+#### Administrative
+
+  * Project default branch migrated to `main` from `master`.
+
+
 ### [2.1] - 2021-04-14
 
 #### Added
