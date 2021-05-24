@@ -51,7 +51,7 @@ including:
 
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
-  * Gentoo GURU: ``dev-python/sphobjinv`` (`info <https://gpo.zugaina.org/Overlays/guru/dev-python/sphobjinv>`__)
+  * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
 
   * Manjaro: ``python-sphobjinv``
 

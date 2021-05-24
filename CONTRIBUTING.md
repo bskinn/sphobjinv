@@ -84,21 +84,21 @@ $ git checkout -b description-of-change
 ```
 
 This makes it a lot simpler to get your repo fork up to date
-after `master` receives further commits.
+after `main` receives further commits.
 
-To bring your fork's `master` up to date, you first need to
+To bring your fork's `main` up to date, you first need to
 add the main repo as a new git remote (one-time task):
 
 ```
 $ git remote add upstream https://github.com/bskinn/sphobjinv
 ```
 
-Then, any time you need to refresh the fork's master:
+Then, any time you need to refresh the fork's `main`:
 
 ```
 $ git fetch --all
-$ git checkout master
-$ git merge upstream/master  # (should merge without incident)
+$ git checkout main
+$ git merge upstream/main  # (should merge without incident)
 $ git push  # (should push to your fork without incident)
 ```
 
@@ -247,12 +247,12 @@ per-commit by including `[skip ci]` in the commit message.
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
 cross-Python-version tests, as well as numerous other checks.
 Due to its length, it is configured to run only on release branches
-and PRs to `master` or `stable`. It cannot be skipped.
+and PRs to `main` or `stable`. It cannot be skipped.
 
 
 ## CHANGELOG
 
-The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/master/CHANGELOG.md)
+The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md)
 should be updated for the majority of contributions. No tooling is in place
 (e.g., [`towncrier`](https://github.com/twisted/towncrier)) for automated collation
 of news items into `CHANGELOG`;

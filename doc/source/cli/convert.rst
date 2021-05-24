@@ -64,7 +64,7 @@ indicated URL):
 
 .. doctest:: convert_url
 
-    >>> cli_run('sphobjinv convert plain -u https://github.com/bskinn/sphobjinv/raw/master/tests/resource/objects_attrs.inv')
+    >>> cli_run('sphobjinv convert plain -u https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     <BLANKLINE>
     Remote inventory found.
     <BLANKLINE>

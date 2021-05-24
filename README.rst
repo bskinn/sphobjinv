@@ -7,7 +7,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :alt: GitHub Workflow Status
     :target: https://github.com/bskinn/sphobjinv/actions
 
-.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
 **Most Recent Stable Release:**
@@ -148,5 +148,5 @@ and feature requests are welcomed at the
 
 Copyright (c) Brian Skinn 2016-2021
 
-License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
+License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
 for full license terms.
