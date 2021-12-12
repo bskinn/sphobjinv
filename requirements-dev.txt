@@ -3,6 +3,7 @@ certifi
 coverage
 dictdiffer
 fuzzywuzzy>=0.3
+interrogate
 jsonschema
 md-toc
 pep517

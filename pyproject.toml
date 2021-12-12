@@ -21,3 +21,8 @@ exclude = '''
   | ^/src/sphobjinv/_vendored
 )
 '''
+
+[tool.interrogate]
+exclude = ["src/sphobjinv/_vendored"]
+fail-under = 100
+verbose = 1
