@@ -49,13 +49,14 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
 
-      Name                                                     Score
-    --------------------------------------------------------  -------
-    :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :std:doc:`cli/implementation/parser`                        57
-    :py:module:`sphobjinv.cli.parser`                           50
-    :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
+      Name                                                       Score
+    ----------------------------------------------------------  -------
+    :py:property:`sphobjinv.data.SuperDataObj.as_rst`             60
+    :std:doc:`cli/implementation/parser`                          57
+    :py:module:`sphobjinv.cli.parser`                             50
+    :py:property:`sphobjinv.data.SuperDataObj.as_str`             50
+    :py:property:`sphobjinv.inventory.Inventory.objects_rst`      50
+
 
 .. end shell command
 
