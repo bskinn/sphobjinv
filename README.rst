@@ -47,16 +47,21 @@ to cross-reference into, and pass it to ``sphobjinv suggest``.
 
 For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
-    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
+    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-      Name                                                       Score
-    ----------------------------------------------------------  -------
-    :py:property:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :std:doc:`cli/implementation/parser`                          57
-    :py:module:`sphobjinv.cli.parser`                             50
-    :py:property:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:property:`sphobjinv.inventory.Inventory.objects_rst`      50
-
+      Name                                                Score
+    ---------------------------------------------------  -------
+    :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
+    :py:class:`sphobjinv.cli.parser.PrsConst`              59
+    :py:class:`sphobjinv.data.DataFields`                  59
+    :py:class:`sphobjinv.data.DataObjBytes`                59
+    :py:class:`sphobjinv.data.DataObjStr`                  59
+    :py:class:`sphobjinv.data.SuperDataObj`                59
+    :py:class:`sphobjinv.enum.HeaderFields`                59
+    :py:class:`sphobjinv.enum.SourceTypes`                 59
+    :py:function:`sphobjinv.fileops.writebytes`            59
+    :py:function:`sphobjinv.fileops.writejson`             59
+    :py:class:`sphobjinv.inventory.Inventory`              59
 
 .. end shell command
 

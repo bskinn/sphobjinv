@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 from timeit import timeit
-import utils
+from sphobjinv._vendored.fuzzywuzzy import utils
 
 iterations=100000*10
 

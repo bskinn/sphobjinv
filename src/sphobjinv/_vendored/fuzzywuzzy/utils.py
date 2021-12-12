@@ -1,15 +1,15 @@
 import string
 
-bad_chars=''
+bad_chars=b""  # B Skinn 2021-12-11
 for i in range(128,256):
-    bad_chars+=chr(i)
+    bad_chars+=chr(i).encode()  # B Skinn 2021-12-11
 table_from=string.punctuation+string.ascii_uppercase
 table_to=' '*len(string.punctuation)+string.ascii_lowercase
-trans_table=string.maketrans(table_from, table_to)
+trans_table=bytes.maketrans(table_from.encode(), table_to.encode())  # B Skinn 2021-12-11
 
 
 def asciionly(s):
-    return s.translate(None, bad_chars)
+    return s.encode().translate(None, bad_chars).decode()  # B Skinn 2021-12-11
 
 # remove non-ASCII characters from strings
 def asciidammit(s):
@@ -31,7 +31,8 @@ def validate_string(s):
 
 def full_process(s):
     s = asciidammit(s)
-    return s.translate(trans_table, bad_chars).strip()
+    # B Skinn 2021-12-11
+    return s.encode().translate(trans_table, bad_chars).decode().strip()
 
 
 

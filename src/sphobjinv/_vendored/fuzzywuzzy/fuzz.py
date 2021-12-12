@@ -29,9 +29,9 @@ import sys
 import os
 import re
 from difflib import SequenceMatcher
-import utils
+from sphobjinv._vendored.fuzzywuzzy import utils
 
-REG_TOKEN = re.compile("[\w\d]+")
+REG_TOKEN = re.compile(r"[\w\d]+")  # B Skinn 2021-12-11
 
 ###########################
 # Basic Scoring Functions #

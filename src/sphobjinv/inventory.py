@@ -525,7 +525,7 @@ class Inventory:
                 category=UserWarning,
                 module="fuzz",
             )
-            from fuzzywuzzy import process as fwp
+            from sphobjinv._vendored.fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index

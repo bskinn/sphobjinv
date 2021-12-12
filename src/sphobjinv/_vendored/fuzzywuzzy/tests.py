@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 
-from fuzz import *
-import process
-import utils
+from sphobjinv._vendored.fuzzywuzzy.fuzz import *
+from sphobjinv._vendored.fuzzywuzzy import process
+from sphobjinv._vendored.fuzzywuzzy import utils
 
 import itertools
 import unittest
