@@ -18,5 +18,6 @@ exclude = '''
   | ^/[.]
   | ^/doc
   | ^/env
+  | ^/src/sphobjinv/_vendored
 )
 '''
