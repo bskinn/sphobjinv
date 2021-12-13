@@ -9,9 +9,28 @@ and this project strives to adhere to
 
 ### [unreleased]
 
+#### Removed
+
+  * Acceleration of the `suggest` functionality via use of `python-Levenshtein`
+    is no longer possible due to the vendoring of an early, MIT-licensed version
+    of `fuzzywuzzy`, as noted below. The `speedup` install extra is now obsolete,
+    and has been removed.
+
+#### Internal
+
+  * The `fuzzywuzzy` string matcher was vendored into the project from a point
+    in its development history before the `python-Levenshtein` dependency,
+    and its corresponding GPL encumbrance, was introduced.
+
 #### Administrative
 
   * Project default branch migrated to `main` from `master`.
+
+  * Standard development Python version bumped to 3.10.
+
+  * Standard development Sphinx version bumped to 4.3.1.
+
+  * Active support for Python 3.11 added.
 
 
 ### [2.1] - 2021-04-14
