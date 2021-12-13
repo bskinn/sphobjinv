@@ -3,7 +3,6 @@ certifi
 codecov
 coverage
 dictdiffer
-fuzzywuzzy>=0.3
 jsonschema
 md-toc
 pytest>=4.4.0
