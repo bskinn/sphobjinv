@@ -21,7 +21,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install -U tox
       displayName: Install tox
@@ -43,7 +43,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install interrogate
       displayName: Install interrogate
@@ -67,6 +67,8 @@ stages:
           spec: '3.8'
         py39:
           spec: '3.9'
+        py310:
+          spec: '3.10'
         pypy3:
           spec: 'pypy3'
       platforms: [linux, windows, macOs]
@@ -85,7 +87,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install project, plus docs requirements
@@ -103,7 +105,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
@@ -120,7 +122,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install doc requirements and local project
@@ -138,7 +140,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
@@ -161,7 +163,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
@@ -181,7 +183,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.9'
+        versionSpec: '3.10'
 
     - script: pip install tox flake8-noqa -r requirements-flake8.txt
       displayName: Install requirements
