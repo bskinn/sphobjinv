@@ -43,7 +43,7 @@ in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
 I prefer to use `virtualenv` and create in `./env`:
 
 ```
-$ python3.9 -m virtualenv env --prompt="(sphobjinv) "
+$ python3.10 -m virtualenv env --prompt="(sphobjinv) "
 ```
 
 Activate the environment:
@@ -138,7 +138,7 @@ configured for the project, it is **not** set up to be an everyday test runner.
 Instead, it's used to execute a matrix of test environments
 checking for the compatibility of different Python and  dependency
 versions. You can run it if you want, but you'll need
-working versions of all of Python 3.6 through 3.10
+working versions of all of Python 3.6 through 3.11
 installed and on `PATH` as `python3.6`, `python3.7`, etc.
 The nonlocal test suite is run for each `tox` environment, so
 it's best to use at most two parallel sub-processes to avoid oversaturating
@@ -239,7 +239,7 @@ and the link validity checker with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project,
 and should run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.6 through 3.9,
+Github Actions runs the test suite on Linux for Python 3.6 through 3.10,
 as well as the `flake8` lints and the Sphinx doctests and link-validity testing,
 and is configured to run on all commits. The workflow can be skipped
 per-commit by including `[skip ci]` in the commit message.

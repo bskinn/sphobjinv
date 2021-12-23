@@ -28,7 +28,6 @@ Sphinx |objects.inv| files.
 import re
 import ssl
 import urllib.request as urlrq
-import warnings
 from zlib import error as zlib_error
 
 import attr
@@ -517,15 +516,7 @@ class Inventory:
             |cour|\ (as_rst, score, index)\ |/cour|
 
         """
-        # Suppress any UserWarning about the speed issue
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                action="ignore",
-                message="Using slow.+levenshtein",
-                category=UserWarning,
-                module="fuzz",
-            )
-            from fuzzywuzzy import process as fwp
+        from sphobjinv._vendored.fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index

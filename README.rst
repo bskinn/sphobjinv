@@ -47,15 +47,21 @@ to cross-reference into, and pass it to ``sphobjinv suggest``.
 
 For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
-    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
+    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-      Name                                                     Score
-    --------------------------------------------------------  -------
-    :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :std:doc:`cli/implementation/parser`                        57
-    :py:module:`sphobjinv.cli.parser`                           50
-    :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
+      Name                                                Score
+    ---------------------------------------------------  -------
+    :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
+    :py:class:`sphobjinv.cli.parser.PrsConst`              59
+    :py:class:`sphobjinv.data.DataFields`                  59
+    :py:class:`sphobjinv.data.DataObjBytes`                59
+    :py:class:`sphobjinv.data.DataObjStr`                  59
+    :py:class:`sphobjinv.data.SuperDataObj`                59
+    :py:class:`sphobjinv.enum.HeaderFields`                59
+    :py:class:`sphobjinv.enum.SourceTypes`                 59
+    :py:function:`sphobjinv.fileops.writebytes`            59
+    :py:function:`sphobjinv.fileops.writejson`             59
+    :py:class:`sphobjinv.inventory.Inventory`              59
 
 .. end shell command
 
@@ -120,11 +126,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1, 205 objects>
+    <Inventory (fname_zlib): sphobjinv v2.2b1, 205 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.1'
+    '2.2b1'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
 

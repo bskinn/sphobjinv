@@ -1,13 +1,15 @@
-r"""``sphobjinv`` *version definition module*.
+r"""``sphobjinv._vendored`` *package definition module*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
+
+Subpackage marker module for vendored packages.
 
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
 **File Created**
-    18 Mar 2019
+    11 Dec 2021
 
 **Copyright**
     \(c) Brian Skinn 2016-2021
@@ -24,5 +26,3 @@ Sphinx |objects.inv| files.
 **Members**
 
 """
-
-__version__ = "2.2b1.dev0"
