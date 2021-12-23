@@ -1,4 +1,4 @@
-attrs>=17.4
+attrs>=19.2
 sphinx==4.3.1
 sphinx-issues
 sphinx-rtd-theme

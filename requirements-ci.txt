@@ -1,4 +1,4 @@
-attrs>=17.4
+attrs>=19.2
 certifi
 codecov
 coverage
