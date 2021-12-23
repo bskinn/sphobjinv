@@ -71,7 +71,20 @@ stages:
           spec: '3.10'
         pypy3:
           spec: 'pypy3'
-      platforms: [linux, windows, macOs]
+      platforms: [linux, windows]
+
+  - template: azure-coretest.yml
+    parameters:
+      pythons:
+        py37:
+          spec: '3.7'
+        py38:
+          spec: '3.8'
+        py39:
+          spec: '3.9'
+        py310:
+          spec: '3.10'
+      platforms: [macOs]
 
 
 - stage: aux_tests
