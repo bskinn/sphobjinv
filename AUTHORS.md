@@ -11,11 +11,11 @@ hadn't yet been documented (that happened in [2018](https://github.com/sphinx-do
 and a fair bit of searching didn't turn up anything promising. 
 
 Once I dug into the Sphinx code to figure out how to zlib-decompress the object data, it was relatively straightforward
-to put together the initial v1.0 of `sphobjinv`, which could only (de)compress objects.inv files to/from plaintext.
+to put together the initial v1.0 of `sphobjinv`, which could only (de)compress `objects.inv` files to/from plaintext.
 As I started to use it regularly in my own documentation work, it became clear that there would be significant advantages
 from also implementing functionality to assist with object searches, especially in large documentation sets.
 Also, it seemed likely that a robust API for creation/manipulation of inventory contents would be useful, in order to
-assist with things like scraping a non-Sphinx website to generate an objects.inv for cross-referencing in other docs.
+assist with things like scraping a non-Sphinx website to generate an `objects.inv` for cross-referencing in other docs.
 This led to the current object-oriented API of `sphobjinv` v2.x.
 
 While there are [numerous](https://github.com/bskinn/sphobjinv/issues) possible enhancements to the project,

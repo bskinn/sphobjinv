@@ -90,4 +90,3 @@ jobs:
       run: |
         pytest --cov=src --testall --nonloc
         tox -e sdist_install
-      
