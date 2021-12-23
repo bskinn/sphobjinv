@@ -7,7 +7,7 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-### [unreleased]
+### [2.2b1] - *pending*
 
 #### Removed
 
