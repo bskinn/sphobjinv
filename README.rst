@@ -22,6 +22,10 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
     :target: http://sphobjinv.readthedocs.io/en/latest/
 
+.. image:: https://badges.gitter.im/sphobjinv/community.svg
+   :alt: Join the chat at https://gitter.im/sphobjinv/community
+   :target: https://gitter.im/sphobjinv/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
 
