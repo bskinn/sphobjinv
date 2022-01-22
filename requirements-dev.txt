@@ -1,7 +1,9 @@
-attrs>=17.4
+attrs>=19.2
+build
 certifi
 coverage
-fuzzywuzzy>=0.3
+dictdiffer
+interrogate
 jsonschema
 md-toc
 pep517
@@ -12,7 +14,7 @@ pytest-ordering
 pytest-timeout
 restview
 rope
-sphinx==3.3.1
+sphinx==4.3.1
 sphinx-autobuild
 sphinx-issues
 sphinxcontrib-programoutput

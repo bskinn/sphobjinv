@@ -29,7 +29,7 @@ via :option:`--thresh`:
 Remote |objects.inv| files can be retrieved for inspection by passing the
 :option:`--url` flag:
 
-.. command-output:: sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/master/tests/resource/objects_attrs.inv instance -u -t 48
+.. command-output:: sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv instance -u -t 48
    :cwd: /../../tests/resource
 
 The URL provided **MUST** have the leading protocol specified (here,

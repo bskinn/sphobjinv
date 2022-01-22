@@ -28,7 +28,6 @@ Sphinx |objects.inv| files.
 import re
 import ssl
 import urllib.request as urlrq
-import warnings
 from zlib import error as zlib_error
 
 import attr
@@ -46,7 +45,7 @@ from sphobjinv.zlib import decompress
 
 
 @attr.s(slots=True, eq=True, order=False)
-class Inventory(object):
+class Inventory:
     r"""Entire contents of an |objects.inv| inventory.
 
     All information is stored internally as |str|,
@@ -114,11 +113,19 @@ class Inventory(object):
         Object is the |str| or |Path| path to a file containing
         the plaintext contents of an |objects.inv| inventory.
 
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
+
     `fname_zlib`
 
         Object is the |str| or |Path| path to a file containing
         the zlib-compressed contents of an
         |objects.inv| inventory.
+
+        .. versionchanged:: 2.1
+
+            Previously, this argument could only be a |str|.
 
     `dict_json`
 
@@ -509,15 +516,7 @@ class Inventory(object):
             |cour|\ (as_rst, score, index)\ |/cour|
 
         """
-        # Suppress any UserWarning about the speed issue
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                action="ignore",
-                message="Using slow.+levenshtein",
-                category=UserWarning,
-                module="fuzz",
-            )
-            from fuzzywuzzy import process as fwp
+        from sphobjinv._vendored.fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index

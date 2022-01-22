@@ -71,12 +71,6 @@ modindex_common_prefix = ["sphobjinv."]
 
 rst_epilog = r"""
 
-.. raw:: html
-
-    <small><em>Logo adapted from freely-available image at
-    https://heypik.com/images/hand-drawn-cartoon-color-tourist-attraction-sphinx_8ZU4501.html
-    (retrieved July 2019; now defunct).</em></small>
-
 .. |extlink| image:: /_static/extlink.svg
 
 .. |dag| replace:: :math:`^\dagger`
@@ -125,7 +119,7 @@ rst_epilog = r"""
 
 .. |license_txt| replace:: LICENSE.txt
 
-.. _license_txt: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 

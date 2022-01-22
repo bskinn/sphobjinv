@@ -1,11 +1,10 @@
 [run]
 omit =
-    # Don't do coverage on test code
-    sphobjinv/test/*
-    tests.py
-
-    # Don't cover code in the env (Termux only?)
+    # Don't cover code in the env (just in case)
     env/*
+
+    # Don't worry about covering vendored libraries
+    src/sphobjinv/_vendored/*
 
 [report]
 exclude_lines =

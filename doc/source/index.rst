@@ -51,7 +51,7 @@ including:
 
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
-  * Gentoo GURU: ``dev-python/sphobjinv`` (`info <https://gpo.zugaina.org/Overlays/guru/dev-python/sphobjinv>`__)
+  * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
 
   * Manjaro: ``python-sphobjinv``
 
@@ -100,3 +100,9 @@ Indices and Tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+.. raw:: html
+
+   <small><em>Logo adapted from freely-available image at
+   https://heypik.com/images/hand-drawn-cartoon-color-tourist-attraction-sphinx_8ZU4501.html
+   (retrieved July 2019; now defunct).</em></small>
