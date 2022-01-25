@@ -42,8 +42,8 @@ Install |soi| via |cour|\ pip\ |/cour|::
     $ pip install sphobjinv
 
 Alternatively, |soi| is packaged with
-`multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__,
-including:
+`multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__
+and package managers, including:
 
   * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
 
@@ -52,6 +52,8 @@ including:
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
   * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
+
+  * Guix: ``python-sphobjinv`` (`info <https://guix.gnu.org/en/packages/python-sphobjinv-2.0.1/>`__)
 
   * Manjaro: ``python-sphobjinv``
 
@@ -63,8 +65,10 @@ including:
 
   * pkgsrc: ``textproc/py-sphobjinv`` (`info <https://pkgsrc.se/textproc/py-sphobjinv>`__)
 
+  * spack: ``py-sphobjinv`` (`info <https://spack.readthedocs.io/en/latest/package_list.html#py-sphobjinv>`__)
 
-The package is configured for use both as a
+
+|soi| is configured for use both as a
 :doc:`command-line script <cli/index>` and as a
 :doc:`Python package <api_usage>`.
 
@@ -77,8 +81,6 @@ The project source repository is on GitHub: `bskinn/sphobjinv
 <https://github.com/bskinn/sphobjinv>`__.
 
 
-.. Contents
-.. --------
 
 .. toctree::
    :maxdepth: 1

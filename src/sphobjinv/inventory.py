@@ -451,7 +451,7 @@ class Inventory:
         r"""Suggest objects in the inventory to match a name.
 
         :meth:`~Inventory.suggest` makes use of
-        the powerful pattern-matching library |fuzzywuzzy|_
+        the edit-distance scoring library |fuzzywuzzy|_
         to identify potential matches to the given `name`
         within the inventory.
         The search is performed over the |list| of |str|
