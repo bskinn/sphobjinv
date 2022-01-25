@@ -68,8 +68,9 @@ The package is configured for use both as a
 :doc:`command-line script <cli/index>` and as a
 :doc:`Python package <api_usage>`.
 
-Installing the optional dependency |python-Levenshtein|_ substantially
-accelerates the the "suggest" functionality; see
+The optional dependency |python-Levenshtein|_ for accelerating
+the "suggest" functionality is no longer available due to a
+licensing conflict, and has been deprecated. See
 :doc:`here <levenshtein>` for more information.
 
 The project source repository is on GitHub: `bskinn/sphobjinv
