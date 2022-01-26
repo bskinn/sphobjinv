@@ -7,6 +7,19 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.2] - *(pending)*
+
+#### Administrative
+
+  * The project documentation has been updated to reflect the deprecation
+    of the `python-Levenshtein` speedup.
+
+#### Internal
+
+  * `sphinx-removed-in` was added as a dev and RTD dependency, to provide
+    the `versionremoved` Sphinx directive.
+
+
 ### [2.2b1] - 2021-12-23
 
 #### Removed

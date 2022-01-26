@@ -14,7 +14,7 @@ https://github.com/seatgeek/fuzzywuzzy/tree/4bf28161f7005f3aa9d4d931455ac5512691
 Imports and code details were changed as required to make the code compatible
 with current (2021) versions of Python 3.
 
-Link to MIT-licensed fuzzywuzzy version from the bottom of the README at:
+Link to MIT-licensed fuzzywuzzy version obtained from the bottom of the README at:
 https://github.com/maxbachmann/RapidFuzz/tree/460d291a38922c7fead920de8147798b817653cb
 
 

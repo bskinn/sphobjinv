@@ -40,6 +40,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinxcontrib.programoutput",
     "sphinx_issues",
+    "sphinx_removed_in",
 ]
 
 # napoleon configuration

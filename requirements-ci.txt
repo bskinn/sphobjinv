@@ -12,6 +12,7 @@ pytest-ordering
 pytest-timeout
 sphinx==4.3.1
 sphinx-issues
+sphinx-removed-in
 sphinx-rtd-theme
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1

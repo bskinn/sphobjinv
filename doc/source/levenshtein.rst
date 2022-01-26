@@ -1,44 +1,31 @@
 .. Info on speedups from python-Levenshtein
 
-Speeding up "suggest" with python-Levenshtein
-=============================================
+Speeding up "suggest" with python-Levenshtein (DEPRECATED)
+==========================================================
 
 |soi| uses |fuzzywuzzy|_ for fuzzy-match searching of object
 names/domains/roles as part of the
 :meth:`Inventory.suggest() <sphobjinv.inventory.Inventory.suggest>` functionality,
 also implemented as the CLI :doc:`suggest <cli/suggest>` subcommand.
 
-By default, |fuzzywuzzy|_ uses :class:`difflib.SequenceMatcher`
+|fuzzywuzzy|_ uses :class:`difflib.SequenceMatcher`
 from the Python standard library for its fuzzy searching.
-However, it also can use |python-Levenshtein|_,
-a Python C extension providing
-similar functionality. Thus, |soi| has been implemented with
-|python-Levenshtein|_ as an *optional* dependency: it will be
-used if it is available.
+While earlier versions of |soi| were able to make use of
+|fuzzywuzzy|_\ 's optional link to |python-Levenshtein|_,
+a Python C extension providing similar functionality,
+due to a licensing conflict this is no longer possible.
+|soi| now uses a vendored copy of |fuzzywuzzy|_ from an
+era when it was released under the MIT License.
 
+Formally:
 
-Installation
-------------
+.. versionremoved:: 2.2
 
-On Linux and MacOS, installing |soi| with the ``speedup`` extra
-should work properly to install |python-Levenshtein|_
-in the vast majority of cases::
+    Acceleration of the |soi| "suggest" mode via |python-Levenshtein|_
+    has been deprecated and is no longer available. 
 
-    $ pip install sphobjinv[speedup]
-
-If you need to work with a version of |soi| prior to v2.1,
-the ``speedup`` extra is not available and direct installation
-is required::
-
-    $ pip install sphobjinv==2.0.1 python-Levenshtein
-
-On Windows, as of this writing
-`no binary wheel is available on PyPI <https://pypi.org/project/python-Levenshtein/0.12.0/#files>`__.
-So, the easiest way to install is to download a wheel from
-`Christoph Gohlke's repository <https://www.lfd.uci.edu/~gohlke/pythonlibs/#python-levenshtein>`__
-and run `pip install C:\\path\\to\\wheel`.
-Just make sure to match Python version and CPU type (win32 vs win_amd64)
-when you download.
+The discussion of performance benchmarks and variations in matching
+behavior is kept below for historical interest.
 
 
 Performance Benchmark
@@ -47,8 +34,7 @@ Performance Benchmark
 The chart below presents one dataset illustrating the performance enhancement
 that can be obtained by installing |python-Levenshtein|_.
 The timings plotted here are from execution of 
-:func:`timeit.repeat` in the
-Python standard library around a 
+:func:`timeit.repeat` around a 
 :meth:`~sphobjinv.inventory.Inventory.suggest` call,
 searching for the term "function", for a number of
 |objects.inv| files from different projects (see
