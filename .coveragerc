@@ -1,8 +1,8 @@
 [run]
-omit =
-    # Don't cover code in the env (just in case)
-    env/*
+source =
+    src
 
+omit =
     # Don't worry about covering vendored libraries
     src/sphobjinv/_vendored/*
 
@@ -10,3 +10,5 @@ omit =
 exclude_lines =
     pragma: no cover
     ^\s*pass\s*$
+
+show_missing = True
