@@ -1,4 +1,4 @@
-r"""Module for ``sphobjinv`` *CLI |Inventory| writing*.
+r"""*Module for* ``sphobjinv`` *CLI* |Inventory| *writing*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.

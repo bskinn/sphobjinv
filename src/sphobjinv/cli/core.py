@@ -89,7 +89,7 @@ def do_suggest(inv, params):
     all of the returned results
     unless |cli:ALL| is specified.
 
-    No |cour|\ -\\-quiet\ |/cour| option is available here, since
+    No |cli:QUIET| option is available here, since
     a silent mode for suggestion output is nonsensical.
 
     Parameters

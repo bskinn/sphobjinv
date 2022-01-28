@@ -187,7 +187,7 @@ def getparser():
     prs
 
         :class:`~argparse.ArgumentParser` -- Parser for commandline usage
-        of ``sphobjinv``
+        of |soi|
 
     """
     prs = ap.ArgumentParser(
