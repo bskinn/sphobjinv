@@ -32,6 +32,9 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
+.. image:: https://pepy.tech/badge/sphobjinv/month
+    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
+
 ----
 
 **Using Sphinx?**
