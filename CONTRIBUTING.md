@@ -65,6 +65,12 @@ The next step is to upgrade/install the development requirements:
 (sphobjinv) $ pip install -r requirements-dev.txt
 ```
 
+Then, install the pre-commit hooks:
+
+```
+(sphobjinv) $ pre-commit install
+```
+
 Finally, you'll need to build the Sphinx docs,
 as some of the tests interact with them:
 
@@ -164,7 +170,7 @@ To run the lints locally, it's easiest to use `tox`:
 $ tox -e flake8
 ```
 
-In some limited circumstances, it may be necessary to add 
+In some limited circumstances, it may be necessary to add
 [`# noqa`](https://flake8.pycqa.org/en/stable/user/violations.html#in-line-ignoring-errors)
 or [`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
 exclusions to the `flake8` lints.
@@ -283,4 +289,3 @@ you want to create, though, then don't use them.
 ## License
 
 All contributions will take on the MIT License of the project at large.
-

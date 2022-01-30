@@ -14,6 +14,12 @@ and this project strives to adhere to
   * The project documentation has been updated to reflect the deprecation
     of the `python-Levenshtein` speedup.
 
+  * `pre-commit` has been added to the project, primarily to automate
+    `black` code formatting on every commit.
+
+    * The default trailing-whitespace, end-of-file, YAML syntax, and
+      large-file-prevention hooks have also been added.
+
 #### Internal
 
   * `sphinx-removed-in` was added as a dev and RTD dependency, to provide
@@ -285,4 +291,3 @@ and this project strives to adhere to
  * Programmatic conversion via API is available, but
    potentially buggy due to poor segregation of cmdline
    behaviors. This is to be fixed.
-
