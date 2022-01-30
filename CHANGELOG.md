@@ -7,7 +7,7 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-### [2.2] - *(pending)*
+### [2.2] - 2022-01-29
 
 #### Administrative
 
