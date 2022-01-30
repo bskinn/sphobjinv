@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     15 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -89,7 +89,7 @@ def do_suggest(inv, params):
     all of the returned results
     unless |cli:ALL| is specified.
 
-    No |cour|\ -\\-quiet\ |/cour| option is available here, since
+    No |cli:QUIET| option is available here, since
     a silent mode for suggestion output is nonsensical.
 
     Parameters

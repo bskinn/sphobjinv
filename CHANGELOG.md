@@ -7,6 +7,51 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.2] - 2022-01-30
+
+#### Administrative
+
+  * The project documentation has been updated to reflect the deprecation
+    of the `python-Levenshtein` speedup.
+
+  * `pre-commit` has been added to the project, primarily to automate
+    `black` code formatting on every commit.
+
+    * The default trailing-whitespace, end-of-file, YAML syntax, and
+      large-file-prevention hooks have also been added.
+
+#### Internal
+
+  * `sphinx-removed-in` was added as a dev and RTD dependency, to provide
+    the `versionremoved` Sphinx directive.
+
+
+### [2.2b1] - 2021-12-23
+
+#### Removed
+
+  * Acceleration of the `suggest` functionality via use of `python-Levenshtein`
+    is no longer possible due to the vendoring of an early, MIT-licensed version
+    of `fuzzywuzzy`, as noted below. The `speedup` install extra is now obsolete,
+    and has been removed.
+
+#### Internal
+
+  * The `fuzzywuzzy` string matcher was vendored into the project from a point
+    in its development history before the `python-Levenshtein` dependency,
+    and its corresponding GPL encumbrance, was introduced.
+
+#### Administrative
+
+  * Project default branch migrated to `main` from `master`.
+
+  * Standard development Python version bumped to 3.10.
+
+  * Standard development Sphinx version bumped to 4.3.1.
+
+  * Active support for Python 3.11 added.
+
+
 ### [2.1] - 2021-04-14
 
 #### Added
@@ -246,4 +291,3 @@ and this project strives to adhere to
  * Programmatic conversion via API is available, but
    potentially buggy due to poor segregation of cmdline
    behaviors. This is to be fixed.
-

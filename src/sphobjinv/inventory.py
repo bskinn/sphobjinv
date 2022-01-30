@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     7 Dec 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -28,7 +28,6 @@ Sphinx |objects.inv| files.
 import re
 import ssl
 import urllib.request as urlrq
-import warnings
 from zlib import error as zlib_error
 
 import attr
@@ -452,7 +451,7 @@ class Inventory:
         r"""Suggest objects in the inventory to match a name.
 
         :meth:`~Inventory.suggest` makes use of
-        the powerful pattern-matching library |fuzzywuzzy|_
+        the edit-distance scoring library |fuzzywuzzy|_
         to identify potential matches to the given `name`
         within the inventory.
         The search is performed over the |list| of |str|
@@ -517,15 +516,7 @@ class Inventory:
             |cour|\ (as_rst, score, index)\ |/cour|
 
         """
-        # Suppress any UserWarning about the speed issue
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                action="ignore",
-                message="Using slow.+levenshtein",
-                category=UserWarning,
-                module="fuzz",
-            )
-            from fuzzywuzzy import process as fwp
+        from sphobjinv._vendored.fuzzywuzzy import process as fwp
 
         # Must propagate list index to include in output
         # Search vals are rst prepended with list index

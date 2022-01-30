@@ -6,7 +6,7 @@ Sphinx objects.inv v2 Syntax
 After decompression, "version 2" Sphinx |objects.inv| files
 follow a syntax that, to the best of this author's ability to determine,
 is not included in the Sphinx documentation. The below
-syntax is believed to be accurate as of Feb 2021 (Sphinx v3.4.3).
+syntax is believed to be accurate as of Jan 2022 (Sphinx v4.4.0).
 
 Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be valid for all
@@ -22,7 +22,7 @@ of an |objects.inv| data line.
 ----
 
 **The first line** `must be exactly
-<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L105-L106>`__:
+<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L89-L90>`__:
 
 .. code-block:: none
 
@@ -31,7 +31,7 @@ of an |objects.inv| data line.
 ----
 
 **The second and third lines** `must obey
-<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L133-L134>`__
+<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L115-L116>`__
 the template:
 
 .. code-block:: none
@@ -51,7 +51,7 @@ the |isphx| cross-references:
 ----
 
 **The fourth line** `must contain
-<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L136-L137>`__
+<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L118-L119>`__
 the string ``zlib`` somewhere within it, but for consistency it should be exactly:
 
 .. code-block:: none
@@ -62,7 +62,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L188-L190>`__:
+<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L173-L175>`__:
 
 .. code-block:: none
 
@@ -124,11 +124,10 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 ``{priority}``
     Flag for `placement in search results
-    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/domains/
-    __init__.py#L319-L325>`__. Most will be ``1`` (standard priority) or
+    <https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/domains/__init__.py#L375-L386>`__. Most will be ``1`` (standard priority) or
     ``-1`` (omit from results) for documentation built by Sphinx.
 
-    To note, as of Feb 2021 this value is **not** used by ``intersphinx``;
+    To note, as of Jan 2022 this value is **not** used by ``intersphinx``;
     it is only used internally within the search function of the static webpages
     built *by Sphinx* (|prio_py_search|_ and |prio_js_search|_). Thus, custom
     inventories likely **MAY** use this field for arbitrary content, if desired,
@@ -216,12 +215,13 @@ size of the inventory file:
     <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L186-L187>`__
     as ``-``.
 
-Thus, a standard |isphx| reference to this method would take the form (the leading
-``:py`` could be omitted if ``py`` is the default domain):
+Thus, a standard |isphx| reference to this method would take the form:
 
 .. code-block:: none
 
     :py:meth:`str.join`
+
+The leading ``:py`` here could be omitted if ``py`` is the default domain.
 
 The cross-reference would show as :meth:`str.join` and link to the relative URI:
 

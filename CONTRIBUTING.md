@@ -43,7 +43,7 @@ in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
 I prefer to use `virtualenv` and create in `./env`:
 
 ```
-$ python3.9 -m virtualenv env --prompt="(sphobjinv) "
+$ python3.10 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
@@ -61,6 +61,12 @@ The next step is to upgrade/install the development requirements:
 ```
 (sphobjinv) $ python -m pip install -U pip setuptools wheel
 (sphobjinv) $ pip install -r requirements-dev.txt
+```
+
+Then, install the pre-commit hooks:
+
+```
+(sphobjinv) $ pre-commit install
 ```
 
 Finally, you'll need to build the Sphinx docs,
@@ -84,21 +90,21 @@ $ git checkout -b description-of-change
 ```
 
 This makes it a lot simpler to get your repo fork up to date
-after `master` receives further commits.
+after `main` receives further commits.
 
-To bring your fork's `master` up to date, you first need to
+To bring your fork's `main` up to date, you first need to
 add the main repo as a new git remote (one-time task):
 
 ```
 $ git remote add upstream https://github.com/bskinn/sphobjinv
 ```
 
-Then, any time you need to refresh the fork's master:
+Then, any time you need to refresh the fork's `main`:
 
 ```
 $ git fetch --all
-$ git checkout master
-$ git merge upstream/master  # (should merge without incident)
+$ git checkout main
+$ git merge upstream/main  # (should merge without incident)
 $ git push  # (should push to your fork without incident)
 ```
 
@@ -128,6 +134,9 @@ please go beyond this and add tests that check potential edge cases,
 bad/malformed/invalid inputs, etc. For bugfixes, add one or more
 focused regression tests that cover the bug behavior being fixed.
 
+PRs that add [xfail tests for existing bugs](https://blog.ganssle.io/articles/2021/11/pytest-xfail.html)
+are also welcomed.
+
 There are some situations where it may make sense to use a
 `# pragma: no cover` to ignore coverage on certain line(s) of code.
 Please start a discussion in the issue or PR comments before
@@ -138,7 +147,7 @@ configured for the project, it is **not** set up to be an everyday test runner.
 Instead, it's used to execute a matrix of test environments
 checking for the compatibility of different Python and  dependency
 versions. You can run it if you want, but you'll need
-working versions of all of Python 3.6 through 3.10
+working versions of all of Python 3.6 through 3.11
 installed and on `PATH` as `python3.6`, `python3.7`, etc.
 The nonlocal test suite is run for each `tox` environment, so
 it's best to use at most two parallel sub-processes to avoid oversaturating
@@ -159,7 +168,7 @@ To run the lints locally, it's easiest to use `tox`:
 $ tox -e flake8
 ```
 
-In some limited circumstances, it may be necessary to add 
+In some limited circumstances, it may be necessary to add
 [`# noqa`](https://flake8.pycqa.org/en/stable/user/violations.html#in-line-ignoring-errors)
 or [`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
 exclusions to the `flake8` lints.
@@ -239,7 +248,7 @@ and the link validity checker with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project,
 and should run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.6 through 3.9,
+Github Actions runs the test suite on Linux for Python 3.6 through 3.10,
 as well as the `flake8` lints and the Sphinx doctests and link-validity testing,
 and is configured to run on all commits. The workflow can be skipped
 per-commit by including `[skip ci]` in the commit message.
@@ -247,12 +256,12 @@ per-commit by including `[skip ci]` in the commit message.
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
 cross-Python-version tests, as well as numerous other checks.
 Due to its length, it is configured to run only on release branches
-and PRs to `master` or `stable`. It cannot be skipped.
+and PRs to `main` or `stable`. It cannot be skipped.
 
 
 ## CHANGELOG
 
-The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/master/CHANGELOG.md)
+The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md)
 should be updated for the majority of contributions. No tooling is in place
 (e.g., [`towncrier`](https://github.com/twisted/towncrier)) for automated collation
 of news items into `CHANGELOG`;
@@ -278,4 +287,3 @@ you want to create, though, then don't use them.
 ## License
 
 All contributions will take on the MIT License of the project at large.
-

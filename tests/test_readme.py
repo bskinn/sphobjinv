@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     6 Aug 2018
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -26,6 +26,7 @@ Sphinx |objects.inv| files.
 """
 
 import doctest as dt
+import platform
 import re
 import shlex
 import subprocess as sp  # noqa: S404
@@ -55,6 +56,10 @@ p_shell = re.compile(
 @pytest.mark.skipif(
     sphinx_ver != sphinx_req,
     reason="Skip if Sphinx version mismatches current dev version.",
+)
+@pytest.mark.skipif(
+    "pypy" in platform.python_implementation().lower(),
+    reason="Inconsistent suggest results on PyPy",
 )
 def test_readme_shell_cmds(ensure_doc_scratch, check):
     """Perform testing on README shell command examples."""

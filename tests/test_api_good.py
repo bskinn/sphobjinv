@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -28,7 +28,6 @@ Sphinx |objects.inv| files.
 import copy
 import itertools as itt
 import re
-import warnings
 from numbers import Number
 
 import dictdiffer
@@ -581,41 +580,3 @@ class TestInventory:
 
         # Should not raise an exception; assert is to emphasize this is the check
         assert soi.Inventory(inv.json_dict())
-
-
-class TestWarnings:
-    """Tests for warnings emitted by dependencies."""
-
-    # The python-Levenshtein warning is only emitted the first time
-    # fuzzywuzzy.process is imported in a given pytest session.
-    # Thus, this test *MUST* be run first, in order for the warning
-    # to be detected in the test.
-    @pytest.mark.first
-    def test_api_fuzzywuzzy_warningcheck(self, misc_info):
-        """Confirm only the Levenshtein warning is raised, if any are."""
-        if misc_info.IN_PYPY:
-            pytest.skip("Don't test warnings in PyPy")  # pragma: no cover
-
-        with warnings.catch_warnings(record=True) as wc:
-            warnings.simplefilter("always")
-            from fuzzywuzzy import process  # noqa: F401
-
-        # Try to import, and adjust tests accordingly
-        try:
-            import Levenshtein  # noqa: F401
-        except ImportError:
-            lev_present = False
-        else:
-            # Standard testing setup is WITHOUT python-Levenshtein
-            lev_present = True  # pragma: no cover
-
-        if lev_present:
-            assert len(wc) == 0, "Warning unexpectedly raised"  # pragma: no cover
-        else:
-            assert len(wc) == 1, "Warning unexpectedly not raised"
-
-            # 'message' will be a Warning instance, thus 'args[0]'
-            # to retrieve the warning message as str.
-            assert (
-                "levenshtein" in wc[0].message.args[0].lower()
-            ), "Warning raised for unexpected reason"

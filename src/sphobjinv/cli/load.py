@@ -1,4 +1,4 @@
-r"""Module for ``sphobjinv`` *CLI |Inventory| loading*.
+r"""*Module for* ``sphobjinv`` *CLI* |Inventory| *loading*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     17 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv

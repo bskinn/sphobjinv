@@ -1,13 +1,15 @@
-r"""*Custom errors for* ``sphobjinv``.
+r"""``sphobjinv._vendored`` *package definition module*.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
+
+Subpackage marker module for vendored packages.
 
 **Author**
     Brian Skinn (bskinn@alum.mit.edu)
 
 **File Created**
-    5 Nov 2017
+    11 Dec 2021
 
 **Copyright**
     \(c) Brian Skinn 2016-2022
@@ -24,16 +26,3 @@ Sphinx |objects.inv| files.
 **Members**
 
 """
-
-
-class SphobjinvError(Exception):
-    """Custom ``sphobjinv`` error superclass."""
-
-
-class VersionError(SphobjinvError):
-    """Raised when attempting an operation on an unsupported version.
-
-    The current version of ``sphobjinv`` only supports 'version 2'
-    |objects.inv| files (see :doc:`here </syntax>`).
-
-    """

@@ -7,7 +7,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :alt: GitHub Workflow Status
     :target: https://github.com/bskinn/sphobjinv/actions
 
-.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/sphobjinv
 
 **Most Recent Stable Release:**
@@ -22,11 +22,18 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
     :target: http://sphobjinv.readthedocs.io/en/latest/
 
+.. image:: https://badges.gitter.im/sphobjinv/community.svg
+   :alt: Join the chat at https://gitter.im/sphobjinv/community
+   :target: https://gitter.im/sphobjinv/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
     :target: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+
+.. image:: https://pepy.tech/badge/sphobjinv/month
+    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
 
 ----
 
@@ -47,15 +54,21 @@ to cross-reference into, and pass it to ``sphobjinv suggest``.
 
 For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
-    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 50
+    $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-      Name                                                     Score
-    --------------------------------------------------------  -------
-    :py:method:`sphobjinv.data.SuperDataObj.as_rst`             60
-    :std:doc:`cli/implementation/parser`                        57
-    :py:module:`sphobjinv.cli.parser`                           50
-    :py:method:`sphobjinv.data.SuperDataObj.as_str`             50
-    :py:method:`sphobjinv.inventory.Inventory.objects_rst`      50
+      Name                                                Score
+    ---------------------------------------------------  -------
+    :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
+    :py:class:`sphobjinv.cli.parser.PrsConst`              59
+    :py:class:`sphobjinv.data.DataFields`                  59
+    :py:class:`sphobjinv.data.DataObjBytes`                59
+    :py:class:`sphobjinv.data.DataObjStr`                  59
+    :py:class:`sphobjinv.data.SuperDataObj`                59
+    :py:class:`sphobjinv.enum.HeaderFields`                59
+    :py:class:`sphobjinv.enum.SourceTypes`                 59
+    :py:function:`sphobjinv.fileops.writebytes`            59
+    :py:function:`sphobjinv.fileops.writejson`             59
+    :py:class:`sphobjinv.inventory.Inventory`              59
 
 .. end shell command
 
@@ -120,11 +133,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.1, 205 objects>
+    <Inventory (fname_zlib): sphobjinv v2.2, 205 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.1'
+    '2.2'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
 
@@ -146,7 +159,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2021
+Copyright (c) Brian Skinn 2016-2022
 
-License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt>`__
+License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
 for full license terms.

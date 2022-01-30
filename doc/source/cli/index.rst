@@ -15,7 +15,7 @@ Some notes on these CLI docs:
 
  * CLI examples are executed in a sandboxed directory pre-loaded with
    |cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
-   `here <https://github.com/bskinn/sphobjinv/blob/master/
+   `here <https://github.com/bskinn/sphobjinv/blob/main/
    tests/resource/objects_attrs.inv>`__).
 
  * :class:`~pathlib.Path` (from :mod:`pathlib`)

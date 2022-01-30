@@ -4,7 +4,7 @@ on: push
 
 jobs:
   all_checks:
-    name: Run all tests, lints, etc. (Python 3.9)
+    name: Run all tests, lints, etc. (Python 3.10)
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
@@ -15,7 +15,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: '3.10'
 
     - name: Update pip & setuptools
       run: python -m pip install -U pip setuptools
@@ -32,9 +32,9 @@ jobs:
         make html
         mkdir scratch
 
-    - name: Run tests
+    - name: Run tests & report source coverage
       run: |
-        pytest --cov=src --testall --nonloc
+        pytest --cov --testall --nonloc
         tox -e sdist_install
 
     - name: Run doctests
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
@@ -86,8 +86,7 @@ jobs:
         make html
         mkdir scratch
 
-    - name: Run tests
+    - name: Run tests & report source coverage
       run: |
-        pytest --cov=src --testall --nonloc
+        pytest --cov --testall --nonloc
         tox -e sdist_install
-      

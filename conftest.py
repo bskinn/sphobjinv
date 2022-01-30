@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2021
+    \(c) Brian Skinn 2016-2022
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -114,7 +114,7 @@ def misc_info(res_path):
 
         # For the URL mode of Inventory instantiation
         remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/master/"
+            "https://github.com/bskinn/sphobjinv/raw/main/"
             "tests/resource/objects_{0}.inv"
         )
 

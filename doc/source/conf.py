@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'sphobjinv'
-copyright = '2016-2021, Brian Skinn'
+copyright = '2016-2022, Brian Skinn'
 author = 'Brian Skinn'
 
 # The full version for `release`, including alpha/beta/rc tags
@@ -40,6 +40,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinxcontrib.programoutput",
     "sphinx_issues",
+    "sphinx_removed_in",
 ]
 
 # napoleon configuration
@@ -119,7 +120,7 @@ rst_epilog = r"""
 
 .. |license_txt| replace:: LICENSE.txt
 
-.. _license_txt: https://github.com/bskinn/sphobjinv/blob/master/LICENSE.txt
+.. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
