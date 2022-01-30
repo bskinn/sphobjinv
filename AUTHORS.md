@@ -20,4 +20,4 @@ This led to the current object-oriented API of `sphobjinv` v2.x.
 
 While there are [numerous](https://github.com/bskinn/sphobjinv/issues) possible enhancements to the project,
 I'm quite satisfied with its ease of use and usefulness, at least for my purposes, and thus consider it fully stable.
-I'm always glad to receive feature requests and (especially) bug reports, though.
+I'm always glad to receive feature requests and bug reports, though.

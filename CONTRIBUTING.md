@@ -15,6 +15,8 @@ Table of Contents
 
 <!--TOC-->
 
+- [Welcome!](#welcome)
+- [Table of Contents](#table-of-contents)
 - [Project Setup](#project-setup)
 - [Working with git](#working-with-git)
 - [Tests](#tests)
@@ -43,7 +45,7 @@ in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
 I prefer to use `virtualenv` and create in `./env`:
 
 ```
-$ python3.10 -m virtualenv env --prompt="(sphobjinv) "
+$ python3.10 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
@@ -127,6 +129,9 @@ as necessary to maintain 100% test coverage. To the extent possible,
 please go beyond this and add tests that check potential edge cases,
 bad/malformed/invalid inputs, etc. For bugfixes, add one or more
 focused regression tests that cover the bug behavior being fixed.
+
+PRs that add [xfail tests for existing bugs](https://blog.ganssle.io/articles/2021/11/pytest-xfail.html)
+are also welcomed.
 
 There are some situations where it may make sense to use a
 `# pragma: no cover` to ignore coverage on certain line(s) of code.
