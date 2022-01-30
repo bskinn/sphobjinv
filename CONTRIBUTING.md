@@ -15,8 +15,6 @@ Table of Contents
 
 <!--TOC-->
 
-- [Welcome!](#welcome)
-- [Table of Contents](#table-of-contents)
 - [Project Setup](#project-setup)
 - [Working with git](#working-with-git)
 - [Tests](#tests)
