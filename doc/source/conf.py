@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'sphobjinv'
-copyright = '2016-2021, Brian Skinn'
+copyright = '2016-2022, Brian Skinn'
 author = 'Brian Skinn'
 
 # The full version for `release`, including alpha/beta/rc tags

@@ -32,6 +32,9 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
+.. image:: https://pepy.tech/badge/sphobjinv/month
+    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
+
 ----
 
 **Using Sphinx?**
@@ -130,11 +133,11 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.2b2, 205 objects>
+    <Inventory (fname_zlib): sphobjinv v2.2, 205 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.2b2'
+    '2.2'
     >>> inv.objects[0]
     DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
 
@@ -156,7 +159,7 @@ Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
 and feature requests are welcomed at the
 `Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
 
-Copyright (c) Brian Skinn 2016-2021
+Copyright (c) Brian Skinn 2016-2022
 
 License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
 for full license terms.

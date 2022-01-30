@@ -32,9 +32,9 @@ jobs:
         make html
         mkdir scratch
 
-    - name: Run tests
+    - name: Run tests & report source coverage
       run: |
-        pytest --cov=src --testall --nonloc
+        pytest --cov --testall --nonloc
         tox -e sdist_install
 
     - name: Run doctests
@@ -86,7 +86,7 @@ jobs:
         make html
         mkdir scratch
 
-    - name: Run tests
+    - name: Run tests & report source coverage
       run: |
-        pytest --cov=src --testall --nonloc
+        pytest --cov --testall --nonloc
         tox -e sdist_install

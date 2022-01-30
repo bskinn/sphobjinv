@@ -43,7 +43,7 @@ in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
 I prefer to use `virtualenv` and create in `./env`:
 
 ```
-$ python3.10 -m virtualenv env --prompt="(sphobjinv) "
+$ python3.10 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
@@ -61,6 +61,12 @@ The next step is to upgrade/install the development requirements:
 ```
 (sphobjinv) $ python -m pip install -U pip setuptools wheel
 (sphobjinv) $ pip install -r requirements-dev.txt
+```
+
+Then, install the pre-commit hooks:
+
+```
+(sphobjinv) $ pre-commit install
 ```
 
 Finally, you'll need to build the Sphinx docs,
@@ -128,6 +134,9 @@ please go beyond this and add tests that check potential edge cases,
 bad/malformed/invalid inputs, etc. For bugfixes, add one or more
 focused regression tests that cover the bug behavior being fixed.
 
+PRs that add [xfail tests for existing bugs](https://blog.ganssle.io/articles/2021/11/pytest-xfail.html)
+are also welcomed.
+
 There are some situations where it may make sense to use a
 `# pragma: no cover` to ignore coverage on certain line(s) of code.
 Please start a discussion in the issue or PR comments before
@@ -159,7 +168,7 @@ To run the lints locally, it's easiest to use `tox`:
 $ tox -e flake8
 ```
 
-In some limited circumstances, it may be necessary to add 
+In some limited circumstances, it may be necessary to add
 [`# noqa`](https://flake8.pycqa.org/en/stable/user/violations.html#in-line-ignoring-errors)
 or [`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
 exclusions to the `flake8` lints.
@@ -278,4 +287,3 @@ you want to create, though, then don't use them.
 ## License
 
 All contributions will take on the MIT License of the project at large.
-
