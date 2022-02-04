@@ -8,7 +8,7 @@ NAME = "sphobjinv"
 exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"))
 
 
-version_override = None
+version_override = "2.2"
 
 
 def readme():
