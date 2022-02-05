@@ -7,6 +7,17 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.2.1] - 2022-02-05
+
+#### Internal
+
+  * The `benchmarks.py` file within the vendored version of `fuzzywuzzy`
+    was removed. This *should* have no effect on `sphobjinv` functionality.
+    * Per [#223](https://github.com/bskinn/sphobjinv/issues/223), the
+      Python 2 code within `benchmarks.py` breaks a full-source compilation
+      done as part of an RPM packaging workflow.
+
+
 ### [2.2] - 2022-01-30
 
 #### Administrative
