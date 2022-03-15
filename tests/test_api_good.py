@@ -469,7 +469,6 @@ class TestInventory:
         check.is_instance(rec[0][1], Number)
         check.equal(rec[0][2], idx)
 
-
     @pytest.mark.testall
     def test_api_inventory_suggest_operation(self, testall_inv_path):
         """Confirm that a suggest operation works on all smoke-test inventories."""
@@ -479,7 +478,6 @@ class TestInventory:
             pytest.xfail("Known bad character in decode operation")
 
         inv.suggest("class")
-
 
     @pytest.mark.testall
     def test_api_inventory_datafile_gen_and_reimport(
