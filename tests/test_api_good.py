@@ -475,7 +475,12 @@ class TestInventory:
         inv = soi.Inventory(testall_inv_path)
 
         if "fonttools" in inv.project.lower():
-            pytest.xfail("Known bad character in decode operation")
+            try:
+                inv.suggest("class")
+            except UnicodeDecodeError:
+                pytest.xfail("Known unhandled bad character in decode operation")
+            else:
+                pytest.fail("'fonttools' was expected to fail, but didn't")
 
         inv.suggest("class")
 
