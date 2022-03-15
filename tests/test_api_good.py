@@ -479,7 +479,7 @@ class TestInventory:
                 inv.suggest("class")
             except UnicodeDecodeError:
                 pytest.xfail("Known unhandled bad character in decode operation")
-            else:
+            else:  # pragma: no cov
                 pytest.fail("'fonttools' was expected to fail, but didn't")
 
         inv.suggest("class")
