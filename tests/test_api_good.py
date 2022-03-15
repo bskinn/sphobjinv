@@ -555,6 +555,12 @@ class TestInventory:
             else:
                 assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
+        elif "fonttools" in fname:  # pragma: no cover
+            # One object appears to have a misbehaving character that Sphinx
+            # rejects on an attempted import
+            # TODO: Figure out which Sphinx versions this is broken on and refine test
+            assert inv.count == 1 + sphinx_ifile_data_count(original_ifile_data), fname
+
         else:
             assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
