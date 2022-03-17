@@ -568,6 +568,11 @@ class TestInventory:
             # TODO: Figure out which Sphinx versions this is broken on and refine test
             assert inv.count == 1 + sphinx_ifile_data_count(original_ifile_data), fname
 
+        elif "readthedocs_io" in fname:  # pragma: no cover
+            # Looks like two objects don't parse in current Sphinx
+            # TODO: Figure out which Sphinx versions this is broken on and refine test
+            assert inv.count == 2 + sphinx_ifile_data_count(original_ifile_data), fname
+
         else:
             assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
