@@ -68,6 +68,7 @@ def test_api_inventory_many_url_imports(
     misc_info,
     sphinx_load_test,
     pytestconfig,
+    git_branch,
 ):
     """Confirm a plethora of .inv files downloads properly via url arg.
 
@@ -87,7 +88,9 @@ def test_api_inventory_many_url_imports(
     mch = misc_info.p_inv.match(fname)
     proj_name = mch.group(1)
     inv1 = soi.Inventory(str(res_path / fname))
-    inv2 = soi.Inventory(url=misc_info.remote_url.format(proj_name))
+    inv2 = soi.Inventory(
+        url=misc_info.remote_url.format(project=proj_name, branch=git_branch)
+    )
 
     # Test the things
     assert inv1 == inv2

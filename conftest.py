@@ -30,6 +30,7 @@ import os.path as osp
 import platform
 import re
 import shutil
+import subprocess
 import sys
 from enum import Enum
 from filecmp import cmp
@@ -114,8 +115,8 @@ def misc_info(res_path):
 
         # For the URL mode of Inventory instantiation
         remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/main/"
-            "tests/resource/objects_{0}.inv"
+            "https://github.com/bskinn/sphobjinv/raw/{branch}/"
+            "tests/resource/objects_{project}.inv"
         )
 
         # Regex pattern for objects_xyz.inv files
@@ -315,3 +316,9 @@ def unix2dos():
 def jsonschema_validator():
     """Provide the standard JSON schema validator."""
     return jsonschema.Draft4Validator
+
+
+@pytest.fixture(scope="session")
+def git_branch():
+    """Provide the current git branch."""
+    return subprocess.check_output("git branch --show-current", text=True).strip()
