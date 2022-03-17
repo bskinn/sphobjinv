@@ -9,7 +9,7 @@ trans_table=bytes.maketrans(table_from.encode(), table_to.encode())  # B Skinn 2
 
 
 def asciionly(s):
-    return s.encode().translate(None, bad_chars).decode()  # B Skinn 2021-12-11
+    return s.encode().translate(None, bad_chars).decode(errors='replace')  # B Skinn 2021-12-11
 
 # remove non-ASCII characters from strings
 def asciidammit(s):
@@ -32,8 +32,4 @@ def validate_string(s):
 def full_process(s):
     s = asciidammit(s)
     # B Skinn 2021-12-11
-    return s.encode().translate(trans_table, bad_chars).decode().strip()
-
-
-
-
+    return s.encode().translate(trans_table, bad_chars).decode(errors='replace').strip()
