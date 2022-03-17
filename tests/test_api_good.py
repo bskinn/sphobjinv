@@ -474,14 +474,6 @@ class TestInventory:
         """Confirm that a suggest operation works on all smoke-test inventories."""
         inv = soi.Inventory(testall_inv_path)
 
-        if "fonttools" in inv.project.lower():
-            try:
-                inv.suggest("class")
-            except UnicodeDecodeError:
-                pytest.xfail("Known unhandled bad character in decode operation")
-            else:  # pragma: no cover
-                pytest.fail("'fonttools' was expected to fail, but didn't")
-
         inv.suggest("class")
 
     @pytest.mark.testall
