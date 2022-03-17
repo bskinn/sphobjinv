@@ -321,4 +321,6 @@ def jsonschema_validator():
 @pytest.fixture(scope="session")
 def git_branch():
     """Provide the current git branch."""
-    return subprocess.check_output("git branch --show-current", text=True).strip()
+    return subprocess.check_output(
+        ["git", "branch", "--show-current"], universal_newlines=True
+    ).strip()

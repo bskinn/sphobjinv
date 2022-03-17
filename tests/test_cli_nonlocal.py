@@ -57,7 +57,12 @@ class TestConvert:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_cli_convert_from_url_with_dest(
-        self, scratch_path, misc_info, run_cmdline_test, monkeypatch
+        self,
+        scratch_path,
+        misc_info,
+        run_cmdline_test,
+        monkeypatch,
+        git_branch,
     ):
         """Confirm CLI URL D/L, convert works w/outfile supplied."""
         monkeypatch.chdir(scratch_path)
@@ -68,7 +73,7 @@ class TestConvert:
                 "convert",
                 "plain",
                 "-u",
-                misc_info.remote_url.format("attrs"),
+                misc_info.remote_url.format(project="attrs", branch=git_branch),
                 str(dest_path),
             ]
         )
@@ -77,20 +82,35 @@ class TestConvert:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_cli_convert_from_url_no_dest(
-        self, scratch_path, misc_info, run_cmdline_test, monkeypatch
+        self,
+        scratch_path,
+        misc_info,
+        run_cmdline_test,
+        monkeypatch,
+        git_branch,
     ):
         """Confirm CLI URL D/L, convert works w/o outfile supplied."""
         monkeypatch.chdir(scratch_path)
         dest_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)
         dest_path.unlink()
         run_cmdline_test(
-            ["convert", "plain", "-u", misc_info.remote_url.format("attrs")]
+            [
+                "convert",
+                "plain",
+                "-u",
+                misc_info.remote_url.format(project="attrs", branch=git_branch),
+            ]
         )
         assert dest_path.is_file()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_cli_url_in_json(
-        self, scratch_path, misc_info, run_cmdline_test, monkeypatch
+        self,
+        scratch_path,
+        misc_info,
+        run_cmdline_test,
+        monkeypatch,
+        git_branch,
     ):
         """Confirm URL is present when using CLI URL mode."""
         monkeypatch.chdir(scratch_path)
@@ -100,7 +120,7 @@ class TestConvert:
                 "convert",
                 "json",
                 "-u",
-                misc_info.remote_url.format("attrs"),
+                misc_info.remote_url.format(project="attrs", branch=git_branch),
                 str(dest_path.resolve()),
             ]
         )
@@ -110,7 +130,9 @@ class TestConvert:
         assert "objects" in d.get("metadata", {}).get("url", {})
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
-    def test_clifail_bad_url(self, run_cmdline_test, misc_info, scratch_path):
+    def test_clifail_bad_url(
+        self, run_cmdline_test, misc_info, scratch_path, git_branch
+    ):
         """Confirm proper error behavior when a bad URL is passed."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
@@ -118,7 +140,7 @@ class TestConvert:
                     "convert",
                     "plain",
                     "-u",
-                    misc_info.remote_url.format("blarghers"),
+                    misc_info.remote_url.format(project="blarghers", branch=git_branch),
                     str(scratch_path),
                 ],
                 expect=1,
@@ -142,10 +164,16 @@ class TestConvert:
             assert "No inventory at provided URL." in err_.getvalue()
 
     def test_cli_json_export_import(
-        self, res_cmp, scratch_path, misc_info, run_cmdline_test, sphinx_load_test
+        self,
+        res_cmp,
+        scratch_path,
+        misc_info,
+        run_cmdline_test,
+        sphinx_load_test,
+        git_branch,
     ):
         """Confirm JSON sent to stdout from local source imports ok."""
-        inv_url = misc_info.remote_url.format("attrs")
+        inv_url = misc_info.remote_url.format(project="attrs", branch=git_branch)
         mod_path = scratch_path / (misc_info.FNames.MOD + misc_info.Extensions.CMP)
 
         with stdio_mgr() as (in_, out_, err_):
@@ -165,14 +193,14 @@ class TestSuggest:
     """Test nonlocal CLI suggest mode functionality."""
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
-    def test_cli_suggest_from_url(self, misc_info, run_cmdline_test):
+    def test_cli_suggest_from_url(self, misc_info, run_cmdline_test, git_branch):
         """Confirm name-only suggest works from URL."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 [
                     "suggest",
                     "-u",
-                    misc_info.remote_url.format("attrs"),
+                    misc_info.remote_url.format(project="attrs", branch=git_branch),
                     "instance",
                     "-t",
                     "50",
