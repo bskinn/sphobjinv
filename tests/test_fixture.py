@@ -38,7 +38,7 @@ def test_info_fixture(misc_info):
 
 def test_populate_scratch(misc_info, scratch_path, check):
     """Ensure the scratch_path fixture populates the scratch dir correctly."""
-    scr_base = misc_info.FNames.INIT
+    scr_base = misc_info.FNames.INIT.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
         with check.check(msg=ext):

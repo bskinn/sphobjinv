@@ -12,5 +12,6 @@ flake8-eradicate
 flake8-implicit-str-concat
 flake8-import-order
 flake8-pie
+flake8-raise
 flake8-rst-docstrings
 pep8-naming

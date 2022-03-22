@@ -12,3 +12,7 @@ repos:
     rev: '22.1.0'
     hooks:
     -   id: black
+-   repo: https://github.com/tox-dev/pyproject-fmt
+    rev: '0.3.2'
+    hooks:
+    -   id: pyproject-fmt
