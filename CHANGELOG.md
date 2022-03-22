@@ -7,6 +7,34 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.2.2] - 2022-03-22
+
+#### Fixed
+
+  * UnicodeDecodeErrors are ignored within the vendored `fuzzywuzzy` package
+    during `suggest` operations, using the `errors=replace` mode within
+    bytes.decode().
+
+    * This misbehavior emerged after vendoring `fuzzywuzzy`, suggesting that
+      it was a bug fixed later on in that project's development, after the
+      point from which it was vendored.
+
+    * This change may alter `suggest` behavior for those inventory objects with
+      pathological characters. But, given their rarity, user experience is not
+      expected to be noticeably affected.
+
+#### Internal
+
+  * The `pyproject-fmt` formatted was added as a pre-commit hook.
+
+  * The `flake8-raise` plugin was added to the linting suite.
+
+#### Testing
+
+  * A smoke test for error-free `suggest` execution was added for all of the
+    inventory files in `tests/resource`.
+
+
 ### [2.2.1] - 2022-02-05
 
 #### Internal

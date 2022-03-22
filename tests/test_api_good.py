@@ -448,7 +448,7 @@ class TestInventory:
         assert inv2.count == 55
 
     def test_api_inventory_namesuggest(self, res_cmp, check):
-        """Confirm object name suggestion is nominally working."""
+        """Confirm object name suggestion is nominally working on a specific object."""
         rst = ":py:function:`attr.evolve`"
         idx = 6
 
@@ -468,6 +468,13 @@ class TestInventory:
         check.equal(rec[0][0], rst)
         check.is_instance(rec[0][1], Number)
         check.equal(rec[0][2], idx)
+
+    @pytest.mark.testall
+    def test_api_inventory_suggest_operation(self, testall_inv_path):
+        """Confirm that a suggest operation works on all smoke-test inventories."""
+        inv = soi.Inventory(testall_inv_path)
+
+        inv.suggest("class")
 
     @pytest.mark.testall
     def test_api_inventory_datafile_gen_and_reimport(
@@ -554,6 +561,16 @@ class TestInventory:
                 ), fname
             else:
                 assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+
+        elif "fonttools" in fname:  # pragma: no cover
+            # One object appears to have a misbehaving character that Sphinx
+            # rejects on an attempted import in ~recent versions
+            if sphinx_version < (3, 3, 0):
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+            else:
+                assert inv.count == 1 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
 
         else:
             assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
