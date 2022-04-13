@@ -6,3 +6,4 @@ sphobjinv.inventory
 .. automodule:: sphobjinv.inventory
     :members:
 
+.. autoclass:: sphobjinv.Inventory
