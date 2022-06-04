@@ -113,9 +113,25 @@ def do_suggest(inv, params):
         with_score=with_score,
     )
 
+    log_print(f"{inv.count} objects in inventory.\n", params)
+
     if len(results) == 0:
-        log_print("No results found.", params)
+        log_print(
+            (
+                "No results found with score at/above current threshold of "
+                f"{params[PrsConst.THRESH]}."
+            ),
+            params,
+        )
         return
+    else:
+        log_print(
+            (
+                f"{len(results)} results found at/above current threshold of "
+                f"{params[PrsConst.THRESH]}.\n"
+            ),
+            params,
+        )
 
     # Query if the results are long enough, but not if '--all' has been
     # passed or if the data is coming via stdin (reading from stdin breaks

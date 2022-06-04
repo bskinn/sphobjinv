@@ -24,6 +24,12 @@ and this project strives to adhere to
 
 ### [2.2.2] - 2022-03-22
 
+#### Changed
+
+  * CLI 'suggest' results output now displays more information about
+    the total number of objects in the inventory, the search score threshold,
+    and the number of results falling at/above that threshold.
+
 #### Fixed
 
   * UnicodeDecodeErrors are ignored within the vendored `fuzzywuzzy` package
