@@ -15,6 +15,12 @@ and this project strives to adhere to
     now results in a clean error-exit, instead of an exception.
     ([#239](https://github.com/bskinn/sphobjinv/issues/239))
 
+#### Internal
+
+  * Bump pre-commit black hook to v22.3.0
+
+  * Remove PyPy and Python 3.6 from Azure Pipelines test matrix
+
 
 ### [2.2.2] - 2022-03-22
 
