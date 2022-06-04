@@ -7,6 +7,14 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [unreleased]
+
+#### Fixed
+
+  * A corner-case bug with the CLI argument parsing leading to an exception
+    if invoked with a non-existent option and no subparser is now fixed.
+
+
 ### [2.2.2] - 2022-03-22
 
 #### Fixed
