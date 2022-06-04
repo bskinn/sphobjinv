@@ -340,7 +340,7 @@ class TestSuggestGood:
         """Confirm suggest w/no found results works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-t", "99"])
-            assert "No results found." in err_.getvalue()
+            assert "No results found" in err_.getvalue()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_nameonly(self, run_cmdline_test, res_cmp):

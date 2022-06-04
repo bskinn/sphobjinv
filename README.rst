@@ -56,6 +56,10 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
+    205 objects in inventory.
+
+    11 results found at/above current threshold of 58.
+
       Name                                                Score
     ---------------------------------------------------  -------
     :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
@@ -90,6 +94,9 @@ cross-reference the ``linspace`` function from numpy (see
     Attempting "https://numpy.org/doc/1.19/objects.inv" ...
     Remote inventory found.
 
+    6487 objects in inventory.
+
+    8 results found at/above current threshold of 75.
 
       Name                                                           Score
     --------------------------------------------------------------  -------
