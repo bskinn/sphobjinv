@@ -123,7 +123,7 @@ class TestConvert:
                 ],
                 expect=1,
             )
-            assert "No inventory at provided URL." in err_.getvalue()
+            assert "HTTP error: 404 Not Found." in err_.getvalue()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_clifail_url_no_leading_http(self, run_cmdline_test, scratch_path):
@@ -139,7 +139,7 @@ class TestConvert:
                 ],
                 expect=1,
             )
-            assert "No inventory at provided URL." in err_.getvalue()
+            assert "file found but inventory could not be loaded" in err_.getvalue()
 
     def test_cli_json_export_import(
         self, res_cmp, scratch_path, misc_info, run_cmdline_test, sphinx_load_test

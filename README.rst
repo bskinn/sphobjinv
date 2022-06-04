@@ -88,11 +88,14 @@ cross-reference the ``linspace`` function from numpy (see
 
     $ sphobjinv suggest https://numpy.org/doc/1.19/reference/index.html linspace -su
 
-    No inventory at provided URL.
+    Attempting https://numpy.org/doc/1.19/reference/index.html ...
+      ... no recognized inventory.
     Attempting "https://numpy.org/doc/1.19/reference/index.html/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://numpy.org/doc/1.19/reference/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://numpy.org/doc/1.19/objects.inv" ...
-    Remote inventory found.
+      ... inventory found.
 
     6487 objects in inventory.
 
