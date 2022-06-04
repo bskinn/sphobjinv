@@ -30,8 +30,8 @@ import sys
 from sphobjinv.cli.parser import PrsConst
 
 
-def log_print(thing, params):
-    """Print `thing` to stderr if not in quiet mode.
+def log_print(thing, params, *, end="\n"):
+    r"""Print `thing` to stderr if not in quiet mode.
 
     Quiet mode is indicated by the value at the |cli:QUIET| key
     within `params`.
@@ -49,9 +49,13 @@ def log_print(thing, params):
 
         |dict| -- Parameters/values mapping from the active subparser
 
+    end
+
+        |str| -- String to append to printed content (default: ``\n``\ )
+
     """
-    if not params[PrsConst.SUBPARSER_NAME][:2] == "co" or not params[PrsConst.QUIET]:
-        print(thing, file=sys.stderr)
+    if params[PrsConst.SUBPARSER_NAME][:2] == "su" or not params[PrsConst.QUIET]:
+        print(thing, file=sys.stderr, end=end)
 
 
 def err_format(exc):
