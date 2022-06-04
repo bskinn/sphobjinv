@@ -71,7 +71,7 @@ stages:
           spec: '3.10'
         pypy3:
           spec: 'pypy3'
-      platforms: [linux, windows]
+      platforms: [linux]
 
   - template: azure-coretest.yml
     parameters:
@@ -84,7 +84,7 @@ stages:
           spec: '3.9'
         py310:
           spec: '3.10'
-      platforms: [macOs]
+      platforms: [windows, macOs]
 
 
 - stage: aux_tests
@@ -203,5 +203,3 @@ stages:
 
     - script: tox -e flake8-noqa
       displayName: Run never-fail flake8 with noqa check
-
-

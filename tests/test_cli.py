@@ -74,6 +74,22 @@ class TestMisc:
 
             assert "usage: sphobjinv" in out_.getvalue()
 
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_no_subparser_prs_exit(self, run_cmdline_test):
+        """Confirm exit code 2 if option passed but no subparser provided."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["--foo"], expect=2)
+
+            assert "error: No subparser selected" in err_.getvalue()
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_bad_subparser_prs_exit(self, run_cmdline_test):
+        """Confirm exit code 2 if invalid subparser provided."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["foo"], expect=2)
+
+            assert "invalid choice: 'foo'" in err_.getvalue()
+
 
 class TestConvertGood:
     """Tests for expected-good convert functionality."""

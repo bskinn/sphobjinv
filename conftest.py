@@ -218,7 +218,7 @@ def sphinx_version():
     """
     p_version = re.compile(r"(\d+)[.]?(\d+)?[.]?(\d+)?")
     mch = p_version.match(sphinx_version_str)
-    return tuple(map((lambda x: int(x) if x else 0), mch.groups()))
+    return tuple(int(x) if x else 0 for x in mch.groups())
 
 
 @pytest.fixture()  # Must be function scope since uses monkeypatch
