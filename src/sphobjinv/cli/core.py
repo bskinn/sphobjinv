@@ -190,6 +190,10 @@ def main():
         print(PrsConst.VER_TXT)
         sys.exit(0)
 
+    # At this point, need to trap for a null subparser
+    if not params[PrsConst.SUBPARSER_NAME]:
+        prs.error("No subparser selected")
+
     # Regardless of mode, insert extra blank line
     # for cosmetics
     log_print(" ", params)

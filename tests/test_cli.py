@@ -80,7 +80,7 @@ class TestMisc:
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["--foo"], expect=2)
 
-            assert "required: {convert,suggest}" in err_.getvalue()
+            assert "error: No subparser selected" in err_.getvalue()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_bad_subparser_prs_exit(self, run_cmdline_test):
