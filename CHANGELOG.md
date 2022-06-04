@@ -7,6 +7,15 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### (unreleased)
+
+#### Fixed
+
+  * CLI corner case where options are passed but no subparser is specified
+    now results in a clean error-exit, instead of an exception.
+    ([#239](https://github.com/bskinn/sphobjinv/issues/239))
+
+
 ### [2.2.2] - 2022-03-22
 
 #### Fixed
