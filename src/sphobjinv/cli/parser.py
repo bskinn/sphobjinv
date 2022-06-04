@@ -30,6 +30,15 @@ import argparse as ap
 from sphobjinv.version import __version__
 
 
+def new_version_action_call(self, parser, namespace, values, option_string=None):
+    """Print the version information as-is, then exit the parser."""
+    parser._print_message(self.version, ap._sys.stdout)
+    parser.exit()
+
+
+ap._VersionAction.__call__ = new_version_action_call
+
+
 class PrsConst:
     """Container for CLI parser constants."""
 
@@ -45,7 +54,7 @@ class PrsConst:
         "Bug reports & feature requests:"
         " https://github.com/bskinn/sphobjinv\n"
         "Documentation:"
-        " https://sphobjinv.readthedocs.io\n"
+        " https://sphobjinv.readthedocs.io\n\n"
     )
 
     # ### Subparser selectors and argparse param for storing subparser name
@@ -199,8 +208,8 @@ def getparser():
     prs.add_argument(
         "-" + PrsConst.VERSION[0],
         "--" + PrsConst.VERSION,
-        help="Print package version & other info",
-        action="store_true",
+        action="version",
+        version=PrsConst.VER_TXT,
     )
 
     sprs = prs.add_subparsers(
@@ -215,11 +224,7 @@ def getparser():
         "to their first two letters.",
     )
 
-    # Enforce subparser as optional. No effect for 3.4 to 3.7;
-    # briefly required a/o 3.7.0b4 due to change in default behavior, per:
-    # https://bugs.python.org/issue33109. 3.6 behavior restored for
-    # 3.7 release.
-    sprs.required = False
+    sprs.required = True
 
     spr_convert = sprs.add_parser(
         PrsConst.CONVERT,

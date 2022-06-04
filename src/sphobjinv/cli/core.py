@@ -185,11 +185,6 @@ def main():
     ns, args_left = prs.parse_known_args()
     params = vars(ns)
 
-    # Print version &c. and exit if indicated
-    if params[PrsConst.VERSION]:
-        print(PrsConst.VER_TXT)
-        sys.exit(0)
-
     # Regardless of mode, insert extra blank line
     # for cosmetics
     log_print(" ", params)
