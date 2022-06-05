@@ -5,8 +5,9 @@ from setuptools import setup
 
 NAME = "sphobjinv"
 
-exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"))
-
+exec_ns = {}
+exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"), exec_ns)
+__version__ = exec_ns["__version__"]
 
 version_override = "2.2"
 

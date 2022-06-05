@@ -23,9 +23,15 @@ and this project strives to adhere to
 
 #### Internal
 
-  * Bump pre-commit black hook to v22.3.0
+  * Bump pre-commit black hook to v22.3.0.
 
-  * Remove PyPy and Python 3.6 from Azure Pipelines test matrix
+  * Remove PyPy and Python 3.6 from Azure Pipelines test matrix.
+
+  * Revise `__version__` retrieval in `setup.py` to use an intermediate
+    dictionary with `exec()`.
+
+  * Update `setup.cfg` to use `license_files`, instead of the deprecated
+    `license_file`.
 
 
 ### [2.2.2] - 2022-03-22
