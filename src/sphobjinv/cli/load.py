@@ -164,7 +164,7 @@ def inv_url(params):
             inv = Inventory(url=url)
         except HTTPError as e:
             log_print(f"  ... HTTP error: {e.code} {e.reason}.", params)
-        except URLError:
+        except URLError:  # pragma: no cover
             log_print("  ... error attempting to retrieve URL.", params)
         except VersionError:
             log_print("  ... no recognized inventory.", params)
