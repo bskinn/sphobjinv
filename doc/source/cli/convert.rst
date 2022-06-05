@@ -66,7 +66,8 @@ indicated URL):
 
     >>> cli_run('sphobjinv convert plain -u https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     <BLANKLINE>
-    Remote inventory found.
+    Attempting https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv ...
+      ... inventory found.
     <BLANKLINE>
     Conversion completed.
     'https://github.com/b[...]ce/objects_attrs.inv' converted to '...objects.txt' (plain).
@@ -91,11 +92,14 @@ it will automatically find and use the correct |objects.inv|:
 
     >>> cli_run('sphobjinv convert plain -ou https://docs.python.org/3/library/urllib.error.html#urllib.error.URLError')
     <BLANKLINE>
-    No inventory at provided URL.
+    Attempting https://docs.python.org/3/library/urllib.error.html#urllib.error.URLError ...
+      ... no recognized inventory.
     Attempting "https://docs.python.org/3/library/urllib.error.html/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://docs.python.org/3/library/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://docs.python.org/3/objects.inv" ...
-    Remote inventory found.
+      ... inventory found.
     <BLANKLINE>
     Conversion completed.
     '...objects.inv' converted to '...objects.txt' (plain).
@@ -205,4 +209,3 @@ If processing of JSON files by API URL is desirable, please
     Contract `uri` and `dispname` fields, if possible, before writing to output;
     see :ref:`here <syntax_shorthand>`. Cannot be specified with
     :option:`--expand`.
-
