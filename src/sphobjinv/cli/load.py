@@ -156,33 +156,46 @@ def inv_url(params):
     """
     in_file = params[PrsConst.INFILE]
 
+    def attempt_inv_load(url, params):
+        """Attempt the Inventory load and report outcome."""
+        inv = None
+
+        try:
+            inv = Inventory(url=url)
+        except HTTPError as e:
+            log_print(f"  ... HTTP error: {e.code} {e.reason}.", params)
+        except URLError:  # pragma: no cover
+            log_print("  ... error attempting to retrieve URL.", params)
+        except VersionError:
+            log_print("  ... no recognized inventory.", params)
+        except ValueError:
+            log_print(
+                (
+                    "  ... file found but inventory could not be loaded. "
+                    "(Did you forget https:// ?)"
+                ),
+                params,
+            )
+        else:
+            log_print("  ... inventory found.", params)
+
+        return inv
+
     # Disallow --url mode on local files
     if in_file.startswith("file:/"):
         log_print("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
-    # Need to initialize the inventory variable
-    inv = None
+    log_print(f"Attempting {in_file} ...", params)
+    inv = attempt_inv_load(in_file, params)
 
-    # Try URL as provided
-    try:
-        inv = Inventory(url=in_file)
-    except (HTTPError, ValueError, VersionError, URLError):
-        log_print("No inventory at provided URL.", params)
-    else:
-        log_print("Remote inventory found.", params)
+    if inv:
         url = in_file
-
-    # Keep searching if inv not found yet
-    if not inv:
+    else:
         for url in urlwalk(in_file):
             log_print(f'Attempting "{url}" ...', params)
-            try:
-                inv = Inventory(url=url)
-            except (ValueError, HTTPError):
-                pass
-            else:
-                log_print("Remote inventory found.", params)
+            inv = attempt_inv_load(url, params)
+            if inv:
                 break
 
     # Cosmetic line break

@@ -9,6 +9,12 @@ and this project strives to adhere to
 
 ### (unreleased)
 
+#### Added
+
+  * The CLI now provides considerably more information about what is happening
+    with the URLs it checks when trying to retrieve a remote inventory.
+    ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
+
 #### Fixed
 
   * CLI corner case where options are passed but no subparser is specified
