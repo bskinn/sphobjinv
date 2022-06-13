@@ -37,3 +37,23 @@ class VersionError(SphobjinvError):
     |objects.inv| files (see :doc:`here </syntax>`).
 
     """
+
+    # TODO: Add SOI prefix to this class name as part of the exceptions refactor
+
+
+class SOIIntersphinxError(SphobjinvError):
+    """Family of errors from the sphobjinv.intersphinx module."""
+
+
+class SOIIsphxNotASuffixError(SOIIntersphinxError):
+    """Raised when a non-suffix URI is passed to the function matching."""
+
+    def __init__(self, *args, base, suffix, **kwargs):
+        """Initialize the instance with base and suffix strings."""
+        super().__init__(*args, **kwargs)
+        self.base = base
+        self.suffix = suffix
+
+    def __str__(self):
+        """Provide human-readable exception message."""
+        return f"'{self.suffix}' is not a suffix of '{self.base}'"
