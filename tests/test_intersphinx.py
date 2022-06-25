@@ -41,7 +41,7 @@ pytestmark = [pytest.mark.intersphinx]
 )
 def test_object_uri_trim(uri, trimmed):
     """Confirm that object URI trimming is working."""
-    assert trimmed == soi_isphx._trim_object_uri(uri)
+    assert trimmed == soi_isphx._strip_url_to_netloc_path(uri)
 
 
 @pytest.mark.local
@@ -56,7 +56,31 @@ def test_object_uri_trim(uri, trimmed):
 )
 def test_inventory_url_trim(url, trimmed):
     """Confirm that inventory URL trimming is working."""
-    assert trimmed == soi_isphx._inventory_url_base(url)
+    assert trimmed == soi_isphx._extract_objectsinv_url_base(url)
+
+
+@pytest.mark.parametrize(
+    ("web_url", "inv_url", "result", "project"),
+    [
+        (
+            "https://www.attrs.org/en/17.2.0/api.html#attr.s",
+            "https://www.attrs.org/en/17.2.0/objects.inv",
+            True,
+            "attrs",
+        )
+    ],
+)
+def test_url_matchup_local(web_url, inv_url, result, project, res_path):
+    """Confirm that URL matching works for selected test/resource inventories.
+
+    These test(s) should continue to pass even if the various documentation sets
+    on the web are taken down. ``web_url`` and ``inv_url`` are chosen to be
+    valid and consistent with the versions of the |objects.inv| files stored
+    in ``tests/resource/``
+
+    """
+    inv_path = res_path / f"objects_{project}.inv"
+    assert result == soi_isphx._url_matchup(web_url, inv_url, soi.Inventory(inv_path))
 
 
 @pytest.mark.nonloc
@@ -73,9 +97,11 @@ def test_inventory_url_trim(url, trimmed):
         )
     ],
 )
-def test_url_matchup(web_url, inv_url, result, pytestconfig):
+def test_url_matchup_nonloc(web_url, inv_url, result, pytestconfig):
     """Confirm that URL matching works for known-good case."""
     if not pytestconfig.getoption("--nonloc"):
         pytest.skip("'--nonloc' not specified")  # pragma: no cover
 
-    assert soi_isphx._url_matchup(web_url, inv_url, soi.Inventory(url=inv_url))
+    assert result == soi_isphx._url_matchup(
+        web_url, inv_url, soi.Inventory(url=inv_url)
+    )

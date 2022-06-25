@@ -48,12 +48,32 @@ class SOIIntersphinxError(SphobjinvError):
 class SOIIsphxNotASuffixError(SOIIntersphinxError):
     """Raised when a non-suffix URI is passed to the function matching."""
 
-    def __init__(self, *args, base, suffix, **kwargs):
+    def __init__(self, *args, web_url, suffix, **kwargs):
         """Initialize the instance with base and suffix strings."""
         super().__init__(*args, **kwargs)
-        self.base = base
+        self.web_url = web_url
         self.suffix = suffix
 
     def __str__(self):
         """Provide human-readable exception message."""
-        return f"'{self.suffix}' is not a suffix of '{self.base}'"
+        return f"'{self.suffix}' is not a suffix of '{self.web_url}'"
+
+
+class SOIIsphxNoMatchingObjectError(SOIIntersphinxError):
+    """Raised when an Inventory does not have an object matching a reference URL.
+
+    "Matching" here means that the object's URI is a suffix of the reference URL,
+    after both reference URL and suffix have their query and fragment components
+    removed.
+
+    """
+
+    def __init__(self, *args, web_url, inv, **kwargs):
+        """Initialize the instance with reference URL and Inventory."""
+        super().__init__(*args, **kwargs)
+        self.web_url = web_url
+        self.inv = inv
+
+    def __str__(self):
+        """Provide human-readable exception message."""
+        return f"'{self.inv}' does not have an object matching '{self.web_url}'"

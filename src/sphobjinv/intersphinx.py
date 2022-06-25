@@ -25,65 +25,80 @@ Sphinx |objects.inv| files.
 
 """
 
-from urllib.parse import urlsplit
+from urllib import parse as urlparse
 
-from sphobjinv.error import SOIIsphxNotASuffixError
-
-
-def _trim_url(url, *, with_scheme=False):
-    parts = urlsplit(url)
-    trimmed = f"{parts.netloc}{parts.path}"
-
-    if with_scheme:
-        trimmed = f"{parts.scheme}://" + trimmed
-
-    return trimmed
+from sphobjinv.error import SOIIsphxNoMatchingObjectError, SOIIsphxNotASuffixError
 
 
-def _is_url_path_suffix(ref, candidate):
-    """Indicate whether the candidate path is a suffix of the ref."""
-    return _trim_url(ref).endswith(_trim_url(candidate))
+def _strip_url_to_netloc_path(url, *, with_scheme=False):
+    """Reduce a URL to only netloc and path, optionally with scheme."""
+    parts = urlparse.urlsplit(url)
+    trimmed = parts._replace(
+        query="",
+        fragment="",
+    )
+
+    if not with_scheme:
+        trimmed = trimmed._replace(scheme="")
+
+    return urlparse.urlunsplit(trimmed)
 
 
-def _obj_with_matching_uri(ref, inv):
-    """Provide an object in the invetory with a matching URI suffix.
+def _extract_objectsinv_url_base(objectsinv_url):
+    """Provide the base URL for the provided objects.inv inventory URL."""
+    trimmed = _strip_url_to_netloc_path(objectsinv_url, with_scheme=True)
+    return f"{trimmed.rpartition('/')[0]}/"
 
-    None if nothing found.
+
+def _is_url_path_suffix(ref_url, suffix_candidate):
+    """Indicate whether the candidate path is a suffix of the reference URL."""
+    return _strip_url_to_netloc_path(ref_url).endswith(
+        _strip_url_to_netloc_path(suffix_candidate)
+    )
+
+
+def _find_obj_with_matching_uri(ref_url, inv):
+    """Provide an object from the inventory whose URI is a suffix of the reference URL.
+
+    Returns None if nothing found.
 
     """
     try:
-        return next(o for o in inv.objects if _is_url_path_suffix(ref, o.uri))
+        return next(o for o in inv.objects if _is_url_path_suffix(ref_url, o.uri))
     except StopIteration:
         return None
 
 
-def _base_from_ref_and_suffix(ref, suffix):
-    url = _trim_url(ref, with_scheme=True)
+def _extract_base_from_weburl_and_suffix(web_url, suffix):
+    """Extract the base URL from a reference web URL and the given suffix.
 
-    if not url.endswith(suffix):
-        raise SOIIsphxNotASuffixError(base=ref, suffix=suffix)
+    The base URL is returned **with** a trailing forward slash.
+
+    Raises sphobjinv.error.SOIIsphxNotASuffixError if 'suffix' is
+    not actually a suffix of ref_url.
+
+    """
+    trimmed = _strip_url_to_netloc_path(web_url, with_scheme=True)
+
+    if not trimmed.endswith(suffix):
+        raise SOIIsphxNotASuffixError(web_url=web_url, suffix=suffix)
 
     # TODO: Once the project drops Python < 3.9, can reimplement with .removesuffix()
-    return url[: url.find(suffix)]
+    return trimmed[: trimmed.find(suffix)]
 
 
-def _base_from_ref_and_object(ref, obj):
-    return _base_from_ref_and_suffix(ref, _trim_url(obj.uri))
+def _extract_base_from_weburl_and_inventory(web_url, inv):
+    """Extract a candidate base URL from a docset web URL and an Inventory instance."""
+    obj = _find_obj_with_matching_uri(web_url, inv)
+
+    if obj is None:
+        raise SOIIsphxNoMatchingObjectError(web_url=web_url, inv=inv)
+
+    stripped_uri = _strip_url_to_netloc_path(obj.uri)
+
+    return _extract_base_from_weburl_and_suffix(web_url, stripped_uri)
 
 
-def _base_from_ref_and_matching_object(ref, inv):
-    work_obj = _obj_with_matching_uri(ref, inv)
-    return _base_from_ref_and_object(ref, work_obj)
-
-
-def _trim_object_uri(uri):
-    return _trim_url(uri)
-
-
-def _inventory_url_base(url):
-    return f"{urlsplit(url).scheme}://{_trim_url(url).rpartition('/')[0]}/"
-
-
-def _url_matchup(web_url, obj_url, inv):
-    inventory_base = _inventory_url_base(obj_url)
-    return inventory_base == _base_from_ref_and_matching_object(web_url, inv)
+def _url_matchup(web_url, objectsinv_url, inv):
+    objectsinv_base = _extract_objectsinv_url_base(objectsinv_url)
+    return objectsinv_base == _extract_base_from_weburl_and_inventory(web_url, inv)
