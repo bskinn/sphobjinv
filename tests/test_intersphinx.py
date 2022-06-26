@@ -31,10 +31,9 @@ import sphobjinv as soi
 import sphobjinv.intersphinx as soi_isphx
 
 
-pytestmark = [pytest.mark.intersphinx]
+pytestmark = [pytest.mark.intersphinx, pytest.mark.local]
 
 
-@pytest.mark.local
 @pytest.mark.parametrize(
     ("uri", "trimmed"),
     [("cli/implementation/parser.html#$", "cli/implementation/parser.html")],
@@ -44,7 +43,6 @@ def test_object_uri_trim(uri, trimmed):
     assert trimmed == soi_isphx._strip_url_to_netloc_path(uri)
 
 
-@pytest.mark.local
 @pytest.mark.parametrize(
     ("url", "trimmed"),
     [
@@ -76,32 +74,8 @@ def test_url_matchup_local(web_url, inv_url, result, project, res_path):
     These test(s) should continue to pass even if the various documentation sets
     on the web are taken down. ``web_url`` and ``inv_url`` are chosen to be
     valid and consistent with the versions of the |objects.inv| files stored
-    in ``tests/resource/``
+    in ``tests/resource/``.
 
     """
     inv_path = res_path / f"objects_{project}.inv"
     assert result == soi_isphx._url_matchup(web_url, inv_url, soi.Inventory(inv_path))
-
-
-@pytest.mark.nonloc
-@pytest.mark.parametrize(
-    ("web_url", "inv_url", "result"),
-    [
-        (
-            (
-                "https://sphobjinv.readthedocs.io/en/stable/api/"
-                "error.html#sphobjinv.error.VersionError"
-            ),
-            "https://sphobjinv.readthedocs.io/en/stable/objects.inv",
-            True,
-        )
-    ],
-)
-def test_url_matchup_nonloc(web_url, inv_url, result, pytestconfig):
-    """Confirm that URL matching works for known-good case."""
-    if not pytestconfig.getoption("--nonloc"):
-        pytest.skip("'--nonloc' not specified")  # pragma: no cover
-
-    assert result == soi_isphx._url_matchup(
-        web_url, inv_url, soi.Inventory(url=inv_url)
-    )
