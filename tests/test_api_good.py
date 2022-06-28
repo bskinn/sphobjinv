@@ -572,6 +572,10 @@ class TestInventory:
                     original_ifile_data
                 ), fname
 
+        elif "django.inv" in fname:  # pragma: no cover
+            # TODO: Refine this adjustment as a function of sphinx_version if needed
+            assert inv.count == 13 + sphinx_ifile_data_count(original_ifile_data), fname
+
         else:
             assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
 
