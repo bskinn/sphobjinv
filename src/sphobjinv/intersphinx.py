@@ -45,9 +45,19 @@ def _strip_url_to_netloc_path(url, *, with_scheme=False):
 
 
 def _extract_objectsinv_url_base(objectsinv_url):
-    """Provide the base URL for the provided objects.inv inventory URL."""
+    """Provide the base URL for the provided objects.inv inventory URL.
+
+    # TODO: Convert this to a public API function
+    It should be useful as a fallback method of identifying a tentative
+    mapping for a docset, given the way that the urlwalk generator
+    steps through the possible objects.inv locations.
+
+    If this function is a no-op, then the resulting base is NOT RELIABLE.
+    If this function *does* make a change, then the resulting base is
+    RELATIVELY RELIABLE.
+    """
     trimmed = _strip_url_to_netloc_path(objectsinv_url, with_scheme=True)
-    return f"{trimmed.rpartition('/')[0]}/"
+    return f"{trimmed.rpartition('/objects.inv')[0]}/"
 
 
 def _is_url_path_suffix(ref_url, suffix_candidate):
@@ -99,6 +109,12 @@ def _extract_base_from_weburl_and_inventory(web_url, inv):
     return _extract_base_from_weburl_and_suffix(web_url, stripped_uri)
 
 
-def _url_matchup(web_url, objectsinv_url, inv):
+def infer_mapping(web_url, objectsinv_url, inv):
+    """Infer a best-guess intersphinx_mapping entry for the given URLs and Inventory.
+
+    # TODO: WRITE THIS DOCSTRING!
+    """
     objectsinv_base = _extract_objectsinv_url_base(objectsinv_url)
-    return objectsinv_base == _extract_base_from_weburl_and_inventory(web_url, inv)
+    weburl_base = _extract_base_from_weburl_and_inventory(web_url, inv)
+
+    return (weburl_base, None if objectsinv_base == weburl_base else objectsinv_url)

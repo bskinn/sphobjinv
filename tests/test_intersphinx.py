@@ -58,24 +58,43 @@ def test_inventory_url_trim(url, trimmed):
 
 
 @pytest.mark.parametrize(
-    ("web_url", "inv_url", "result", "project"),
+    ("web_url", "inv_url", "project", "mapping"),
     [
         (
-            "https://www.attrs.org/en/17.2.0/api.html#attr.s",
-            "https://www.attrs.org/en/17.2.0/objects.inv",
-            True,
-            "attrs",
-        )
+            "https://flask.palletsprojects.com/en/1.1.x/api/#flask.Config",
+            "https://flask.palletsprojects.com/en/1.1.x/objects.inv",
+            "flask",
+            ("https://flask.palletsprojects.com/en/1.1.x/", None),
+        ),
+        (
+            "https://docs.djangoproject.com/en/4.0/topics/cache/#memcached",
+            "https://docs.djangoproject.com/en/4.0/_objects/",
+            "django",
+            (
+                "https://docs.djangoproject.com/en/4.0/",
+                "https://docs.djangoproject.com/en/4.0/_objects/",
+            ),
+        ),
+        (
+            (
+                "https://docs.scipy.org/doc/numpy-1.13.0/reference/"
+                "arrays.interface.html#python-side"
+            ),
+            "https://docs.scipy.org/doc/numpy-1.13.0/objects.inv",
+            "numpy",
+            ("https://docs.scipy.org/doc/numpy-1.13.0/", None),
+        ),
     ],
+    ids=(lambda arg: arg if (isinstance(arg, str) and "/" not in arg) else ""),
 )
-def test_url_matchup_local(web_url, inv_url, result, project, res_path):
-    """Confirm that URL matching works for selected test/resource inventories.
+def test_infer_mapping(web_url, inv_url, project, mapping, res_path):
+    """Confirm intersphinx mapping inference works for select test cases.
 
     These test(s) should continue to pass even if the various documentation sets
     on the web are taken down. ``web_url`` and ``inv_url`` are chosen to be
     valid and consistent with the versions of the |objects.inv| files stored
-    in ``tests/resource/``.
+    in the tests resource path `res_path`.
 
     """
     inv_path = res_path / f"objects_{project}.inv"
-    assert result == soi_isphx._url_matchup(web_url, inv_url, soi.Inventory(inv_path))
+    assert mapping == soi_isphx.infer_mapping(web_url, inv_url, soi.Inventory(inv_path))
