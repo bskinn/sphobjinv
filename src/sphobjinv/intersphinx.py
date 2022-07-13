@@ -74,7 +74,13 @@ def _find_obj_with_matching_uri(ref_url, inv):
 
     """
     try:
-        return next(o for o in inv.objects if _is_url_path_suffix(ref_url, o.uri))
+        return next(
+            o
+            for o in inv.objects
+            if o.uri  # Must not be empty string
+            and not o.uri.startswith("#")  # Must not only be a fragment
+            and _is_url_path_suffix(ref_url, o.uri)  # Must be a suffix of the ref URL
+        )
     except StopIteration:
         return None
 

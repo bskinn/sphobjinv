@@ -98,3 +98,22 @@ def test_infer_mapping(web_url, inv_url, project, mapping, res_path):
     """
     inv_path = res_path / f"objects_{project}.inv"
     assert mapping == soi_isphx.infer_mapping(web_url, inv_url, soi.Inventory(inv_path))
+
+
+@pytest.mark.parametrize(
+    ("web_url", "project"),
+    [
+        (
+            "https://docs.djangoproject.com/en/4.0/topicXYZs/cache/#memcached",
+            "django",
+        )
+    ],
+    ids=(lambda arg: arg if (isinstance(arg, str) and "/" not in arg) else ""),
+)
+def test_no_matching_object(web_url, project, res_path):
+    """Confirm that no matching Inventory object is found when there shouldn't be."""
+    inv_path = res_path / f"objects_{project}.inv"
+    with pytest.raises(soi.error.SOIIsphxNoMatchingObjectError):
+        soi_isphx._extract_base_from_weburl_and_inventory(
+            web_url, soi.Inventory(inv_path)
+        )
