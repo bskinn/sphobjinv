@@ -31,7 +31,7 @@ from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.error import (
     SOIIntersphinxError,
     SOIIsphxNoMatchingObjectError,
-    SOIIsphxNotASuffixError,
+    SOIIsphxURINotASuffixError,
     SphobjinvError,
     VersionError,
 )

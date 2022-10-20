@@ -28,19 +28,37 @@ Sphinx |objects.inv| files.
 import pytest
 
 import sphobjinv as soi
-import sphobjinv.intersphinx as soi_isphx
+import sphobjinv._intersphinx as soi_isphx
 
 
 pytestmark = [pytest.mark.intersphinx, pytest.mark.local]
 
 
 @pytest.mark.parametrize(
-    ("uri", "trimmed"),
-    [("cli/implementation/parser.html#$", "cli/implementation/parser.html")],
+    ("uri", "trimmed", "with_scheme"),
+    [
+        ("cli/implementation/parser.html#$", "cli/implementation/parser.html", False),
+        (
+            (
+                "https://sphobjinv.readthedocs.io/en/stable/api/"
+                "enum.html#sphobjinv.enum.HeaderFields"
+            ),
+            "//sphobjinv.readthedocs.io/en/stable/api/enum.html",
+            False,
+        ),
+        (
+            (
+                "https://sphobjinv.readthedocs.io/en/stable/api/"
+                "enum.html#sphobjinv.enum.HeaderFields"
+            ),
+            "https://sphobjinv.readthedocs.io/en/stable/api/enum.html",
+            True,
+        ),
+    ],
 )
-def test_object_uri_trim(uri, trimmed):
+def test_strip_netloc_path(uri, trimmed, with_scheme):
     """Confirm that object URI trimming is working."""
-    assert trimmed == soi_isphx._strip_url_to_netloc_path(uri)
+    assert trimmed == soi_isphx._strip_url_to_netloc_path(uri, with_scheme=with_scheme)
 
 
 @pytest.mark.parametrize(
@@ -52,9 +70,9 @@ def test_object_uri_trim(uri, trimmed):
         )
     ],
 )
-def test_inventory_url_trim(url, trimmed):
+def test_extract_objinv_url_base(url, trimmed):
     """Confirm that inventory URL trimming is working."""
-    assert trimmed == soi_isphx._extract_objectsinv_url_base(url)
+    assert trimmed == soi_isphx.extract_objectsinv_url_base(url)
 
 
 @pytest.mark.parametrize(
@@ -113,7 +131,7 @@ def test_infer_mapping(web_url, inv_url, project, mapping, res_path):
 def test_no_matching_object(web_url, project, res_path):
     """Confirm that no matching Inventory object is found when there shouldn't be."""
     inv_path = res_path / f"objects_{project}.inv"
-    with pytest.raises(soi.error.SOIIsphxNoMatchingObjectError):
+    with pytest.raises(soi.SOIIsphxNoMatchingObjectError):
         soi_isphx._extract_base_from_weburl_and_inventory(
             web_url, soi.Inventory(inv_path)
         )

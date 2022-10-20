@@ -178,7 +178,7 @@ class TestInventory:
             soi.Inventory(d)
 
     def test_apifail_compressed_inv_with_win_newlines(self, unix2dos, res_cmp):
-        """Confirm that a compressed inventory with Windows newlines does not decompress.
+        """Confirm that a compressed inventory with Windodddws newlines doesn't decompress.
 
         This should *never* happen, except in a pathological circumstance where
         unix2dos was specifically run on a compressed inventory.

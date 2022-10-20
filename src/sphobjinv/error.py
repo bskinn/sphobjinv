@@ -45,18 +45,18 @@ class SOIIntersphinxError(SphobjinvError):
     """Family of errors from the sphobjinv.intersphinx module."""
 
 
-class SOIIsphxNotASuffixError(SOIIntersphinxError):
+class SOIIsphxURINotASuffixError(SOIIntersphinxError):
     """Raised when a non-suffix URI is passed to the function matching."""
 
-    def __init__(self, *args, web_url, suffix, **kwargs):
+    def __init__(self, *args, web_url, uri, **kwargs):
         """Initialize the instance with base and suffix strings."""
         super().__init__(*args, **kwargs)
         self.web_url = web_url
-        self.suffix = suffix
+        self.uri = uri
 
     def __str__(self):
         """Provide human-readable exception message."""
-        return f"'{self.suffix}' is not a suffix of '{self.web_url}'"
+        return f"'{self.uri}' is not a suffix of '{self.web_url}'"
 
 
 class SOIIsphxNoMatchingObjectError(SOIIntersphinxError):
