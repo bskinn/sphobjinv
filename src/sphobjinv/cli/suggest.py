@@ -85,7 +85,9 @@ def do_suggest(inv, params):
     else:
         log_print(
             (
-                f"{len(results)} results found at/above current threshold of "
+                f"{len(results)} result"
+                f"{'' if len(results) == 1 else 's'}"
+                " found at/above current threshold of "
                 f"{params[PrsConst.THRESH]}.\n"
             ),
             params,
