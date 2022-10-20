@@ -26,7 +26,6 @@ Sphinx |objects.inv| files.
 """
 
 
-from sphobjinv import intersphinx
 from sphobjinv.data import DataFields, DataObjBytes, DataObjStr
 from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.error import (
