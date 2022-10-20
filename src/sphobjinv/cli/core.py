@@ -27,50 +27,10 @@ Sphinx |objects.inv| files.
 
 import sys
 
+from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
 from sphobjinv.cli.parser import getparser, PrsConst
 from sphobjinv.cli.ui import log_print, yesno_prompt
-from sphobjinv.cli.write import write_file, write_stdout
-
-
-def do_convert(inv, in_path, params):
-    r"""Carry out the conversion operation, including writing output.
-
-    If |cli:OVERWRITE| is passed and the output file
-    (the default location, or as passed to |cli:OUTFILE|)
-    exists, it will be overwritten without a prompt. Otherwise,
-    the user will be queried if it is desired to overwrite
-    the existing file.
-
-    If |cli:QUIET| is passed, nothing will be
-    printed to |cour|\ stdout\ |/cour|
-    (potentially useful for scripting),
-    and any existing output file will be overwritten
-    without prompting.
-
-    Parameters
-    ----------
-    inv
-
-        |Inventory| -- Inventory object to be output in the format
-        indicated by |cli:MODE|.
-
-    in_path
-
-        |str| -- For a local input file, its absolute path.
-        For a URL, the (possibly truncated) URL text.
-
-    params
-
-        |dict| -- Parameters/values mapping from the active subparser
-
-    """
-    if params[PrsConst.OUTFILE] == "-" or (
-        params[PrsConst.INFILE] == "-" and params[PrsConst.OUTFILE] is None
-    ):
-        write_stdout(inv, params)
-    else:
-        write_file(inv, in_path, params)
 
 
 def do_suggest(inv, params):
