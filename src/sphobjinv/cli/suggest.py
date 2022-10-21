@@ -125,7 +125,6 @@ def confirm_print_if_long_list(params, results):
     interaction here fouls the data flow...I forget exactly how.
 
     """
-
     if (
         len(results) > PrsConst.SUGGEST_CONFIRM_LENGTH
         and not params[PrsConst.ALL]

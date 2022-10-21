@@ -80,8 +80,8 @@ The ``-s`` argument in the above shell command indicates to print the
 ``fuzzywuzzy`` match score along with each search result, and ``-t 50``
 changes the reporting threshold for the match score.
 
-For external references, just find the API documentation wherever it lives on the web,
-and pass ``sphobjinv suggest`` a URL from within the documentation set
+For external references, just find the API documentation wherever it lives on
+the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
 `here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
@@ -114,8 +114,8 @@ cross-reference the ``linspace`` function from numpy (see
 
 .. end shell command
 
-**NOTE** that the results from ``sphobjinv suggest`` are printed using the longer
-*block directives*, whereas cross-references must be composed using the
+**NOTE** that the results from ``sphobjinv suggest`` are printed using the
+longer *block directives*, whereas cross-references must be composed using the
 *inline directives*. Thus, the above ``linspace()`` function must be
 cross-referenced as ``:func:`numpy.linspace```, **not**
 ``:function:`numpy.linspace```.
