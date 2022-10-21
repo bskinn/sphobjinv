@@ -44,7 +44,8 @@ def main():
     Creates the |Inventory| from the indicated source
     and method.
 
-    Invokes :func:`do_convert` or :func:`do_suggest`
+    Invokes :func:`~sphobjinv.cli.convert.do_convert` or
+    :func:`~sphobjinv.cli.suggest.do_suggest`
     per the subparser name stored in |cli:SUBPARSER_NAME|.
 
     """
