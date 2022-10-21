@@ -28,7 +28,7 @@ Sphinx |objects.inv| files.
 import sys
 
 from sphobjinv.cli.parser import PrsConst
-from sphobjinv.cli.ui import log_print, yesno_prompt
+from sphobjinv.cli.ui import print_stderr, yesno_prompt
 
 
 def do_suggest(inv, params):
@@ -71,19 +71,41 @@ def do_suggest(inv, params):
         with_score=with_score,
     )
 
-    log_print(f"{inv.count} objects in inventory.\n", params)
+    print_stderr(f"{inv.count} objects in inventory.\n", params)
 
+    log_print_result_count(params, results)
+
+    # TODO: Print inferred intersphinx_mapping
+    #  - If input URL is the objinv URL and objinv base finder is a no-op,
+    #    then can't infer mapping
+    #  - If input URL is the objinv URL and objinv base finder IS NOT a no-op,
+    #    then mapping inferred from objinv base finder and None is PROBABLY
+    #    reliable.
+    #  - If input URL is NOT the objinv URL and objinv base finder is a no-op,
+    #    then SOMETHING WEIRD HAPPENED.
+    #  - If input URL is NOT the objinv URL and objinv base find IS NOT a no-op,
+    #    then mapping inferred from objinv base finder and None is STRONGLY
+    #    reliable.
+
+    # The confirmation query here is conditional; see the function docstring.
+    confirm_print_if_long_list(params, results)
+
+    log_print_results_table(with_index, with_score, results)
+
+
+def log_print_result_count(params, results):
+    """Report the count of found objects from the suggest search."""
     if len(results) == 0:
-        log_print(
+        print_stderr(
             (
                 "No results found with score at/above current threshold of "
                 f"{params[PrsConst.THRESH]}."
             ),
             params,
         )
-        return
+        sys.exit(0)
     else:
-        log_print(
+        print_stderr(
             (
                 f"{len(results)} result"
                 f"{'' if len(results) == 1 else 's'}"
@@ -93,9 +115,17 @@ def do_suggest(inv, params):
             params,
         )
 
-    # Query if the results are long enough, but not if '--all' has been
-    # passed or if the data is coming via stdin (reading from stdin breaks
-    # the terminal interactions)
+
+def confirm_print_if_long_list(params, results):
+    """Check if the results list is too long and query user if to proceed.
+
+    Skip the check if ``--all`` has been passed.
+
+    Also skip the check if receiving data from ``stdin``, as a stream
+    interaction here fouls the data flow...I forget exactly how.
+
+    """
+
     if (
         len(results) > PrsConst.SUGGEST_CONFIRM_LENGTH
         and not params[PrsConst.ALL]
@@ -103,13 +133,20 @@ def do_suggest(inv, params):
     ):
         resp = yesno_prompt(f"Display all {len(results)} results (Y/N)?")
         if resp.lower() == "n":
-            log_print("\nExiting...", params)
+            print_stderr("\nExiting...", params)
             sys.exit(0)
 
+
+def log_print_results_table(with_index, with_score, results):
+    """Prepare and print the table of suggest search results."""
     # Field widths in output
     score_width = 7
     index_width = 7
 
+    # This is necessary because the results are returned as a
+    # list[str] if neither index nor score is included; but are
+    # returned as a list[tuple[...]] if one or both of index/score
+    # is included.
     if with_index or with_score:
         rst_width = max(len(res[0]) for res in results)
     else:
@@ -117,22 +154,26 @@ def do_suggest(inv, params):
 
     rst_width += 2
 
+    # For now, in each case the formatting for each row is dynamically
+    # stored in `fmt`, and then `fmt` is used to actually format each row.
+
+    # TODO: Consider replacing this with a *real* table formatting tool
     if with_index:
         if with_score:
             fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
             print(fmt.format("  Name", "Score", "Index"))
             print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
-            print("\n".join(fmt.format(*_) for _ in results))
+            print("\n".join(fmt.format(*res) for res in results))
         else:
             fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
             print(fmt.format("  Name", "Index"))
             print(fmt.format("-" * rst_width, "-" * index_width))
-            print("\n".join(fmt.format(*_) for _ in results))
+            print("\n".join(fmt.format(*res) for res in results))
     else:
         if with_score:
             fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
             print(fmt.format("  Name", "Score"))
             print(fmt.format("-" * rst_width, "-" * score_width))
-            print("\n".join(fmt.format(*_) for _ in results))
+            print("\n".join(fmt.format(*res) for res in results))
         else:
-            print("\n".join(str(_) for _ in results))
+            print("\n".join(str(res) for res in results))

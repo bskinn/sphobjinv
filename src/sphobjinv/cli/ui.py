@@ -30,7 +30,7 @@ import sys
 from sphobjinv.cli.parser import PrsConst
 
 
-def log_print(thing, params, *, end="\n"):
+def print_stderr(thing, params, *, end="\n"):
     r"""Print `thing` to stderr if not in quiet mode.
 
     Quiet mode is indicated by the value at the |cli:QUIET| key

@@ -31,7 +31,7 @@ from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
 from sphobjinv.cli.parser import getparser, PrsConst
 from sphobjinv.cli.suggest import do_suggest
-from sphobjinv.cli.ui import log_print
+from sphobjinv.cli.ui import print_stderr
 
 
 def main():
@@ -53,9 +53,11 @@ def main():
     if len(sys.argv) == 1:
         sys.argv.append("-h")
 
-    # Parse commandline arguments
+    # Parse commandline arguments, discarding any unknown ones
+    # I forget why I set it up to discard these, it might be
+    # more confusing than it's worth....
     prs = getparser()
-    ns, args_left = prs.parse_known_args()
+    ns, _ = prs.parse_known_args()
     params = vars(ns)
 
     # Print version &c. and exit if indicated
@@ -69,7 +71,7 @@ def main():
 
     # Regardless of mode, insert extra blank line
     # for cosmetics
-    log_print(" ", params)
+    print_stderr(" ", params)
 
     # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
@@ -91,7 +93,7 @@ def main():
         do_suggest(inv, params)
 
     # Cosmetic final blank line
-    log_print(" ", params)
+    print_stderr(" ", params)
 
     # Clean exit
     sys.exit(0)

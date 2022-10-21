@@ -35,7 +35,7 @@ from jsonschema.exceptions import ValidationError
 from sphobjinv import Inventory, readjson, urlwalk, VersionError
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.paths import resolve_inpath
-from sphobjinv.cli.ui import err_format, log_print
+from sphobjinv.cli.ui import err_format, print_stderr
 
 
 def import_infile(in_path):
@@ -107,14 +107,14 @@ def inv_local(params):
     try:
         in_path = resolve_inpath(params[PrsConst.INFILE])
     except Exception as e:
-        log_print("\nError while parsing input file path:", params)
-        log_print(err_format(e), params)
+        print_stderr("\nError while parsing input file path:", params)
+        print_stderr(err_format(e), params)
         sys.exit(1)
 
     # Attempt import
     inv = import_infile(in_path)
     if inv is None:
-        log_print("\nError: Unrecognized file format", params)
+        print_stderr("\nError: Unrecognized file format", params)
         sys.exit(1)
 
     return inv, in_path
@@ -163,13 +163,13 @@ def inv_url(params):
         try:
             inv = Inventory(url=url)
         except HTTPError as e:
-            log_print(f"  ... HTTP error: {e.code} {e.reason}.", params)
+            print_stderr(f"  ... HTTP error: {e.code} {e.reason}.", params)
         except URLError:  # pragma: no cover
-            log_print("  ... error attempting to retrieve URL.", params)
+            print_stderr("  ... error attempting to retrieve URL.", params)
         except VersionError:
-            log_print("  ... no recognized inventory.", params)
+            print_stderr("  ... no recognized inventory.", params)
         except ValueError:
-            log_print(
+            print_stderr(
                 (
                     "  ... file found but inventory could not be loaded. "
                     "(Did you forget https:// ?)"
@@ -177,33 +177,33 @@ def inv_url(params):
                 params,
             )
         else:
-            log_print("  ... inventory found.", params)
+            print_stderr("  ... inventory found.", params)
 
         return inv
 
     # Disallow --url mode on local files
     if in_file.startswith("file:/"):
-        log_print("\nError: URL mode on local file is invalid", params)
+        print_stderr("\nError: URL mode on local file is invalid", params)
         sys.exit(1)
 
-    log_print(f"Attempting {in_file} ...", params)
+    print_stderr(f"Attempting {in_file} ...", params)
     inv = attempt_inv_load(in_file, params)
 
     if inv:
         url = in_file
     else:
         for url in urlwalk(in_file):
-            log_print(f'Attempting "{url}" ...', params)
+            print_stderr(f'Attempting "{url}" ...', params)
             inv = attempt_inv_load(url, params)
             if inv:
                 break
 
     # Cosmetic line break
-    log_print(" ", params)
+    print_stderr(" ", params)
 
     # Success or no?
     if not inv:
-        log_print("No inventory found!", params)
+        print_stderr("No inventory found!", params)
         sys.exit(1)
 
     params.update({PrsConst.FOUND_URL: url})
@@ -250,5 +250,5 @@ def inv_stdin(params):
     except (AttributeError, UnicodeEncodeError, TypeError):
         pass
 
-    log_print("Invalid plaintext or JSON inventory format.", params)
+    print_stderr("Invalid plaintext or JSON inventory format.", params)
     sys.exit(1)
