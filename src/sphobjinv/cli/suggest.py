@@ -87,7 +87,8 @@ def do_suggest(inv, params):
     #    then mapping inferred from objinv base finder and None is STRONGLY
     #    reliable.
 
-    # The confirmation query here is conditional; see the function docstring.
+    # The query here for printing the full list only occurs in some
+    # circumstances; see the function docstring.
     confirm_print_if_long_list(params, results)
 
     print_results_table(with_index, with_score, results)
@@ -134,6 +135,9 @@ def confirm_print_if_long_list(params, results):
         if resp.lower() == "n":
             print_stderr("\nExiting...", params)
             sys.exit(0)
+
+        # Extra cosmetic newline
+        print_stderr("", params)
 
 
 def print_results_table(with_index, with_score, results):
