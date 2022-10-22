@@ -26,8 +26,8 @@ Sphinx |objects.inv| files.
 """
 
 import sys
+import urllib.parse as urlparse
 
-import sphobjinv._intersphinx as soi_isphx
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.ui import print_stderr, yesno_prompt
 
@@ -184,7 +184,7 @@ def print_stderr_inferred_mapping(params):
     input_url = params[PrsConst.INFILE]
     inv_url = params[PrsConst.FOUND_URL]
 
-    reduced_inv_url = soi_isphx.extract_objectsinv_url_base(inv_url)
+    reduced_inv_url = extract_objectsinv_url_base(inv_url)
 
     if input_url == inv_url:
         # User provided an exact URL to an inventory
@@ -232,3 +232,46 @@ def print_stderr_inferred_mapping(params):
                 ),
                 params,
             )
+
+
+def extract_objectsinv_url_base(objectsinv_url):
+    """Infer a base URL for the provided ``objects.inv`` inventory URL.
+
+    If this function is a no-op, then the resulting base is NOT RELIABLE,
+    because the URL did not end with ``/objects.inv``.
+
+    If this function *does* make a change, then the resulting base is
+    RELATIVELY RELIABLE, since the only change that should occur is
+    stripping of a ``/objects.inv`` suffix, which strongly implies but
+    does not guarantee that the URL came from a Sphinx docset in the
+    standard multi-page HTML layout.
+
+    Parameters
+    ----------
+    objectsinv_url
+
+        |str| -- URL from which to attempt docset base inference
+
+    Returns
+    -------
+    trimmed
+
+        |str| -- URL after attempt to trim a trailing ``/objects.inv``
+
+    """
+    trimmed = _strip_url_to_netloc_path(objectsinv_url, with_scheme=True)
+    return f"{trimmed.rpartition('/objects.inv')[0]}/"
+
+
+def _strip_url_to_netloc_path(url, *, with_scheme=False):
+    """Reduce a URL to only netloc and path, optionally with scheme."""
+    parts = urlparse.urlsplit(url)
+    trimmed = parts._replace(
+        query="",
+        fragment="",
+    )
+
+    if not with_scheme:
+        trimmed = trimmed._replace(scheme="")
+
+    return urlparse.urlunsplit(trimmed)

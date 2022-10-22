@@ -60,6 +60,8 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     11 results found at/above current threshold of 58.
 
+    Cannot infer intersphinx_mapping from a local objects.inv.
+
       Name                                                Score
     ---------------------------------------------------  -------
     :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
@@ -100,6 +102,10 @@ cross-reference the ``linspace`` function from numpy (see
     6487 objects in inventory.
 
     8 results found at/above current threshold of 75.
+
+    The intersphinx_mapping for this docset is LIKELY:
+
+      (https://numpy.org/doc/1.19/, None)
 
       Name                                                           Score
     --------------------------------------------------------------  -------
