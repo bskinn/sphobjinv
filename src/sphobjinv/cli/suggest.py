@@ -27,6 +27,7 @@ Sphinx |objects.inv| files.
 
 import sys
 
+import sphobjinv._intersphinx as soi_isphx
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.ui import print_stderr, yesno_prompt
 
@@ -75,17 +76,7 @@ def do_suggest(inv, params):
 
     print_stderr_result_count(params, results)
 
-    # TODO: Print inferred intersphinx_mapping
-    #  - If input URL is the objinv URL and objinv base finder is a no-op,
-    #    then can't infer mapping
-    #  - If input URL is the objinv URL and objinv base finder IS NOT a no-op,
-    #    then mapping inferred from objinv base finder and None is PROBABLY
-    #    reliable.
-    #  - If input URL is NOT the objinv URL and objinv base finder is a no-op,
-    #    then SOMETHING WEIRD HAPPENED.
-    #  - If input URL is NOT the objinv URL and objinv base find IS NOT a no-op,
-    #    then mapping inferred from objinv base finder and None is STRONGLY
-    #    reliable.
+    print_stderr_inferred_mapping(params)
 
     # The query here for printing the full list only occurs in some
     # circumstances; see the function docstring.
@@ -180,3 +171,64 @@ def print_results_table(with_index, with_score, results):
             print("\n".join(fmt.format(*res) for res in results))
         else:
             print("\n".join(str(res) for res in results))
+
+
+def print_stderr_inferred_mapping(params):
+    """Print as good of an `intersphinx_mapping` entry as can be determined."""
+    if not params[PrsConst.URL]:
+        print_stderr(
+            "Cannot infer intersphinx_mapping from a local objects.inv.\n", params
+        )
+        return
+
+    input_url = params[PrsConst.INFILE]
+    inv_url = params[PrsConst.FOUND_URL]
+
+    reduced_inv_url = soi_isphx.extract_objectsinv_url_base(inv_url)
+
+    if input_url == inv_url:
+        # User provided an exact URL to an inventory
+        # The tail of input_url thus should not match anything in the inventory,
+        # so we can't say anything about what the URL base of the docset is.
+        if inv_url == reduced_inv_url:
+            # The inventory URL does not end with the standard /objects.inv,
+            # so we don't even have *that* point of reference to work with.
+            print_stderr(
+                (
+                    "Cannot infer intersphinx_mapping for this docset using\n"
+                    "the provided input URL.\n"
+                ),
+                params,
+            )
+        else:
+            # The inventory URL *does* end with standard /objects.inv,
+            # so there's a reasonable chance we know the mapping.
+            print_stderr(
+                (
+                    "The intersphinx_mapping for this docset is PROBABLY:\n\n"
+                    f"  ({reduced_inv_url}, None)\n"
+                ),
+                params,
+            )
+    else:
+        # User provided a URL from the docset that reduced to a base, atop which
+        # an inventory at .../objects.inv was found.
+        if inv_url == reduced_inv_url:
+            # This should never happen, because the only way we should be in
+            # this outer else is if inv_url *DOES* end in /objects.inv
+            print_stderr(
+                (
+                    "ERROR: Inconsistent internal state "
+                    "during intersphinx_mapping inference.\n"
+                ),
+                params,
+            )
+        else:
+            # Here we're *very* confident that we've go the mapping.
+            print_stderr(
+                (
+                    "The intersphinx_mapping for this docset is LIKELY:\n\n"
+                    f"  ({reduced_inv_url}, None)\n"
+                ),
+                params,
+            )
