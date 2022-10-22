@@ -73,7 +73,7 @@ def do_suggest(inv, params):
 
     print_stderr(f"{inv.count} objects in inventory.\n", params)
 
-    log_print_result_count(params, results)
+    print_stderr_result_count(params, results)
 
     # TODO: Print inferred intersphinx_mapping
     #  - If input URL is the objinv URL and objinv base finder is a no-op,
@@ -90,10 +90,10 @@ def do_suggest(inv, params):
     # The confirmation query here is conditional; see the function docstring.
     confirm_print_if_long_list(params, results)
 
-    log_print_results_table(with_index, with_score, results)
+    print_results_table(with_index, with_score, results)
 
 
-def log_print_result_count(params, results):
+def print_stderr_result_count(params, results):
     """Report the count of found objects from the suggest search."""
     if len(results) == 0:
         print_stderr(
@@ -136,7 +136,7 @@ def confirm_print_if_long_list(params, results):
             sys.exit(0)
 
 
-def log_print_results_table(with_index, with_score, results):
+def print_results_table(with_index, with_score, results):
     """Prepare and print the table of suggest search results."""
     # Field widths in output
     score_width = 7
