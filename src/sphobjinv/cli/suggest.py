@@ -195,7 +195,7 @@ def print_stderr_inferred_mapping(params):
             # so we don't even have *that* point of reference to work with.
             print_stderr(
                 (
-                    "Cannot infer intersphinx_mapping for this docset using\n"
+                    "Cannot infer intersphinx_mapping for this docset using "
                     "the provided input URL.\n"
                 ),
                 params,
@@ -260,7 +260,12 @@ def extract_objectsinv_url_base(objectsinv_url):
 
     """
     trimmed = _strip_url_to_netloc_path(objectsinv_url, with_scheme=True)
-    return f"{trimmed.rpartition('/objects.inv')[0]}/"
+    base = trimmed.rpartition("/objects.inv")[0]
+
+    if base:
+        return f"{base}/"
+    else:
+        return objectsinv_url
 
 
 def _strip_url_to_netloc_path(url, *, with_scheme=False):

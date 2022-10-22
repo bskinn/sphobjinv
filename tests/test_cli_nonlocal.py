@@ -204,7 +204,7 @@ class TestSuggest:
             )
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
-    def test_cli_suggest_from_objinv_url(self, run_cmdline_test, check):
+    def test_cli_suggest_from_typical_objinv_url(self, run_cmdline_test, check):
         """Confirm reST-only suggest works for direct objects.inv URL."""
         url = "http://sphobjinv.readthedocs.io/en/v2.0/objects.inv"
         with stdio_mgr() as (in_, out_, err_):
@@ -215,3 +215,13 @@ class TestSuggest:
             check.is_in(
                 "(http://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
             )
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    def test_cli_suggest_from_django_objinv_url(self, run_cmdline_test, check):
+        """Confirm reST-only suggest works for direct objects.inv URL."""
+        url = "https://docs.djangoproject.com/en/4.1/_objects/"
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["suggest", "-u", url, "route", "-a"])
+
+            check.is_true(re.search("DATABASE_ROUTERS", out_.getvalue()))
+            check.is_in("Cannot infer intersphinx_mapping", err_.getvalue())
