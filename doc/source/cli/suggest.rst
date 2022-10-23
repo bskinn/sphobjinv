@@ -1,7 +1,7 @@
 .. Description of suggest commandline usage
 
-Command-Line Usage: "suggest" Mode
-==================================
+Command-Line Usage: "suggest" Subcommand
+========================================
 
 .. program:: sphobjinv suggest
 
