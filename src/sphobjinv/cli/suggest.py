@@ -216,7 +216,7 @@ def print_stderr_inferred_mapping(params):
         if inv_url == reduced_inv_url:
             # This should never happen, because the only way we should be in
             # this outer else is if inv_url *DOES* end in /objects.inv
-            print_stderr(
+            print_stderr(  # pragma: no cover
                 (
                     "ERROR: Inconsistent internal state "
                     "during intersphinx_mapping inference.\n"
