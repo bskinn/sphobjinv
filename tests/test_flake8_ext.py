@@ -58,7 +58,7 @@ def test_flake8_version_output(check):
 
     # This is fragile if anything ends up not having a prefix that needs
     # stripping
-    plugins = [p.partition("-")[-1] for p in plugins]
+    plugins = [p.partition("flake8-")[-1] for p in plugins]
 
     flake8_ver_output = sp.check_output(  # noqa: S607,S603
         ["flake8", "--version"], universal_newlines=True
@@ -66,4 +66,4 @@ def test_flake8_version_output(check):
 
     for p in plugins:
         with check.check(msg=p):
-            assert p in flake8_ver_output.replace("_", "-")
+            assert p in flake8_ver_output.replace("_", "-").replace("\n", "")
