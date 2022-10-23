@@ -56,7 +56,7 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-    217 objects in inventory.
+    214 objects in inventory.
 
     11 results found at/above current threshold of 58.
 
@@ -149,7 +149,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.3, 217 objects>
+    <Inventory (fname_zlib): sphobjinv v2.3, 214 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
