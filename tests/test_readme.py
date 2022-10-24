@@ -69,7 +69,7 @@ def test_readme_shell_cmds(ensure_doc_scratch, check):
 
     dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
-    for i, mch in enumerate(p_shell.finditer(text)):
+    for mch in p_shell.finditer(text):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
@@ -81,5 +81,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, check):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with check.check(msg=f"match_{i}"):
+        with check.check():
             assert chk.check_output(out, result, dt_flags), msg
