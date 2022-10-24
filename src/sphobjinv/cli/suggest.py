@@ -26,6 +26,7 @@ Sphinx |objects.inv| files.
 """
 
 import sys
+import time
 import urllib.parse as urlparse
 
 from sphobjinv.cli.parser import PrsConst
@@ -73,14 +74,18 @@ def do_suggest(inv, params):
     )
 
     print_stderr(f"{inv.count} objects in inventory.\n", params)
+    time.sleep(0.2)
 
     print_stderr_result_count(params, results)
+    time.sleep(0.2)
 
     print_stderr_inferred_mapping(params)
+    time.sleep(0.2)
 
     # The query here for printing the full list only occurs in some
     # circumstances; see the function docstring.
     confirm_print_if_long_list(params, results)
+    time.sleep(0.2)
 
     print_results_table(with_index, with_score, results)
 
