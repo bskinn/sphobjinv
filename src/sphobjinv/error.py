@@ -37,3 +37,5 @@ class VersionError(SphobjinvError):
     |objects.inv| files (see :doc:`here </syntax>`).
 
     """
+
+    # TODO: Add SOI prefix to this class name as part of the exceptions refactor

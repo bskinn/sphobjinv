@@ -3,17 +3,23 @@
 Command-Line Usage
 ==================
 
-The CLI for |soi| is implemented using two subparsers, one each for the
-:doc:`convert <convert>` and :doc:`suggest <suggest>` sub-functions.
-More information about the implementation of these features can be
-found :doc:`here <implementation/index>` and in the documentation for the
+The CLI for |soi| is implemented using two subcommands:
+
+  - A :doc:`convert <convert>` subcommand, which handles conversion of
+    inventories between supported formats (currently zlib-compressed,
+    plaintext, and JSON).
+  - A :doc:`suggest <suggest>` subcommand, which provides suggestions for
+    objects in an inventory matching a desired search term.
+
+More information about the underlying implementation of these subcommands can
+be found :doc:`here <implementation/index>` and in the documentation for the
 :class:`~sphobjinv.inventory.Inventory` object, in particular the
 :meth:`~sphobjinv.inventory.Inventory.data_file` and
 :meth:`~sphobjinv.inventory.Inventory.suggest` methods.
 
 Some notes on these CLI docs:
 
- * CLI examples are executed in a sandboxed directory pre-loaded with
+ * CLI docs examples are executed in a sandboxed directory pre-loaded with
    |cour|\ objects_attrs.inv\ |/cour| (from, e.g.,
    `here <https://github.com/bskinn/sphobjinv/blob/main/
    tests/resource/objects_attrs.inv>`__).
@@ -54,5 +60,3 @@ The options for the parent |soi| command are:
 
     "convert" Mode <convert>
     "suggest" Mode <suggest>
-
-

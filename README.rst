@@ -56,9 +56,11 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-    205 objects in inventory.
+    214 objects in inventory.
 
     11 results found at/above current threshold of 58.
+
+    Cannot infer intersphinx_mapping from a local objects.inv.
 
       Name                                                Score
     ---------------------------------------------------  -------
@@ -80,8 +82,8 @@ The ``-s`` argument in the above shell command indicates to print the
 ``fuzzywuzzy`` match score along with each search result, and ``-t 50``
 changes the reporting threshold for the match score.
 
-For external references, just find the API documentation wherever it lives on the web,
-and pass ``sphobjinv suggest`` a URL from within the documentation set
+For external references, just find the API documentation wherever it lives on
+the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
 `here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
@@ -101,6 +103,10 @@ cross-reference the ``linspace`` function from numpy (see
 
     8 results found at/above current threshold of 75.
 
+    The intersphinx_mapping for this docset is LIKELY:
+
+      (https://numpy.org/doc/1.19/, None)
+
       Name                                                           Score
     --------------------------------------------------------------  -------
     :py:function:`numpy.linspace`                                     90
@@ -114,8 +120,8 @@ cross-reference the ``linspace`` function from numpy (see
 
 .. end shell command
 
-**NOTE** that the results from ``sphobjinv suggest`` are printed using the longer
-*block directives*, whereas cross-references must be composed using the
+**NOTE** that the results from ``sphobjinv suggest`` are printed using the
+longer *block directives*, whereas cross-references must be composed using the
 *inline directives*. Thus, the above ``linspace()`` function must be
 cross-referenced as ``:func:`numpy.linspace```, **not**
 ``:function:`numpy.linspace```.
@@ -143,13 +149,13 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.2, 205 objects>
+    <Inventory (fname_zlib): sphobjinv v2.3, 214 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.2'
+    '2.3'
     >>> inv.objects[0]
-    DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
+    DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
 
 The API also enables straightforward re-export of an inventory,
 for subsequent use with ``intersphinx`` cross-references.

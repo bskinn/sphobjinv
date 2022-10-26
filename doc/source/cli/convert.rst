@@ -1,11 +1,11 @@
 .. Description of convert commandline usage
 
-Command-Line Usage: "convert" Mode
-==================================
+Command-Line Usage: "convert" Subcommand
+========================================
 
 .. program:: sphobjinv convert
 
-The |cour|\ convert\ |/cour| subparser is used for all conversions of
+The |cour|\ convert\ |/cour| subcommand is used for all conversions of
 "version 2" Sphinx inventory
 files among plaintext, zlib-compressed, and (unique to |soi|) JSON formats.
 The |soi| CLI can read and write inventory data from local files
