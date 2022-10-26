@@ -11,6 +11,12 @@ and this project strives to adhere to
 
 #### Added
 
+  * The CLI now prints an inferred `intersphinx_mapping` entry for a remote
+    docset as part of the 'suggest' mode output, where such inference is
+    possible. The output from this mapping inference was added to the relevant
+    tests, and a couple of unit tests on some basic pieces of functionality were
+    written. ([#149](https://github.com/bskinn/sphobjinv/issues/149))
+
   * The CLI now provides considerably more information about what is happening
     with the URLs it checks when trying to retrieve a remote inventory.
     ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
@@ -21,7 +27,29 @@ and this project strives to adhere to
     now results in a clean error-exit, instead of an exception.
     ([#239](https://github.com/bskinn/sphobjinv/issues/239))
 
+#### Documentation
+
+  * Add new 'CLI implementation' pages for the new modules, downstream of the
+    refactoring of the CLI 'convert' and 'suggest' code.
+
+  * Revise the intro paragraph of the 'CLI usage' page to more clearly emphasize
+    the two CLI subcommands and the links to their respective docs pages.
+
 #### Internal
+
+  * Refactor CLI code to place the 'convert' and 'suggest' implementations in
+    their own modules.
+
+  * Refactor CLI 'suggest' code to the main `do_suggest()` function and a
+    handful of sub-functions.
+
+  * Rename the `log_print()` CLI helper function to the more-descriptive
+    `print_stderr()`.
+
+  * Bump development Sphinx version to v5.3.
+
+  * Bump flake8 version to >=5, due to the absorption of flake8-colors
+    colorization functionality. The flake8/tox config was updated accordingly.
 
   * Bump pre-commit black hook to v22.3.0.
 
