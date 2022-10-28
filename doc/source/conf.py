@@ -126,6 +126,10 @@ rst_epilog = r"""
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
 
+.. |pipx| replace:: ``pipx``
+
+.. _pipx: https://pypa.github.io/pipx/
+
 .. |python-Levenshtein| replace:: ``python-Levenshtein``
 
 .. _python-Levenshtein: https://pypi.org/project/python-Levenshtein
