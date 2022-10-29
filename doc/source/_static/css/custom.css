@@ -1,0 +1,16 @@
+div.wy-side-nav-search {
+    background-color: #7ebbff;
+}
+
+div.version {
+    color: #ffffff !important;
+    font-weight: bolder !important;
+}
+
+li.toctree-l1:not(.current) a {
+    color: #f8f8f8 !important;
+}
+
+form.wy-form input {
+    border: 3px solid #6eabef !important;
+}
