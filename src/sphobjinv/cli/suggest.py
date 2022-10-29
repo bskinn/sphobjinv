@@ -82,7 +82,7 @@ def do_suggest(inv, params):
     # circumstances; see the function docstring.
     confirm_print_if_long_list(params, results)
 
-    print_results_table(with_index, with_score, results)
+    print_results_table(with_index, with_score, results, params)
 
 
 def print_stderr_result_count(params, results):
@@ -131,7 +131,7 @@ def confirm_print_if_long_list(params, results):
         print_stderr("", params)
 
 
-def print_results_table(with_index, with_score, results):
+def print_results_table(with_index, with_score, results, params):
     """Prepare and print the table of suggest search results."""
     # Field widths in output
     score_width = 7
@@ -154,23 +154,54 @@ def print_results_table(with_index, with_score, results):
     # TODO: Consider replacing this with a *real* table formatting tool
     if with_index:
         if with_score:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
-            print(fmt.format("  Name", "Score", "Index"))
-            print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            ...
         else:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
-            print(fmt.format("  Name", "Index"))
-            print(fmt.format("-" * rst_width, "-" * index_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            ...
     else:
         if with_score:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
-            print(fmt.format("  Name", "Score"))
-            print(fmt.format("-" * rst_width, "-" * score_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            ...
         else:
-            print("\n".join(str(res) for res in results))
+            gen = generate_names_only_lines
+
+    if params[PrsConst.PAGINATE]:
+        ...
+    else:
+        print("\n".join(gen(results)))
+
+    # if with_index:
+    #     if with_score:
+    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
+    #         print(fmt.format("  Name", "Score", "Index"))
+    #         print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
+    #         print("\n".join(fmt.format(*res) for res in results))
+    #     else:
+    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
+    #         print(fmt.format("  Name", "Index"))
+    #         print(fmt.format("-" * rst_width, "-" * index_width))
+    #         print("\n".join(fmt.format(*res) for res in results))
+    # else:
+    #     if with_score:
+    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
+    #         print(fmt.format("  Name", "Score"))
+    #         print(fmt.format("-" * rst_width, "-" * score_width))
+    #         print("\n".join(fmt.format(*res) for res in results))
+    #     else:
+    #         print("\n".join(str(res) for res in results))
+
+
+# def generate_results_table_lines(results, with_index, with_score, index_width=7, score_width=7):
+#     """Yield the individual lines of the suggest results output."""
+#     # TODO: This could be swapped to use pattern matching once < 3.9 is out of support
+#     flags = (with_index, with_score)
+
+#     if flags == (True, True):
+
+#     elif flags == ()
+
+
+def generate_names_only_lines(results):
+    """Yield lines to print containing just the object search results."""
+    yield from (str(res) for res in results)
 
 
 def print_stderr_inferred_mapping(params):
