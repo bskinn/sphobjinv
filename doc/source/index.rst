@@ -41,6 +41,10 @@ Install |soi| via |cour|\ pip\ |/cour|::
 
     $ pip install sphobjinv
 
+Or, if you only plan to use the |soi| CLI, another option is |pipx|_::
+
+    $ pipx install sphobjinv
+
 Alternatively, |soi| is packaged with
 `multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__
 and package managers, including:

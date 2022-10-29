@@ -126,6 +126,10 @@ rst_epilog = r"""
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
 
+.. |pipx| replace:: ``pipx``
+
+.. _pipx: https://pypa.github.io/pipx/
+
 .. |python-Levenshtein| replace:: ``python-Levenshtein``
 
 .. _python-Levenshtein: https://pypi.org/project/python-Levenshtein
@@ -321,3 +325,8 @@ htmlhelp_basename = "sphobjinv"
 # Location of the favicon and logo images
 html_favicon = "_static/soi-logo.png"
 html_logo = "_static/soi-logo_duo_border.png"
+
+# Adding custom CSS
+html_css_files = [
+    "css/custom.css",
+]

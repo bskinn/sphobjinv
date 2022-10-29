@@ -49,8 +49,9 @@ you mean, but it's pretty hit-or-miss.  The best approach is to provide
 Sphinx with a completely specified cross-reference, and that's where
 ``sphobjinv`` comes in.
 
-After a ``pip install sphobjinv``, find the documentation set you want
-to cross-reference into, and pass it to ``sphobjinv suggest``.
+After a ``pip install sphobjinv`` (or ``pipx install sphobjinv``), find the
+documentation set you want to cross-reference into, and pass it to
+``sphobjinv suggest``.
 
 For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
