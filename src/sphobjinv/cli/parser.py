@@ -147,6 +147,10 @@ class PrsConst:
     #: number returned, without asking for confirmation
     ALL = "all"
 
+    #: Optional argument name for use with the :data:`SUGGEST` subparser,
+    #: indicating to paginate the suggest subcommand results
+    PAGINATE = "paginate"
+
     # ### Helper strings
     #: Help text for the :data:`CONVERT` subparser
     HELP_CO_PARSER = (
@@ -329,6 +333,12 @@ def getparser():
         help="Display all results "
         "regardless of the number returned "
         "without prompting for confirmation.",
+        action="store_true",
+    )
+    spr_suggest.add_argument(
+        "-" + PrsConst.PAGINATE[0],
+        "--" + PrsConst.PAGINATE,
+        help="Paginate long search results",
         action="store_true",
     )
     spr_suggest.add_argument(
