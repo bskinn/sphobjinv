@@ -25,6 +25,8 @@ Sphinx |objects.inv| files.
 
 """
 
+import itertools as itt
+import shutil
 import sys
 import urllib.parse as urlparse
 
@@ -159,14 +161,32 @@ def print_results_table(with_index, with_score, results, params):
             ...
     else:
         if with_score:
-            ...
+            pass
         else:
-            gen = generate_names_only_lines
+            gen = generate_names_only_lines(results)
 
-    if params[PrsConst.PAGINATE]:
-        ...
+    if not params[PrsConst.PAGINATE]:
+        print("\n".join(gen))
     else:
-        print("\n".join(gen(results)))
+        # To make sure the initial output is not scrolled off the screen
+        # when --all is specified.
+        if params[PrsConst.ALL]:
+            input("Press Enter to continue...")
+
+        while True:
+            # Adjust the number of lines per page if the user changes their
+            # terminal window size mid-execution
+            n_lines = shutil.get_terminal_size().lines - 2
+            out_text = "\n".join(itt.islice(gen, n_lines))
+
+            if out_text:
+                print(out_text)
+                # Don't paginate after the last, partial screenful of output
+                if out_text.count("\n") == n_lines - 1:
+                    input("Press Enter to continue...")
+            else:
+                # join() above will supply an empty string once gen is exhausted
+                break
 
     # if with_index:
     #     if with_score:
