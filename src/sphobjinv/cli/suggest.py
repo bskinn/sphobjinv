@@ -161,7 +161,7 @@ def print_results_table(with_index, with_score, results, params):
             ...
     else:
         if with_score:
-            pass
+            gen = generate_score_lines(results, score_width, rst_width)
         else:
             gen = generate_names_only_lines(results)
 
@@ -209,14 +209,12 @@ def print_results_table(with_index, with_score, results, params):
     #         print("\n".join(str(res) for res in results))
 
 
-# def generate_results_table_lines(results, with_index, with_score, index_width=7, score_width=7):
-#     """Yield the individual lines of the suggest results output."""
-#     # TODO: This could be swapped to use pattern matching once < 3.9 is out of support
-#     flags = (with_index, with_score)
-
-#     if flags == (True, True):
-
-#     elif flags == ()
+def generate_score_lines(results, score_width, rst_width):
+    """Yield lines to print the table with scores."""
+    fmt = f"{{name: <{rst_width}}}  {{score: ^{score_width}}}"
+    yield fmt.format(name="  Name", score="Score")
+    yield fmt.format(name=("-" * rst_width), score=("-" * score_width))
+    yield from (fmt.format(name=res[0], score=res[1]) for res in results)
 
 
 def generate_names_only_lines(results):
