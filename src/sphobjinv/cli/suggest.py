@@ -156,9 +156,11 @@ def print_results_table(with_index, with_score, results, params):
     # TODO: Consider replacing this with a *real* table formatting tool
     if with_index:
         if with_score:
-            ...
+            gen = generate_score_index_lines(
+                results, score_width, index_width, rst_width
+            )
         else:
-            ...
+            gen = generate_index_lines(results, index_width, rst_width)
     else:
         if with_score:
             gen = generate_score_lines(results, score_width, rst_width)
@@ -188,25 +190,25 @@ def print_results_table(with_index, with_score, results, params):
                 # join() above will supply an empty string once gen is exhausted
                 break
 
-    # if with_index:
-    #     if with_score:
-    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
-    #         print(fmt.format("  Name", "Score", "Index"))
-    #         print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
-    #         print("\n".join(fmt.format(*res) for res in results))
-    #     else:
-    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
-    #         print(fmt.format("  Name", "Index"))
-    #         print(fmt.format("-" * rst_width, "-" * index_width))
-    #         print("\n".join(fmt.format(*res) for res in results))
-    # else:
-    #     if with_score:
-    #         fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
-    #         print(fmt.format("  Name", "Score"))
-    #         print(fmt.format("-" * rst_width, "-" * score_width))
-    #         print("\n".join(fmt.format(*res) for res in results))
-    #     else:
-    #         print("\n".join(str(res) for res in results))
+
+def generate_score_index_lines(results, score_width, index_width, rst_width):
+    """Yield lines to print the table with scores & indices."""
+    fmt = (
+        f"{{name: <{rst_width}}}  {{score: ^{score_width}}}  {{index: ^{index_width}}}"
+    )
+    yield fmt.format(name="  Name", score="Score", index="Index")
+    yield fmt.format(
+        name=("-" * rst_width), score=("-" * score_width), index=("-" * index_width)
+    )
+    yield from (fmt.format(name=res[0], score=res[1], index=res[2]) for res in results)
+
+
+def generate_index_lines(results, index_width, rst_width):
+    """Yield lines to print the table with indices."""
+    fmt = f"{{name: <{rst_width}}}  {{index: ^{index_width}}}"
+    yield fmt.format(name="  Name", index="Index")
+    yield fmt.format(name=("-" * rst_width), index=("-" * index_width))
+    yield from (fmt.format(name=res[0], index=res[1]) for res in results)
 
 
 def generate_score_lines(results, score_width, rst_width):
