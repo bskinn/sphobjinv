@@ -358,14 +358,14 @@ class TestSuggestGood:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscore(self, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm with_score suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-st", "50"])
             re.search("^.*instance_of\\S*\\s+\\d+\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscoreandindex(self, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm with_index + with_score suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-sit", "50"])
             re.search("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", out_.getvalue(), re.M)
@@ -376,17 +376,25 @@ class TestSuggestGood:
     )  # Extra line for input() query in the "y\n" case
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_long_list(self, inp, flags, nlines, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm suggest with a long list of results works."""
         with stdio_mgr(inp) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", flags, "1"])
             assert nlines == out_.getvalue().count("\n")
 
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_many_results_stdin(self, res_cmp, run_cmdline_test):
         """Confirm suggest from stdin doesn't choke on a long list."""
         data = json.dumps(Inventory(res_cmp).json_dict())
 
         with stdio_mgr(data) as (in_, out_, err_):
             run_cmdline_test(["suggest", "-", "py", "-t", "1"])
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_suggest_paginated(self, res_cmp, run_cmdline_test):
+        """Confirm pagination works as expected for a controlled example."""
+        with stdio_mgr("\n\n") as (in_, out_, err_):
+            run_cmdline_test(["suggest", res_cmp, "function", "-sapt30"])
+            assert 2 == out_.getvalue().count("Press Enter to continue")
 
 
 class TestFail:
