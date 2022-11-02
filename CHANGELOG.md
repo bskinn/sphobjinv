@@ -21,6 +21,9 @@ and this project strives to adhere to
     with the URLs it checks when trying to retrieve a remote inventory.
     ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
 
+  * A new CLI option, `-p`/`--paginate`, enables paging of the results from the
+    `suggest` feature. ([#70](https://github.com/bskinn/sphobjinv/issues/70))
+
 #### Fixed
 
   * CLI corner case where options are passed but no subparser is specified
@@ -34,6 +37,8 @@ and this project strives to adhere to
 
   * Revise the intro paragraph of the 'CLI usage' page to more clearly emphasize
     the two CLI subcommands and the links to their respective docs pages.
+
+  * Fixed a mistake in the CLI help info for the `--url` argument to `convert`.
 
 #### Internal
 

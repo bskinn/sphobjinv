@@ -25,6 +25,8 @@ Sphinx |objects.inv| files.
 
 """
 
+import itertools as itt
+import shutil
 import sys
 import urllib.parse as urlparse
 
@@ -82,7 +84,7 @@ def do_suggest(inv, params):
     # circumstances; see the function docstring.
     confirm_print_if_long_list(params, results)
 
-    print_results_table(with_index, with_score, results)
+    print_results_table(with_index, with_score, results, params)
 
 
 def print_stderr_result_count(params, results):
@@ -131,7 +133,7 @@ def confirm_print_if_long_list(params, results):
         print_stderr("", params)
 
 
-def print_results_table(with_index, with_score, results):
+def print_results_table(with_index, with_score, results, params):
     """Prepare and print the table of suggest search results."""
     # Field widths in output
     score_width = 7
@@ -154,23 +156,72 @@ def print_results_table(with_index, with_score, results):
     # TODO: Consider replacing this with a *real* table formatting tool
     if with_index:
         if with_score:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}  {{2: ^{index_width}}}"
-            print(fmt.format("  Name", "Score", "Index"))
-            print(fmt.format("-" * rst_width, "-" * score_width, "-" * index_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            gen = generate_score_index_lines(
+                results, score_width, index_width, rst_width
+            )
         else:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{index_width}}}"
-            print(fmt.format("  Name", "Index"))
-            print(fmt.format("-" * rst_width, "-" * index_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            gen = generate_index_lines(results, index_width, rst_width)
     else:
         if with_score:
-            fmt = f"{{0: <{rst_width}}}  {{1: ^{score_width}}}"
-            print(fmt.format("  Name", "Score"))
-            print(fmt.format("-" * rst_width, "-" * score_width))
-            print("\n".join(fmt.format(*res) for res in results))
+            gen = generate_score_lines(results, score_width, rst_width)
         else:
-            print("\n".join(str(res) for res in results))
+            gen = generate_names_only_lines(results)
+
+    if not params[PrsConst.PAGINATE]:
+        print("\n".join(gen))
+    else:
+        # To make sure the initial output is not scrolled off the screen
+        # when --all is specified.
+        if params[PrsConst.ALL]:
+            input("Press Enter to continue...")
+
+        while True:
+            # Adjust the number of lines per page if the user changes their
+            # terminal window size mid-execution
+            n_lines = shutil.get_terminal_size().lines - 2
+            out_text = "\n".join(itt.islice(gen, n_lines))
+
+            if out_text:
+                print(out_text)
+                # Don't paginate after the last, partial screenful of output
+                if out_text.count("\n") == n_lines - 1:
+                    input("Press Enter to continue...")
+            else:
+                # join() above will supply an empty string once gen is exhausted
+                break
+
+
+def generate_score_index_lines(results, score_width, index_width, rst_width):
+    """Yield lines to print the table with scores & indices."""
+    fmt = (
+        f"{{name: <{rst_width}}}  {{score: ^{score_width}}}  {{index: ^{index_width}}}"
+    )
+    yield fmt.format(name="  Name", score="Score", index="Index")
+    yield fmt.format(
+        name=("-" * rst_width), score=("-" * score_width), index=("-" * index_width)
+    )
+    yield from (fmt.format(name=res[0], score=res[1], index=res[2]) for res in results)
+
+
+def generate_index_lines(results, index_width, rst_width):
+    """Yield lines to print the table with indices."""
+    fmt = f"{{name: <{rst_width}}}  {{index: ^{index_width}}}"
+    yield fmt.format(name="  Name", index="Index")
+    yield fmt.format(name=("-" * rst_width), index=("-" * index_width))
+    yield from (fmt.format(name=res[0], index=res[1]) for res in results)
+
+
+def generate_score_lines(results, score_width, rst_width):
+    """Yield lines to print the table with scores."""
+    fmt = f"{{name: <{rst_width}}}  {{score: ^{score_width}}}"
+    yield fmt.format(name="  Name", score="Score")
+    yield fmt.format(name=("-" * rst_width), score=("-" * score_width))
+    yield from (fmt.format(name=res[0], score=res[1]) for res in results)
+
+
+def generate_names_only_lines(results):
+    """Yield lines to print containing just the object search results."""
+    yield from (str(res) for res in results)
 
 
 def print_stderr_inferred_mapping(params):
