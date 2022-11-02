@@ -55,7 +55,7 @@ def main():
 
     # Parse commandline arguments, discarding any unknown ones
     # I forget why I set it up to discard these, it might be
-    # more confusing than it's worth....
+    # more confusing than it's worth to swallow them this way....
     prs = getparser()
     ns, _ = prs.parse_known_args()
     params = vars(ns)

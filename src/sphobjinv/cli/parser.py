@@ -313,7 +313,7 @@ def getparser():
         "--" + PrsConst.URL,
         help=(
             "Treat 'infile' as a URL for download. "
-            f"Cannot be used with --{PrsConst.URL}."
+            "Cannot be used with an infile of '-'."
         ),
         action="store_true",
     )
