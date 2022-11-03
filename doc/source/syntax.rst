@@ -106,8 +106,11 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 ``{role}``
     The Sphinx role used when cross-referencing the object (falls between the
-    second and third colons; or, between the first and second colons if
+    second and third/last colons; or, between the first and second/last colons if
     using the |defdom|_).
+
+    Note that the role MAY contain a colon, as occurs with the
+    |rst-directive-option|_ directive in the Sphinx docs.
 
     **Constraints**
 
@@ -115,7 +118,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
     * **MUST** match a role defined in the domain referenced by ``{domain}``
 
-    * **MUST NOT** contain whitespace or a colon
+    * **MUST NOT** contain whitespace
 
       * **RECOMMENDED** to consist of only ASCII word characters (``a-z``, ``A-Z``,
         ``0-9``, and ``_``)
@@ -283,3 +286,7 @@ as in :obj:`This is join! <str.join>`:
 .. |{uri}| replace:: ``{uri}``
 
 .. |{dispname}| replace:: ``{dispname}``
+
+.. |rst-directive-option| replace:: ``:rst:directive:option:``
+
+.. _rst-directive-option: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-rst-directive-option
