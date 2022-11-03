@@ -32,10 +32,10 @@ Basic file conversion to the default output filename is straightforward:
     >>> print(file_head('objects_attrs.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 17.2
+    # Version: 22.1
     # The remainder of this file is compressed using zlib.
-    attr.Attribute py:class 1 api.html#$ -
-    attr.Factory py:class 1 api.html#$ -
+    attr py:module 0 index.html#module-$ -
+    attr.VersionInfo py:class 1 api.html#$ -
 
 A different target filename can be specified, to avoid overwriting an existing
 file:
@@ -76,10 +76,10 @@ indicated URL):
     >>> print(file_head('objects.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 17.2
+    # Version: 22.1
     # The remainder of this file is compressed using zlib.
-    attr.Attribute py:class 1 api.html#$ -
-    attr.Factory py:class 1 api.html#$ -
+    attr py:module 0 index.html#module-$ -
+    attr.VersionInfo py:class 1 api.html#$ -
 
 The URL provided **MUST** have the leading protocol specified (here,
 |cour|\ https\ ://\ |/cour|).
@@ -135,11 +135,11 @@ If processing of JSON files by API URL is desirable, please
         >>> cli_run('sphobjinv co plain objects_attrs.inv -')
         # Sphinx inventory version 2
         # Project: attrs
-        # Version: 17.2
+        # Version: 22.1
         # The remainder of this file is compressed using zlib.
-        attr.Attribute py:class 1 api.html#$ -
-        attr.Factory py:class 1 api.html#$ -
-        attr.asdict py:function 1 api.html#$ -
+        attr py:module 0 index.html#module-$ -
+        attr.VersionInfo py:class 1 api.html#$ -
+        attr._make.Attribute py:class -1 api.html#attrs.Attribute -
         ...
 
 

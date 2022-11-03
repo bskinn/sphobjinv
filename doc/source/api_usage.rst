@@ -17,11 +17,11 @@ Inspecting the contents of an existing inventory is handled entirely by the
 
     >>> inv = soi.Inventory('objects_attrs.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): attrs v17.2, 56 objects>
+    <Inventory (fname_zlib): attrs v22.1, 129 objects>
     >>> inv.version
-    '17.2'
+    '22.1'
     >>> inv.count
-    56
+    129
 
 The location of the inventory file to import can also be provided as
 a :class:`pathlib.Path`, instead of as a string:
@@ -38,12 +38,12 @@ a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
 .. doctest:: api_inspect
 
     >>> len(inv.objects)
-    56
+    129
     >>> dobj = inv.objects[0]
     >>> dobj
-    DataObjStr(name='attr.Attribute', domain='py', role='class', priority='1', uri='api.html#$', dispname='-')
+    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='index.html#module-$', dispname='-')
     >>> dobj.name
-    'attr.Attribute'
+    'attr'
     >>> dobj.domain
     'py'
     >>> [d.name for d in inv.objects if 'validator' in d.uri]
@@ -56,10 +56,10 @@ inventories, as |bytes|:
 
     >>> inv2 = soi.Inventory(inv.data_file())
     >>> print(inv2)
-    <Inventory (bytes_plain): attrs v17.2, 56 objects>
+    <Inventory (bytes_plain): attrs v22.1, 129 objects>
     >>> inv3 = soi.Inventory(soi.compress(inv.data_file()))
     >>> print(inv3)
-    <Inventory (bytes_zlib): attrs v17.2, 56 objects>
+    <Inventory (bytes_zlib): attrs v22.1, 129 objects>
 
 Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword argument:
 
@@ -67,7 +67,7 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
 
     >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     >>> print(inv4)
-    <Inventory (url): attrs v17.2, 56 objects>
+    <Inventory (url): attrs v22.1, 129 objects>
 
 Comparing Inventories
 ---------------------
@@ -118,10 +118,10 @@ The :class:`~sphobjinv.data.DataObjStr` instances can be edited in place:
 
     >>> inv = soi.Inventory('objects_attrs.inv')
     >>> inv.objects[0]
-    DataObjStr(name='attr.Attribute', domain='py', role='class', priority='1', uri='api.html#$', dispname='-')
+    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='index.html#module-$', dispname='-')
     >>> inv.objects[0].uri = 'attribute.html'
     >>> inv.objects[0]
-    DataObjStr(name='attr.Attribute', domain='py', role='class', priority='1', uri='attribute.html', dispname='-')
+    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='attribute.html', dispname='-')
 
 New instances can be easily created either by direct instantiation, or by
 :meth:`~sphobjinv.data.SuperDataObj.evolve`:
@@ -130,9 +130,9 @@ New instances can be easily created either by direct instantiation, or by
 
     >>> inv.objects.append(inv.objects[0].evolve(name='attr.Generator', uri='generator.html'))
     >>> inv.count
-    57
+    130
     >>> inv.objects[-1]
-    DataObjStr(name='attr.Generator', domain='py', role='class', priority='1', uri='generator.html', dispname='-')
+    DataObjStr(name='attr.Generator', domain='py', role='module', priority='0', uri='generator.html', dispname='-')
 
 The other attributes of the :class:`~sphobjinv.inventory.Inventory` instance can also be freely modified:
 
@@ -141,7 +141,7 @@ The other attributes of the :class:`~sphobjinv.inventory.Inventory` instance can
     >>> inv.project = 'not_attrs'
     >>> inv.version = '0.1'
     >>> print(inv)
-    <Inventory (fname_zlib): not_attrs v0.1, 57 objects>
+    <Inventory (fname_zlib): not_attrs v0.1, 130 objects>
 
 
 Formatting Inventory Contents
@@ -156,10 +156,10 @@ the plaintext |objects.inv| format **as** |bytes| via :meth:`~sphobjinv.inventor
     >>> print(*inv.data_file().splitlines()[:6], sep='\n')
     b'# Sphinx inventory version 2'
     b'# Project: attrs'
-    b'# Version: 17.2'
+    b'# Version: 22.1'
     b'# The remainder of this file is compressed using zlib.'
-    b'attr.Attribute py:class 1 api.html#$ -'
-    b'attr.Factory py:class 1 api.html#$ -'
+    b'attr py:module 0 index.html#module-$ -'
+    b'attr.VersionInfo py:class 1 api.html#$ -'
 
 This method makes use of the :meth:`DataObjStr.data_line <sphobjinv.data.SuperDataObj.data_line>`
 method to format each of the object information lines.
@@ -171,11 +171,11 @@ If desired, the :ref:`shorthand <syntax_shorthand>` used for the
 .. doctest:: api_formatting
 
     >>> print(*inv.data_file(expand=True).splitlines()[4:6], sep='\n')
-    b'attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute'
-    b'attr.Factory py:class 1 api.html#attr.Factory attr.Factory'
+    b'attr py:module 0 index.html#module-attr attr'
+    b'attr.VersionInfo py:class 1 api.html#attr.VersionInfo attr.VersionInfo'
     >>> do = inv.objects[0]
     >>> do.data_line(expand=True)
-    'attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute'
+    'attr py:module 0 index.html#module-attr attr'
 
 
 Exporting an Inventory
@@ -202,10 +202,10 @@ To export plaintext:
     >>> print(*Path('objects_attrs.txt').read_text().splitlines()[:6], sep='\n')
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 17.2
+    # Version: 22.1
     # The remainder of this file is compressed using zlib.
-    attr.Attribute py:class 1 api.html#$ -
-    attr.Factory py:class 1 api.html#$ -
+    attr py:module 0 index.html#module-$ -
+    attr.VersionInfo py:class 1 api.html#$ -
 
 For zlib-compressed:
 
@@ -216,10 +216,10 @@ For zlib-compressed:
     >>> print(*Path('objects_attrs_new.inv').read_bytes().splitlines()[:4], sep='\n')
     b'# Sphinx inventory version 2'
     b'# Project: attrs'
-    b'# Version: 17.2'
+    b'# Version: 22.1'
     b'# The remainder of this file is compressed using zlib.'
     >>> print(Path('objects_attrs_new.inv').read_bytes().splitlines()[6][:10])
-    b'5\xcb0\xd7\x9f>\xf3\x84\x89'
+    b'\xbf\x86\x8fL49\xc4\x91\xb8\x8c'
 
 For JSON:
 
@@ -229,4 +229,3 @@ For JSON:
     >>> soi.writejson('objects_attrs.json', jd)
     >>> print(Path('objects_attrs.json').read_text()[:51])  # doctest: +SKIP
     {"project": "attrs", "version": "17.2", "count": 56
-
