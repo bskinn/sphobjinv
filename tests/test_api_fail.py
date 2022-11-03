@@ -141,7 +141,7 @@ class TestInventory:
         """Confirm error raised when JSON dict passed w/too many objects."""
         inv = soi.Inventory(path_fxn(res_dec))
         d = inv.json_dict()
-        d.update({"57": d["23"]})
+        d.update({"4000": d["23"]})
 
         with pytest.raises(ValueError):
             soi.Inventory(dict_json=d)

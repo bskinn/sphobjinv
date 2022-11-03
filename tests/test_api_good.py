@@ -108,23 +108,23 @@ class TestCore:
             [
                 0,
                 {  # attr.Attribute py:class 1 api.html#$ -
-                    soi.DataFields.Name: b"attr.Attribute",
+                    soi.DataFields.Name: b"attr",
                     soi.DataFields.Domain: b"py",
-                    soi.DataFields.Role: b"class",
-                    soi.DataFields.Priority: b"1",
-                    soi.DataFields.URI: b"api.html#$",
+                    soi.DataFields.Role: b"module",
+                    soi.DataFields.Priority: b"0",
+                    soi.DataFields.URI: b"index.html#module-$",
                     soi.DataFields.DispName: b"-",
                 },
             ],
             [
                 -3,
                 {  # slots std:label -1 examples.html#$ Slots
-                    soi.DataFields.Name: b"slots",
+                    soi.DataFields.Name: b"validators",
                     soi.DataFields.Domain: b"std",
                     soi.DataFields.Role: b"label",
                     soi.DataFields.Priority: b"-1",
-                    soi.DataFields.URI: b"examples.html#$",
-                    soi.DataFields.DispName: b"Slots",
+                    soi.DataFields.URI: b"init.html#$",
+                    soi.DataFields.DispName: b"Validators",
                 },
             ],
         ),
@@ -133,7 +133,7 @@ class TestCore:
         """Confirm the regex for loading data lines is working properly."""
         # Prelim approximate check to be sure we're working with the
         # correct file/data.
-        assert len(soi.re.pb_data.findall(bytes_txt)) == 56
+        assert len(soi.re.pb_data.findall(bytes_txt)) == 129
 
         mchs = list(soi.re.pb_data.finditer(bytes_txt))
 
@@ -444,13 +444,13 @@ class TestInventory:
 
         inv2 = soi.Inventory(d, count_error=False)
 
-        # 55 b/c the loop continues past missing elements
-        assert inv2.count == 55
+        # 128 (one less than 129) b/c the loop continues past missing elements
+        assert inv2.count == 128
 
     def test_api_inventory_namesuggest(self, res_cmp, check):
         """Confirm object name suggestion is nominally working on a specific object."""
-        rst = ":py:function:`attr.evolve`"
-        idx = 6
+        rst = ":py:function:`attr.attr.evolve`"
+        idx = 10
 
         inv = soi.Inventory(str(res_cmp))
 

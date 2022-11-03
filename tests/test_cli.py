@@ -354,7 +354,7 @@ class TestSuggestGood:
         """Confirm with_index suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-it", "50"])
-            assert re.search("^.*instance_of\\S*\\s+23\\s*$", out_.getvalue(), re.M)
+            assert re.search("^.*instance_of\\S*\\s+82\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscore(self, run_cmdline_test, res_cmp):
@@ -368,11 +368,11 @@ class TestSuggestGood:
         """Confirm with_index + with_score suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-sit", "50"])
-            re.search("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", out_.getvalue(), re.M)
+            re.search("^.*instance_of\\S*\\s+\\d+\\s+82\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.parametrize(
         ["inp", "flags", "nlines"],
-        [("", "-at", 56), ("y\n", "-t", 57), ("n\n", "-t", 1)],
+        [("", "-at", 129), ("y\n", "-t", 130), ("n\n", "-t", 1)],
     )  # Extra line for input() query in the "y\n" case
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_long_list(self, inp, flags, nlines, run_cmdline_test, res_cmp):
@@ -392,9 +392,9 @@ class TestSuggestGood:
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_paginated(self, res_cmp, run_cmdline_test):
         """Confirm pagination works as expected for a controlled example."""
-        with stdio_mgr("\n\n") as (in_, out_, err_):
+        with stdio_mgr("\n" * 5) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "function", "-sapt30"])
-            assert 2 == out_.getvalue().count("Press Enter to continue")
+            assert 5 == out_.getvalue().count("Press Enter to continue")
 
 
 class TestFail:
