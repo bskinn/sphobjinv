@@ -26,19 +26,47 @@ and this project strives to adhere to
 
 #### Fixed
 
+  * The regex for parsing object lines from decompressed inventories now
+    correctly processes `{role}` values that contain internal colons.
+
   * CLI corner case where options are passed but no subparser is specified
     now results in a clean error-exit, instead of an exception.
     ([#239](https://github.com/bskinn/sphobjinv/issues/239))
 
 #### Documentation
 
-  * Add new 'CLI implementation' pages for the new modules, downstream of the
+  * Updated doctests to reflect the new v22.1 attrs `objects.inv` used for
+    demonstration purposes.
+
+  * Updated `syntax.rst` to indicate that the `{role}` in an inventory object
+    MAY contain a colon.
+
+  * Added new 'CLI implementation' pages for the new modules, downstream of the
     refactoring of the CLI 'convert' and 'suggest' code.
 
-  * Revise the intro paragraph of the 'CLI usage' page to more clearly emphasize
+  * Revised the intro paragraph of the 'CLI usage' page to more clearly emphasize
     the two CLI subcommands and the links to their respective docs pages.
 
   * Fixed a mistake in the CLI help info for the `--url` argument to `convert`.
+
+#### Tests
+
+  * Various tests were updated to reflect the contents of the new v22.1 attrs
+    `objects.inv` introduced to replace the previous v17.2 inventory.
+
+  * A modern Sphinx `objects.inv` (v6.0.0b) was added to `tests/resource` as
+    `objects_sphinx.inv`, and the previous v1.6.6 was renamed to
+    `objects_sphinx_1_6_6.inv`.
+
+  * The 'valid objects' test cases were updated to reflect the possibility for a colon within `{role}`:
+
+    * The colon-within-`{role}` test case was moved from 'invalid' to 'valid'.
+
+    * The colon-within-`{domain}` test case was also moved from 'invalid' to
+      'valid', but with an annotation added to indicate that it's not actually
+      viable---it will actually be interpreted incorrectly, with the first
+      portion of the colon-containing `{domain}` imported as `{domain}`, and the
+      remainder imported as part of `{role}`.
 
 #### Internal
 
