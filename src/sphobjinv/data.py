@@ -133,7 +133,7 @@ class SuperDataObj(metaclass=ABCMeta):
     @property
     @abstractmethod
     def priority(self):
-        r"""Object search priority\ |dag|."""
+        r"""Object search priority, as handled internally by Sphinx\ |dag|."""
 
     @property
     @abstractmethod
