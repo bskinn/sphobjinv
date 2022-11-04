@@ -3,10 +3,11 @@
 Sphinx objects.inv v2 Syntax
 ============================
 
-After decompression, "version 2" Sphinx |objects.inv| files
-follow a syntax that, to the best of this author's ability to determine,
-is not included in the Sphinx documentation. The below
-syntax is believed to be accurate as of Jan 2022 (Sphinx v4.4.0).
+After decompression, "version 2" Sphinx |objects.inv| files follow a syntax
+that, to the best of this author's ability to determine, is not included in the
+Sphinx documentation. The below syntax is believed to be accurate as of Nov 2022
+(Sphinx v6.0.0b2). It is based on inspection of |objects.inv| files "in the
+wild" and of the Sphinx inventory object `parsing regex`_.
 
 Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be valid for all
@@ -22,7 +23,7 @@ of an |objects.inv| data line.
 ----
 
 **The first line** `must be exactly
-<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L89-L90>`__:
+<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L81-L82>`__:
 
 .. code-block:: none
 
@@ -31,7 +32,7 @@ of an |objects.inv| data line.
 ----
 
 **The second and third lines** `must obey
-<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L115-L116>`__
+<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L89-L90>`__
 the template:
 
 .. code-block:: none
@@ -51,7 +52,7 @@ the |isphx| cross-references:
 ----
 
 **The fourth line** `must contain
-<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L118-L119>`__
+<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L109-L111>`__
 the string ``zlib`` somewhere within it, but for consistency it should be exactly:
 
 .. code-block:: none
@@ -62,7 +63,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/util/inventory.py#L173-L175>`__:
+<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L165-L167>`__:
 
 .. code-block:: none
 
@@ -127,7 +128,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 ``{priority}``
     Flag for `placement in search results
-    <https://github.com/sphinx-doc/sphinx/blob/e54b63d3eead95ef3fac1906deae54b6972573e4/sphinx/domains/__init__.py#L375-L386>`__. Most will be ``1`` (standard priority) or
+    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/domains/__init__.py#L370-L381>`__. Most will be ``1`` (standard priority) or
     ``-1`` (omit from results) for documentation built by Sphinx.
 
     To note, as of Jan 2022 this value is **not** used by ``intersphinx``;
@@ -211,11 +212,11 @@ size of the inventory file:
     <https://en.wikipedia.org/wiki/Fragment_identifier>`__," the portion
     following the ``#`` symbol) and the tail of the anchor is identical to
     |{name}|_, that tail is `replaced
-    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L180-L182>`__
+    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L157-L159>`__
     with ``$``. |br| |br|
 
  #. If |{dispname}|_ is identical to |{name}|_, it is `stored
-    <https://github.com/sphinx-doc/sphinx/blob/f7b3292d87e9a2b7eae0b4ef72e87779beefc699/sphinx/util/inventory.py#L186-L187>`__
+    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L163-L164>`__
     as ``-``.
 
 Thus, a standard |isphx| reference to this method would take the form:
@@ -265,11 +266,11 @@ as in :obj:`This is join! <str.join>`:
 
 .. |prio_js_search| replace:: here
 
-.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/241577f65eea94a08944bf096bd704b495282373/sphinx/themes/basic/static/searchtools.js#L26-L43
+.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/themes/basic/static/searchtools.js#L28-L47
 
 .. |prio_py_search| replace:: here
 
-.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/241577f65eea94a08944bf096bd704b495282373/sphinx/search/__init__.py#L332
+.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/search/__init__.py#L332-L333
 
 .. |sphinx_uri_issue| replace:: sphinx-doc/sphinx#7096
 
@@ -290,3 +291,5 @@ as in :obj:`This is join! <str.join>`:
 .. |rst-directive-option| replace:: ``:rst:directive:option:``
 
 .. _rst-directive-option: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-rst-directive-option
+
+.. _parsing regex: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L115-L116

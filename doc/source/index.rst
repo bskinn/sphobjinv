@@ -11,7 +11,7 @@ Welcome to sphobjinv!
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
-<https://github.com/sphinx-doc/sphinx/blob/b371312887869c52e7be9033e60450a9dc12ca0c/sphinx/util/inventory.py#L159-L191>`__
+<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L138-L168>`__
 to a file called |objects.inv| in the html build directory.
 (One common location is, |cour|\ doc/build/html\ |/cour|, though the exact location will vary
 depending on the details of how Sphinx is configured.)  This file is read by |isphx| when
