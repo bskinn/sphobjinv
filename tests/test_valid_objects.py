@@ -69,12 +69,15 @@ def skip_on_sphinx_version(sphinx_version):
         ("Index # Page", "std", "doc", 1, "index.html", "-"),  # Symbol in name
         ("Thing \u33a4", "std", "ref", 1, "index.html#$", "-"),  # Unicode in name
         ("Thing One", "std", "ref", 1, "index.html#$", "\u33a4"),  # Unicode in dispname
+        ("foo", "py", "da:ta", 1, "data.html#$", "-"),  # Colon in role (used in Sphinx)
         ("foo", "py$", "data", 1, "data.html#$", "-"),  # Valid but discouraged
         ("foo", "py\u33a4", "data", 1, "data.html#$", "-"),  # Valid but discouraged
         ("foo", "py", "data$", 1, "data.html#$", "-"),  # Valid but discouraged
         ("foo", "py", "data\u33a4", 1, "data.html#$", "-"),  # Valid but discouraged
         ("foo", "py", "data", 1, "data/\u33a4.html#$", "-"),  # Valid but discouraged
         ("  foo", "py", "data", 1, "data.html#$", "-"),  # Valid but discouraged
+        # Colon in domain (invalid but undetectable)
+        ("foo", "p:y", "data", 1, "data.html#$", "-"),
     ],
 )
 def test_dataobjstr_valid_objects(
@@ -123,10 +126,8 @@ def test_dataobjstr_valid_objects(
         ("foo  ", "py", "data", 1, "data.html#$", "-"),  # Name w/trailing space
         ("# Index Page", "std", "doc", 1, "index.html", "-"),  # '#' @ name start
         ("X Y Z 0 foo", "std", "doc", 1, "index.html", "-"),  # Int in name
-        ("foo", "p:y", "data", 1, "data.html#$", "-"),  # Colon in domain
         ("foo", "py thon", "data", 1, "data.html#$", "-"),  # Space in domain
         ("foo", "", "data", 1, "data.html#$", "-"),  # Missing domain
-        ("foo", "py", "da:ta", 1, "data.html#$", "-"),  # Colon in role
         ("foo", "py", "da ta", 1, "data.html#$", "-"),  # Space in role
         ("foo", "py", "", 1, "data.html#$", "-"),  # Missing role
         ("foo", "py", "data", 0.5, "data.html#$", "-"),  # Non-integer prio
