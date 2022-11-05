@@ -74,6 +74,9 @@ def do_suggest(inv, params):
         with_score=with_score,
     )
 
+    print_stderr(f"Project: {inv.project}", params)
+    print_stderr(f"Version: {inv.version}\n", params)
+
     print_stderr(f"{inv.count} objects in inventory.\n", params)
 
     print_stderr_result_count(params, results)
