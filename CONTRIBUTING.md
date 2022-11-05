@@ -63,14 +63,22 @@ The next step is to upgrade/install the development requirements:
 (sphobjinv) $ pip install -r requirements-dev.txt
 ```
 
-Then, install the pre-commit hooks:
+Then, install the [`pre-commit`](https://pre-commit.com/) hooks:
 
 ```
 (sphobjinv) $ pre-commit install
 ```
 
-Finally, you'll need to build the Sphinx docs,
-as some of the tests interact with them:
+One of the `pre-commit` hooks installed on the project is the hook from
+[`black`](https://black.readthedocs.io/en/stable/). If you want to run `black`
+independently from `pre-commit`, you'll need to install it separately:
+
+```
+(sphobjinv) $ pip install black
+```
+
+Finally, you'll need to build the Sphinx docs locally, as some of the tests
+interact with them:
 
 ```
 (sphobjinv) $ cd doc
@@ -104,8 +112,8 @@ Then, any time you need to refresh the fork's `main`:
 ```
 $ git fetch --all
 $ git checkout main
-$ git merge upstream/main  # (should merge without incident)
-$ git push  # (should push to your fork without incident)
+$ git merge upstream/main   # (should merge without incident)
+$ git push                  # (should push to your fork without incident)
 ```
 
 
@@ -141,14 +149,14 @@ There are some situations where it may make sense to use a `# pragma: no cover`
 to ignore coverage on certain line(s) of code. Please start a discussion in the
 issue or PR comments before adding such a pragma.
 
-Note that while [`tox`](https://github.com/tox-dev/tox/) *is* configured for the
+Note that while [`tox`](https://tox.wiki/en/latest/) *is* configured for the
 project, it is **not** set up to be an everyday test runner. Instead, it's used
-to execute a matrix of test environments checking for the compatibility of
-different Python and dependency versions. You can run it if you want, but you'll
-need working versions of all of Python 3.6 through 3.11 installed and on `PATH`
-as `python3.6`, `python3.7`, etc. The nonlocal test suite is run for each `tox`
-environment, so it's best to use at most two parallel sub-processes to avoid
-oversaturating your network bandwidth; e.g.:
+to execute an extensive matrix of test environments checking for the
+compatibility of different Python and dependency versions. You can run it if you
+want, but you'll need working versions of all of Python 3.6 through 3.11
+installed and on `PATH` as `python3.6`, `python3.7`, etc. The nonlocal test
+suite is run for each `tox` environment, so it's best to use at most two
+parallel sub-processes to avoid oversaturating your network bandwidth; e.g.:
 
 ```
 $ tox -rp2
@@ -158,7 +166,7 @@ $ tox -rp2
 ## Linting
 
 The project uses a number of lints, which are checked using
-[`flake8`](https://gitlab.com/pycqa/flake8) in CI. To run the lints locally,
+[`flake8`](https://flake8.pycqa.org/en/latest/) in CI. To run the lints locally,
 it's easiest to use `tox`:
 
 ```
@@ -242,7 +250,7 @@ with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project, and should
 run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.6 through 3.10, as well
+Github Actions runs the test suite on Linux for Python 3.6 through 3.11, as well
 as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
 configured to run on all commits. The workflow can be skipped per-commit by
 including `[skip ci]` in the commit message.
@@ -250,7 +258,8 @@ including `[skip ci]` in the commit message.
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
 cross-Python-version tests, as well as numerous other checks. Due to its length,
 it is configured to run only on release branches and PRs to `main` or `stable`.
-It cannot be skipped.
+Azure Pipelines now [also obeys `[skip ci]`
+directives](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#skipping-ci-for-individual-pushes).
 
 
 ## CHANGELOG
@@ -260,7 +269,7 @@ The project
 be updated for the majority of contributions. No tooling is in place (e.g.,
 [`towncrier`](https://github.com/twisted/towncrier)) for automated collation of
 news items into `CHANGELOG`; all changes should be documented manually, directly
-in the `CHANGELOG`.
+in the `CHANGELOG`. Please follow the format currently in use.
 
 Any PR that touches the project code *must* include a `CHANGELOG` entry.
 Contributions that make changes just to the test suite should usually also
