@@ -4,7 +4,7 @@ r"""``sphobjinv`` *package definition module*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     17 May 2016

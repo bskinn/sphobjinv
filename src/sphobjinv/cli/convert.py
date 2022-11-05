@@ -4,7 +4,7 @@ r"""``sphobjinv`` *module for CLI convert functionality*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Oct 2022

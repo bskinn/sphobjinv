@@ -4,7 +4,7 @@ r"""``sphobjinv`` *data classes for individual objects*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     7 Nov 2017

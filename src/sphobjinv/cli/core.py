@@ -4,7 +4,7 @@ r"""``sphobjinv`` *CLI core execution module*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     15 Nov 2020

@@ -19,7 +19,7 @@ https://github.com/maxbachmann/RapidFuzz/tree/460d291a38922c7fead920de8147798b81
 
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     11 Dec 2021

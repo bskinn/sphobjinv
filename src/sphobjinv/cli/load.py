@@ -4,7 +4,7 @@ r"""*Module for* ``sphobjinv`` *CLI* |Inventory| *loading*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     17 Nov 2020

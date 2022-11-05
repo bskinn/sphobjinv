@@ -4,7 +4,7 @@ r"""*Test(s) to ensure full loading of flake8 extensions*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     27 Apr 2019

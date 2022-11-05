@@ -6,7 +6,7 @@ Sphinx |objects.inv| files.
 Subpackage marker module for vendored packages.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     11 Dec 2021
