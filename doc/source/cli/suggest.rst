@@ -39,7 +39,7 @@ It is usually not necessary to locate the |objects.inv| file before running |soi
 for most Sphinx documentation sets, if you provide a URL to any page in the docs,
 it will automatically find and use the correct |objects.inv|:
 
-.. command-output:: sphobjinv suggest -u https://sphobjinv.readthedocs.io/en/v2.0/cli/convert.html compress
+.. command-output:: sphobjinv suggest -u https://sphobjinv.readthedocs.io/en/stable/cli/convert.html compress
    :cwd: /../../tests/resource
 
 |soi| only supports download of zlib-compressed |objects.inv| files by URL.

@@ -11,6 +11,9 @@ and this project strives to adhere to
 
 #### Added
 
+  * The CLI now prints the project name and version for the `objects.inv` as
+    part of the 'suggest' mode output.
+
   * The CLI now prints an inferred `intersphinx_mapping` entry for a remote
     docset as part of the 'suggest' mode output, where such inference is
     possible. The output from this mapping inference was added to the relevant

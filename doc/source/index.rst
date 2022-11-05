@@ -49,7 +49,7 @@ Alternatively, |soi| is packaged with
 `multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__
 and package managers, including:
 
-  * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
+  * Alpine Linux: ``py3-sphobjinv``
 
   * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/community/any/python-sphobjinv/>`__)
 

@@ -57,6 +57,9 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
+    Project: sphobjinv
+    Version: 2.3
+
     219 objects in inventory.
 
     11 results found at/above current threshold of 58.
@@ -89,24 +92,28 @@ with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
 `here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
 
-    $ sphobjinv suggest https://numpy.org/doc/1.19/reference/index.html linspace -su
+    $ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
 
-    Attempting https://numpy.org/doc/1.19/reference/index.html ...
+    Attempting https://numpy.org/doc/1.23/reference/index.html ...
       ... no recognized inventory.
-    Attempting "https://numpy.org/doc/1.19/reference/index.html/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.23/reference/index.html/objects.inv" ...
       ... HTTP error: 404 Not Found.
-    Attempting "https://numpy.org/doc/1.19/reference/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.23/reference/objects.inv" ...
       ... HTTP error: 404 Not Found.
-    Attempting "https://numpy.org/doc/1.19/objects.inv" ...
+    Attempting "https://numpy.org/doc/1.23/objects.inv" ...
       ... inventory found.
 
-    6487 objects in inventory.
+    Project: NumPy
+    Version: 1.23
+
+    8074 objects in inventory.
 
     8 results found at/above current threshold of 75.
 
     The intersphinx_mapping for this docset is LIKELY:
 
-      (https://numpy.org/doc/1.19/, None)
+      (https://numpy.org/doc/1.23/, None)
+
 
       Name                                                           Score
     --------------------------------------------------------------  -------
