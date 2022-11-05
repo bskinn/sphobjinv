@@ -90,7 +90,7 @@ For external references, just find the API documentation wherever it lives on
 the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
-`here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
+`here <https://numpy.org/doc/1.23/reference/generated/numpy.linspace.html>`__)::
 
     $ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
 
