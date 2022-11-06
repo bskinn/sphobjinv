@@ -314,6 +314,13 @@ linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 #
 html_theme = "sphinx_rtd_theme"
 
+# Configure theme
+
+html_theme_options = {
+    "analytics_id": "G-J2PQ1V8NHR",
+    "analytics_anonymize_ip": True,
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
