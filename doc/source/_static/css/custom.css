@@ -34,3 +34,14 @@ a.reference.internal code.docutils.literal.notranslate {
 .rst-content dl.property {
     margin-bottom: 10px !important;
 }
+
+/*
+    Reduced font size in footer
+*/
+footer, footer div[role=contentinfo] p, footer p.footer-license {
+    font-size: 13px;
+}
+
+footer p.footer-license {
+    line-height: 20px;
+}
