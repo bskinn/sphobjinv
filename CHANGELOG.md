@@ -97,6 +97,11 @@ and this project strives to adhere to
   * Update `setup.cfg` to use `license_files`, instead of the deprecated
     `license_file`.
 
+#### Administrative
+
+  * Apply CC BY 4.0 to documentation and docstrings and update project files to
+    reflect.
+
 
 ### [2.2.2] - 2022-03-22
 
