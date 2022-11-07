@@ -185,5 +185,8 @@ and feature requests are welcomed at the
 
 Copyright (c) Brian Skinn 2016-2022
 
-License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
-for full license terms.
+The ``sphobjinv`` documentation (including docstrings) is licensed under a
+`Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
+(CC-BY). The ``sphobjinv`` codebase is released under the MIT License. See
+`LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
+full license terms.

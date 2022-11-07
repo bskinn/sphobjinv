@@ -281,7 +281,7 @@ situation. When in doubt, ask!
 
 ## Issue & PR Templates
 
-The project is configured with a PR template and a couple of issue templates, to
+I've set up the project with a PR template and a couple of issue templates, to
 hopefully make it easier to provide all the information needed to act on code
 contributions, bug reports, and feature requests. If the templates don't fit the
 issue/PR you want to create, though, then don't use them.
@@ -289,4 +289,5 @@ issue/PR you want to create, though, then don't use them.
 
 ## License
 
-All contributions will take on the MIT License of the project at large.
+All code and documentation contributions will respectively take on the MIT
+License and CC-BY 4.0 license of the project at large.
