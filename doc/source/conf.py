@@ -122,6 +122,12 @@ rst_epilog = r"""
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
+.. _MIT License: https://opensource.org/licenses/MIT
+
+.. |CC BY 4.0| replace:: CC BY 4.0 International License
+
+.. _CC BY 4.0: http://creativecommons.org/licenses/by/4.0/
+
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
