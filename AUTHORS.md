@@ -26,6 +26,6 @@ order to assist with things like scraping a non-Sphinx website to generate an
 object-oriented API of `sphobjinv` v2.x.
 
 While there are [numerous](https://github.com/bskinn/sphobjinv/issues) possible
-enhancements to the project, I'm quite satisfied with its ease of use and
-usefulness, at least for my purposes, and thus consider it fully stable. I'm
-always glad to receive feature requests and bug reports, though.
+enhancements to the project, I'm satisfied with its ease of use and usefulness,
+at least for my purposes, and thus consider it fully stable. I'm always glad to
+receive feature requests and bug reports, though.
