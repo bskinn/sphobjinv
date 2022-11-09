@@ -33,7 +33,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/psf/black
 
 .. image:: https://pepy.tech/badge/sphobjinv/month
-    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
+    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3
 
 ----
 
@@ -187,6 +187,7 @@ Copyright (c) Brian Skinn 2016-2022
 
 The ``sphobjinv`` documentation (including docstrings) is licensed under a
 `Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
-(CC-BY). The ``sphobjinv`` codebase is released under the MIT License. See
+(CC-BY). The ``sphobjinv`` codebase is released under the
+`MIT License <https://opensource.org/licenses/MIT>`__. See
 `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
 full license terms.
