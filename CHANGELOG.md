@@ -7,7 +7,109 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.3] - 2022-11-08
+
+#### Added
+
+  * The CLI now prints the project name and version for the `objects.inv` as
+    part of the 'suggest' mode output.
+
+  * The CLI now prints an inferred `intersphinx_mapping` entry for a remote
+    docset as part of the 'suggest' mode output, where such inference is
+    possible. The output from this mapping inference was added to the relevant
+    tests, and a couple of unit tests on some basic pieces of functionality were
+    written. ([#149](https://github.com/bskinn/sphobjinv/issues/149))
+
+  * The CLI now provides considerably more information about what is happening
+    with the URLs it checks when trying to retrieve a remote inventory.
+    ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
+
+  * A new CLI option, `-p`/`--paginate`, enables paging of the results from the
+    `suggest` feature. ([#70](https://github.com/bskinn/sphobjinv/issues/70))
+
+#### Fixed
+
+  * The regex for parsing object lines from decompressed inventories now
+    correctly processes `{role}` values that contain internal colons.
+
+  * CLI corner case where options are passed but no subparser is specified
+    now results in a clean error-exit, instead of an exception.
+    ([#239](https://github.com/bskinn/sphobjinv/issues/239))
+
+#### Documentation
+
+  * Updated doctests to reflect the new v22.1 attrs `objects.inv` used for
+    demonstration purposes.
+
+  * Updated `syntax.rst` to indicate that the `{role}` in an inventory object
+    MAY contain a colon.
+
+  * Added new 'CLI implementation' pages for the new modules, downstream of the
+    refactoring of the CLI 'convert' and 'suggest' code.
+
+  * Revised the intro paragraph of the 'CLI usage' page to more clearly emphasize
+    the two CLI subcommands and the links to their respective docs pages.
+
+  * Fixed a mistake in the CLI help info for the `--url` argument to `convert`.
+
+#### Tests
+
+  * Various tests were updated to reflect the contents of the new v22.1 attrs
+    `objects.inv` introduced to replace the previous v17.2 inventory.
+
+  * A modern Sphinx `objects.inv` (v6.0.0b) was added to `tests/resource` as
+    `objects_sphinx.inv`, and the previous v1.6.6 was renamed to
+    `objects_sphinx_1_6_6.inv`.
+
+  * The 'valid objects' test cases were updated to reflect the possibility for a colon within `{role}`:
+
+    * The colon-within-`{role}` test case was moved from 'invalid' to 'valid'.
+
+    * The colon-within-`{domain}` test case was also moved from 'invalid' to
+      'valid', but with an annotation added to indicate that it's not actually
+      viable---it will actually be interpreted incorrectly, with the first
+      portion of the colon-containing `{domain}` imported as `{domain}`, and the
+      remainder imported as part of `{role}`.
+
+#### Internal
+
+  * Refactor CLI code to place the 'convert' and 'suggest' implementations in
+    their own modules.
+
+  * Refactor CLI 'suggest' code to the main `do_suggest()` function and a
+    handful of sub-functions.
+
+  * Rename the `log_print()` CLI helper function to the more-descriptive
+    `print_stderr()`.
+
+  * Bump development Sphinx version to v5.3.
+
+  * Bump flake8 version to >=5, due to the absorption of flake8-colors
+    colorization functionality. The flake8/tox config was updated accordingly.
+
+  * Bump pre-commit black hook to v22.3.0.
+
+  * Remove PyPy and Python 3.6 from Azure Pipelines test matrix.
+
+  * Revise `__version__` retrieval in `setup.py` to use an intermediate
+    dictionary with `exec()`.
+
+  * Update `setup.cfg` to use `license_files`, instead of the deprecated
+    `license_file`.
+
+#### Administrative
+
+  * Apply CC BY 4.0 to documentation and docstrings and update project files to
+    reflect.
+
+
 ### [2.2.2] - 2022-03-22
+
+#### Changed
+
+  * CLI 'suggest' results output now displays more information about
+    the total number of objects in the inventory, the search score threshold,
+    and the number of results falling at/above that threshold.
 
 #### Fixed
 

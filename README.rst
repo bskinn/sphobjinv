@@ -33,7 +33,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/psf/black
 
 .. image:: https://pepy.tech/badge/sphobjinv/month
-    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
+    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3
 
 ----
 
@@ -49,12 +49,22 @@ you mean, but it's pretty hit-or-miss.  The best approach is to provide
 Sphinx with a completely specified cross-reference, and that's where
 ``sphobjinv`` comes in.
 
-After a ``pip install sphobjinv``, find the documentation set you want
-to cross-reference into, and pass it to ``sphobjinv suggest``.
+After a ``pip install sphobjinv`` (or ``pipx install sphobjinv``), find the
+documentation set you want to cross-reference into, and pass it to
+``sphobjinv suggest``.
 
 For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
+
+    Project: sphobjinv
+    Version: 2.3
+
+    219 objects in inventory.
+
+    11 results found at/above current threshold of 58.
+
+    Cannot infer intersphinx_mapping from a local objects.inv.
 
       Name                                                Score
     ---------------------------------------------------  -------
@@ -76,19 +86,33 @@ The ``-s`` argument in the above shell command indicates to print the
 ``fuzzywuzzy`` match score along with each search result, and ``-t 50``
 changes the reporting threshold for the match score.
 
-For external references, just find the API documentation wherever it lives on the web,
-and pass ``sphobjinv suggest`` a URL from within the documentation set
+For external references, just find the API documentation wherever it lives on
+the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
-`here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
+`here <https://numpy.org/doc/1.23/reference/generated/numpy.linspace.html>`__)::
 
-    $ sphobjinv suggest https://numpy.org/doc/1.19/reference/index.html linspace -su
+    $ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
 
-    No inventory at provided URL.
-    Attempting "https://numpy.org/doc/1.19/reference/index.html/objects.inv" ...
-    Attempting "https://numpy.org/doc/1.19/reference/objects.inv" ...
-    Attempting "https://numpy.org/doc/1.19/objects.inv" ...
-    Remote inventory found.
+    Attempting https://numpy.org/doc/1.23/reference/index.html ...
+      ... no recognized inventory.
+    Attempting "https://numpy.org/doc/1.23/reference/index.html/objects.inv" ...
+      ... HTTP error: 404 Not Found.
+    Attempting "https://numpy.org/doc/1.23/reference/objects.inv" ...
+      ... HTTP error: 404 Not Found.
+    Attempting "https://numpy.org/doc/1.23/objects.inv" ...
+      ... inventory found.
+
+    Project: NumPy
+    Version: 1.23
+
+    8074 objects in inventory.
+
+    8 results found at/above current threshold of 75.
+
+    The intersphinx_mapping for this docset is LIKELY:
+
+      (https://numpy.org/doc/1.23/, None)
 
 
       Name                                                           Score
@@ -104,8 +128,8 @@ cross-reference the ``linspace`` function from numpy (see
 
 .. end shell command
 
-**NOTE** that the results from ``sphobjinv suggest`` are printed using the longer
-*block directives*, whereas cross-references must be composed using the
+**NOTE** that the results from ``sphobjinv suggest`` are printed using the
+longer *block directives*, whereas cross-references must be composed using the
 *inline directives*. Thus, the above ``linspace()`` function must be
 cross-referenced as ``:func:`numpy.linspace```, **not**
 ``:function:`numpy.linspace```.
@@ -133,13 +157,13 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.2, 205 objects>
+    <Inventory (fname_zlib): sphobjinv v2.3, 219 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
-    '2.2'
+    '2.3'
     >>> inv.objects[0]
-    DataObjStr(name='sphobjinv.cli.core', domain='py', role='module', priority='0', uri='cli/implementation/core.html#module-$', dispname='-')
+    DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
 
 The API also enables straightforward re-export of an inventory,
 for subsequent use with ``intersphinx`` cross-references.
@@ -161,5 +185,9 @@ and feature requests are welcomed at the
 
 Copyright (c) Brian Skinn 2016-2022
 
-License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
-for full license terms.
+The ``sphobjinv`` documentation (including docstrings) is licensed under a
+`Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
+(CC-BY). The ``sphobjinv`` codebase is released under the
+`MIT License <https://opensource.org/licenses/MIT>`__. See
+`LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
+full license terms.

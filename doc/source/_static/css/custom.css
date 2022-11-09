@@ -1,0 +1,47 @@
+/* Lighten the header blue color */
+div.wy-side-nav-search {
+    background-color: #7ebbff;
+}
+
+/* White version text in header */
+div.version {
+    color: #ffffff !important;
+    font-weight: bolder !important;
+}
+
+/* Blue border around the search bar */
+form.wy-form input {
+    border: 3px solid #6eabef !important;
+}
+
+/*
+    ul.current selects only the sidebar ul. Otherwise,
+    toctrees in the text get colored white, too
+*/
+ul.current li.toctree-l1:not(.current) a {
+    color: #f8f8f8 !important;
+}
+
+/* Increase font size for code object names in navbar toctree */
+a.reference.internal code.docutils.literal.notranslate {
+    font-size: 85%;
+}
+
+/*
+    Reduce margin at bottom of 'property' docs.
+    Too much vertical whitespace previously.
+*/
+.rst-content dl.property {
+    margin-bottom: 10px !important;
+}
+
+/*
+    Reduced font size in footer
+*/
+footer, footer div[role=contentinfo] p, footer p.footer-license {
+    font-size: 13px;
+}
+
+footer p.footer-license {
+    line-height: 20px;
+}

@@ -4,7 +4,7 @@ r"""*CLI tests for* ``sphobjinv``.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Mar 2019
@@ -16,12 +16,17 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
+
 """
 
 
@@ -73,6 +78,22 @@ class TestMisc:
             run_cmdline_test([])
 
             assert "usage: sphobjinv" in out_.getvalue()
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_no_subparser_prs_exit(self, run_cmdline_test):
+        """Confirm exit code 2 if option passed but no subparser provided."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["--foo"], expect=2)
+
+            assert "error: No subparser selected" in err_.getvalue()
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_bad_subparser_prs_exit(self, run_cmdline_test):
+        """Confirm exit code 2 if invalid subparser provided."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["foo"], expect=2)
+
+            assert "invalid choice: 'foo'" in err_.getvalue()
 
 
 class TestConvertGood:
@@ -324,7 +345,7 @@ class TestSuggestGood:
         """Confirm suggest w/no found results works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-t", "99"])
-            assert "No results found." in err_.getvalue()
+            assert "No results found" in err_.getvalue()
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_nameonly(self, run_cmdline_test, res_cmp):
@@ -338,39 +359,47 @@ class TestSuggestGood:
         """Confirm with_index suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-it", "50"])
-            assert re.search("^.*instance_of\\S*\\s+23\\s*$", out_.getvalue(), re.M)
+            assert re.search("^.*instance_of\\S*\\s+82\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscore(self, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm with_score suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-st", "50"])
             re.search("^.*instance_of\\S*\\s+\\d+\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscoreandindex(self, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm with_index + with_score suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-sit", "50"])
-            re.search("^.*instance_of\\S*\\s+\\d+\\s+23\\s*$", out_.getvalue(), re.M)
+            re.search("^.*instance_of\\S*\\s+\\d+\\s+82\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.parametrize(
         ["inp", "flags", "nlines"],
-        [("", "-at", 56), ("y\n", "-t", 57), ("n\n", "-t", 1)],
+        [("", "-at", 129), ("y\n", "-t", 130), ("n\n", "-t", 1)],
     )  # Extra line for input() query in the "y\n" case
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_long_list(self, inp, flags, nlines, run_cmdline_test, res_cmp):
-        """Confirm with_index suggest works."""
+        """Confirm suggest with a long list of results works."""
         with stdio_mgr(inp) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", flags, "1"])
             assert nlines == out_.getvalue().count("\n")
 
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_many_results_stdin(self, res_cmp, run_cmdline_test):
         """Confirm suggest from stdin doesn't choke on a long list."""
         data = json.dumps(Inventory(res_cmp).json_dict())
 
         with stdio_mgr(data) as (in_, out_, err_):
             run_cmdline_test(["suggest", "-", "py", "-t", "1"])
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_suggest_paginated(self, res_cmp, run_cmdline_test):
+        """Confirm pagination works as expected for a controlled example."""
+        with stdio_mgr("\n" * 5) as (in_, out_, err_):
+            run_cmdline_test(["suggest", res_cmp, "function", "-sapt30"])
+            assert 5 == out_.getvalue().count("Press Enter to continue")
 
 
 class TestFail:

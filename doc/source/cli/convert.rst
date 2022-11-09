@@ -1,11 +1,11 @@
 .. Description of convert commandline usage
 
-Command-Line Usage: "convert" Mode
-==================================
+Command-Line Usage: "convert" Subcommand
+========================================
 
 .. program:: sphobjinv convert
 
-The |cour|\ convert\ |/cour| subparser is used for all conversions of
+The |cour|\ convert\ |/cour| subcommand is used for all conversions of
 "version 2" Sphinx inventory
 files among plaintext, zlib-compressed, and (unique to |soi|) JSON formats.
 The |soi| CLI can read and write inventory data from local files
@@ -32,10 +32,10 @@ Basic file conversion to the default output filename is straightforward:
     >>> print(file_head('objects_attrs.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 17.2
+    # Version: 22.1
     # The remainder of this file is compressed using zlib.
-    attr.Attribute py:class 1 api.html#$ -
-    attr.Factory py:class 1 api.html#$ -
+    attr py:module 0 index.html#module-$ -
+    attr.VersionInfo py:class 1 api.html#$ -
 
 A different target filename can be specified, to avoid overwriting an existing
 file:
@@ -66,7 +66,8 @@ indicated URL):
 
     >>> cli_run('sphobjinv convert plain -u https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     <BLANKLINE>
-    Remote inventory found.
+    Attempting https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv ...
+      ... inventory found.
     <BLANKLINE>
     Conversion completed.
     'https://github.com/b[...]ce/objects_attrs.inv' converted to '...objects.txt' (plain).
@@ -75,10 +76,10 @@ indicated URL):
     >>> print(file_head('objects.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 17.2
+    # Version: 22.1
     # The remainder of this file is compressed using zlib.
-    attr.Attribute py:class 1 api.html#$ -
-    attr.Factory py:class 1 api.html#$ -
+    attr py:module 0 index.html#module-$ -
+    attr.VersionInfo py:class 1 api.html#$ -
 
 The URL provided **MUST** have the leading protocol specified (here,
 |cour|\ https\ ://\ |/cour|).
@@ -91,11 +92,14 @@ it will automatically find and use the correct |objects.inv|:
 
     >>> cli_run('sphobjinv convert plain -ou https://docs.python.org/3/library/urllib.error.html#urllib.error.URLError')
     <BLANKLINE>
-    No inventory at provided URL.
+    Attempting https://docs.python.org/3/library/urllib.error.html#urllib.error.URLError ...
+      ... no recognized inventory.
     Attempting "https://docs.python.org/3/library/urllib.error.html/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://docs.python.org/3/library/objects.inv" ...
+      ... HTTP error: 404 Not Found.
     Attempting "https://docs.python.org/3/objects.inv" ...
-    Remote inventory found.
+      ... inventory found.
     <BLANKLINE>
     Conversion completed.
     '...objects.inv' converted to '...objects.txt' (plain).
@@ -131,11 +135,11 @@ If processing of JSON files by API URL is desirable, please
         >>> cli_run('sphobjinv co plain objects_attrs.inv -')
         # Sphinx inventory version 2
         # Project: attrs
-        # Version: 17.2
+        # Version: 22.1
         # The remainder of this file is compressed using zlib.
-        attr.Attribute py:class 1 api.html#$ -
-        attr.Factory py:class 1 api.html#$ -
-        attr.asdict py:function 1 api.html#$ -
+        attr py:module 0 index.html#module-$ -
+        attr.VersionInfo py:class 1 api.html#$ -
+        attr._make.Attribute py:class -1 api.html#attrs.Attribute -
         ...
 
 
@@ -205,4 +209,3 @@ If processing of JSON files by API URL is desirable, please
     Contract `uri` and `dispname` fields, if possible, before writing to output;
     see :ref:`here <syntax_shorthand>`. Cannot be specified with
     :option:`--expand`.
-

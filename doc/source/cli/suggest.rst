@@ -1,7 +1,7 @@
 .. Description of suggest commandline usage
 
-Command-Line Usage: "suggest" Mode
-==================================
+Command-Line Usage: "suggest" Subcommand
+========================================
 
 .. program:: sphobjinv suggest
 
@@ -39,7 +39,7 @@ It is usually not necessary to locate the |objects.inv| file before running |soi
 for most Sphinx documentation sets, if you provide a URL to any page in the docs,
 it will automatically find and use the correct |objects.inv|:
 
-.. command-output:: sphobjinv suggest -u https://sphobjinv.readthedocs.io/en/v2.0rc1/cmdline.html compress
+.. command-output:: sphobjinv suggest -u https://sphobjinv.readthedocs.io/en/stable/cli/convert.html compress
    :cwd: /../../tests/resource
 
 |soi| only supports download of zlib-compressed |objects.inv| files by URL.
@@ -67,7 +67,8 @@ If download of JSON files by URL is desirable, please
     Path (or URL, if :option:`--url` is specified) to file to be searched.
 
     If passed as ``-``, |soi| will attempt import of a plaintext or JSON
-    inventory from ``stdin`` (incompatible with :option:`--url`).
+    inventory from ``stdin``. This is incompatible with :option:`--url`,
+    and automatically enables :option:`--all`.
 
 .. option:: search
 
@@ -105,6 +106,3 @@ If download of JSON files by URL is desirable, please
 
     Treat :option:`infile` as a URL for download. Cannot be used when
     :option:`infile` is passed as ``-``.
-
-
-

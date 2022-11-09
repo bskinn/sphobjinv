@@ -4,7 +4,7 @@ r"""*Direct expect-fail API tests for* ``sphobjinv``.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Mar 2019
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -141,7 +145,7 @@ class TestInventory:
         """Confirm error raised when JSON dict passed w/too many objects."""
         inv = soi.Inventory(path_fxn(res_dec))
         d = inv.json_dict()
-        d.update({"57": d["23"]})
+        d.update({"4000": d["23"]})
 
         with pytest.raises(ValueError):
             soi.Inventory(dict_json=d)
@@ -178,7 +182,7 @@ class TestInventory:
             soi.Inventory(d)
 
     def test_apifail_compressed_inv_with_win_newlines(self, unix2dos, res_cmp):
-        """Confirm that a compressed inventory with Windows newlines does not decompress.
+        """Confirm that a compressed inventory with Windows newlines doesn't decompress.
 
         This should *never* happen, except in a pathological circumstance where
         unix2dos was specifically run on a compressed inventory.

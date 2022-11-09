@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'sphobjinv'
-copyright = '2016-2022, Brian Skinn'
-author = 'Brian Skinn'
+project = "sphobjinv"
+copyright = "2016-2022, Brian Skinn"
+author = "Brian Skinn"
 
 # The full version for `release`, including alpha/beta/rc tags
 from sphobjinv import __version__ as release
@@ -34,6 +34,7 @@ version = ".".join(release.split(".")[:2])
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -51,7 +52,7 @@ napoleon_use_rtype = False
 issues_github_path = "bskinn/sphobjinv"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -122,9 +123,19 @@ rst_epilog = r"""
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
+.. _MIT License: https://opensource.org/licenses/MIT
+
+.. |CC BY 4.0| replace:: CC BY 4.0 International License
+
+.. _CC BY 4.0: http://creativecommons.org/licenses/by/4.0/
+
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
 .. _fuzzywuzzy: https://github.com/seatgeek/fuzzywuzzy
+
+.. |pipx| replace:: ``pipx``
+
+.. _pipx: https://pypa.github.io/pipx/
 
 .. |python-Levenshtein| replace:: ``python-Levenshtein``
 
@@ -154,7 +165,7 @@ rst_epilog = r"""
 
 .. |soi| raw:: html
 
-    <span style="font-family:courier, monospace; font-size: 90%; font-weight: bold;">sphobjinv</span>
+    <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv</span>
 
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
@@ -308,12 +319,12 @@ linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Output file basename
 htmlhelp_basename = "sphobjinv"
@@ -321,3 +332,8 @@ htmlhelp_basename = "sphobjinv"
 # Location of the favicon and logo images
 html_favicon = "_static/soi-logo.png"
 html_logo = "_static/soi-logo_duo_border.png"
+
+# Adding custom CSS
+html_css_files = [
+    "css/custom.css",
+]

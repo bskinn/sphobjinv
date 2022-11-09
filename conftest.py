@@ -4,7 +4,7 @@ r"""*Root conftest for* ``sphobjinv``.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Mar 2019
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -218,7 +222,7 @@ def sphinx_version():
     """
     p_version = re.compile(r"(\d+)[.]?(\d+)?[.]?(\d+)?")
     mch = p_version.match(sphinx_version_str)
-    return tuple(map((lambda x: int(x) if x else 0), mch.groups()))
+    return tuple(int(x) if x else 0 for x in mch.groups())
 
 
 @pytest.fixture()  # Must be function scope since uses monkeypatch
@@ -278,8 +282,8 @@ def attrs_inventory_test():
 
         """
         assert inv.project == "attrs"
-        assert inv.version == "17.2"
-        assert inv.count == 56
+        assert inv.version == "22.1"
+        assert inv.count == 129
         assert inv.source_type
 
     return func

@@ -10,10 +10,10 @@ pytest-check>=0.4
 pytest-cov
 pytest-ordering
 pytest-timeout
-sphinx==4.3.1
+sphinx==5.3.0
 sphinx-issues
 sphinx-removed-in
-sphinx-rtd-theme
+sphinx-rtd-theme>=0.5.1
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox

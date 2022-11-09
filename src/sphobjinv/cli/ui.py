@@ -4,7 +4,7 @@ r"""``sphobjinv`` *CLI UI functions*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     19 Nov 2020
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -30,8 +34,8 @@ import sys
 from sphobjinv.cli.parser import PrsConst
 
 
-def log_print(thing, params):
-    """Print `thing` to stderr if not in quiet mode.
+def print_stderr(thing, params, *, end="\n"):
+    r"""Print `thing` to stderr if not in quiet mode.
 
     Quiet mode is indicated by the value at the |cli:QUIET| key
     within `params`.
@@ -49,9 +53,13 @@ def log_print(thing, params):
 
         |dict| -- Parameters/values mapping from the active subparser
 
+    end
+
+        |str| -- String to append to printed content (default: ``\n``\ )
+
     """
-    if not params[PrsConst.SUBPARSER_NAME][:2] == "co" or not params[PrsConst.QUIET]:
-        print(thing, file=sys.stderr)
+    if params[PrsConst.SUBPARSER_NAME][:2] == "su" or not params[PrsConst.QUIET]:
+        print(thing, file=sys.stderr, end=end)
 
 
 def err_format(exc):

@@ -4,7 +4,7 @@ r"""*README shell command doctests for* ``sphobjinv``.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     6 Aug 2018
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -30,6 +34,7 @@ import platform
 import re
 import shlex
 import subprocess as sp  # noqa: S404
+import sys
 from pathlib import Path
 
 
@@ -61,15 +66,18 @@ p_shell = re.compile(
     "pypy" in platform.python_implementation().lower(),
     reason="Inconsistent suggest results on PyPy",
 )
-def test_readme_shell_cmds(ensure_doc_scratch, check):
+def test_readme_shell_cmds(ensure_doc_scratch, is_win, check):
     """Perform testing on README shell command examples."""
+    if is_win and sys.version_info < (3, 9):  # pragma: no cover
+        pytest.skip("Windows mishandles stdout/stderr for Python < 3.9")
+
     text = Path("README.rst").read_text()
 
     chk = dt.OutputChecker()
 
     dt_flags = dt.ELLIPSIS | dt.NORMALIZE_WHITESPACE
 
-    for i, mch in enumerate(p_shell.finditer(text)):
+    for mch in p_shell.finditer(text):
         cmd = mch.group("cmd")
         out = mch.group("out")
 
@@ -81,5 +89,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, check):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with check.check(msg=f"match_{i}"):
+        with check.check():
             assert chk.check_output(out, result, dt_flags), msg

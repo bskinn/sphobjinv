@@ -4,7 +4,7 @@ r"""*Test(s) to ensure full loading of flake8 extensions*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     27 Apr 2019
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -58,7 +62,7 @@ def test_flake8_version_output(check):
 
     # This is fragile if anything ends up not having a prefix that needs
     # stripping
-    plugins = [p.partition("-")[-1] for p in plugins]
+    plugins = [p.partition("flake8-")[-1] for p in plugins]
 
     flake8_ver_output = sp.check_output(  # noqa: S607,S603
         ["flake8", "--version"], universal_newlines=True
@@ -66,4 +70,4 @@ def test_flake8_version_output(check):
 
     for p in plugins:
         with check.check(msg=p):
-            assert p in flake8_ver_output.replace("_", "-")
+            assert p in flake8_ver_output.replace("_", "-").replace("\n", "")

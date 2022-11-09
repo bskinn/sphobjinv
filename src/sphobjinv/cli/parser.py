@@ -4,7 +4,7 @@ r"""``sphobjinv`` *CLI parser definition module*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     15 Nov 2020
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -146,6 +150,10 @@ class PrsConst:
     #: indicating to print all returned objects, regardless of the
     #: number returned, without asking for confirmation
     ALL = "all"
+
+    #: Optional argument name for use with the :data:`SUGGEST` subparser,
+    #: indicating to paginate the suggest subcommand results
+    PAGINATE = "paginate"
 
     # ### Helper strings
     #: Help text for the :data:`CONVERT` subparser
@@ -309,7 +317,7 @@ def getparser():
         "--" + PrsConst.URL,
         help=(
             "Treat 'infile' as a URL for download. "
-            f"Cannot be used with --{PrsConst.URL}."
+            "Cannot be used with an infile of '-'."
         ),
         action="store_true",
     )
@@ -329,6 +337,12 @@ def getparser():
         help="Display all results "
         "regardless of the number returned "
         "without prompting for confirmation.",
+        action="store_true",
+    )
+    spr_suggest.add_argument(
+        "-" + PrsConst.PAGINATE[0],
+        "--" + PrsConst.PAGINATE,
+        help="Paginate long search results",
         action="store_true",
     )
     spr_suggest.add_argument(

@@ -4,7 +4,7 @@ r"""*Module for* ``sphobjinv`` *CLI* |Inventory| *writing*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     19 Nov 2020
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -31,7 +35,7 @@ import sys
 
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.paths import resolve_outpath
-from sphobjinv.cli.ui import err_format, log_print, yesno_prompt
+from sphobjinv.cli.ui import err_format, print_stderr, yesno_prompt
 from sphobjinv.fileops import writebytes, writejson
 from sphobjinv.zlib import compress
 
@@ -193,7 +197,7 @@ def write_stdout(inv, params):
 
         print(json.dumps(json_dict))
     else:
-        log_print("Error: Only plaintext and JSON can be emitted to stdout.", params)
+        print_stderr("Error: Only plaintext and JSON can be emitted to stdout.", params)
         sys.exit(1)
 
 
@@ -229,15 +233,15 @@ def write_file(inv, in_path, params):
         out_path = resolve_outpath(params[PrsConst.OUTFILE], in_path, params)
     except Exception as e:  # pragma: no cover
         # This may not actually be reachable except in exceptional situations
-        log_print("\nError while constructing output file path:", params)
-        log_print(err_format(e), params)
+        print_stderr("\nError while constructing output file path:", params)
+        print_stderr(err_format(e), params)
         sys.exit(1)
 
     # If exists, must handle overwrite
     if os.path.isfile(out_path) and not params[PrsConst.OVERWRITE]:
         if params[PrsConst.INFILE] == "-":
             # If reading from stdin, just alert and don't overwrite
-            log_print("\nFile exists. To overwrite, supply '-o'. Exiting...", params)
+            print_stderr("\nFile exists. To overwrite, supply '-o'. Exiting...", params)
             sys.exit(0)
         # This could be written w/o nesting via elif, but would be harder to read.
         else:
@@ -245,7 +249,7 @@ def write_file(inv, in_path, params):
                 # If not a stdin read, confirm overwrite; or, just clobber if QUIET
                 resp = yesno_prompt("File exists. Overwrite (Y/N)? ")
                 if resp.lower() == "n":
-                    log_print("\nExiting...", params)
+                    print_stderr("\nExiting...", params)
                     sys.exit(0)
 
     # Write the output file
@@ -267,12 +271,12 @@ def write_file(inv, in_path, params):
         if mode == PrsConst.JSON:
             write_json(inv, out_path, params)
     except Exception as e:
-        log_print("\nError during write of output file:", params)
-        log_print(err_format(e), params)
+        print_stderr("\nError during write of output file:", params)
+        print_stderr(err_format(e), params)
         sys.exit(1)
 
     # Report success, if not QUIET
-    log_print(
+    print_stderr(
         "Conversion completed.\n"
         f"'{in_path if in_path else 'stdin'}' converted to '{out_path}' ({mode}).",
         params,
