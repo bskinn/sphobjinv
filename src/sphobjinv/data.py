@@ -4,7 +4,7 @@ r"""``sphobjinv`` *data classes for individual objects*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     7 Nov 2017
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -133,7 +137,7 @@ class SuperDataObj(metaclass=ABCMeta):
     @property
     @abstractmethod
     def priority(self):
-        r"""Object search priority\ |dag|."""
+        r"""Object search priority, as handled internally by Sphinx\ |dag|."""
 
     @property
     @abstractmethod

@@ -33,7 +33,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/psf/black
 
 .. image:: https://pepy.tech/badge/sphobjinv/month
-    :target: https://pepy.tech/project/sphobjinv?versions=2.1b1&versions=2.2b1&versions=2.2&versions=2.1&versions=2.0.1
+    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3
 
 ----
 
@@ -90,7 +90,7 @@ For external references, just find the API documentation wherever it lives on
 the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
 with the ``--url/-u`` flag. For example, say I need to know how to
 cross-reference the ``linspace`` function from numpy (see
-`here <https://numpy.org/doc/1.18/reference/generated/numpy.linspace.html>`__)::
+`here <https://numpy.org/doc/1.23/reference/generated/numpy.linspace.html>`__)::
 
     $ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
 
@@ -185,5 +185,9 @@ and feature requests are welcomed at the
 
 Copyright (c) Brian Skinn 2016-2022
 
-License: The MIT License. See `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__
-for full license terms.
+The ``sphobjinv`` documentation (including docstrings) is licensed under a
+`Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
+(CC-BY). The ``sphobjinv`` codebase is released under the
+`MIT License <https://opensource.org/licenses/MIT>`__. See
+`LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
+full license terms.

@@ -37,8 +37,8 @@ Start by forking the repo and cloning locally:
 $ git clone https://github.com/{you}/sphobjinv
 ```
 
-Then, create a virtual environment for the project,
-in whatever location you prefer. Any Python interpreter 3.6+ *should* work fine.
+Then, create a virtual environment for the project, in whatever location you
+prefer. Any Python interpreter 3.6+ *should* work fine.
 
 I prefer to use `virtualenv` and create in `./env`:
 
@@ -63,14 +63,22 @@ The next step is to upgrade/install the development requirements:
 (sphobjinv) $ pip install -r requirements-dev.txt
 ```
 
-Then, install the pre-commit hooks:
+Then, install the [`pre-commit`](https://pre-commit.com/) hooks:
 
 ```
 (sphobjinv) $ pre-commit install
 ```
 
-Finally, you'll need to build the Sphinx docs,
-as some of the tests interact with them:
+One of the `pre-commit` hooks installed on the project is the hook from
+[`black`](https://black.readthedocs.io/en/stable/). If you want to run `black`
+independently from `pre-commit`, you'll need to install it separately:
+
+```
+(sphobjinv) $ pip install black
+```
+
+Finally, you'll need to build the Sphinx docs locally, as some of the tests
+interact with them:
 
 ```
 (sphobjinv) $ cd doc
@@ -80,8 +88,8 @@ as some of the tests interact with them:
 
 ## Working with git
 
-There's no way I can fit a whole git tutorial in here, so this
-just highlights a couple of key functionalities you'll need.
+There's no way I can fit a whole git tutorial in here, so this just highlights a
+couple of key functionalities you'll need.
 
 First, always hack on a bugfix or feature in a new branch:
 
@@ -89,11 +97,11 @@ First, always hack on a bugfix or feature in a new branch:
 $ git checkout -b description-of-change
 ```
 
-This makes it a lot simpler to get your repo fork up to date
-after `main` receives further commits.
+This makes it a lot simpler to get your repo fork up to date after `main`
+receives further commits.
 
-To bring your fork's `main` up to date, you first need to
-add the main repo as a new git remote (one-time task):
+To bring your fork's `main` up to date, you first need to add the main repo as a
+new git remote (one-time task):
 
 ```
 $ git remote add upstream https://github.com/bskinn/sphobjinv
@@ -104,54 +112,51 @@ Then, any time you need to refresh the fork's `main`:
 ```
 $ git fetch --all
 $ git checkout main
-$ git merge upstream/main  # (should merge without incident)
-$ git push  # (should push to your fork without incident)
+$ git merge upstream/main   # (should merge without incident)
+$ git push                  # (should push to your fork without incident)
 ```
 
 
 ## Tests
 
-`sphobjinv` uses the [`pytest`](https://github.com/pytest-dev/pytest)
-framework for most of its automated tests. From a properly configured
-virtual environment, a simple no-arguments invocation is all
-that is required:
+`sphobjinv` uses the [`pytest`](https://github.com/pytest-dev/pytest) framework
+for most of its automated tests. From a properly configured virtual environment,
+a simple no-arguments invocation is all that is required:
 
 ```
 $ pytest
 ```
 
-The test suite defaults to running only local tests,
-those that do **NOT** require network access. To include
-the nonlocal tests, run with the `--nonloc` flag:
+The test suite defaults to running only local tests, those that do **NOT**
+require network access. To include the nonlocal tests, run with the `--nonloc`
+flag:
 
 ```
 $ pytest --nonloc
 ```
 
-When putting together a PR, at minimum, please add/augment the test suite
-as necessary to maintain 100% test coverage. To the extent possible,
-please go beyond this and add tests that check potential edge cases,
-bad/malformed/invalid inputs, etc. For bugfixes, add one or more
-focused regression tests that cover the bug behavior being fixed.
+When putting together a PR, at minimum, please add/augment the test suite as
+necessary to maintain 100% test coverage. To the extent possible, please go
+beyond this and add tests that check potential edge cases, bad/malformed/invalid
+inputs, etc. For bugfixes, add one or more focused regression tests that cover
+the bug behavior being fixed.
 
-PRs that add [xfail tests for existing bugs](https://blog.ganssle.io/articles/2021/11/pytest-xfail.html)
+PRs that add
+[xfail tests for existing bugs](https://blog.ganssle.io/articles/2021/11/pytest-xfail.html)
 are also welcomed.
 
-There are some situations where it may make sense to use a
-`# pragma: no cover` to ignore coverage on certain line(s) of code.
-Please start a discussion in the issue or PR comments before
-adding such a pragma.
+There are some situations where it may make sense to use a `# pragma: no cover`
+to ignore coverage on certain line(s) of code. Please start a discussion in the
+issue or PR comments before adding such a pragma.
 
-Note that while [`tox`](https://github.com/tox-dev/tox/) *is*
-configured for the project, it is **not** set up to be an everyday test runner.
-Instead, it's used to execute a matrix of test environments
-checking for the compatibility of different Python and  dependency
-versions. You can run it if you want, but you'll need
-working versions of all of Python 3.6 through 3.11
-installed and on `PATH` as `python3.6`, `python3.7`, etc.
-The nonlocal test suite is run for each `tox` environment, so
-it's best to use at most two parallel sub-processes to avoid oversaturating
-your network bandwidth; e.g.:
+Note that while [`tox`](https://tox.wiki/en/latest/) *is* configured for the
+project, it is **not** set up to be an everyday test runner. Instead, it's used
+to execute an extensive matrix of test environments checking for the
+compatibility of different Python and dependency versions. You can run it if you
+want, but you'll need working versions of all of Python 3.6 through 3.11
+installed and on `PATH` as `python3.6`, `python3.7`, etc. The nonlocal test
+suite is run for each `tox` environment, so it's best to use at most two
+parallel sub-processes to avoid oversaturating your network bandwidth; e.g.:
 
 ```
 $ tox -rp2
@@ -161,8 +166,8 @@ $ tox -rp2
 ## Linting
 
 The project uses a number of lints, which are checked using
-[`flake8`](https://gitlab.com/pycqa/flake8) in CI.
-To run the lints locally, it's easiest to use `tox`:
+[`flake8`](https://flake8.pycqa.org/en/latest/) in CI. To run the lints locally,
+it's easiest to use `tox`:
 
 ```
 $ tox -e flake8
@@ -170,15 +175,15 @@ $ tox -e flake8
 
 In some limited circumstances, it may be necessary to add
 [`# noqa`](https://flake8.pycqa.org/en/stable/user/violations.html#in-line-ignoring-errors)
-or [`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
-exclusions to the `flake8` lints.
-Please note these for discussion in an issue/PR comment
-as soon as you think they might be needed.
+or
+[`per_file_ignores`](https://flake8.pycqa.org/en/stable/user/options.html#cmdoption-flake8-per-file-ignores)
+exclusions to the `flake8` lints. Please note these for discussion in an
+issue/PR comment as soon as you think they might be needed.
 
-Additionally, the CI for pull requests is set up to check that all
-modules, functions, classes and methods have docstrings
-using the [`interrogate`](https://pypi.org/project/interrogate/) package.
-There's a `tox` environment for running this check, also:
+Additionally, the CI for pull requests is set up to check that all modules,
+functions, classes and methods have docstrings using the
+[`interrogate`](https://pypi.org/project/interrogate/) package. There's a `tox`
+environment for running this check, also:
 
 ```
 $ tox -e interrogate
@@ -187,36 +192,33 @@ $ tox -e interrogate
 
 ## Type Hints
 
-I'd like to [roll out typing](https://github.com/bskinn/sphobjinv/issues/132)
-on the project at some point in the near future, and add
-[`mypy`](https://github.com/python/mypy) checking to CI.
-(This would be a great PR to put together, for anyone interested....)
-For now, types on contributed code are welcomed, but optional.
-Once the codebase is typed, though, they will be a required part of
-any PR touching code.
+I'd like to [roll out typing](https://github.com/bskinn/sphobjinv/issues/132) on
+the project at some point in the near future, and add
+[`mypy`](https://github.com/python/mypy) checking to CI. (This would be a great
+PR to put together, for anyone interested....) For now, types on contributed
+code are welcomed, but optional. Once the codebase is typed, though, they will
+be a required part of any PR touching code.
 
 
 ## Documentation
 
-All of the project documentation (except the README) is
-generated via [Sphinx](https://github.com/sphinx-doc/sphinx),
-and should be updated for (at minimum) any behavior changes
-in the codebase. API changes should be documented in the
-relevant docstring(s), and possibly in the prose portions
-of the documentation as well. Please use the modified
-[NumPy-style](https://numpydoc.readthedocs.io/en/latest/format.html)
-formatting for docstrings that is already in use in the project.
+All of the project documentation (except the README) is generated via
+[Sphinx](https://github.com/sphinx-doc/sphinx), and should be updated for (at
+minimum) any behavior changes in the codebase. API changes should be documented
+in the relevant docstring(s), and possibly in the prose portions of the
+documentation as well. Please use the modified
+[NumPy-style](https://numpydoc.readthedocs.io/en/latest/format.html) formatting
+for docstrings that is already in use in the project.
 
 A large number of reStructuredText substitutions are defined in the `rst_epilog`
-setting within `conf.py`, to make the documentation source
-more readable. Feel free to add more entries there.
+setting within `conf.py`, to make the documentation source more readable. Feel
+free to add more entries there.
 
-To run any of the Sphinx builders, first change to the `/doc` directory
-in the repository tree. In most cases, a plain `make html` invocation
-is sufficient to build the docs properly,
-as Sphinx does its best to detect which files were changed and
-rebuild only the minimum portion of the documentation necessary.
-If the docs seem not to be rendering correctly, try a clean build:
+To run any of the Sphinx builders, first change to the `/doc` directory in the
+repository tree. In most cases, a plain `make html` invocation is sufficient to
+build the docs properly, as Sphinx does its best to detect which files were
+changed and rebuild only the minimum portion of the documentation necessary. If
+the docs seem not to be rendering correctly, try a clean build:
 
 ```
 === Linux/Mac
@@ -226,10 +228,10 @@ doc $ make clean html
 doc> make -Ea
 ```
 
-It's also a good idea to build the complete docs every once in a while with
-its ['nitpicky' option](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky),
-in order to detect any broken cross-references, as these will fail
-the [Azure CI pipeline](#continuous-integration):
+It's also a good idea to build the complete docs every once in a while with its
+['nitpicky' option](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky),
+in order to detect any broken cross-references, as these will fail the
+[Azure CI pipeline](#continuous-integration):
 
 ```
 === Linux/Mac
@@ -239,51 +241,53 @@ doc $ O=-n make clean html
 doc> make html -Ean
 ```
 
-You can also run the doctests with `make doctest`
-and the link validity checker with `make linkcheck`.
+You can also run the doctests with `make doctest` and the link validity checker
+with `make linkcheck`.
 
 
 ## Continuous Integration
 
-Both Github Actions and Azure Pipelines are set up for the project,
-and should run on any forks of the repository.
+Both Github Actions and Azure Pipelines are set up for the project, and should
+run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.6 through 3.10,
-as well as the `flake8` lints and the Sphinx doctests and link-validity testing,
-and is configured to run on all commits. The workflow can be skipped
-per-commit by including `[skip ci]` in the commit message.
+Github Actions runs the test suite on Linux for Python 3.6 through 3.11, as well
+as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
+configured to run on all commits. The workflow can be skipped per-commit by
+including `[skip ci]` in the commit message.
 
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
-cross-Python-version tests, as well as numerous other checks.
-Due to its length, it is configured to run only on release branches
-and PRs to `main` or `stable`. It cannot be skipped.
+cross-Python-version tests, as well as numerous other checks. Due to its length,
+it is configured to run only on release branches and PRs to `main` or `stable`.
+Azure Pipelines now [also obeys `[skip ci]`
+directives](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#skipping-ci-for-individual-pushes).
 
 
 ## CHANGELOG
 
-The project [`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md)
-should be updated for the majority of contributions. No tooling is in place
-(e.g., [`towncrier`](https://github.com/twisted/towncrier)) for automated collation
-of news items into `CHANGELOG`;
-all changes should be documented manually, directly in the `CHANGELOG`.
+The project
+[`CHANGELOG`](https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md) should
+be updated for the majority of contributions. No tooling is in place (e.g.,
+[`towncrier`](https://github.com/twisted/towncrier)) for automated collation of
+news items into `CHANGELOG`; all changes should be documented manually, directly
+in the `CHANGELOG`. Please follow the format currently in use.
 
 Any PR that touches the project code *must* include a `CHANGELOG` entry.
-Contributions that make changes just to the test suite should usually also include
-a `CHANGELOG` entry, except for very minor or cosmetic changes. Other changes of note
-(packaging/build tooling, test/lint tooling/plugins, tool settings, etc.)
-may also warrant a `CHANGELOG` bullet, depending on the situation.
-When in doubt, ask!
+Contributions that make changes just to the test suite should usually also
+include a `CHANGELOG` entry, except for very minor or cosmetic changes. Other
+changes of note (packaging/build tooling, test/lint tooling/plugins, tool
+settings, etc.) may also warrant a `CHANGELOG` bullet, depending on the
+situation. When in doubt, ask!
 
 
 ## Issue & PR Templates
 
-The project is configured with a PR template and a couple of
-issue templates, to hopefully make it easier to provide all
-the information needed to act on code contributions, bug reports,
-and feature requests. If the templates don't fit the issue/PR
-you want to create, though, then don't use them.
+I've set up the project with a PR template and a couple of issue templates, to
+hopefully make it easier to provide all the information needed to act on code
+contributions, bug reports, and feature requests. If the templates don't fit the
+issue/PR you want to create, though, then don't use them.
 
 
 ## License
 
-All contributions will take on the MIT License of the project at large.
+All code and documentation contributions will respectively take on the MIT
+License and CC-BY 4.0 license of the project at large.

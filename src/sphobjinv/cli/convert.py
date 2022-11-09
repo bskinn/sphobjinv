@@ -4,7 +4,7 @@ r"""``sphobjinv`` *module for CLI convert functionality*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Oct 2022
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 

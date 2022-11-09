@@ -13,12 +13,16 @@ Based upon a quick ``git diff`` of the `Sphinx repository
 <https://github.com/sphinx-doc/sphinx>`__, it is thought to be valid for all
 Sphinx versions >=1.0b1 that make use of this "version 2" |objects.inv| format.
 
-**NOTE** that the previous version of the syntax presented here has been
-shown to be inaccurate (see :issue:`181`), in that it *is*
-permitted for the |{name}|_ field to contain whitespace.
-The descriptions below have been updated to reflect this and to provide
-more detailed information on the constraints governing each field
-of an |objects.inv| data line.
+**NOTE** that previous versions of the syntax presented here have been
+shown to be inaccurate:
+
+  * It *is* permitted for the |{name}|_ field to contain whitespace (see :issue:`181`).
+
+  * It *is* permitted for the |{role}|_ field to contain a colon (see :issue:`256`).
+
+The descriptions below have been updated to reflect this and to provide more
+detailed information on the constraints governing each field of an |objects.inv|
+data line.
 
 ----
 

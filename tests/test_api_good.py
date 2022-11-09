@@ -4,7 +4,7 @@ r"""*Direct expect-good API tests for* ``sphobjinv``.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     20 Mar 2019
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
-    http://sphobjinv.readthedocs.io
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -573,8 +577,13 @@ class TestInventory:
                 ), fname
 
         elif "django.inv" in fname:  # pragma: no cover
-            # TODO: Refine this adjustment as a function of sphinx_version if needed
-            assert inv.count == 13 + sphinx_ifile_data_count(original_ifile_data), fname
+            # 13 objects misbehave on import for Sphinx >= 3.3.0
+            if sphinx_version < (3, 3, 0):
+                assert inv.count == sphinx_ifile_data_count(original_ifile_data), fname
+            else:
+                assert inv.count == 13 + sphinx_ifile_data_count(
+                    original_ifile_data
+                ), fname
 
         elif "sphinx.inv" in fname:  # pragma: no cover
             assert inv.count == 4 + sphinx_ifile_data_count(original_ifile_data), fname

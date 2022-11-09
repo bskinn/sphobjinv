@@ -34,6 +34,7 @@ version = ".".join(release.split(".")[:2])
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -121,6 +122,12 @@ rst_epilog = r"""
 .. |license_txt| replace:: LICENSE.txt
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
+
+.. _MIT License: https://opensource.org/licenses/MIT
+
+.. |CC BY 4.0| replace:: CC BY 4.0 International License
+
+.. _CC BY 4.0: http://creativecommons.org/licenses/by/4.0/
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 

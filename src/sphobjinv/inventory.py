@@ -4,7 +4,7 @@ r"""``sphobjinv`` *data class for full inventories*.
 Sphinx |objects.inv| files.
 
 **Author**
-    Brian Skinn (bskinn@alum.mit.edu)
+    Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
     7 Dec 2017
@@ -16,10 +16,14 @@ Sphinx |objects.inv| files.
     https://github.com/bskinn/sphobjinv
 
 **Documentation**
-    https://sphobjinv.readthedocs.io/en/latest
+    https://sphobjinv.readthedocs.io/en/stable
 
 **License**
-    The MIT License; see |license_txt|_ for full license terms
+    Code: `MIT License`_
+
+    Docs & Docstrings: |CC BY 4.0|_
+
+    See |license_txt|_ for full license terms.
 
 **Members**
 
@@ -277,35 +281,11 @@ class Inventory:
         :class:`data.SuperDataObj.rst_fmt
         <sphobjinv.data.SuperDataObj.rst_fmt>`.
 
-        Calling with both `expand` and `contract` as |True| is invalid.
-
-        Parameters
-        ----------
-        expand
-
-            |bool| *(optional)* -- Return |str|\ s with any
-            :data:`~sphobjinv.data.SuperDataObj.uri` or
-            :data:`~sphobjinv.data.SuperDataObj.dispname`
-            abbreviations expanded
-
-        contract
-
-            |bool| *(optional)* -- Return |str|\ s with abbreviated
-            :data:`~sphobjinv.data.SuperDataObj.uri` and
-            :data:`~sphobjinv.data.SuperDataObj.dispname` values
-
         Returns
         -------
         obj_l
 
-            |list| of |str|
-            -- Inventory object data in reST-like format
-
-        Raises
-        ------
-        ValueError
-
-            If both `expand` and `contract` are |True|
+            |list| of |str| -- Inventory object data in reST-like format
 
         """
         return [_.as_rst for _ in self.objects]

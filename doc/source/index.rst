@@ -49,7 +49,7 @@ Alternatively, |soi| is packaged with
 `multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__
 and package managers, including:
 
-  * Alpine Linux: ``py3-sphobjinv``
+  * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
 
   * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/community/any/python-sphobjinv/>`__)
 
@@ -63,7 +63,7 @@ and package managers, including:
 
   * OpenEuler: ``python-sphobjinv``
 
-  * openSUSE: ``python-sphobjinv`` (`info <https://build.opensuse.org/package/show/openSUSE:Leap:15.2:Update/python-sphobjinv>`__)
+  * openSUSE: ``python-sphobjinv`` (`info <https://build.opensuse.org/package/show/openSUSE:Factory/python-sphobjinv>`__)
 
   * Parabola: ``python-sphobjinv`` (`info <https://www.parabola.nu/packages/?q=python-sphobjinv>`__)
 
@@ -103,13 +103,4 @@ The project source repository is on GitHub: `bskinn/sphobjinv
 Indices and Tables
 ------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-
-.. raw:: html
-
-   <small><em>Logo adapted from freely-available image at
-   https://heypik.com/images/hand-drawn-cartoon-color-tourist-attraction-sphinx_8ZU4501.html
-   (retrieved July 2019; now defunct).</em></small>
+:ref:`genindex` --- :ref:`modindex` --- :ref:`search`
