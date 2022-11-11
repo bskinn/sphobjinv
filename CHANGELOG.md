@@ -24,6 +24,10 @@ and this project strives to adhere to
     with the URLs it checks when trying to retrieve a remote inventory.
     ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
 
+  * CLI 'suggest' results output now displays more information about
+    the total number of objects in the inventory, the search score threshold,
+    and the number of results falling at/above that threshold.
+
   * A new CLI option, `-p`/`--paginate`, enables paging of the results from the
     `suggest` feature. ([#70](https://github.com/bskinn/sphobjinv/issues/70))
 
@@ -104,12 +108,6 @@ and this project strives to adhere to
 
 
 ### [2.2.2] - 2022-03-22
-
-#### Changed
-
-  * CLI 'suggest' results output now displays more information about
-    the total number of objects in the inventory, the search score threshold,
-    and the number of results falling at/above that threshold.
 
 #### Fixed
 
