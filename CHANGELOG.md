@@ -27,6 +27,7 @@ and this project strives to adhere to
   * CLI 'suggest' results output now displays more information about
     the total number of objects in the inventory, the search score threshold,
     and the number of results falling at/above that threshold.
+    ([#232](https://github.com/bskinn/sphobjinv/issues/232))
 
   * A new CLI option, `-p`/`--paginate`, enables paging of the results from the
     `suggest` feature. ([#70](https://github.com/bskinn/sphobjinv/issues/70))
