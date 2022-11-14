@@ -63,6 +63,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--flake8_ext", action="store_true", help="Include flake8 extensions test"
     )
+    parser.addoption("--readme", action="store_true", help="Include README shell tests")
 
 
 @pytest.fixture(scope="session")
