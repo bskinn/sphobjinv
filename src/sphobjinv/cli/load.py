@@ -170,7 +170,7 @@ def inv_url(params):
             print_stderr(f"  ... HTTP error: {e.code} {e.reason}.", params)
         except URLError:  # pragma: no cover
             print_stderr("  ... error attempting to retrieve URL.", params)
-        except VersionError:
+        except VersionError:  # pragma: no cover
             print_stderr("  ... no recognized inventory.", params)
         except ValueError:
             print_stderr(
