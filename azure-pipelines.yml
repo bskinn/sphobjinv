@@ -181,7 +181,7 @@ stages:
     - script: cd doc; make html; mkdir scratch
       displayName: Build docset
 
-    - script: pytest --cov=. --nonloc --flake8_ext
+    - script: pytest --cov=. --nonloc --flake8_ext --readme
       displayName: Run pytest with coverage on the entire project tree
 
     - script: coverage report --include="tests/*" --fail-under=100
