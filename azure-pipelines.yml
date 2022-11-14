@@ -126,6 +126,26 @@ stages:
     - script: cd doc; make doctest
       displayName: Run doctests
 
+  - job: readme
+    displayName: Run README doctests/shell tests
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.10'
+
+    - script: pip install -r requirements-ci.txt
+      displayName: Install CI requirements
+
+    - script: cd doc; make html
+      displayName: Build docs
+
+    - script: pytest -k readme --readme --doctest-glob="README.rst"
+      displayName: Run README doc/shell tests
+
   - job: linkcheck
     displayName: Run docs link-check suite
 
