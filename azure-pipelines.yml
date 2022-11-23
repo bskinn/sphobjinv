@@ -9,78 +9,6 @@ pr:
 
 
 stages:
-- stage: temp_testable_sdist
-  displayName: Test sdist testability
-
-  jobs:
-  - job: testable_sdist
-    displayName: Ensure sdist is testable
-
-    pool:
-      vmImage: 'Ubuntu-latest'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.10'
-
-    # - script: pip install -r requirements-dev.txt
-    #   displayName: Install full dev requirements
-
-    # - script: cd doc; make html
-    #   displayName: Build docs
-
-    - script: python -m pip install build
-      displayName: Install 'build' package
-
-    - script: |
-        python -m build -s
-        ls -lah dist
-      displayName: Build sdist
-
-    - script: |
-        mkdir sandbox
-      displayName: Create sandbox
-
-    - script: |
-        cp dist/*.gz sandbox/
-        cd sandbox
-        tar xf *.gz
-      displayName: Unpack sdist in sandbox
-
-    - script: |
-        cd sandbox
-        python -m venv env
-      displayName: Create venv
-
-    - script: |
-        cd sandbox
-        echo $( find . -maxdepth 1 -type d -regex "./.+[0-9].+" )
-      displayName: Debug cd command arg
-
-    # Only the dir of the unpacked sdist will have a digit in its name
-    - script: |
-        cd sandbox
-        source env/bin/activate
-        cd $( find . -maxdepth 1 -type d -regex "./.+[0-9].+" )
-        python -m pip install -r requirements-dev.txt
-      displayName: Install dev requirements to venv
-
-    - script: |
-        cd sandbox
-        source env/bin/activate
-        cd $( find . -maxdepth 1 -type d -regex "./.+[0-9].+" )
-        cd doc
-        O=-Ean make html
-      displayName: Build docs in sandbox
-
-    - script: |
-        cd sandbox
-        source env/bin/activate
-        cd $( find . -maxdepth 1 -type d -regex "./.+[0-9].+" )
-        pytest --nonloc
-      displayName: Run full test suite in sandbox
-
 
 - stage: code_quality
   displayName: Check code quality
@@ -161,6 +89,8 @@ stages:
         py311:
           spec: '3.11'
       platforms: [windows, macOs]
+
+  - template: azure-sdisttest.yml
 
 
 - stage: aux_tests
