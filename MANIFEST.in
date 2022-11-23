@@ -1,1 +1,14 @@
-include AUTHORS.md CHANGELOG.md CONTRIBUTING.md LICENSE.txt pyproject.toml README.rst
+include AUTHORS.md CHANGELOG.md CONTRIBUTING.md LICENSE.txt pyproject.toml
+include README.rst requirements-dev.txt requirements-flake8.txt tox.ini
+
+include src/sphobjinv/_vendored/fuzzywuzzy/LICENSE.txt
+
+recursive-include doc/source *
+include doc/make.bat doc/Makefile
+
+include tests/*.py
+include tests/resource/objects_attrs*
+include conftest.py
+
+global-exclude __pycache__/*
+prune **/*.egg-info
