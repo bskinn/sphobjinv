@@ -22,6 +22,22 @@ and this project strives to adhere to
 
   * The `sys.exit()` in the case of no objects falling above the 'suggest' search threshold was refactored into the main `do_suggest()` body, to minimize the surprise of an `exit()` call coming in a subfunction. ([#263](https://github.com/bskinn/sphobjinv/issues/263))
 
+#### Testing
+
+  * The constraint for `pytest-check` was bumped to `>=1.1.2` and all uses of
+    the `check` fixture were revised from `with check.check(...):` to
+    `with check(...):`. ([#265](https://github.com/bskinn/sphobjinv/issues/265))
+
+  * Azure Pipelines now has Python 3.11 available for all of Ubuntu, Windows and
+    MacOS, so it was added to the core text matrix for all platforms.
+
+#### Administrative
+
+  * The version bump on `pytest-check` no longer permits the use of Python 3.6
+    in CI. As Python 3.6 is nearly a year beyond EOL, this seems a reasonable
+    time to officially drop support for it. `python_requires` will still be at
+    `>=3.6` for now; it *should* still work for 3.6...but, no guarantees.
+
 
 ### [2.3] - 2022-11-08
 
