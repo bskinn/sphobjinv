@@ -18,6 +18,12 @@ and this project strives to adhere to
   * The 'suggest' CLI mode output now includes dividers for improved
     readability.
 
+#### Tests
+
+  * The README doctests and shell tests have been removed from the default
+    pytest suite. They must be explicitly opted-in with the `--readme` and
+    `--doctest-glob="README.rst"` flags to pytest.
+
 #### Internal
 
   * The `sys.exit()` in the case of no objects falling above the 'suggest' search threshold was refactored into the main `do_suggest()` body, to minimize the surprise of an `exit()` call coming in a subfunction. ([#263](https://github.com/bskinn/sphobjinv/issues/263))
