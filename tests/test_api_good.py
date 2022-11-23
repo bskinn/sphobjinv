@@ -366,17 +366,17 @@ class TestInventory:
             source = soi.readbytes(source)
 
         # General import, without a specified kwarg
-        with check.check(msg="general"):
+        with check(msg="general"):
             attrs_inventory_test(soi.Inventory(source), source_type)
 
         # Importing with the respective kwarg for each source type
-        with check.check(msg="specific"):
+        with check(msg="specific"):
             inv = soi.Inventory(**{inv_arg: source})
             attrs_inventory_test(inv, source_type)
 
         # Special case for plaintext bytes, try decoding it
         if source_type is soi.SourceTypes.BytesPlaintext:
-            with check.check(msg="plaintext_bytes"):
+            with check(msg="plaintext_bytes"):
                 inv = soi.Inventory(**{inv_arg: source.decode("utf-8")})
                 attrs_inventory_test(inv, source_type)
 

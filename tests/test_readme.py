@@ -103,5 +103,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, is_win, check):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with check.check():
+        with check():
             assert chk.check_output(out, result, dt_flags), msg

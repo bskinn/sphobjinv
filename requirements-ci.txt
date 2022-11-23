@@ -6,7 +6,7 @@ dictdiffer
 jsonschema
 md-toc
 pytest>=4.4.0
-pytest-check>=0.4
+pytest-check>=1.1.2
 pytest-cov
 pytest-ordering
 pytest-timeout

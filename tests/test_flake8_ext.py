@@ -69,5 +69,5 @@ def test_flake8_version_output(check):
     )  # noqa: S607,S603
 
     for p in plugins:
-        with check.check(msg=p):
+        with check(msg=p):
             assert p in flake8_ver_output.replace("_", "-").replace("\n", "")
