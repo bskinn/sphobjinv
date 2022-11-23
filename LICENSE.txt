@@ -1,16 +1,3 @@
-The sphobjinv documentation (including docstrings) is licensed under a Creative
-Commons Attribution 4.0 International License (CC-BY).
-
-See http://creativecommons.org/licenses/by/4.0/.
-
-
-The sphobjinv codebase is released under the MIT License, the text of which is
-included below.
-
-
-====================================================================================
-
-
 The MIT License (MIT)
 
 Copyright (c) 2016-2022 Brian Skinn and community contributors
