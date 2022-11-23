@@ -7,6 +7,22 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### (unreleased)
+
+#### Changed
+
+  * The printout of the inferred `intersphinx_mapping` item for inventories
+    retrieved by URL (`--url`) in the 'suggest' CLI mode is now relocated to
+    fall immediately below the inventory-search output. ([#262](https://github.com/bskinn/sphobjinv/issues/262))
+
+  * The 'suggest' CLI mode output now includes dividers for improved
+    readability.
+
+#### Internal
+
+  * The `sys.exit()` in the case of no objects falling above the 'suggest' search threshold was refactored into the main `do_suggest()` body, to minimize the surprise of an `exit()` call coming in a subfunction. ([#263](https://github.com/bskinn/sphobjinv/issues/263))
+
+
 ### [2.3] - 2022-11-08
 
 #### Added
@@ -66,7 +82,8 @@ and this project strives to adhere to
     `objects_sphinx.inv`, and the previous v1.6.6 was renamed to
     `objects_sphinx_1_6_6.inv`.
 
-  * The 'valid objects' test cases were updated to reflect the possibility for a colon within `{role}`:
+  * The 'valid objects' test cases were updated to reflect the possibility for a
+    colon within `{role}`:
 
     * The colon-within-`{role}` test case was moved from 'invalid' to 'valid'.
 
