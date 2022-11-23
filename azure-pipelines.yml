@@ -59,8 +59,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py36:
-          spec: '3.6'
         py37:
           spec: '3.7'
         py38:
@@ -69,6 +67,8 @@ stages:
           spec: '3.9'
         py310:
           spec: '3.10'
+        py311:
+          spec: '3.11'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -84,6 +84,8 @@ stages:
           spec: '3.9'
         py310:
           spec: '3.10'
+        py311:
+          spec: '3.11'
       platforms: [windows, macOs]
 
 

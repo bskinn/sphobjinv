@@ -45,7 +45,7 @@ def test_populate_scratch(misc_info, scratch_path, check):
     scr_base = misc_info.FNames.INIT.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
-        with check.check(msg=ext):
+        with check(msg=ext):
             assert (scratch_path / f"{scr_base}{ext}").is_file(), ext
 
 
