@@ -66,7 +66,7 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
     Project: sphobjinv
     Version: 2.3
 
-    219 objects in inventory.
+    220 objects in inventory.
 
     ------------------------------------------------
 
@@ -170,7 +170,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.3, 219 objects>
+    <Inventory (fname_zlib): sphobjinv v2.3, 220 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
