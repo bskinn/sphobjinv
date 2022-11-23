@@ -57,14 +57,21 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
+    ------------------------------------------------
+
+    Cannot infer intersphinx_mapping from a local objects.inv.
+
+    ------------------------------------------------
+
     Project: sphobjinv
     Version: 2.3
 
     219 objects in inventory.
 
+    ------------------------------------------------
+
     11 results found at/above current threshold of 58.
 
-    Cannot infer intersphinx_mapping from a local objects.inv.
 
       Name                                                Score
     ---------------------------------------------------  -------
@@ -103,16 +110,22 @@ cross-reference the ``linspace`` function from numpy (see
     Attempting "https://numpy.org/doc/1.23/objects.inv" ...
       ... inventory found.
 
+    ------------------------------------------------
+
+    The intersphinx_mapping for this docset is LIKELY:
+
+      (https://numpy.org/doc/1.23/, None)
+
+    ------------------------------------------------
+
     Project: NumPy
     Version: 1.23
 
     8074 objects in inventory.
 
+    ------------------------------------------------
+
     8 results found at/above current threshold of 75.
-
-    The intersphinx_mapping for this docset is LIKELY:
-
-      (https://numpy.org/doc/1.23/, None)
 
 
       Name                                                           Score

@@ -78,20 +78,33 @@ def do_suggest(inv, params):
         with_score=with_score,
     )
 
+    print_divider(params)
+    print_stderr_inferred_mapping(params)
+    print_divider(params)
+
     print_stderr(f"Project: {inv.project}", params)
     print_stderr(f"Version: {inv.version}\n", params)
 
     print_stderr(f"{inv.count} objects in inventory.\n", params)
+    print_divider(params)
 
     print_stderr_result_count(params, results)
 
-    print_stderr_inferred_mapping(params)
+    if not results:
+        print_stderr("\nExiting...\n", params)
+        sys.exit(0)
 
     # The query here for printing the full list only occurs in some
     # circumstances; see the function docstring.
     confirm_print_if_long_list(params, results)
 
     print_results_table(with_index, with_score, results, params)
+
+
+def print_divider(params):
+    """Print a visual divider to break up sections of the CLI output."""
+    length = shutil.get_terminal_size().columns * 3 // 5
+    print_stderr("-" * length + "\n", params)
 
 
 def print_stderr_result_count(params, results):
@@ -104,7 +117,6 @@ def print_stderr_result_count(params, results):
             ),
             params,
         )
-        sys.exit(0)
     else:
         print_stderr(
             (
