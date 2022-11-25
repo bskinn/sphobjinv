@@ -71,5 +71,5 @@ def test_decomp_comp_fixture(misc_info, decomp_cmp_test, scratch_path):
 
     """
     decomp_cmp_test(
-        scratch_path / f"{misc_info.FNames.INIT.value}{misc_info.Extensions.DEC}"
+        scratch_path / f"{misc_info.FNames.INIT.value}{misc_info.Extensions.DEC.value}"
     )
