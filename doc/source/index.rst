@@ -57,7 +57,7 @@ and package managers, including:
 
   * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
 
-  * Guix: ``python-sphobjinv`` (`info <https://guix.gnu.org/en/packages/python-sphobjinv-2.0.1/>`__)
+  * Guix: ``python-sphobjinv`` (`info <https://packages.guix.gnu.org/packages/python-sphobjinv/2.0.1/>`__)
 
   * Manjaro: ``python-sphobjinv``
 
