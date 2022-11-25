@@ -36,7 +36,6 @@ import re
 import shutil
 import sys
 from enum import Enum
-from filecmp import cmp
 from functools import partial
 from io import BytesIO
 from pathlib import Path
@@ -139,7 +138,7 @@ def misc_info(res_path):
 
 
 @pytest.fixture()
-def scratch_path(tmp_path, res_path, misc_info):
+def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
     """Provision pre-populated scratch directory, returned as Path."""
     res_base = misc_info.FNames.RES.value
     scr_base = misc_info.FNames.INIT.value
@@ -150,6 +149,13 @@ def scratch_path(tmp_path, res_path, misc_info):
             str(res_path / f"{res_base}{ext}"),
             str(tmp_path / f"{scr_base}{ext}"),
         )
+
+    # With the conversion of resources/objects_attrs.txt to Unix EOLs in order to
+    # provide for a Unix-testable sdist, on Windows systems this resource needs
+    # to be converted to DOS EOLs for consistency.
+    if is_win:
+        win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC}"
+        win_path.write_bytes(unix2dos(win_path.read_bytes()))
 
     yield tmp_path
 
@@ -260,13 +266,22 @@ def run_cmdline_test(monkeypatch):
 
 
 @pytest.fixture(scope="session")
-def decomp_cmp_test(misc_info):
+def decomp_cmp_test(misc_info, is_win, unix2dos):
     """Return function to confirm a decompressed file is identical to resource."""
 
     def func(path):
         """Perform the round-trip compress/decompress comparison test."""
         # The str() calls here are for Python 3.5 compat
-        assert cmp(str(misc_info.res_decomp_path), str(path), shallow=False)
+        res_bytes = Path(misc_info.res_decomp_path).read_bytes()
+        tgt_bytes = Path(path).read_bytes()  # .replace(b"\r\n", b"\n")
+
+        if is_win:
+            # Have to explicitly convert these newlines, now that the
+            # tests/resource/objects_attrs.txt file is marked 'binary' in
+            # .gitattributes
+            res_bytes = unix2dos(res_bytes)
+
+        assert res_bytes == tgt_bytes
 
     return func
 
