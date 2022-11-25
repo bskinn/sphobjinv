@@ -154,7 +154,7 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
     # provide for a Unix-testable sdist, on Windows systems this resource needs
     # to be converted to DOS EOLs for consistency.
     if is_win:
-        win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC}"
+        win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC.value}"
         win_path.write_bytes(unix2dos(win_path.read_bytes()))
 
     yield tmp_path
