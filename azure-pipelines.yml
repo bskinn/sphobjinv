@@ -7,6 +7,9 @@ pr:
     - main
     - stable
 
+variables:
+  pip_cache_dir: $(Pipeline.Workspace)/.pip
+
 
 stages:
 
@@ -19,10 +22,19 @@ stages:
 
     pool:
       vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install -U tox
       displayName: Install tox
@@ -42,10 +54,19 @@ stages:
 
     pool:
       vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install interrogate
       displayName: Install interrogate
@@ -108,6 +129,14 @@ stages:
       inputs:
         versionSpec: '3.10'
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: pip install . -r requirements-rtd.txt
       displayName: Install project, plus docs requirements
 
@@ -125,6 +154,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
@@ -147,6 +184,14 @@ stages:
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: cd doc; make html
       displayName: Build docs
 
@@ -165,6 +210,14 @@ stages:
       inputs:
         versionSpec: '3.10'
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: pip install . -r requirements-rtd.txt
       displayName: Install doc requirements and local project
 
@@ -182,6 +235,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
@@ -207,6 +268,14 @@ stages:
       inputs:
         versionSpec: '3.10'
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
 
@@ -227,6 +296,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install tox flake8-noqa -r requirements-flake8.txt
       displayName: Install requirements

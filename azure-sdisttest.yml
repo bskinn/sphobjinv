@@ -2,6 +2,9 @@ jobs:
 - job: testable_sdist
   displayName: Ensure sdist is testable
 
+  variables:
+    pip_cache_dir: $(Pipeline.Workspace)/.pip
+
   pool:
     vmImage: 'Ubuntu-latest'
 
@@ -9,6 +12,14 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.10'
+
+  - task: Cache@2
+    inputs:
+      key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+      restoreKeys: |
+        pip | "$(Agent.OS)"
+      path: $(pip_cache_dir)
+    displayName: Cache pip
 
   - script: python -m pip install build
     displayName: Install 'build' package
