@@ -1,3 +1,6 @@
+# Caching implemented as per
+# https://stackoverflow.com/a/70297887/4376000
+
 parameters:
   pythons: []
   platforms: []
@@ -15,6 +18,7 @@ jobs:
           image: 'macOS-latest'
         ${{ if notIn(platform, 'macOs', 'linux', 'windows') }}:
           image: 'Ubuntu-latest'
+        pip_cache_dir: $(Pipeline.Workspace)/.pip
 
       pool:
         vmImage: $[ variables.image ]
@@ -25,6 +29,14 @@ jobs:
           versionSpec: '${{ python.value.spec }}'
           architecture: 'x64'
         displayName: Use cached ${{ coalesce(python.value.name, python.key) }} for tests.
+
+      - task: Cache@2
+        inputs:
+          key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+          restoreKeys: |
+            pip | "$(Agent.OS)"
+          path: $(pip_cache_dir)
+        displayName: Cache pip
 
       - script: pip install -U --force-reinstall -r requirements-ci.txt
         displayName: Install CI requirements
