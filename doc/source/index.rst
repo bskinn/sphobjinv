@@ -3,10 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sphobjinv!
-=====================
+sphobjinv: Inspect & Manipulate Sphinx ``objects.inv`` Files
+------------------------------------------------------------
 
-*A toolkit for inspection/manipulation of Sphinx objects inventories*
+|soi| is a Python package that provides both a CLI and an API to search,
+inspect, manipulate and create Sphinx |objects.inv| files.
+
+Its most popular feature is its "suggest" CLI mode, which searches an |objects.inv| file for objects matching a desired search term. See those usage docs :doc:`here <cli/suggest>`.
 
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
@@ -97,10 +100,10 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    cli/index
    api_usage
    customfile
-   levenshtein
    syntax
    api/index
    CLI Implementation (non-API) <cli/implementation/index>
+   levenshtein
 
 
 
