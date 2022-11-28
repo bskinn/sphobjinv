@@ -5,15 +5,15 @@ Command-Line Usage: "suggest" Subcommand
 
 .. program:: sphobjinv suggest
 
-The |cour|\ suggest\ |/cour| subcommand is used to query an inventory for objects
-fuzzy-matching a given search string. Fuzzy-matching is carried out via the
-|fuzzywuzzy|_ library, against the Restructured Text-like representation of each
-object exposed by :attr:`SuperDataObj.as_rst <sphobjinv.data.SuperDataObj.as_rst>`:
+The "suggest" subcommand is used to query an inventory for
+objects fuzzy-matching a given search string. The search string is matched
+against the reStructuredText-like representation of each object in the
+|objects.inv|, and all objects with a score above a set threshold are printed:
 
 .. command-output:: sphobjinv suggest objects_attrs.inv instance
    :cwd: /../../tests/resource
 
-The |fuzzywuzzy|_ match score and the index of the object within the inventory can
+The match score and the index of the object within the inventory can
 be printed by passing the :option:`--score` and :option:`--index` options,
 respectively:
 
@@ -72,7 +72,7 @@ If download of JSON files by URL is desirable, please
 
 .. option:: search
 
-    Search term for |fuzzywuzzy|_ matching.
+    Search term for matching against inventory objects.
 
 **Flags**
 
@@ -94,11 +94,11 @@ If download of JSON files by URL is desirable, please
 
 .. option:: -s, --score
 
-    Display the |fuzzywuzzy|_ match score for each search result returned.
+    Display the match score for each search result returned.
 
 .. option:: -t, --thresh <#>
 
-    Change the |fuzzywuzzy|_ match quality threshold (0-100; higher values
+    Change the match quality threshold (0-100; higher values
     yield fewer results). Default is specified in
     :attr:`~sphobjinv.cli.parser.PrsConst.DEF_THRESH`.
 
