@@ -89,9 +89,9 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
 .. end shell command
 
-The ``-s`` argument in the above shell command indicates to print the
-``fuzzywuzzy`` match score along with each search result, and ``-t 50``
-changes the reporting threshold for the match score.
+The ``-s`` argument in the above shell command indicates to print the match
+score along with each search result, and ``-t 50`` changes the reporting
+threshold for the match score.
 
 For external references, just find the API documentation wherever it lives on
 the web, and pass ``sphobjinv suggest`` a URL from within the documentation set
@@ -159,13 +159,12 @@ cross-referenced as ``:func:`numpy.linspace```, **not**
 
 .. end shell command
 
-JSON output is supported (``sphobjinv convert json ...``), and
-inventories can be re-compressed to the
-partially-zlib-compressed form that ``intersphinx`` reads
-(``sphobjinv convert zlib ...``).
+JSON output is also supported (``sphobjinv convert json ...``), and inventories
+can be re-compressed to the partially-zlib-compressed form that ``intersphinx``
+reads (``sphobjinv convert zlib ...``).
 
-Alternatively, ``sphobjinv`` exposes an API to enable automation of
-inventory creation/modification::
+Alternatively, ``sphobjinv`` exposes an API to enable automation of inventory
+creation/modification::
 
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
