@@ -75,6 +75,9 @@ and this project strives to adhere to
 
 #### Administrative
 
+  * `sphobjinv` is now available via conda-forge! A note was added to the docs
+    to indicate this.
+
   * The version bump on `pytest-check` no longer permits the use of Python 3.6
     in CI. As Python 3.6 is nearly a year beyond EOL, this seems a reasonable
     time to officially drop support for it. `python_requires` will still be at

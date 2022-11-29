@@ -45,6 +45,10 @@ Or, if you only plan to use the |soi| CLI, another option is |pipx|_::
 
     $ pipx install sphobjinv
 
+As of Nov 2022, |soi| is also available via conda-forge. After activating the desired conda environment::
+
+    $ conda install -c conda-forge sphobjinv
+
 Alternatively, |soi| is packaged with
 `multiple POSIX distributions <https://repology.org/projects/?search=sphobjinv>`__
 and package managers, including:
