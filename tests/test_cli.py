@@ -479,10 +479,10 @@ class TestFail:
 
         (scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)).unlink()
 
-        with check.check(msg="path-style"):
+        with check(msg="path-style"):
             run_cmdline_test(["convert", "plain", "-u", str(in_path)], expect=1)
 
-        with check.check(msg="url-style"):
+        with check(msg="url-style"):
             file_url = "file:///" + str(in_path.resolve())
             run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
 

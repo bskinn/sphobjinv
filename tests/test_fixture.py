@@ -45,7 +45,7 @@ def test_populate_scratch(misc_info, scratch_path, check):
     scr_base = misc_info.FNames.INIT.value
 
     for ext in [_.value for _ in misc_info.Extensions]:
-        with check.check(msg=ext):
+        with check(msg=ext):
             assert (scratch_path / f"{scr_base}{ext}").is_file(), ext
 
 
@@ -63,11 +63,13 @@ def test_cli_invoke(run_cmdline_test):
     run_cmdline_test([])
 
 
-def test_decomp_comp_fixture(misc_info, decomp_cmp_test):
+def test_decomp_comp_fixture(misc_info, decomp_cmp_test, scratch_path):
     """Test decomp_cmp_test works in 'identity' case.
 
     Basically is telling filecmp.cmp to compare a reference inventory file
     with itself.
 
     """
-    decomp_cmp_test(misc_info.res_decomp_path)
+    decomp_cmp_test(
+        scratch_path / f"{misc_info.FNames.INIT.value}{misc_info.Extensions.DEC.value}"
+    )

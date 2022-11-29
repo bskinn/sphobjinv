@@ -58,6 +58,20 @@ p_shell = re.compile(
 )
 
 
+pytestmark = [pytest.mark.readme]
+
+
+@pytest.fixture(scope="module", autouse=True)
+def skip_if_no_readme_option(pytestconfig):
+    """Skip test if --readme not provided.
+
+    Auto-applied to all functions in module, since module is dedicated to README.
+
+    """
+    if not pytestconfig.getoption("--readme"):
+        pytest.skip("'--readme' not specified")  # pragma: no cover
+
+
 @pytest.mark.skipif(
     sphinx_ver != sphinx_req,
     reason="Skip if Sphinx version mismatches current dev version.",
@@ -89,5 +103,5 @@ def test_readme_shell_cmds(ensure_doc_scratch, is_win, check):
 
         msg = "\n\nExpected:\n" + out + "\n\nGot:\n" + result
 
-        with check.check():
+        with check():
             assert chk.check_output(out, result, dt_flags), msg

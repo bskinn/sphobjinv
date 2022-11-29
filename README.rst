@@ -33,7 +33,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/psf/black
 
 .. image:: https://pepy.tech/badge/sphobjinv/month
-    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3
+    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3&versions=2.3.1
 
 ----
 
@@ -57,14 +57,21 @@ For internal cross-references, locate ``objects.inv`` within ``build/html``::
 
     $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
+    ------------------------------------------------
+
+    Cannot infer intersphinx_mapping from a local objects.inv.
+
+    ------------------------------------------------
+
     Project: sphobjinv
     Version: 2.3
 
-    219 objects in inventory.
+    220 objects in inventory.
+
+    ------------------------------------------------
 
     11 results found at/above current threshold of 58.
 
-    Cannot infer intersphinx_mapping from a local objects.inv.
 
       Name                                                Score
     ---------------------------------------------------  -------
@@ -103,16 +110,22 @@ cross-reference the ``linspace`` function from numpy (see
     Attempting "https://numpy.org/doc/1.23/objects.inv" ...
       ... inventory found.
 
+    ------------------------------------------------
+
+    The intersphinx_mapping for this docset is LIKELY:
+
+      (https://numpy.org/doc/1.23/, None)
+
+    ------------------------------------------------
+
     Project: NumPy
     Version: 1.23
 
     8074 objects in inventory.
 
+    ------------------------------------------------
+
     8 results found at/above current threshold of 75.
-
-    The intersphinx_mapping for this docset is LIKELY:
-
-      (https://numpy.org/doc/1.23/, None)
 
 
       Name                                                           Score
@@ -157,7 +170,7 @@ inventory creation/modification::
     >>> import sphobjinv as soi
     >>> inv = soi.Inventory('doc/build/html/objects.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.3, 219 objects>
+    <Inventory (fname_zlib): sphobjinv v2.3, 220 objects>
     >>> inv.project
     'sphobjinv'
     >>> inv.version
@@ -185,7 +198,8 @@ and feature requests are welcomed at the
 
 Copyright (c) Brian Skinn 2016-2022
 
-The ``sphobjinv`` documentation (including docstrings) is licensed under a
+The ``sphobjinv`` documentation (including docstrings and README) is licensed
+under a
 `Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
 (CC-BY). The ``sphobjinv`` codebase is released under the
 `MIT License <https://opensource.org/licenses/MIT>`__. See

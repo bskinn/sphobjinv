@@ -7,8 +7,12 @@ pr:
     - main
     - stable
 
+variables:
+  pip_cache_dir: $(Pipeline.Workspace)/.pip
+
 
 stages:
+
 - stage: code_quality
   displayName: Check code quality
 
@@ -18,10 +22,19 @@ stages:
 
     pool:
       vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install -U tox
       displayName: Install tox
@@ -35,15 +48,25 @@ stages:
     - script: tox -e flake8
       displayName: Lint the codebase
 
+
   - job: interrogate
     displayName: Run interrogate docstrings check
 
     pool:
       vmImage: 'Ubuntu-latest'
+
     steps:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install interrogate
       displayName: Install interrogate
@@ -59,8 +82,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py36:
-          spec: '3.6'
         py37:
           spec: '3.7'
         py38:
@@ -69,6 +90,8 @@ stages:
           spec: '3.9'
         py310:
           spec: '3.10'
+        py311:
+          spec: '3.11'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -84,7 +107,11 @@ stages:
           spec: '3.9'
         py310:
           spec: '3.10'
+        py311:
+          spec: '3.11'
       platforms: [windows, macOs]
+
+  - template: azure-sdisttest.yml
 
 
 - stage: aux_tests
@@ -101,6 +128,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install project, plus docs requirements
@@ -120,11 +155,49 @@ stages:
       inputs:
         versionSpec: '3.10'
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
 
     - script: cd doc; make doctest
       displayName: Run doctests
+
+
+  - job: readme
+    displayName: Run README doctests/shell tests
+
+    pool:
+      vmImage: 'Ubuntu-latest'
+
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.10'
+
+    - script: pip install -r requirements-ci.txt
+      displayName: Install CI requirements
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
+    - script: cd doc; make html
+      displayName: Build docs
+
+    - script: pytest -k readme --readme --doctest-glob="README.rst"
+      displayName: Run README doc/shell tests
+
 
   - job: linkcheck
     displayName: Run docs link-check suite
@@ -136,6 +209,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install . -r requirements-rtd.txt
       displayName: Install doc requirements and local project
@@ -155,37 +236,26 @@ stages:
       inputs:
         versionSpec: '3.10'
 
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
+
     - script: pip install -r requirements-dev.txt
       displayName: Install full dev requirements
 
     - script: cd doc; make html; mkdir scratch
       displayName: Build docset
 
-    - script: pytest --cov=. --nonloc --flake8_ext
+    - script: pytest --cov=. --nonloc --flake8_ext --readme
       displayName: Run pytest with coverage on the entire project tree
 
     - script: coverage report --include="tests/*" --fail-under=100
       displayName: Check 100% test execution
 
-  - job: contributing_toc
-    displayName: Confirm CONTRIBUTING.md TOC is up to date
-
-    pool:
-      vmImage: 'Ubuntu-latest'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.10'
-
-    - script: pip install -r requirements-ci.txt
-      displayName: Install CI requirements
-
-    - script: python -m md_toc -p github CONTRIBUTING.md
-      displayName: Run md-toc on CONTRIBUTING
-
-    - script: if [[ $( git status | grep modified | wc -l ) -ne 0 ]]; then exit 1; fi
-      displayName: Fail if md-toc modified CONTRIBUTING
 
   - job: noqa_info
     displayName: Report flake8-noqa results for info (never fails)
@@ -197,6 +267,14 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.10'
+
+    - task: Cache@2
+      inputs:
+        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
+        restoreKeys: |
+          pip | "$(Agent.OS)"
+        path: $(pip_cache_dir)
+      displayName: Cache pip
 
     - script: pip install tox flake8-noqa -r requirements-flake8.txt
       displayName: Install requirements

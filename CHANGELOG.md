@@ -7,6 +7,108 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### [2.3.1] - 2022-11-29
+
+#### Changed
+
+  * The printout of the inferred `intersphinx_mapping` item for inventories
+    retrieved by URL (`--url`) in the 'suggest' CLI mode is now relocated to
+    fall immediately below the inventory-search output. It also now is displayed
+    even if no objects in the `objects.inv` satisfy the score threshold.
+    ([#262](https://github.com/bskinn/sphobjinv/issues/262))
+
+  * The 'suggest' CLI mode output now includes dividers for improved
+    readability.
+
+#### Tests
+
+  * The plaintext `tests/resource/objects_attrs.txt` was converted to POSIX EOLs
+    and declared as binary to git, in order to provide a consistent state for
+    sdist packaging, regardless of platform (POSIX vs Windows).
+
+    * As a result, it was necessary to modify the `scratch_path` fixture to
+      "`unix2dos`" this file on Windows systems, in order to provide a
+      consistent test state.
+
+    * Similarly, the `decomp_cmp_test` fixture was modified to "`unix2dos`" the
+      `objects_attrs.txt` resource before comparisons, again in order to provide
+      a consistent reference artifact. Implementing required direct manipulation
+      of the bytes contents of the file, instead of the `filecmp.cmp` method
+      that had been used previously.
+
+  * The README doctests and shell tests have been removed from the default
+    pytest suite. They must be explicitly opted-in with the `--readme` and
+    `--doctest-glob="README.rst"` flags to pytest.
+
+    * A new job, `readme`, has been added to the `aux_tests` stage of the Azure
+      Pipelines CI to run these tests for PRs and release branches.
+
+  * The constraint for `pytest-check` was bumped to `>=1.1.2` and all uses of
+    the `check` fixture were revised from `with check.check(...):` to
+    `with check(...):`. ([#265](https://github.com/bskinn/sphobjinv/issues/265))
+
+  * Azure Pipelines now has Python 3.11 available for all of Ubuntu, Windows and
+    MacOS, so it was added to the core text matrix for all platforms.
+
+  * A new CI job was created on Azure Pipelines that creates an sdist from the
+    current project, extracts it into a sandboxed environment, installs the dev
+    dependencies, and runs the pytest suite (`azure-sdisttest.yml`).
+
+  * All uses of `pytest-check` were updated to use the
+    [v1.1.2 syntax](https://github.com/okken/pytest-check/blob/main/changelog.md#110---2022-nov-21)
+    (`check` fixture, or `from pytest_check import check`).
+
+#### Internal
+
+  * The `sys.exit()` in the case of no objects falling above the 'suggest'
+    search threshold was refactored into the main `do_suggest()` body, to
+    minimize the surprise of an `exit()` call coming in a subfunction.
+    ([#263](https://github.com/bskinn/sphobjinv/issues/263))
+
+#### Packaging
+
+  * `MANIFEST.in` was revised in order to provide a testable (`pytest --nonloc`)
+    sdist, in order to streamline packaging of `sphobjinv` for conda-forge.
+    (Thanks very much to [@anjos](https://github.com/anjos) for getting the
+    recipes for `sphobjinv` and its dependencies in place! See
+    [#264](https://github.com/bskinn/sphobjinv/issues/264).)
+
+#### Administrative
+
+  * `sphobjinv` is now available via conda-forge! A note was added to the docs
+    to indicate this.
+
+  * The version bump on `pytest-check` no longer permits the use of Python 3.6
+    in CI. As Python 3.6 is nearly a year beyond EOL, this seems a reasonable
+    time to officially drop support for it. `python_requires` will still be at
+    `>=3.6` for now; it *should* still work for 3.6...but, no guarantees.
+
+  * The hook versions for `pre-commit-hooks`, `black`, and `pyproject-fmt` were
+    updated to v4.3, v22.10, and v0.3.5, respectively.
+
+  * `CONTENT_LICENSE.txt` was created, to specifically house the full
+    content/documentation license information.
+
+  * `LICENSE.txt` was revised to only hold the MIT License for the code,
+    primarily so that Github's automatic systems will recognize the project as
+    MIT licensed.
+
+  * Caching of pip downloads was added to all of the Azure Pipelines jobs.
+
+  * The version constraint for `pytest-check` was raised to `>=1.1.2`.
+
+  * A temporary upper bound was placed on the `flake8` version (now `>=5,<6`,
+    instead of `>=5`) to avoid pip resolver failures likely due to conflicts
+    with constraints declared by plugins.
+
+  * The older versions of `jsonschema` tested in the `tox` matrix were
+    streamlined down to 3.0 (`==3.0`), 3.x (`<4`), 4.0 (`<4.1`) and 4.8
+    (`<4.9`).
+
+  * The pin of `sphinx-issues==0.4.0` in the `tox` matrix was removed, to match
+    the unpinned package in the `requirements-xxx.txt` files.
+
+
 ### [2.3] - 2022-11-08
 
 #### Added
@@ -23,6 +125,11 @@ and this project strives to adhere to
   * The CLI now provides considerably more information about what is happening
     with the URLs it checks when trying to retrieve a remote inventory.
     ([#99](https://github.com/bskinn/sphobjinv/issues/99), plus more)
+
+  * CLI 'suggest' results output now displays more information about
+    the total number of objects in the inventory, the search score threshold,
+    and the number of results falling at/above that threshold.
+    ([#232](https://github.com/bskinn/sphobjinv/issues/232))
 
   * A new CLI option, `-p`/`--paginate`, enables paging of the results from the
     `suggest` feature. ([#70](https://github.com/bskinn/sphobjinv/issues/70))
@@ -61,7 +168,8 @@ and this project strives to adhere to
     `objects_sphinx.inv`, and the previous v1.6.6 was renamed to
     `objects_sphinx_1_6_6.inv`.
 
-  * The 'valid objects' test cases were updated to reflect the possibility for a colon within `{role}`:
+  * The 'valid objects' test cases were updated to reflect the possibility for a
+    colon within `{role}`:
 
     * The colon-within-`{role}` test case was moved from 'invalid' to 'valid'.
 
@@ -104,12 +212,6 @@ and this project strives to adhere to
 
 
 ### [2.2.2] - 2022-03-22
-
-#### Changed
-
-  * CLI 'suggest' results output now displays more information about
-    the total number of objects in the inventory, the search score threshold,
-    and the number of results falling at/above that threshold.
 
 #### Fixed
 
