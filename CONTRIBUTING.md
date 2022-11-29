@@ -1,4 +1,4 @@
-Welcome!
+Welcome!  <!-- omit in toc -->
 --------
 
 Thanks for your interest in contributing to `sphobjinv`!
@@ -10,7 +10,7 @@ If you have any questions, please drop me a line on Twitter
 [issue](https://github.com/bskinn/sphobjinv/issues).
 
 
-Table of Contents
+Table of Contents <!-- omit in toc -->
 -----------------
 
 <!--TOC-->
@@ -23,7 +23,7 @@ Table of Contents
 - [Documentation](#documentation)
 - [Continuous Integration](#continuous-integration)
 - [CHANGELOG](#changelog)
-- [Issue \& PR Templates](#issue--pr-templates)
+- [Issue and PR Templates](#issue-and-pr-templates)
 - [License](#license)
 
 <!--TOC-->
@@ -279,7 +279,7 @@ settings, etc.) may also warrant a `CHANGELOG` bullet, depending on the
 situation. When in doubt, ask!
 
 
-## Issue & PR Templates
+## Issue and PR Templates
 
 I've set up the project with a PR template and a couple of issue templates, to
 hopefully make it easier to provide all the information needed to act on code
