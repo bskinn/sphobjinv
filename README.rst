@@ -33,7 +33,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
     :target: https://github.com/psf/black
 
 .. image:: https://pepy.tech/badge/sphobjinv/month
-    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3
+    :target: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3&versions=2.3.1
 
 ----
 
