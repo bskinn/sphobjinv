@@ -36,6 +36,7 @@ def readme():
 
 
 setup(
+    name=NAME,
     long_description=readme(),
     long_description_content_type="text/x-rst",
 )
