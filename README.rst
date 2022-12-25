@@ -3,7 +3,7 @@ sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
 **Current Development Version:**
 
-.. image:: https://img.shields.io/github/workflow/status/bskinn/sphobjinv/ci-tests?logo=github
+.. image:: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/ci_tests.yml?logo=github&branch=main
     :alt: GitHub Workflow Status
     :target: https://github.com/bskinn/sphobjinv/actions
 
