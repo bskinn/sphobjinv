@@ -133,7 +133,8 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 ``{priority}``
     Flag for `placement in search results
     <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/domains/__init__.py#L370-L381>`__. Most will be ``1`` (standard priority) or
-    ``-1`` (omit from results) for documentation built by Sphinx.
+    ``-1`` (omit from results) for documentation built by Sphinx;
+    values of ``0`` (higher priority) or ``2`` (lower priority) may also occur.
 
     To note, as of Jan 2022 this value is **not** used by ``intersphinx``;
     it is only used internally within the search function of the static webpages

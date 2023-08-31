@@ -55,7 +55,7 @@ and package managers, including:
 
   * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
 
-  * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/community/any/python-sphobjinv/>`__)
+  * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/extra/any/python-sphobjinv/>`__)
 
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
