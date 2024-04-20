@@ -10,6 +10,7 @@ line-length = 88
 include = '''
 (
     ^/tests/.*[.]py$
+  | ^/helpers/.*[.]py$
   | ^/src/sphobjinv/.*[.]py$
   | ^/setup[.]py
   | ^/conftest[.]py

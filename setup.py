@@ -3,6 +3,8 @@ from pathlib import Path
 
 from setuptools import setup
 
+from helpers.update_readme import update_readme
+
 NAME = "sphobjinv"
 
 exec_ns = {}
@@ -10,6 +12,8 @@ exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"), exec_ns
 __version__ = exec_ns["__version__"]
 
 version_override = None
+
+new_ver = version_override if version_override else __version__
 
 
 def readme():
@@ -37,6 +41,6 @@ def readme():
 
 setup(
     name=NAME,
-    long_description=readme(),
+    long_description=update_readme(name=NAME, new_ver=new_ver, path="README.md"),
     long_description_content_type="text/markdown",
 )
