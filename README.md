@@ -1,23 +1,16 @@
-sphobjinv: Manipulate and inspect Sphinx objects.inv files
-==========================================================
+## sphobjinv: Manipulate and inspect Sphinx objects.inv files
 
-**Current Development Version:**
 
-.. image:: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/ci_tests.yml?logo=github&branch=main
-    :alt: GitHub Workflow Status
-    :target: https://github.com/bskinn/sphobjinv/actions
+#### Current Development Version
 
-.. image:: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/bskinn/sphobjinv
+[![GitHub Workflow Status][workflow badge]][workflow link target] [![Codecov Coverage][codecov badge]][codecov target]
 
-**Most Recent Stable Release:**
+#### Most Recent Stable Release:
 
-.. image:: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi
-    :target: https://pypi.org/project/sphobjinv
+[![PyPI Version][pypi badge]][pypi link target] ![Python Versions][python versions badge]
 
-.. image:: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
+#### Info:
 
-**Info:**
 
 .. image:: https://img.shields.io/readthedocs/sphobjinv/latest.svg
     :target: http://sphobjinv.readthedocs.io/en/latest/
@@ -205,3 +198,12 @@ under a
 `MIT License <https://opensource.org/licenses/MIT>`__. See
 `LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
 full license terms.
+
+
+[codecov badge]: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
+[codecov target]: https://codecov.io/gh/bskinn/sphobjinv
+[pypi badge]: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi]
+[pypi link target]: https://pypi.org/project/sphobjinv
+[python versions badge]: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
+[workflow badge]: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/ci_tests.yml?logo=github&branch=main
+[workflow link target]: https://github.com/bskinn/sphobjinv/actions
