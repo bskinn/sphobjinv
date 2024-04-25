@@ -3,11 +3,13 @@
 
 #### Current Development Version
 
-[![GitHub Workflow Status][workflow badge]][workflow link target] [![Codecov Coverage][codecov badge]][codecov target]
+[![GitHub Workflow Status][workflow badge]][workflow link target]
+[![Codecov Coverage][codecov badge]][codecov target]
 
 #### Most Recent Stable Release:
 
-[![PyPI Version][pypi badge]][pypi link target] ![Python Versions][python versions badge]
+[![PyPI Version][pypi badge]][pypi link target]
+![Python Versions][python versions badge]
 
 #### Info:
 
