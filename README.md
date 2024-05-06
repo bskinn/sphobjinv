@@ -145,13 +145,17 @@ cross-referenced as ``` :func:`numpy.linspace` ``` , **not**
 
 `sphobjinv` can help with that, too.
 
-`objects.inv` files can be decompressed to plaintext at the commandline::
+`objects.inv` files can be decompressed to plaintext at the commandline:
 
-    $ sphobjinv convert plain -o doc/build/html/objects.inv doc/scratch/
-    Conversion completed.
-    '...objects.inv' converted to '...objects.txt' (plain).
+<!-- START TEST BLOCK -->
 
-.. end shell command
+```none
+$ sphobjinv convert plain -o doc/build/html/objects.inv doc/scratch/
+Conversion completed.
+'...objects.inv' converted to '...objects.txt' (plain).
+```
+
+<!-- END TEST BLOCK -->
 
 JSON output is supported (`sphobjinv convert json ...`), and
 inventories can be re-compressed to the
@@ -159,56 +163,55 @@ partially-zlib-compressed form that `intersphinx` reads
 (`sphobjinv convert zlib ...`).
 
 Alternatively, `sphobjinv` exposes an API to enable automation of
-inventory creation/modification::
+inventory creation/modification:
 
-    >>> import sphobjinv as soi
-    >>> inv = soi.Inventory('doc/build/html/objects.inv')
-    >>> print(inv)
-    <Inventory (fname_zlib): sphobjinv v2.3, 220 objects>
-    >>> inv.project
-    'sphobjinv'
-    >>> inv.version
-    '2.3'
-    >>> inv.objects[0]
-    DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
+```python
+>>> import sphobjinv as soi
+>>> inv = soi.Inventory('doc/build/html/objects.inv')
+>>> print(inv)
+<Inventory (fname_zlib): sphobjinv v2.3, 220 objects>
+>>> inv.project
+'sphobjinv'
+>>> inv.version
+'2.3'
+>>> inv.objects[0]
+DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
+```
 
-The API also enables straightforward re-export of an inventory,
-for subsequent use with `intersphinx` cross-references.
-See `the docs <http://sphobjinv.readthedocs.io/en/latest/
-api_usage.html#exporting-an-inventory>`__
-for more details.
+The API also enables straightforward re-export of an inventory, for subsequent
+use with `intersphinx` cross-references. See [the docs][soi docs inv export] for
+more details.
 
 ----
 
-Full documentation is hosted at
-`Read The Docs <http://sphobjinv.readthedocs.io/en/latest/>`__.
+Full documentation is hosted at [Read The Docs][readthedocs link target].
 
-Available on `PyPI <https://pypi.org/project/sphobjinv>`__
-(`pip install sphobjinv`).
+Available on [PyPI][pypi link target] (`pip install sphobjinv`).
 
-Source on `GitHub <https://github.com/bskinn/sphobjinv>`__.  Bug reports
-and feature requests are welcomed at the
-`Issues <https://github.com/bskinn/sphobjinv/issues>`__ page there.
+Source on [GitHub][github repo]. Bug reports and feature requests are welcomed
+at the [Issues][github issue tracker] page there.
 
 Copyright (c) Brian Skinn 2016-2022
 
 The `sphobjinv` documentation (including docstrings and README) is licensed
-under a
-`Creative Commons Attribution 4.0 International License <http://creativecommons.org/licenses/by/4.0/>`__
-(CC-BY). The `sphobjinv` codebase is released under the
-`MIT License <https://opensource.org/licenses/MIT>`__. See
-`LICENSE.txt <https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt>`__ for
-full license terms.
+under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
+(CC-BY). The `sphobjinv` codebase is released under the [MIT License]. See
+[`LICENSE.txt`][license link target] for full license terms.
 
 
 [black badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black link target]: https://github.com/psf/black
+[cc-by 4.0]: http://creativecommons.org/licenses/by/4.0/
 [codecov badge]: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
 [codecov target]: https://codecov.io/gh/bskinn/sphobjinv
+[soi docs inv export]: http://sphobjinv.readthedocs.io/en/latest/api_usage.html#exporting-an-inventory
+[github issue tracker]: https://github.com/bskinn/sphobjinv/issues
+[github repo]: https://github.com/bskinn/sphobjinv
 [gitter badge]: https://badges.gitter.im/sphobjinv/community.svg
 [gitter link target]: https://gitter.im/sphobjinv/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [license badge]: https://img.shields.io/github/license/mashape/apistatus.svg
 [license link target]: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
+[mit license]: https://opensource.org/licenses/MIT
 [numpy linspace]: https://numpy.org/doc/1.23/reference/generated/numpy.linspace.html
 [pepy badge]: https://pepy.tech/badge/sphobjinv/month
 [pepy link target]: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3&versions=2.3.1
