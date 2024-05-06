@@ -71,10 +71,10 @@ can be found at the GitHub repo
 
             The `role` values here must be the **full** role names ("`block directives`"),
             described as the "directives" in the `Sphinx documentation for
-            domains <https://www.sphinx-doc.org/en/master/domains.html#the-python-domain>`__,
+            domains <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#the-python-domain>`__,
             and not the abbreviated forms ("`inline directives`")
             `used when constructing cross-references
-            <https://www.sphinx-doc.org/en/master/domains.html#cross-referencing-python-objects>`__.
+            <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#cross-referencing-python-objects>`__.
 
             Thus, for example, a :class:`~sphobjinv.data.DataObjStr` corresponding
             to a method on a class should be constructed with

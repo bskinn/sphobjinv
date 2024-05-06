@@ -73,7 +73,7 @@ and package managers, including:
 
   * pkgsrc: ``textproc/py-sphobjinv`` (`info <https://pkgsrc.se/textproc/py-sphobjinv>`__)
 
-  * spack: ``py-sphobjinv`` (`info <https://spack.readthedocs.io/en/latest/package_list.html#py-sphobjinv>`__)
+  * spack: ``py-sphobjinv`` (`info <https://packages.spack.io/package.html?name=py-sphobjinv>`__)
 
 
 |soi| is configured for use both as a
