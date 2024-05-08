@@ -82,8 +82,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py37:
-          spec: '3.7'
         py38:
           spec: '3.8'
         py39:
@@ -92,6 +90,8 @@ stages:
           spec: '3.10'
         py311:
           spec: '3.11'
+        py312:
+          spec: '3.12'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -99,8 +99,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py37:
-          spec: '3.7'
         py38:
           spec: '3.8'
         py39:
@@ -109,6 +107,8 @@ stages:
           spec: '3.10'
         py311:
           spec: '3.11'
+        py312:
+          spec: '3.12'
       platforms: [windows, macOs]
 
   - template: azure-sdisttest.yml
