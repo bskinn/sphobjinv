@@ -40,8 +40,6 @@ documentation set you want to cross-reference into, and pass it to
 
 For internal cross-references, locate `objects.inv` within `build/html`:
 
-<!-- START TEST BLOCK -->
-
 ```none
 $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
@@ -76,9 +74,6 @@ Version: 2.3
 :py:class:`sphobjinv.inventory.Inventory`              59
 ```
 
-<!-- END TEST BLOCK -->
-
-
 The `-s` argument in the above shell command indicates to print the
 `fuzzywuzzy` match score along with each search result, and `-t 50`
 changes the reporting threshold for the match score.
@@ -88,8 +83,6 @@ the web, and pass `sphobjinv suggest` a URL from within the documentation set
 with the `--url/-u` flag. For example, say I need to know how to
 cross-reference the `linspace` function from numpy (see
 [here][numpy linspace]):
-
-<!-- START TEST BLOCK -->
 
 ```none
 $ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
@@ -133,8 +126,6 @@ Version: 1.23
 :std:doc:`reference/generated/numpy.linspace`                     90
 ```
 
-<!-- END TEST BLOCK -->
-
 **NOTE** that the results from `sphobjinv suggest` are printed using the
 longer *block directives*, whereas cross-references must be composed using the
 *inline directives*. Thus, the above `linspace()` function must be
@@ -147,15 +138,11 @@ cross-referenced as ``` :func:`numpy.linspace` ``` , **not**
 
 `objects.inv` files can be decompressed to plaintext at the commandline:
 
-<!-- START TEST BLOCK -->
-
 ```none
 $ sphobjinv convert plain -o doc/build/html/objects.inv doc/scratch/
 Conversion completed.
 '...objects.inv' converted to '...objects.txt' (plain).
 ```
-
-<!-- END TEST BLOCK -->
 
 JSON output is supported (`sphobjinv convert json ...`), and
 inventories can be re-compressed to the
