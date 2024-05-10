@@ -6,7 +6,7 @@ jobs:
   all_checks:
     name: Run all tests, lints, etc. (Python 3.10)
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: '!contains(github.event.head_commit.message, ''[skip ci]'')'
 
     steps:
     - name: Check out repo
@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.7', '3.8', '3.9', '3.11']
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: '!contains(github.event.head_commit.message, ''[skip ci]'')'
 
     steps:
     - name: Check out repo
