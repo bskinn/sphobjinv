@@ -50,9 +50,10 @@ sphinx_req = m_sphinx_req.group(1)
 
 p_shell = re.compile(
     r"""
-    \n\s+[$](?P<cmd>.*)        # Entered command
+    \n```(\w+)?
+    \n\s*[$](?P<cmd>.*)        # Entered command
     (?P<out>(\n.*)+?)          # Line(s) of output
-    (?=\n\.\.)                 # Lookahead for explicit shell block endpoint
+    (?=\n```)                  # Lookahead for explicit shell block endpoint
     """,
     re.X,
 )
@@ -85,7 +86,7 @@ def test_readme_shell_cmds(ensure_doc_scratch, is_win, check):
     if is_win and sys.version_info < (3, 9):  # pragma: no cover
         pytest.skip("Windows mishandles stdout/stderr for Python < 3.9")
 
-    text = Path("README.rst").read_text()
+    text = Path("README.md").read_text()
 
     chk = dt.OutputChecker()
 

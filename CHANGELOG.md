@@ -7,6 +7,25 @@ and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+### Unreleased
+
+#### Tests
+
+  * Update test machinery for the shell examples in the README, downstream of
+    the conversion to Markdown ([#289]).
+
+#### Administrative
+
+  * Bump `checkout` and `setup-python` GitHub Actions versions ([#289]).
+
+  * Convert README from reST to Markdown ([#289], fixes [#287]).
+
+  * Fix some broken/redirecting docs links ([#289]).
+
+  * Adjust `flake8` configuration to account for some new lint warnings/errors
+    ([#289]).
+
+
 ### [2.3.1] - 2022-11-29
 
 #### Changed
@@ -534,3 +553,7 @@ and this project strives to adhere to
  * Programmatic conversion via API is available, but
    potentially buggy due to poor segregation of cmdline
    behaviors. This is to be fixed.
+
+
+[#287]: https://github.com/bskinn/sphobjinv/issues/287
+[#289]: https://github.com/bskinn/sphobjinv/pull/289
