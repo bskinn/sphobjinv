@@ -181,7 +181,9 @@ stages:
       inputs:
         versionSpec: '3.10'
 
-    - script: pip install -r requirements-ci.txt
+    - script: |
+        pip install -r requirements-ci.txt
+        pip install -e .
       displayName: Install CI requirements
 
     - task: Cache@2

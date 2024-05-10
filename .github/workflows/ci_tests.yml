@@ -27,6 +27,7 @@ jobs:
     - name: Install & report CI dependencies
       run: |
         python -m pip install -U --force-reinstall -r requirements-ci.txt -r requirements-flake8.txt
+        python -m pip install -e .
         python --version
         pip list
 
@@ -85,6 +86,7 @@ jobs:
     - name: Install & report CI dependencies
       run: |
         python -m pip install -U --force-reinstall -r requirements-ci.txt
+        python -m pip install -e .
         python --version
         pip list
 

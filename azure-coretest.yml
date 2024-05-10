@@ -38,7 +38,9 @@ jobs:
           path: $(pip_cache_dir)
         displayName: Cache pip
 
-      - script: pip install -U --force-reinstall -r requirements-ci.txt
+      - script: |
+          pip install -U --force-reinstall -r requirements-ci.txt
+          pip install -e .
         displayName: Install CI requirements
 
       - script: pip list
