@@ -13,7 +13,7 @@ version_override = None
 
 
 def readme():
-    content = Path("README.rst").read_text(encoding="utf-8")
+    content = Path("README.md").read_text(encoding="utf-8")
 
     new_ver = version_override if version_override else __version__
 
@@ -38,5 +38,5 @@ def readme():
 setup(
     name=NAME,
     long_description=readme(),
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
 )

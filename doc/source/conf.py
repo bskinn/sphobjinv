@@ -123,11 +123,11 @@ rst_epilog = r"""
 
 .. _license_txt: https://github.com/bskinn/sphobjinv/blob/main/LICENSE.txt
 
-.. _MIT License: https://opensource.org/licenses/MIT
+.. _MIT License: https://opensource.org/license/MIT
 
 .. |CC BY 4.0| replace:: CC BY 4.0 International License
 
-.. _CC BY 4.0: http://creativecommons.org/licenses/by/4.0/
+.. _CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
 .. |fuzzywuzzy| replace:: ``fuzzywuzzy``
 
@@ -135,7 +135,7 @@ rst_epilog = r"""
 
 .. |pipx| replace:: ``pipx``
 
-.. _pipx: https://pypa.github.io/pipx/
+.. _pipx: https://pipx.pypa.io/stable/
 
 .. |python-Levenshtein| replace:: ``python-Levenshtein``
 
