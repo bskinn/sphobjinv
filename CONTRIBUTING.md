@@ -38,7 +38,7 @@ $ git clone https://github.com/{you}/sphobjinv
 ```
 
 Then, create a virtual environment for the project, in whatever location you
-prefer. Any Python interpreter 3.7+ *should* work fine.
+prefer. Any Python interpreter 3.8+ *should* work fine.
 
 I prefer to use `virtualenv` and create in `./env`:
 
@@ -153,8 +153,8 @@ Note that while [`tox`](https://tox.wiki/en/latest/) *is* configured for the
 project, it is **not** set up to be an everyday test runner. Instead, it's used
 to execute an extensive matrix of test environments checking for the
 compatibility of different Python and dependency versions. You can run it if you
-want, but you'll need working versions of all of Python 3.7 through 3.11
-installed and on `PATH` as `python3.7`, `python3.8`, etc. The nonlocal test
+want, but you'll need working versions of all of Python 3.8 through 3.12
+installed and on `PATH` as `python3.8`, `python3.9`, etc. The nonlocal test
 suite is run for each `tox` environment, so it's best to use at most two
 parallel sub-processes to avoid oversaturating your network bandwidth; e.g.:
 
@@ -250,7 +250,7 @@ with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project, and should
 run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.7 through 3.11, as well
+Github Actions runs the test suite on Linux for Python 3.8 through 3.12, as well
 as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
 configured to run on all commits. The workflow can be skipped per-commit by
 including `[skip ci]` in the commit message.

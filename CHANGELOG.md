@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ### Unreleased
+
+#### Added
+
+  * The project now supports Python 3.12.
+
+#### Removed
+
+  * Removed support for Python 3.7, which is end-of-life.
 
 #### Tests
 
