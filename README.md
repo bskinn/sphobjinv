@@ -178,7 +178,7 @@ Available on [PyPI][pypi link target] (`pip install sphobjinv`).
 Source on [GitHub][github repo]. Bug reports and feature requests are welcomed
 at the [Issues][github issue tracker] page there.
 
-Copyright (c) Brian Skinn 2016-2022
+Copyright (c) Brian Skinn 2016-2024
 
 The `sphobjinv` documentation (including docstrings and README) is licensed
 under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]

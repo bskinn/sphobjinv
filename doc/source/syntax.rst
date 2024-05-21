@@ -5,8 +5,8 @@ Sphinx objects.inv v2 Syntax
 
 After decompression, "version 2" Sphinx |objects.inv| files follow a syntax
 that, to the best of this author's ability to determine, is not included in the
-Sphinx documentation. The below syntax is believed to be accurate as of Nov 2022
-(Sphinx v6.0.0b2). It is based on inspection of |objects.inv| files "in the
+Sphinx documentation. The below syntax is believed to be accurate as of May 2024
+(Sphinx v7.3.7). It is based on inspection of |objects.inv| files "in the
 wild" and of the Sphinx inventory object `parsing regex`_.
 
 Based upon a quick ``git diff`` of the `Sphinx repository
