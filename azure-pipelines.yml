@@ -26,7 +26,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -58,7 +58,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -127,7 +127,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -153,7 +153,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -179,7 +179,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
@@ -208,7 +208,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -234,7 +234,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -266,7 +266,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
