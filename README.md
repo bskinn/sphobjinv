@@ -85,34 +85,33 @@ cross-reference the `linspace` function from numpy (see
 [here][numpy linspace]):
 
 ```none
-$ sphobjinv suggest https://numpy.org/doc/1.23/reference/index.html linspace -su
+$ sphobjinv suggest https://numpy.org/doc/1.26/reference/index.html linspace -su
 
-Attempting https://numpy.org/doc/1.23/reference/index.html ...
+Attempting https://numpy.org/doc/1.26/reference/index.html ...
   ... no recognized inventory.
-Attempting "https://numpy.org/doc/1.23/reference/index.html/objects.inv" ...
+Attempting "https://numpy.org/doc/1.26/reference/index.html/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.23/reference/objects.inv" ...
+Attempting "https://numpy.org/doc/1.26/reference/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.23/objects.inv" ...
+Attempting "https://numpy.org/doc/1.26/objects.inv" ...
   ... inventory found.
 
-------------------------------------------------
+----------------------------------------------------------------------------------
 
 The intersphinx_mapping for this docset is LIKELY:
 
-  (https://numpy.org/doc/1.23/, None)
+  (https://numpy.org/doc/1.26/, None)
 
-------------------------------------------------
+----------------------------------------------------------------------------------
 
 Project: NumPy
-Version: 1.23
+Version: 1.26
 
-8074 objects in inventory.
+8152 objects in inventory.
 
-------------------------------------------------
+----------------------------------------------------------------------------------
 
 8 results found at/above current threshold of 75.
-
 
   Name                                                           Score
 --------------------------------------------------------------  -------
@@ -199,7 +198,7 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [license badge]: https://img.shields.io/github/license/mashape/apistatus.svg
 [license link target]: https://github.com/bskinn/sphobjinv/blob/stable/LICENSE.txt
 [mit license]: https://opensource.org/licenses/MIT
-[numpy linspace]: https://numpy.org/doc/1.23/reference/generated/numpy.linspace.html
+[numpy linspace]: https://numpy.org/doc/1.26/reference/generated/numpy.linspace.html
 [pepy badge]: https://pepy.tech/badge/sphobjinv/month
 [pepy link target]: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3&versions=2.3.1
 [pypi badge]: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi]
