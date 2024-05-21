@@ -194,7 +194,7 @@ of cross-references from other documentation source.
 
 **For illustration**, the following is the entry for the
 :meth:`join() <str.join>` method of the :class:`str` class in the
-Python 3.9 |objects.inv|, broken out field-by-field:
+Python 3.12 |objects.inv|, broken out field-by-field:
 
 .. code-block:: none
 
