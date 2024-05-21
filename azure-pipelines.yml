@@ -195,8 +195,8 @@ stages:
     - script: cd doc; make html
       displayName: Build docs
 
-    - script: pytest -k readme --readme --doctest-glob="README.rst"
-      displayName: Run README doc/shell tests
+    - script: pytest -k readme --doctest-glob="README.md"
+      displayName: Run README doctests
 
 
   - job: linkcheck

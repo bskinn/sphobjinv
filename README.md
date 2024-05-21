@@ -162,6 +162,7 @@ inventory creation/modification:
 '2.3'
 >>> inv.objects[0]
 DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
+
 ```
 
 The API also enables straightforward re-export of an inventory, for subsequent
