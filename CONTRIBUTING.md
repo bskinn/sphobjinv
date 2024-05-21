@@ -5,8 +5,8 @@ Thanks for your interest in contributing to `sphobjinv`!
 The aim of this document is to provide the information you need
 to get started smoothly on a contribution.
 
-If you have any questions, please drop me a line on Twitter
-([@btskinn](https://twitter.com/btskinn)) or open an
+If you have any questions, please drop me a line on Mastodon
+([@btskinn@fosstodon.org](https://fosstodon.org/@btskinn)) or open an
 [issue](https://github.com/bskinn/sphobjinv/issues).
 
 
@@ -43,7 +43,7 @@ prefer. Any Python interpreter 3.8+ *should* work fine.
 I prefer to use `virtualenv` and create in `./env`:
 
 ```
-$ python3.10 -m virtualenv env --prompt="sphobjinv"
+$ python3.11 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
