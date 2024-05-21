@@ -143,7 +143,7 @@ can be found at the GitHub repo
 
             intersphinx_mapping = {
                 # Standard reference to web docs, with web objects.inv
-                'python': ('https://docs.python.org/3.5', None),
+                'python': ('https://docs.python.org/3.12', None),
 
                 # Django puts its objects.inv file in a non-standard location
                 'django': ('https://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
