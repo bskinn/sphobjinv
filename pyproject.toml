@@ -46,7 +46,7 @@ dynamic = ["version", "readme"]
 Homepage = "https://github.com/bskinn/sphobjinv"
 Changelog = "https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md"
 Docs = "https://sphobjinv.readthedocs.io/en/stable/"
-Thank = "https://twitter.com/btskinn"
+Thank = "https://fosstodon.org/@btskinn"
 Donate = "https://github.com/sponsors/bskinn"
 
 [project.scripts]
