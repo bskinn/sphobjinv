@@ -55,7 +55,7 @@ and package managers, including:
 
   * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
 
-  * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/extra/any/python-sphobjinv/>`__)
+  * Arch Linux: ``python-sphobjinv``
 
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
@@ -73,7 +73,7 @@ and package managers, including:
 
   * pkgsrc: ``textproc/py-sphobjinv`` (`info <https://pkgsrc.se/textproc/py-sphobjinv>`__)
 
-  * spack: ``py-sphobjinv`` (`info <https://packages.spack.io/package.html?name=py-sphobjinv>`__)
+  * spack: ``py-sphobjinv``
 
 
 |soi| is configured for use both as a
