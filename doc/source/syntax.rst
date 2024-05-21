@@ -27,7 +27,7 @@ data line.
 ----
 
 **The first line** `must be exactly
-<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L81-L82>`__:
+<https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L90-L91>`__:
 
 .. code-block:: none
 
@@ -36,7 +36,7 @@ data line.
 ----
 
 **The second and third lines** `must obey
-<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L89-L90>`__
+<https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L126-L127>`__
 the template:
 
 .. code-block:: none
@@ -56,7 +56,7 @@ the |isphx| cross-references:
 ----
 
 **The fourth line** `must contain
-<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L109-L111>`__
+<https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L128-L130>`__
 the string ``zlib`` somewhere within it, but for consistency it should be exactly:
 
 .. code-block:: none
@@ -67,7 +67,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 **All remaining lines** of the file are the objects data, each laid out in the
 `following syntax
-<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L165-L167>`__:
+<https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L186-L188>`__:
 
 .. code-block:: none
 
@@ -132,7 +132,7 @@ the string ``zlib`` somewhere within it, but for consistency it should be exactl
 
 ``{priority}``
     Flag for `placement in search results
-    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/domains/__init__.py#L370-L381>`__. Most will be ``1`` (standard priority) or
+    <https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/domains/__init__.py#L378-L389>`__. Most will be ``1`` (standard priority) or
     ``-1`` (omit from results) for documentation built by Sphinx;
     values of ``0`` (higher priority) or ``2`` (lower priority) may also occur.
 
@@ -217,11 +217,11 @@ size of the inventory file:
     <https://en.wikipedia.org/wiki/Fragment_identifier>`__," the portion
     following the ``#`` symbol) and the tail of the anchor is identical to
     |{name}|_, that tail is `replaced
-    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L157-L159>`__
+    <https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L178-L180>`__
     with ``$``. |br| |br|
 
  #. If |{dispname}|_ is identical to |{name}|_, it is `stored
-    <https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L163-L164>`__
+    <https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L184-L185>`__
     as ``-``.
 
 Thus, a standard |isphx| reference to this method would take the form:
@@ -271,11 +271,11 @@ as in :obj:`This is join! <str.join>`:
 
 .. |prio_js_search| replace:: here
 
-.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/themes/basic/static/searchtools.js#L28-L47
+.. _prio_js_search: https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/themes/basic/static/searchtools.js#L28-L46
 
 .. |prio_py_search| replace:: here
 
-.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/search/__init__.py#L332-L333
+.. _prio_py_search: https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/search/__init__.py#L344-L345
 
 .. |sphinx_uri_issue| replace:: sphinx-doc/sphinx#7096
 
@@ -297,4 +297,4 @@ as in :obj:`This is join! <str.join>`:
 
 .. _rst-directive-option: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-rst-directive-option
 
-.. _parsing regex: https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L115-L116
+.. _parsing regex: https://github.com/sphinx-doc/sphinx/blob/ac3f74a3e0fbb326f73989a16dfa369e072064ca/sphinx/util/inventory.py#L134-L135
