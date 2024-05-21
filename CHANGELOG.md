@@ -6,15 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project strives to adhere to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-### Unreleased
-
-#### Added
-
-  * The project now supports Python 3.12.
-
-#### Removed
-
-  * Removed support for Python 3.7, which is end-of-life.
+### [2.3.2] - 2024-05-20
 
 #### Tests
 
@@ -22,6 +14,10 @@ and this project strives to adhere to
     the conversion to Markdown ([#289]).
 
 #### Administrative
+
+  * Added formal support for Python 3.12.
+
+  * Removed formal support for Python 3.7, which is end-of-life.
 
   * Bump `checkout` and `setup-python` GitHub Actions versions ([#289]).
 
