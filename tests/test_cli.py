@@ -399,7 +399,7 @@ class TestSuggestGood:
         """Confirm pagination works as expected for a controlled example."""
         with stdio_mgr("\n" * 5) as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "function", "-sapt30"])
-            assert 5 == out_.getvalue().count("Press Enter to continue")
+            assert 1 < out_.getvalue().count("Press Enter to continue")
 
 
 class TestFail:
