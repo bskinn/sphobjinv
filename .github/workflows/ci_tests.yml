@@ -4,18 +4,18 @@ on: push
 
 jobs:
   all_checks:
-    name: Run all tests, lints, etc. (Python 3.10)
+    name: Run all tests, lints, etc. (Python 3.11)
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
     - name: Check out repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.11'
         cache: 'pip'
         cache-dependency-path: |
           requirements-ci.txt
@@ -63,15 +63,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.7', '3.8', '3.9', '3.11']
+        python: ['3.8', '3.9', '3.10', '3.12']
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
     - name: Check out repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
         cache: 'pip'

@@ -1,6 +1,3 @@
-trigger:
-- release-*
-
 pr:
   branches:
     include:
@@ -26,7 +23,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -58,7 +55,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -82,8 +79,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py37:
-          spec: '3.7'
         py38:
           spec: '3.8'
         py39:
@@ -92,6 +87,8 @@ stages:
           spec: '3.10'
         py311:
           spec: '3.11'
+        py312:
+          spec: '3.12'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -99,8 +96,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py37:
-          spec: '3.7'
         py38:
           spec: '3.8'
         py39:
@@ -109,6 +104,8 @@ stages:
           spec: '3.10'
         py311:
           spec: '3.11'
+        py312:
+          spec: '3.12'
       platforms: [windows, macOs]
 
   - template: azure-sdisttest.yml
@@ -127,7 +124,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -153,7 +150,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -171,7 +168,7 @@ stages:
 
 
   - job: readme
-    displayName: Run README doctests/shell tests
+    displayName: Run README doctests
 
     pool:
       vmImage: 'Ubuntu-latest'
@@ -179,7 +176,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
@@ -195,8 +192,8 @@ stages:
     - script: cd doc; make html
       displayName: Build docs
 
-    - script: pytest -k readme --readme --doctest-glob="README.rst"
-      displayName: Run README doc/shell tests
+    - script: pytest -k readme --doctest-glob="README.md"
+      displayName: Run README doctests
 
 
   - job: linkcheck
@@ -208,7 +205,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -234,7 +231,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:
@@ -250,7 +247,7 @@ stages:
     - script: cd doc; make html; mkdir scratch
       displayName: Build docset
 
-    - script: pytest --cov=. --nonloc --flake8_ext --readme
+    - script: pytest --cov=. --nonloc --flake8_ext
       displayName: Run pytest with coverage on the entire project tree
 
     - script: coverage report --include="tests/*" --fail-under=100
@@ -266,7 +263,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.10'
+        versionSpec: '3.11'
 
     - task: Cache@2
       inputs:

@@ -11,7 +11,7 @@ Welcome to sphobjinv!
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
-<https://github.com/sphinx-doc/sphinx/blob/2f60b44999d7e610d932529784f082fc1c6af989/sphinx/util/inventory.py#L138-L168>`__
+<https://github.com/sphinx-doc/sphinx/blob/adde25689377b58791ad2e357817378ad3a08a1b/sphinx/util/inventory.py#L158-L189>`__
 to a file called |objects.inv| in the html build directory.
 (One common location is, |cour|\ doc/build/html\ |/cour|, though the exact location will vary
 depending on the details of how Sphinx is configured.)  This file is read by |isphx| when
@@ -55,7 +55,7 @@ and package managers, including:
 
   * Alpine Linux: ``py3-sphobjinv`` (`info <https://pkgs.alpinelinux.org/packages?name=py3-sphobjinv>`__)
 
-  * Arch Linux: ``python-sphobjinv`` (`info <https://archlinux.org/packages/community/any/python-sphobjinv/>`__)
+  * Arch Linux: ``python-sphobjinv``
 
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
@@ -73,7 +73,7 @@ and package managers, including:
 
   * pkgsrc: ``textproc/py-sphobjinv`` (`info <https://pkgsrc.se/textproc/py-sphobjinv>`__)
 
-  * spack: ``py-sphobjinv`` (`info <https://spack.readthedocs.io/en/latest/package_list.html#py-sphobjinv>`__)
+  * spack: ``py-sphobjinv``
 
 
 |soi| is configured for use both as a
