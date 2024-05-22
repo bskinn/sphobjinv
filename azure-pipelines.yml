@@ -171,7 +171,7 @@ stages:
 
 
   - job: readme
-    displayName: Run README doctests/shell tests
+    displayName: Run README doctests
 
     pool:
       vmImage: 'Ubuntu-latest'
