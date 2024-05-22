@@ -29,4 +29,4 @@ Sphinx |objects.inv| files.
 
 """
 
-__version__ = "2.3.1.1"
+__version__ = "2.3.2.dev0"
