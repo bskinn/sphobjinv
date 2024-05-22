@@ -25,7 +25,7 @@ https://github.com/maxbachmann/RapidFuzz/tree/460d291a38922c7fead920de8147798b81
     11 Dec 2021
 
 **Copyright**
-    \(c) Brian Skinn 2016-2022
+    \(c) Brian Skinn 2016-2024
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv

@@ -3,18 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project strives to adhere to
-[Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+and this project follows an extension of
+[Semantic Versioning](http://semver.org/spec/v2.0.0.html), where a bump in a
+fourth number represents an administrative maintenance release with no code
+changes.
 
-### Unreleased
-
-#### Added
-
-  * The project now supports Python 3.12.
-
-#### Removed
-
-  * Removed support for Python 3.7, which is end-of-life.
+### [2.3.1.1] - 2024-05-21
 
 #### Tests
 
@@ -22,6 +16,10 @@ and this project strives to adhere to
     the conversion to Markdown ([#289]).
 
 #### Administrative
+
+  * Added formal support for Python 3.12.
+
+  * Removed formal support for Python 3.7, which is end-of-life.
 
   * Bump `checkout` and `setup-python` GitHub Actions versions ([#289]).
 

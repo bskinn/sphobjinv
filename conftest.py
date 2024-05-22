@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2022
+    \(c) Brian Skinn 2016-2024
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -62,7 +62,6 @@ def pytest_addoption(parser):
     parser.addoption(
         "--flake8_ext", action="store_true", help="Include flake8 extensions test"
     )
-    parser.addoption("--readme", action="store_true", help="Include README shell tests")
 
 
 @pytest.fixture(scope="session")
