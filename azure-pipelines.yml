@@ -1,6 +1,3 @@
-trigger:
-- release-*
-
 pr:
   branches:
     include:
