@@ -158,9 +158,3 @@ With |soi-textconv| configured
     version-info std:label -1 api.html#$ -
     why std:doc -1 why.html Why not…
    +attrs.validators.set_cheat_mode py:function 1 api.html#$ -
-
-The last line contains <whitespace><newline> rather than <newline>
-
-The 2nd line changes every time
-
-:code:`2>/dev/null` means suppress |stderr|

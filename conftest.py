@@ -339,7 +339,11 @@ def run_cmdline_textconv(monkeypatch):
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_no_checks(monkeypatch):
     """Return function to perform command line. So as to debug issues no tests."""
+<<<<<<< HEAD
     from sphobjinv.cli.core_textconv import main as main_textconv
+=======
+    from sphobjinv.cli.core_textconv import main
+>>>>>>> 53d495f (git diff support)
 
     def func(arglist, *, prog="sphobjinv-textconv"):
         """Perform the CLI exit-code test."""
@@ -353,11 +357,19 @@ def run_cmdline_no_checks(monkeypatch):
             m.setattr(sys, "argv", runargs)
 
             try:
+<<<<<<< HEAD
                 main_textconv()
             except SystemExit as e:
                 retcode = e.args[0]
                 is_system_exit = True
             else:  # pragma: no cover
+=======
+                main()
+            except SystemExit as e:
+                retcode = e.args[0]
+                is_system_exit = True
+            else:
+>>>>>>> 53d495f (git diff support)
                 is_system_exit = False
 
         return retcode, is_system_exit

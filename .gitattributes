@@ -1,2 +1,3 @@
 tests/resource/objects_mkdoc_zlib0.inv binary
 tests/resource/objects_attrs.txt binary
+*.inv binary diff=inv

@@ -238,6 +238,7 @@ def main():
                     inv, in_path = inv_url(params)
             msg_err = f.getvalue().strip()
             f.close()
+
         if len(msg_err) != 0 and msg_err.startswith("Error: URL mode"):
             print_stderr_2(msg_err, None)
             sys.exit(1)
