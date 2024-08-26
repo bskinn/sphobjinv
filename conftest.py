@@ -264,6 +264,68 @@ def run_cmdline_test(monkeypatch):
     return func
 
 
+@pytest.fixture()  # Must be function scope since uses monkeypatch
+def run_cmdline_textconv(monkeypatch):
+    """Return function to perform command line exit code test."""
+    from sphobjinv.cli.core_textconv import main
+
+    def func(arglist, *, expect=0):  # , suffix=None):
+        """Perform the CLI exit-code test."""
+
+        # Assemble execution arguments
+        runargs = ["sphobjinv-textconv"]
+        runargs.extend(str(a) for a in arglist)
+
+        # Mock sys.argv, run main, and restore sys.argv
+        with monkeypatch.context() as m:
+            m.setattr(sys, "argv", runargs)
+
+            try:
+                main()
+            except SystemExit as e:
+                retcode = e.args[0]
+                ok = True
+            else:
+                ok = False
+
+        # Do all pytesty stuff outside monkeypatch context
+        assert ok, "SystemExit not raised on termination."
+
+        # Test that execution completed w/indicated exit code
+        assert retcode == expect, runargs
+
+    return func
+
+
+@pytest.fixture()  # Must be function scope since uses monkeypatch
+def run_cmdline_no_checks(monkeypatch):
+    """Return function to perform command line. So as to debug issues no tests."""
+    from sphobjinv.cli.core_textconv import main
+
+    def func(arglist, *, prog="sphobjinv-textconv"):
+        """Perform the CLI exit-code test."""
+
+        # Assemble execution arguments
+        runargs = [prog]
+        runargs.extend(str(a) for a in arglist)
+
+        # Mock sys.argv, run main, and restore sys.argv
+        with monkeypatch.context() as m:
+            m.setattr(sys, "argv", runargs)
+
+            try:
+                main()
+            except SystemExit as e:
+                retcode = e.args[0]
+                is_system_exit = True
+            else:
+                is_system_exit = False
+
+        return retcode, is_system_exit
+
+    return func
+
+
 @pytest.fixture(scope="session")
 def decomp_cmp_test(misc_info, is_win, unix2dos):
     """Return function to confirm a decompressed file is identical to resource."""

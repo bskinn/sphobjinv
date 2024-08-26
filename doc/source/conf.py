@@ -167,9 +167,15 @@ rst_epilog = r"""
 
     <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv</span>
 
+.. |soi-textconv| raw:: html
+
+    <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv-textconv</span>
+
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
 .. |stdout| replace:: |cour|\ stdout\ |/cour|
+
+.. |stderr| replace:: |cour|\ stderr\ |/cour|
 
 .. |cli:ALL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.ALL`
 

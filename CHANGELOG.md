@@ -8,6 +8,23 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.0] - 2024-08-26
+
+#### Added
+
+  * Entrypoint sphobjinv-textconv ([#295])
+
+#### Tests
+
+  * Unittests both offline and online
+  * Integration test to demonstrate git diff objects.inv
+  * add pytest module with class to interact with git
+
+#### Documentation
+
+  * Added step by step guide to configure git. Both bash and python code examples
+  * Added sphobjinv-textconv API docs
+
 ### [2.3.1.1] - 2024-05-21
 
 #### Tests

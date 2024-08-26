@@ -8,6 +8,7 @@ sphobjinv.cli (non-API)
 
     convert
     core
+    core-textconv
     load
     parser
     paths
