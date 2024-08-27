@@ -8,6 +8,12 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.1] - 2024-08-27
+
+#### Tests
+
+* print entire os.environ rather than a single key
+
 ### [2.4.1] - 2024-08-27
 
 #### Fixed

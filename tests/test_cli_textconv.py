@@ -70,7 +70,7 @@ def windows_paths():
     def func() -> None:
         """Diagnostic info for bugging Windows paths."""
         # On Windows what is the bin path?
-        print(f"""VIRTUAL_ENV: {os.environ['VIRTUAL_ENV']}""", file=sys.stderr)
+        print(f"""env: {os.environ!r}""", file=sys.stderr)
         # On Windows, what is the lib path?
         # /home/faulkmore/.local/lib/python3.9/site-packages
         print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
