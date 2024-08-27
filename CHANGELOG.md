@@ -57,12 +57,17 @@ changes.
 
 #### Internal
 
+<<<<<<< HEAD
   * **DOC RENDERING FIX**: The `super` keyword used in a statement in the HTML footer
     template was missing parentheses to perform a method call; this
     caused the template rendering to emit a Python string describing
     the parent template object, instead of rendering the parent
     template as intended.
     ([#298](https://github.com/bskinn/sphobjinv/issues/298))
+=======
+  * for Windows, attempt add SCRIPTS folder to sys.path
+  * for Windows, walk SCRIPTS folder print files and folders
+>>>>>>> ecdbeef (meant list.insert)
 
   * Moved the Sphinx linkcheck job out of CI and into `tox`.
     * The linkcheck is often flaky, and is a nuisance when it fails the CI. For
@@ -73,8 +78,12 @@ changes.
   * Renamed `.readthedocs.yml` to `.readthedocs.yaml` to comply with the new,
     strict RtD requirement.
 
+<<<<<<< HEAD
   * Added read-only GitHub PAT to Azure Pipelines config to ensure Python 3.13
     retrieval from GitHub doesn't hit a rate limit.
+=======
+  * print entire os.environ rather than a single key
+>>>>>>> ecdbeef (meant list.insert)
 
   * Update flake8 version pin in `requirements-flake8.txt` to avoid a bug in
     `pycodestyle`.
