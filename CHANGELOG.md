@@ -8,6 +8,13 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.2] - 2024-08-27
+
+#### Tests
+
+* for Windows, attempt add SCRIPTS folder to sys.path
+* for Windows, walk SCRIPTS folder print files and folders
+
 ### [2.4.1.1] - 2024-08-27
 
 #### Tests

@@ -58,8 +58,8 @@ from .wd_wrapper import (  # noqa: ABS101
 @pytest.fixture
 def windows_paths():
     """Fixture prints diagnostic info for bugging Windows paths."""
-    import os
     import site
+    import platform
 
     def func() -> None:
         """Diagnostic info for bugging Windows paths."""
@@ -68,6 +68,23 @@ def windows_paths():
         # On Windows, what is the lib path?
         # /home/faulkmore/.local/lib/python3.9/site-packages
         print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
+        if platform.system() == "Windows":
+            site_packages = site.getsitepackages()
+            site_user_packages = site.getusersitepackages()
+            print(f"site packages: {site_packages!r}", file=sys.stderr)
+            print(f"user site packages: {site_user_packages!r}", file=sys.stderr)
+
+            path_scripts = Path(site.USER_SITE).parent.joinpath("SCRIPTS")
+            scripts_path = str(path_scripts)
+            print(f"path_scripts: {path_scripts}", file=sys.stderr)
+            for (dirpath, dirnames, filenames) in os.walk(str(path_scripts)):
+                print(f"{dirpath!s} {dirnames!r} {filenames!r}")
+
+            # Set path to parent folder of package entrypoint executables
+            # https://stackoverflow.com/a/10253916
+            # `[better way] <https://stackoverflow.com/a/59411635>`_
+            if scripts_path not in sys.path:
+                sys.path.append(0, scripts_path)
 
     return func
 
