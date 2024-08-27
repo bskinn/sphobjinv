@@ -8,6 +8,18 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1] - 2024-08-27
+
+#### Fixed
+
+  * py38 with statements multiple --> nested
+  * py38 standard types typing isms e.g. List
+  * use Windows friendly line seperators
+
+#### Tests
+
+  * print diagnostic info on Windows bin and site folders
+
 ### [2.4.0] - 2024-08-26
 
 #### Added

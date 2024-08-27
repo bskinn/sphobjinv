@@ -41,6 +41,7 @@ converting an (partially binary) inventory to plain text.
 
 
 import json
+import os
 import shlex
 import subprocess as sp  # noqa: S404
 import sys
@@ -60,47 +61,72 @@ CLI_CMDS = ["sphobjinv-textconv"]
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
+@pytest.fixture
+def windows_paths():
+    """Fixture prints diagnostic info for bugging Windows paths."""
+    import os
+    import site
+
+    def func() -> None:
+        """Diagnostic info for bugging Windows paths."""
+        # On Windows what is the bin path?
+        print(f"""VIRTUAL_ENV: {os.environ['VIRTUAL_ENV']}""", file=sys.stderr)
+        # On Windows, what is the lib path?
+        # /home/faulkmore/.local/lib/python3.9/site-packages
+        print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
+
+    return func
+
+
 class TestTextconvMisc:
     """Tests for miscellaneous CLI functions."""
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     @pytest.mark.parametrize("cmd", CLI_CMDS)
-    def test_cli_invocations(self, cmd):
-        """Confirm that actual shell invocations do not error."""
+    def test_cli_textconv_help(self, cmd, run_cmdline_no_checks):
+        """Confirm that actual shell invocations do not error.
+
+        .. code-block:: shell
+
+           pytest --showlocals --cov=sphobjinv --cov-report=term-missing \
+           --cov-config=pyproject.toml -k test_cli_textconv_help tests
+
+        """
         runargs = shlex.split(cmd)
         runargs.append("--help")
 
-        out = sp.check_output(" ".join(runargs), shell=True).decode()  # noqa: S602
+        with stdio_mgr() as (in_, out_, err_):
+            retcode, is_sys_exit = run_cmdline_no_checks(runargs)
+            str_out = out_.getvalue()
+            assert "sphobjinv-textconv" in str_out
 
-        assert "sphobjinv-textconv" in out
+            # Ideally, the only place sys.exit calls occur within a codebase is in
+            # entrypoint file(s). In this case, sphobjinv.cli.core
+            #
+            # Each unique custom Exception has a corresponding unique exit code.
+            #
+            # Testing looks at exit codes only.
+            #
+            # Not the error messages, which could change or be localized
+            #
+            # In command line utilities, relaying possible errors is common practice
+            #
+            # From an UX POV, running echo $? and getting 1 on error is
+            # useless and frustrating.
+            #
+            # Not relaying errors and giving exact feedback on how to rectify
+            # the issue is bad UX.
+            #
+            # So if the numerous exit codes of 1 looks strange. It is; but this is
+            # a separate issue best solved within a dedicated commit
+            assert f"EXIT CODES{os.linesep}" in str_out
 
-        # Ideally, the only place sys.exit calls occur within a codebase is in
-        # entrypoint file(s). In this case, sphobjinv.cli.core
-        #
-        # Each unique custom Exception has a corresponding unique exit code.
-        #
-        # Testing looks at exit codes only.
-        #
-        # Not the error messages, which could change or be localized
-        #
-        # In command line utilities, relaying possible errors is common practice
-        #
-        # From an UX POV, running echo $? and getting 1 on error is
-        # useless and frustrating.
-        #
-        # Not relaying errors and giving exact feedback on how to rectify
-        # the issue is bad UX.
-        #
-        # So if the numerous exit codes of 1 looks strange. It is; but this is
-        # a separate issue best solved within a dedicated commit
-        assert "EXIT CODES\n" in out
-
-        # Leave zero doubt about
-        #
-        # - what it's for
-        # - how to use
-        # - what to expect
-        assert "USAGE\n" in out
+            # Leave zero doubt about
+            #
+            # - what it's for
+            # - how to use
+            # - what to expect
+            assert f"USAGE{os.linesep}" in str_out
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_version_exits_ok(self, run_cmdline_textconv):
@@ -177,6 +203,7 @@ def test_cli_textconv_via_subprocess(
     res_dec,
     res_cmp,
     misc_info,
+    windows_paths,
 ):
     """In a subprocess, plain inventory passed in thru stdin.
 
@@ -188,6 +215,9 @@ def test_cli_textconv_via_subprocess(
     """
     # prepare
     retcode_expected = 0
+
+    windows_paths()
+
     path_cmd = Path(sys.executable).parent.joinpath("sphobjinv-textconv")
     cmd_path = str(path_cmd)
 
@@ -231,12 +261,13 @@ class TestTextconvStdioFail:
     def test_cli_textconv_zlib_inv_stdin(
         self,
         res_cmp,
+        windows_paths,
     ):
         """Piping in a zlib inventory is not supported.
 
         .. code-block:: shell
 
-            sphobjinv-textconv "-" 2>/dev/null < plain tests/resource/objects_cclib.inv
+            sphobjinv-textconv "-" 2>/dev/null < tests/resource/objects_cclib.inv
             echo $?
 
         1
@@ -254,6 +285,8 @@ class TestTextconvStdioFail:
         # prepare
         #    byte stream usable by subprocess
         bytes_cmp = readbytes(res_cmp)
+
+        windows_paths()
 
         path_cmd = Path(sys.executable).parent.joinpath("sphobjinv-textconv")
         cmd_path = str(path_cmd)

@@ -65,6 +65,7 @@ In ``.gitattributes`` append,
 """
 import contextlib
 import io
+import os
 import sys
 from unittest.mock import patch
 
@@ -74,7 +75,7 @@ from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
 from sphobjinv.cli.parser import getparser_textconv, PrsConst
 
 
-def print_stderr_2(thing, params_b, *, end="\n"):
+def print_stderr_2(thing, params_b, *, end=os.linesep):
     r"""Bypass :func:`print_strerr <sphobjinv.cli.ui.print_strerr>`.
 
     Use along with :func:`unittest.mock.patch` whenever calling
@@ -165,13 +166,13 @@ def _wrap_inv_stdin(params):
        sphobjinv-textconv "-" 2>/dev/null
 
     """
-    with (
-        patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2),
-        contextlib.redirect_stderr(io.StringIO()) as f,
-        contextlib.suppress(SystemExit),
-    ):
-        inv = inv_stdin(params)
-    msg_err = f.getvalue().strip()
+    f = io.StringIO()
+    with patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2):
+        with contextlib.redirect_stderr(f):
+            with contextlib.suppress(SystemExit):
+                inv = inv_stdin(params)
+        msg_err = f.getvalue().strip()
+        f.close()
 
     is_inv = "inv" in locals() and inv is not None and issubclass(type(inv), Inventory)
 
@@ -219,7 +220,7 @@ def main():
 
     # Regardless of mode, insert extra blank line
     # for cosmetics
-    print_stderr_2("\n", params)
+    print_stderr_2(os.linesep, params)
 
     # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
@@ -230,13 +231,13 @@ def main():
 
         # Bypass problematic sphobjinv.cli.ui:print_stderr
         # sphobjinv-textconv --url 'file:///tests/resource/objects_cclib.inv'
-        with (
-            patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2),
-            contextlib.redirect_stderr(io.StringIO()) as f,
-            contextlib.suppress(SystemExit),
-        ):
-            inv, in_path = inv_url(params)
-        msg_err = f.getvalue().strip()
+        f = io.StringIO()
+        with patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2):
+            with contextlib.redirect_stderr(f):
+                with contextlib.suppress(SystemExit):
+                    inv, in_path = inv_url(params)
+            msg_err = f.getvalue().strip()
+            f.close()
         if len(msg_err) != 0 and msg_err.startswith("Error: URL mode"):
             print_stderr_2(msg_err, None)
             sys.exit(1)
@@ -276,7 +277,7 @@ def main():
         else:
             if is_inv:
                 # Cosmetic final blank line
-                print_stderr_2("\n", params)
+                print_stderr_2(os.linesep, params)
                 sys.exit(0)
     else:
         inv, in_path = inv_local(params)
@@ -289,7 +290,7 @@ def main():
         do_convert(inv, in_path, params)
 
         # Cosmetic final blank line
-        print_stderr_2("\n", params)
+        print_stderr_2(os.linesep, params)
 
     # Clean exit
     sys.exit(0)

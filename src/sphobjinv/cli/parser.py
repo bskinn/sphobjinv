@@ -30,6 +30,7 @@ Sphinx |objects.inv| files.
 """
 
 import argparse as ap
+import os
 import textwrap
 
 from sphobjinv.version import __version__
@@ -408,30 +409,35 @@ def getparser_textconv():
         "sphobjinv convert plain object.inv -"
     )
 
-    epilog = (
-        "USAGE\n"
-        " \n"
-        "Place in doc[s]/.gitattributes\n"
-        " \n"
-        """[diff "inv"]\n"""
-        "  textconv = sphobjinv-textconv\n"
-        "  binary = true\n"
-        " \n"
-        "Place .gitattributes file in your Sphinx doc[s] folder\n"
-        "Make a change to an inventory file, see differences: \n"
-        " \n"
-        "git diff objects.inv\n\n"
-        "or\n\n"
-        "git diff HEAD objects.inv\n"
-        " \n"
-        "EXIT CODES\n"
-        " \n"
-        "0 -- Successfully convert inventory to stdout or print version or help\n"
-        "1 -- parsing input file path\n"
-        "1 -- Unrecognized file format\n"
-        "1 -- URL mode on local file is invalid\n"
-        "1 -- No inventory found!\n"
-    )
+    lst_epilog = [
+        "USAGE",
+        " ",
+        "Place in doc[s]/.gitattributes",
+        " ",
+        """[diff "inv"]""",
+        "  textconv = sphobjinv-textconv",
+        "  binary = true",
+        " ",
+        "Place .gitattributes file in your Sphinx doc[s] folder",
+        "Make a change to an inventory file, see differences: ",
+        " ",
+        "git diff objects.inv",
+        " ",
+        "or",
+        " ",
+        "git diff HEAD objects.inv",
+        " ",
+        "EXIT CODES",
+        " ",
+        "0 -- Successfully convert inventory to stdout or print version or help",
+        "1 -- parsing input file path",
+        "1 -- Unrecognized file format",
+        "1 -- URL mode on local file is invalid",
+        "1 -- No inventory found!",
+    ]
+    sep = os.linesep
+    epilog = sep.join(lst_epilog)
+    epilog += os.linesep
 
     prs = ap.ArgumentParser(
         formatter_class=ap.RawTextHelpFormatter,

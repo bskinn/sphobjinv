@@ -15,9 +15,13 @@ import os
 import shlex
 import subprocess as sp  # noqa: S404
 from pathlib import Path
+from typing import List
 
 
-def run(cmd, cwd=None):
+def run(
+    cmd: List[str] | str,
+    cwd: Path = None,
+) -> sp.CompletedProcess | None:
     """Run a command.
 
     Parameters
@@ -33,9 +37,9 @@ def run(cmd, cwd=None):
 
     Returns
     -------
-    CompletedProcess
+    cp
 
-        subprocess.CompletedProcess -- Subprocess results
+        subprocess.CompletedProcess or |None| -- Subprocess results
 
     """
     if isinstance(cmd, str):
@@ -90,7 +94,7 @@ class WorkDir:
         self.cwd = cwd
         self.__counter = itertools.count()
 
-    def __call__(self, cmd: list[str] | str, **kw: object) -> str:
+    def __call__(self, cmd: List[str] | str, **kw: object) -> str:
         """Run a cmd.
 
         Parameters
@@ -105,7 +109,7 @@ class WorkDir:
 
         Returns
         -------
-        CompletedProcess
+        cp
 
             subprocess.CompletedProcess -- Subprocess results
 
