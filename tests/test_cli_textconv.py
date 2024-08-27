@@ -90,7 +90,7 @@ def windows_paths():
             if scripts_path not in sys.path:
                 # https://stackoverflow.com/a/10253916
                 # `[better way] <https://stackoverflow.com/a/59411635>`_
-                sys.path.append(0, scripts_path)
+                sys.path.insert(0, scripts_path)
 
     return func
 

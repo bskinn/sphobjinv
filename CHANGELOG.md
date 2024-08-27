@@ -8,18 +8,24 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.3] - 2024-08-27
+
+#### Tests
+
+  * wrong params for list.append instead use list.insert
+
 ### [2.4.1.2] - 2024-08-27
 
 #### Tests
 
-* for Windows, attempt add SCRIPTS folder to sys.path
-* for Windows, walk SCRIPTS folder print files and folders
+  * for Windows, attempt add SCRIPTS folder to sys.path
+  * for Windows, walk SCRIPTS folder print files and folders
 
 ### [2.4.1.1] - 2024-08-27
 
 #### Tests
 
-* print entire os.environ rather than a single key
+  * print entire os.environ rather than a single key
 
 ### [2.4.1] - 2024-08-27
 
