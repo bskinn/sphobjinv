@@ -59,6 +59,23 @@ CLI_CMDS = ["sphobjinv-textconv"]
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
+@pytest.fixture
+def windows_paths():
+    """Fixture prints diagnostic info for bugging Windows paths."""
+    import os
+    import site
+
+    def func() -> None:
+        """Diagnostic info for bugging Windows paths."""
+        # On Windows what is the bin path?
+        print(f"""VIRTUAL_ENV: {os.environ['VIRTUAL_ENV']}""", file=sys.stderr)
+        # On Windows, what is the lib path?
+        # /home/faulkmore/.local/lib/python3.9/site-packages
+        print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
+
+    return func
+
+
 class TestTextconvMisc:
     """Tests for miscellaneous CLI functions."""
 
@@ -191,6 +208,7 @@ def test_cli_textconv_via_subprocess(
     res_dec,
     res_cmp,
     misc_info,
+    windows_paths,
 ):
     """In a subprocess, plain inventory passed in thru stdin.
 
@@ -245,6 +263,7 @@ class TestTextconvStdioFail:
     def test_cli_textconv_zlib_inv_stdin(
         self,
         res_cmp,
+        windows_paths,
     ):
         """Piping in a zlib inventory is not supported.
 

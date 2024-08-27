@@ -38,9 +38,12 @@ converting an (partially binary) inventory to plain text.
 **Members**
 
 """
+import os
 import re
 import sys
 from pathlib import Path
+
+import pytest
 
 from sphobjinv import DataObjStr
 from sphobjinv.cli.load import import_infile
@@ -52,6 +55,23 @@ from .wd_wrapper import (  # noqa: ABS101
 )
 
 
+@pytest.fixture
+def windows_paths():
+    """Fixture prints diagnostic info for bugging Windows paths."""
+    import os
+    import site
+
+    def func() -> None:
+        """Diagnostic info for bugging Windows paths."""
+        # On Windows what is the bin path?
+        print(f"""VIRTUAL_ENV: {os.environ['VIRTUAL_ENV']}""", file=sys.stderr)
+        # On Windows, what is the lib path?
+        # /home/faulkmore/.local/lib/python3.9/site-packages
+        print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
+
+    return func
+
+
 class TestTextconvIntegration:
     """Prove git diff an compare |objects.inv| files."""
 
@@ -59,6 +79,7 @@ class TestTextconvIntegration:
         self,
         misc_info,
         scratch_path,
+        windows_paths,
     ):
         """Demonstrate git diff on a zlib inventory.
 
@@ -68,26 +89,29 @@ class TestTextconvIntegration:
            --cov-config=pyproject.toml -k test_textconv_git_diff tests
 
         """
+        sep = os.linesep
         # word placeholder --> \w+
         # Escape $ --> \$
         # Escape + --> \+
         expected_diff = (
-            r"^diff --git a/objects.inv b/objects.inv\n"
-            r"index \w+..\w+ \w+\n"
-            r"--- a/objects.inv\n"
-            r"\+\+\+ b/objects.inv\n"
-            r"@@ -131,4 \+131,5 @@ types std:doc -1 types.html Type Annotations\n"
-            r" validators std:label -1 init.html#\$ Validators\n"
-            r" version-info std:label -1 api.html#\$ -\n"
-            r" why std:doc -1 why.html Why not…\n"
-            r"\+attrs.validators.set_cheat_mode py:function 1 api.html#\$ -\n"
-            r" \n$"
+            r"^diff --git a/objects.inv b/objects.inv\r?\n"
+            r"index \w+..\w+ \w+\r?\n"
+            r"--- a/objects.inv\r?\n"
+            r"\+\+\+ b/objects.inv\r?\n"
+            r"@@ -131,4 \+131,5 @@ types std:doc -1 types.html Type Annotations\r?\n"
+            r" validators std:label -1 init.html#\$ Validators\r?\n"
+            r" version-info std:label -1 api.html#\$ -\r?\n"
+            r" why std:doc -1 why.html Why not…\r?\n"
+            r"\+attrs.validators.set_cheat_mode py:function 1 api.html#\$ -\r?\n"
+            r" \r?\n$"
         )
 
         # prepare
         #    project folder
         path_cwd = scratch_path
         wd = WorkDir(path_cwd)
+
+        windows_paths()
 
         path_soi = Path(sys.executable).parent.joinpath("sphobjinv")
         soi_path = str(path_soi)
@@ -112,10 +136,11 @@ class TestTextconvIntegration:
         str_git_config = path_git_config.read_text()
         lines = [
             """[diff "inv"]""",
-            f"""	textconv = {path_soi_textconv!s}\n""",
+            f"""	textconv = {path_soi_textconv!s}""",
         ]
-        gc_textconv = "\n".join(lines)
-        str_git_config = f"{str_git_config}\n{gc_textconv}\n"
+
+        gc_textconv = sep.join(lines)
+        str_git_config = f"{str_git_config}{sep}{gc_textconv}{sep}"
         path_git_config.write_text(str_git_config)
 
         #    .gitattributes
@@ -124,7 +149,7 @@ class TestTextconvIntegration:
         path_ga.touch()
         str_gitattributes = path_ga.read_text()
         ga_textconv = "*.inv binary diff=inv"
-        str_gitattributes = f"{str_gitattributes}\n{ga_textconv}"
+        str_gitattributes = f"{str_gitattributes}{sep}{ga_textconv}"
         wd.write(".gitattributes", str_gitattributes)
 
         #    commit (1st)
