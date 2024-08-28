@@ -59,40 +59,6 @@ CLI_CMDS = ["sphobjinv-textconv"]
 pytestmark = [pytest.mark.cli, pytest.mark.local]
 
 
-@pytest.fixture
-def windows_paths():
-    """Fixture prints diagnostic info for bugging Windows paths."""
-    import platform
-    import site
-
-    def func() -> None:
-        """Diagnostic info for bugging Windows paths."""
-        # On Windows what is the bin path?
-        print(f"""env: {os.environ!r}""", file=sys.stderr)
-        # On Windows, what is the lib path?
-        # /home/faulkmore/.local/lib/python3.9/site-packages
-        print(f"Packages site path: {site.USER_SITE}", file=sys.stderr)
-        if platform.system() == "Windows":
-            site_packages = site.getsitepackages()
-            site_user_packages = site.getusersitepackages()
-            print(f"site packages: {site_packages!r}", file=sys.stderr)
-            print(f"user site packages: {site_user_packages!r}", file=sys.stderr)
-
-            path_scripts = Path(site.USER_SITE).parent.joinpath("SCRIPTS")
-            scripts_path = str(path_scripts)
-            print(f"path_scripts: {path_scripts}", file=sys.stderr)
-            for (dirpath, dirnames, filenames) in os.walk(str(path_scripts)):
-                print(f"{dirpath!s} {dirnames!r} {filenames!r}")
-
-            # Set path to parent folder of package entrypoint executables
-            if scripts_path not in sys.path:
-                # https://stackoverflow.com/a/10253916
-                # `[better way] <https://stackoverflow.com/a/59411635>`_
-                sys.path.insert(0, scripts_path)
-
-    return func
-
-
 class TestTextconvMisc:
     """Tests for miscellaneous CLI functions."""
 
