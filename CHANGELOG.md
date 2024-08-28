@@ -8,6 +8,14 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.9] - 2024-08-28
+
+#### Tests
+
+  * read inventory on disk
+    there is a object count discrepency. Track down reason
+  * print diagnostic before assertions
+
 ### [2.4.1.8] - 2024-08-28
 
 #### Tests
