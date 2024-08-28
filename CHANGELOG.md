@@ -8,6 +8,12 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.7] - 2024-08-28
+
+#### Tests
+
+  * resolve both soi and soi-textconv executables path
+
 ### [2.4.1.6] - 2024-08-28
 
 #### Tests
