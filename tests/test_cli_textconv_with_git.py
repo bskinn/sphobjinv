@@ -164,6 +164,9 @@ class TestTextconvIntegration:
         )
         inv_0.objects.append(obj_datum)
         write_plaintext(inv_0, dst_dec_path)
+
+        # Read the inventory on disk
+        inv_0 = Inventory(path_dec)
         inv_0_count = len(inv_0.objects)
         inv_0_last_three = inv_0.objects[-3:]
 
@@ -184,13 +187,19 @@ class TestTextconvIntegration:
         inv_1 = Inventory(path_cmp)
         inv_1_count = len(inv_1.objects)
         inv_1_last_three = inv_1.objects[-3:]
-        assert inv_0_count == inv_1_count
-        assert inv_0_last_three == inv_1_last_three
 
+        # Diagnostic before assertion checks
         if platform.system() in ("Linux", "Windows"):
+            msg_info = f"cmd: {cmd}"
+            print(msg_info, file=sys.stderr)
+
+            is_dec = path_dec.is_file()
+            is_cmp = path_cmp.is_file()
+            msg_info = f"is_dec: {is_dec} is_cmp {is_cmp}"
+            print(msg_info, file=sys.stderr)
             msg_info = (
                 f"objects after (count {inv_1_count}; delta"
-                f"{inv_1_count - inv_0_count}): {inv_1.objects[-3:]!r}"
+                f"{inv_1_count - inv_0_count}): {inv_1_last_three!r}"
             )
             print(msg_info, file=sys.stderr)
             msg_info = "convert txt --> inv"
@@ -201,6 +210,9 @@ class TestTextconvIntegration:
             delta_cmp = lng_cmd_size_after - lng_cmd_size_before
             msg_info = f"delta (cmp): {delta_cmp}"
             print(msg_info, file=sys.stderr)
+
+        assert inv_0_count == inv_1_count
+        assert inv_0_last_three == inv_1_last_three
 
         #    Compare last commit .inv with updated .inv
         #    If virtual environment not activated, .git/config texconv
@@ -214,15 +226,17 @@ class TestTextconvIntegration:
         sp_out = run(cmd, cwd=wd.cwd)
         retcode = sp_out.returncode
         out = sp_out.stdout
-        assert retcode == 0
-        assert len(out) != 0
 
+        #    Diagnostics before assertions
         #    On error, not showing locals, so print source file and diff
         if platform.system() in ("Linux", "Windows"):
             print(f"is_file: {Path(cmp_relpath).is_file()}", file=sys.stderr)
             print(f"cmd: {cmd}", file=sys.stderr)
             print(f"diff: {out}", file=sys.stderr)
             print(f"regex: {expected_diff}", file=sys.stderr)
+
+        assert retcode == 0
+        assert len(out) != 0
 
         # Had trouble finding executable's path. On Windows, regex should be OK
         pattern = re.compile(expected_diff)
