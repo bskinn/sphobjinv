@@ -93,10 +93,11 @@ class TestTextconvIntegration:
         path_cwd = scratch_path
         wd = WorkDir(path_cwd)
 
+        #    On Windows, unresolved executables paths
         soi_path = "sphobjinv"
         soi_textconv_path = "sphobjinv-textconv"
 
-        #    On Windows, resolve executables' path are necessary
+        #    On Windows, resolved executables paths
         resolved_soi_textconv_path = shutil.which(soi_textconv_path)
         if resolved_soi_textconv_path is None:
             resolved_soi_textconv_path = soi_textconv_path
@@ -122,7 +123,7 @@ class TestTextconvIntegration:
         path_git_config = path_cwd / ".git" / "config"
         str_git_config = path_git_config.read_text()
 
-        #    On Windows, resolved path necessary
+        #    On Windows, RESOLVED path necessary
         lines = [
             """[diff "inv"]""",
             f"""	textconv = {resolved_soi_textconv_path}""",
@@ -176,8 +177,8 @@ class TestTextconvIntegration:
             msg_info = f"size (cmp): {lng_cmd_size_before}"
             print(msg_info, file=sys.stderr)
 
-        # On Windows, resolved path necessary
-        cmd = f"{resolved_soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
+        # On Windows, UNRESOLVED path necessary
+        cmd = f"{soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
         wd(cmd)
 
         inv_1 = Inventory(path_cmp)
