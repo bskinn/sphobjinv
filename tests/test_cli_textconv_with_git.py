@@ -96,6 +96,14 @@ class TestTextconvIntegration:
         soi_path = "sphobjinv"
         soi_textconv_path = "sphobjinv-textconv"
 
+        #    On Windows, resolve executables' path are necessary
+        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
+        if resolved_soi_textconv_path is None:
+            resolved_soi_textconv_path = soi_textconv_path
+        resolved_soi_path = shutil.which(soi_path)
+        if resolved_soi_path is None:
+            resolved_soi_path = soi_path
+
         #    git init
         wd("git init")
         wd("git config user.email test@example.com")
@@ -113,20 +121,18 @@ class TestTextconvIntegration:
         #    .git/config append
         path_git_config = path_cwd / ".git" / "config"
         str_git_config = path_git_config.read_text()
-        #    On Windows may need os.environ["PATHEXT"]
-        resolved_path = shutil.which(soi_textconv_path)
-        if resolved_path is None:
-            resolved_path = soi_textconv_path
+
+        #    On Windows, resolved path necessary
         lines = [
             """[diff "inv"]""",
-            f"""	textconv = {resolved_path}""",
+            f"""	textconv = {resolved_soi_textconv_path}""",
         ]
 
         gc_textconv = sep.join(lines)
         str_git_config = f"{str_git_config}{sep}{gc_textconv}{sep}"
         path_git_config.write_text(str_git_config)
         if platform.system() in ("Linux", "Windows"):
-            print(f"executable path: {resolved_path}", file=sys.stderr)
+            print(f"executable path: {resolved_soi_textconv_path}", file=sys.stderr)
             print(f"""PATHEXT: {os.environ.get("PATHEXT", None)}""", file=sys.stderr)
             print(f".git/config {str_git_config}", file=sys.stderr)
 
@@ -170,7 +176,8 @@ class TestTextconvIntegration:
             msg_info = f"size (cmp): {lng_cmd_size_before}"
             print(msg_info, file=sys.stderr)
 
-        cmd = f"{soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
+        # On Windows, resolved path necessary
+        cmd = f"{resolved_soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
         wd(cmd)
 
         inv_1 = Inventory(path_cmp)
