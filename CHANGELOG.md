@@ -8,6 +8,14 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.5] - 2024-08-28
+
+#### Tests
+
+  * carefully escape regex metacharacters
+  * print source .inv file and diff. On windows, issue with regex
+  * remove fixture windows_paths
+
 ### [2.4.1.4] - 2024-08-28
 
 #### Tests
