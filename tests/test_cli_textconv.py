@@ -225,7 +225,6 @@ def test_cli_textconv_via_subprocess(
     res_dec,
     res_cmp,
     misc_info,
-    windows_paths,
 ):
     """In a subprocess, plain inventory passed in thru stdin.
 
@@ -280,7 +279,6 @@ class TestTextconvStdioFail:
     def test_cli_textconv_zlib_inv_stdin(
         self,
         res_cmp,
-        windows_paths,
     ):
         """Piping in a zlib inventory is not supported.
 
