@@ -8,6 +8,12 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.10] - 2024-08-28
+
+#### Tests
+
+  * consistantly use sphobjinv.cli.load:import_infile so compare apple with apples
+
 ### [2.4.1.9] - 2024-08-28
 
 #### Tests

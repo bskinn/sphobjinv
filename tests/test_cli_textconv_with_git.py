@@ -43,9 +43,8 @@ import platform
 import re
 import shutil
 import sys
-from pathlib import Path
 
-from sphobjinv import DataObjStr, Inventory
+from sphobjinv import DataObjStr
 from sphobjinv.cli.load import import_infile
 from sphobjinv.cli.write import write_plaintext
 
@@ -133,6 +132,7 @@ class TestTextconvIntegration:
         str_git_config = f"{str_git_config}{sep}{gc_textconv}{sep}"
         path_git_config.write_text(str_git_config)
         if platform.system() in ("Linux", "Windows"):
+            print(f"cwd {wd.cwd!s}", file=sys.stderr)
             print(f"executable path: {resolved_soi_textconv_path}", file=sys.stderr)
             print(f"""PATHEXT: {os.environ.get("PATHEXT", None)}""", file=sys.stderr)
             print(f".git/config {str_git_config}", file=sys.stderr)
@@ -154,6 +154,7 @@ class TestTextconvIntegration:
         # Act
         #    make change to .txt inventory (path_dst_dec)
         inv_0 = import_infile(dst_dec_path)
+        inv_0_count_orig = len(inv_0.objects)
         obj_datum = DataObjStr(
             name="attrs.validators.set_cheat_mode",
             domain="py",
@@ -166,35 +167,43 @@ class TestTextconvIntegration:
         write_plaintext(inv_0, dst_dec_path)
 
         # Read the inventory on disk
-        inv_0 = Inventory(path_dec)
+        inv_0 = import_infile(dst_dec_path)
         inv_0_count = len(inv_0.objects)
         inv_0_last_three = inv_0.objects[-3:]
+        lng_cmd_size_before = path_cmp.stat().st_size
 
         #    plain --> zlib
         if platform.system() in ("Linux", "Windows"):
-            msg_info = f"objects dec before (count {inv_0_count}): {inv_0_last_three!r}"
+            msg_info = f"objects dev original count ({inv_0_count_orig})"
+            print(msg_info, file=sys.stderr)
+            msg_info = (
+                f"objects dec after write (count {inv_0_count}): {inv_0_last_three!r}"
+            )
             print(msg_info, file=sys.stderr)
             msg_info = f"size (dec): {path_dec.stat().st_size}"
             print(msg_info, file=sys.stderr)
-            lng_cmd_size_before = path_cmp.stat().st_size
             msg_info = f"size (cmp): {lng_cmd_size_before}"
             print(msg_info, file=sys.stderr)
 
-        # On Windows, UNRESOLVED path necessary
+        #    On Windows, UNRESOLVED executable path necessary
+        #    Didn't work on windows?
+        #    cmd: sphobjinv convert -q zlib infile_full_path outfile_full_path
         cmd = f"{soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
         wd(cmd)
 
-        inv_1 = Inventory(path_cmp)
+        inv_1 = import_infile(dst_cmp_path)
         inv_1_count = len(inv_1.objects)
         inv_1_last_three = inv_1.objects[-3:]
+        lng_cmd_size_after = path_cmp.stat().st_size
+        is_dec = path_dec.is_file()
+        is_cmp = path_cmp.is_file()
 
         # Diagnostic before assertion checks
         if platform.system() in ("Linux", "Windows"):
             msg_info = f"cmd: {cmd}"
             print(msg_info, file=sys.stderr)
-
-            is_dec = path_dec.is_file()
-            is_cmp = path_cmp.is_file()
+            msg_info = "convert txt --> inv"
+            print(msg_info, file=sys.stderr)
             msg_info = f"is_dec: {is_dec} is_cmp {is_cmp}"
             print(msg_info, file=sys.stderr)
             msg_info = (
@@ -202,16 +211,18 @@ class TestTextconvIntegration:
                 f"{inv_1_count - inv_0_count}): {inv_1_last_three!r}"
             )
             print(msg_info, file=sys.stderr)
-            msg_info = "convert txt --> inv"
-            print(msg_info, file=sys.stderr)
-            lng_cmd_size_after = path_cmp.stat().st_size
             msg_info = f"size (cmp): {lng_cmd_size_after}"
             print(msg_info, file=sys.stderr)
             delta_cmp = lng_cmd_size_after - lng_cmd_size_before
             msg_info = f"delta (cmp): {delta_cmp}"
             print(msg_info, file=sys.stderr)
 
-        assert inv_0_count == inv_1_count
+        info_msg = (
+            "Inventory objects count decrepancy would mean "
+            "command failed: sphobjinv convert -q zlib ..."
+            "Executable path should be relative. INFILE and OUTFILE relative?"
+        )
+        assert inv_0_count == inv_1_count, info_msg
         assert inv_0_last_three == inv_1_last_three
 
         #    Compare last commit .inv with updated .inv
@@ -230,7 +241,6 @@ class TestTextconvIntegration:
         #    Diagnostics before assertions
         #    On error, not showing locals, so print source file and diff
         if platform.system() in ("Linux", "Windows"):
-            print(f"is_file: {Path(cmp_relpath).is_file()}", file=sys.stderr)
             print(f"cmd: {cmd}", file=sys.stderr)
             print(f"diff: {out}", file=sys.stderr)
             print(f"regex: {expected_diff}", file=sys.stderr)
