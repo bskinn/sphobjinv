@@ -41,9 +41,11 @@ converting an (partially binary) inventory to plain text.
 import os
 import platform
 import re
+import shutil
 import sys
+from pathlib import Path
 
-from sphobjinv import DataObjStr
+from sphobjinv import DataObjStr, Inventory
 from sphobjinv.cli.load import import_infile
 from sphobjinv.cli.write import write_plaintext
 
@@ -111,14 +113,22 @@ class TestTextconvIntegration:
         #    .git/config append
         path_git_config = path_cwd / ".git" / "config"
         str_git_config = path_git_config.read_text()
+        #    On Windows may need os.environ["PATHEXT"]
+        resolved_path = shutil.which(soi_textconv_path)
+        if resolved_path is None:
+            resolved_path = soi_textconv_path
         lines = [
             """[diff "inv"]""",
-            f"""	textconv = {soi_textconv_path}""",
+            f"""	textconv = {resolved_path}""",
         ]
 
         gc_textconv = sep.join(lines)
         str_git_config = f"{str_git_config}{sep}{gc_textconv}{sep}"
         path_git_config.write_text(str_git_config)
+        if platform.system() in ("Linux", "Windows"):
+            print(f"executable path: {resolved_path}", file=sys.stderr)
+            print(f"""PATHEXT: {os.environ.get("PATHEXT", None)}""", file=sys.stderr)
+            print(f".git/config {str_git_config}", file=sys.stderr)
 
         #    .gitattributes
         #    Informs git: .inv are binary files and which cmd converts .inv --> .txt
@@ -147,25 +157,66 @@ class TestTextconvIntegration:
         )
         inv_0.objects.append(obj_datum)
         write_plaintext(inv_0, dst_dec_path)
+        inv_0_count = len(inv_0.objects)
+        inv_0_last_three = inv_0.objects[-3:]
 
         #    plain --> zlib
+        if platform.system() in ("Linux", "Windows"):
+            msg_info = f"objects dec before (count {inv_0_count}): {inv_0_last_three!r}"
+            print(msg_info, file=sys.stderr)
+            msg_info = f"size (dec): {path_dec.stat().st_size}"
+            print(msg_info, file=sys.stderr)
+            lng_cmd_size_before = path_cmp.stat().st_size
+            msg_info = f"size (cmp): {lng_cmd_size_before}"
+            print(msg_info, file=sys.stderr)
+
         cmd = f"{soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
         wd(cmd)
 
+        inv_1 = Inventory(path_cmp)
+        inv_1_count = len(inv_1.objects)
+        inv_1_last_three = inv_1.objects[-3:]
+        assert inv_0_count == inv_1_count
+        assert inv_0_last_three == inv_1_last_three
+
+        if platform.system() in ("Linux", "Windows"):
+            msg_info = (
+                f"objects after (count {inv_1_count}; delta"
+                f"{inv_1_count - inv_0_count}): {inv_1.objects[-3:]!r}"
+            )
+            print(msg_info, file=sys.stderr)
+            msg_info = "convert txt --> inv"
+            print(msg_info, file=sys.stderr)
+            lng_cmd_size_after = path_cmp.stat().st_size
+            msg_info = f"size (cmp): {lng_cmd_size_after}"
+            print(msg_info, file=sys.stderr)
+            delta_cmp = lng_cmd_size_after - lng_cmd_size_before
+            msg_info = f"delta (cmp): {delta_cmp}"
+            print(msg_info, file=sys.stderr)
+
         #    Compare last commit .inv with updated .inv
-        cmd = f"git diff HEAD {misc_info.FNames.INIT + misc_info.Extensions.CMP}"
+        #    If virtual environment not activated, .git/config texconv
+        #    executable relative path will not work e.g. sphobjinv-textconv
+        #
+        #    error: cannot run sphobjinv-textconv: No such file or directory
+        #    fatal: unable to read files to diff
+        #    exit code 128
+        cmp_relpath = misc_info.FNames.INIT + misc_info.Extensions.CMP
+        cmd = f"git diff HEAD {cmp_relpath}"
         sp_out = run(cmd, cwd=wd.cwd)
         retcode = sp_out.returncode
         out = sp_out.stdout
         assert retcode == 0
+        assert len(out) != 0
 
         #    On error, not showing locals, so print source file and diff
-        if platform.system() == "Windows":
-            b_cmp_inv = path_cmp.read_bytes()
-            print(f".inv: {b_cmp_inv!r}", file=sys.stderr)
+        if platform.system() in ("Linux", "Windows"):
+            print(f"is_file: {Path(cmp_relpath).is_file()}", file=sys.stderr)
+            print(f"cmd: {cmd}", file=sys.stderr)
             print(f"diff: {out}", file=sys.stderr)
             print(f"regex: {expected_diff}", file=sys.stderr)
 
+        # Had trouble finding executable's path. On Windows, regex should be OK
         pattern = re.compile(expected_diff)
         lst_matches = pattern.findall(out)
         assert lst_matches is not None
