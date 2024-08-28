@@ -96,7 +96,6 @@ class TestTextconvIntegration:
         self,
         misc_info,
         scratch_path,
-        windows_paths,
     ):
         """Demonstrate git diff on a zlib inventory.
 
@@ -128,11 +127,8 @@ class TestTextconvIntegration:
         path_cwd = scratch_path
         wd = WorkDir(path_cwd)
 
-        windows_paths()
-
-        path_soi = Path(sys.executable).parent.joinpath("sphobjinv")
-        soi_path = str(path_soi)
-        path_soi_textconv = Path(sys.executable).parent.joinpath("sphobjinv-textconv")
+        soi_path = "sphobjinv"
+        soi_textconv_path = "sphobjinv-textconv"
 
         #    git init
         wd("git init")
@@ -153,7 +149,7 @@ class TestTextconvIntegration:
         str_git_config = path_git_config.read_text()
         lines = [
             """[diff "inv"]""",
-            f"""	textconv = {path_soi_textconv!s}""",
+            f"""	textconv = {soi_textconv_path}""",
         ]
 
         gc_textconv = sep.join(lines)

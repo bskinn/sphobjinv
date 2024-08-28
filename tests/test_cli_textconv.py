@@ -220,7 +220,6 @@ def test_cli_textconv_via_subprocess(
     res_dec,
     res_cmp,
     misc_info,
-    windows_paths,
 ):
     """In a subprocess, plain inventory passed in thru stdin.
 
@@ -233,10 +232,7 @@ def test_cli_textconv_via_subprocess(
     # prepare
     retcode_expected = 0
 
-    windows_paths()
-
-    path_cmd = Path(sys.executable).parent.joinpath("sphobjinv-textconv")
-    cmd_path = str(path_cmd)
+    soi_textconv_path = "sphobjinv-textconv"
 
     inv1 = Inventory(res_cmp)
     if data_format is SourceTypes.DictJSON:
@@ -248,8 +244,8 @@ def test_cli_textconv_via_subprocess(
 
     # Act
     cmds = (
-        [cmd_path],
-        [cmd_path, "-"],
+        [soi_textconv_path],
+        [soi_textconv_path, "-"],
     )
     for cmd in cmds:
         try:
@@ -278,7 +274,6 @@ class TestTextconvStdioFail:
     def test_cli_textconv_zlib_inv_stdin(
         self,
         res_cmp,
-        windows_paths,
     ):
         """Piping in a zlib inventory is not supported.
 
@@ -303,12 +298,9 @@ class TestTextconvStdioFail:
         #    byte stream usable by subprocess
         bytes_cmp = readbytes(res_cmp)
 
-        windows_paths()
+        soi_textconv_path = "sphobjinv-textconv"
 
-        path_cmd = Path(sys.executable).parent.joinpath("sphobjinv-textconv")
-        cmd_path = str(path_cmd)
-
-        cmd = [cmd_path, "-"]
+        cmd = [soi_textconv_path, "-"]
         try:
             sp.run(
                 cmd,
