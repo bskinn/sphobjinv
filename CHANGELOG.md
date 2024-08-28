@@ -8,6 +8,13 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.6] - 2024-08-28
+
+#### Tests
+
+  * .git/config textconv executable resolve path
+    shutil.which to resolve path to executable
+
 ### [2.4.1.5] - 2024-08-28
 
 #### Tests
