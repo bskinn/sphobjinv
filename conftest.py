@@ -522,9 +522,11 @@ def gitconfig(is_win):
         # .git/config
         #    :code:`newline=None` auto translates \n --> os.linesep
         try:
-            with open(str(path_git_config_dst), "a", newline=None) as f:
+            f_path = str(path_git_config_dst)
+            with open(f_path, mode="a", newline=os.linesep, encoding="utf-8") as f:
                 for additional_section_line in lines:
-                    f.write(f"{additional_section_line}\n")
+                    f.write(f"{additional_section_line}{os.linesep}")
+                f.write(os.linesep)
         except OSError:
             reason = "Could not rw .git/config"
             pytest.xfail(reason)
