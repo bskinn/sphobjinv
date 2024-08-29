@@ -38,20 +38,24 @@ converting an (partially binary) inventory to plain text.
 **Members**
 
 """
-import os
-import platform
+import logging
 import re
 import shutil
-import sys
 
-from sphobjinv import DataObjStr
-from sphobjinv.cli.load import import_infile
-from sphobjinv.cli.write import write_plaintext
+import pytest
 
 from .wd_wrapper import (  # noqa: ABS101
     run,
     WorkDir,
 )
+
+logger = logging.getLogger(__name__)
+
+
+@pytest.fixture()
+def caplog_configure(caplog):
+    """Config logging and caplog fixture."""
+    caplog.set_level(logging.INFO)
 
 
 class TestTextconvIntegration:
@@ -59,18 +63,24 @@ class TestTextconvIntegration:
 
     def test_textconv_git_diff(
         self,
+        caplog,
+        caplog_configure,
         misc_info,
         scratch_path,
+        res_cmp_plus_one_line,
+        gitconfig,
+        gitattributes,
+        is_win,
+        is_linux,
     ):
         """Demonstrate git diff on a zlib inventory.
 
         .. code-block:: shell
 
            pytest --showlocals --cov=sphobjinv --cov-report=term-missing \
-           --cov-config=pyproject.toml -k test_textconv_git_diff tests
+           -vv --cov-config=pyproject.toml -k test_textconv_git_diff tests
 
         """
-        sep = os.linesep
         # word placeholder --> \w+
         # Escape $ --> \$
         # Escape + --> \+
@@ -91,139 +101,53 @@ class TestTextconvIntegration:
         #    project folder
         path_cwd = scratch_path
         wd = WorkDir(path_cwd)
+        if is_win or is_linux:
+            msg_info = f"cwd {wd.cwd!s}"
+            logger.info(msg_info)
 
         #    On Windows, unresolved executables paths
-        soi_path = "sphobjinv"
         soi_textconv_path = "sphobjinv-textconv"
 
         #    On Windows, resolved executables paths
         resolved_soi_textconv_path = shutil.which(soi_textconv_path)
         if resolved_soi_textconv_path is None:
             resolved_soi_textconv_path = soi_textconv_path
-        resolved_soi_path = shutil.which(soi_path)
-        if resolved_soi_path is None:
-            resolved_soi_path = soi_path
 
         #    git init
         wd("git init")
         wd("git config user.email test@example.com")
         wd('git config user.name "a test"')
 
-        #    inventories: .txt and .inv
-        # scratch_path copied:
-        # objects_attrs.{.txt|.inv.json} --> objects.{.txt|.inv.json}
-        path_cmp = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
-        dst_cmp_path = str(path_cmp)
-
-        path_dec = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)
-        dst_dec_path = str(path_dec)
-
-        #    .git/config append
-        path_git_config = path_cwd / ".git" / "config"
-        str_git_config = path_git_config.read_text()
-
-        #    On Windows, RESOLVED path necessary
-        lines = [
-            """[diff "inv"]""",
-            f"""	textconv = {resolved_soi_textconv_path}""",
-        ]
-
-        gc_textconv = sep.join(lines)
-        str_git_config = f"{str_git_config}{sep}{gc_textconv}{sep}"
-        path_git_config.write_text(str_git_config)
-        if platform.system() in ("Linux", "Windows"):
-            print(f"cwd {wd.cwd!s}", file=sys.stderr)
-            print(f"executable path: {resolved_soi_textconv_path}", file=sys.stderr)
-            print(f"""PATHEXT: {os.environ.get("PATHEXT", None)}""", file=sys.stderr)
-            print(f".git/config {str_git_config}", file=sys.stderr)
+        #    .git/config
+        #    defines the diff textconv "inv"
+        path_git_config = gitconfig(wd.cwd)
+        git_config_contents = path_git_config.read_text()
+        assert """[diff "inv"]""" in git_config_contents
 
         #    .gitattributes
-        #    Informs git: .inv are binary files and which cmd converts .inv --> .txt
-        path_ga = path_cwd / ".gitattributes"
-        path_ga.touch()
-        str_gitattributes = path_ga.read_text()
-        ga_textconv = "*.inv binary diff=inv"
-        str_gitattributes = f"{str_gitattributes}{sep}{ga_textconv}"
-        wd.write(".gitattributes", str_gitattributes)
+        #    Informs git: .inv are binary files uses textconv "inv" from .git/config
+        path_ga = gitattributes(wd.cwd)
+        git_attributes_contents = path_ga.read_text()
+        assert "*.inv binary diff=inv" in git_attributes_contents
+
+        #     scratch_path from objects_attrs.{inv|txt|json}
+        #     creates: objects.inv, objects.txt, and objects.json
+        path_fname_src = misc_info.FNames.INIT + misc_info.Extensions.CMP
+        path_cmp_dst = wd.cwd / path_fname_src
+
+        objects_inv_size_before = path_cmp_dst.stat().st_size
 
         #    commit (1st)
         wd.add_command = "git add ."
         wd.commit_command = "git commit --no-verify --no-gpg-sign -m test-{reason}"
         wd.add_and_commit(reason="sphobjinv-textconv", signed=False)
 
-        # Act
-        #    make change to .txt inventory (path_dst_dec)
-        inv_0 = import_infile(dst_dec_path)
-        inv_0_count_orig = len(inv_0.objects)
-        obj_datum = DataObjStr(
-            name="attrs.validators.set_cheat_mode",
-            domain="py",
-            role="function",
-            priority="1",
-            uri="api.html#$",
-            dispname="-",
-        )
-        inv_0.objects.append(obj_datum)
-        write_plaintext(inv_0, dst_dec_path)
+        # overwrite objects.inv (aka path_cmp_dst)
+        res_cmp_plus_one_line(wd.cwd)
 
-        # Read the inventory on disk
-        inv_0 = import_infile(dst_dec_path)
-        inv_0_count = len(inv_0.objects)
-        inv_0_last_three = inv_0.objects[-3:]
-        lng_cmd_size_before = path_cmp.stat().st_size
-
-        #    plain --> zlib
-        if platform.system() in ("Linux", "Windows"):
-            msg_info = f"objects dev original count ({inv_0_count_orig})"
-            print(msg_info, file=sys.stderr)
-            msg_info = (
-                f"objects dec after write (count {inv_0_count}): {inv_0_last_three!r}"
-            )
-            print(msg_info, file=sys.stderr)
-            msg_info = f"size (dec): {path_dec.stat().st_size}"
-            print(msg_info, file=sys.stderr)
-            msg_info = f"size (cmp): {lng_cmd_size_before}"
-            print(msg_info, file=sys.stderr)
-
-        #    On Windows, UNRESOLVED executable path necessary
-        #    Didn't work on windows?
-        #    cmd: sphobjinv convert -q zlib infile_full_path outfile_full_path
-        cmd = f"{soi_path} convert -q zlib {dst_dec_path} {dst_cmp_path}"
-        wd(cmd)
-
-        inv_1 = import_infile(dst_cmp_path)
-        inv_1_count = len(inv_1.objects)
-        inv_1_last_three = inv_1.objects[-3:]
-        lng_cmd_size_after = path_cmp.stat().st_size
-        is_dec = path_dec.is_file()
-        is_cmp = path_cmp.is_file()
-
-        # Diagnostic before assertion checks
-        if platform.system() in ("Linux", "Windows"):
-            msg_info = f"cmd: {cmd}"
-            print(msg_info, file=sys.stderr)
-            msg_info = "convert txt --> inv"
-            print(msg_info, file=sys.stderr)
-            msg_info = f"is_dec: {is_dec} is_cmp {is_cmp}"
-            print(msg_info, file=sys.stderr)
-            msg_info = (
-                f"objects after (count {inv_1_count}; delta"
-                f"{inv_1_count - inv_0_count}): {inv_1_last_three!r}"
-            )
-            print(msg_info, file=sys.stderr)
-            msg_info = f"size (cmp): {lng_cmd_size_after}"
-            print(msg_info, file=sys.stderr)
-            delta_cmp = lng_cmd_size_after - lng_cmd_size_before
-            msg_info = f"delta (cmp): {delta_cmp}"
-            print(msg_info, file=sys.stderr)
-
-        info_msg = (
-            "Inventory objects count decrepancy would mean "
-            "command failed: sphobjinv convert -q zlib ..."
-            "Executable path should be relative. INFILE and OUTFILE relative?"
-        )
-        assert inv_0_count == inv_1_count, info_msg
-        assert inv_0_last_three == inv_1_last_three
+        objects_inv_size_after = path_cmp_dst.stat().st_size
+        reason = f"objects.inv supposed to have been overwritten {path_cmp_dst}"
+        assert objects_inv_size_before != objects_inv_size_after, reason
 
         #    Compare last commit .inv with updated .inv
         #    If virtual environment not activated, .git/config texconv
@@ -232,18 +156,23 @@ class TestTextconvIntegration:
         #    error: cannot run sphobjinv-textconv: No such file or directory
         #    fatal: unable to read files to diff
         #    exit code 128
-        cmp_relpath = misc_info.FNames.INIT + misc_info.Extensions.CMP
-        cmd = f"git diff HEAD {cmp_relpath}"
+        cmd = f"git diff HEAD {path_cmp_dst.name}"
         sp_out = run(cmd, cwd=wd.cwd)
         retcode = sp_out.returncode
         out = sp_out.stdout
 
         #    Diagnostics before assertions
         #    On error, not showing locals, so print source file and diff
-        if platform.system() in ("Linux", "Windows"):
-            print(f"cmd: {cmd}", file=sys.stderr)
-            print(f"diff: {out}", file=sys.stderr)
-            print(f"regex: {expected_diff}", file=sys.stderr)
+        if is_win or is_linux:
+            msg_info = f"cmd: {cmd}"
+            logger.info(msg_info)
+            msg_info = f"diff: {out}"
+            logger.info(msg_info)
+            msg_info = f"regex: {expected_diff}"
+            logger.info(msg_info)
+            msg_info = f"out: {out}"
+            logger.info(msg_info)
+            logging_records = caplog.records  # noqa: F841
 
         assert retcode == 0
         assert len(out) != 0

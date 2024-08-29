@@ -29,7 +29,8 @@ Sphinx |objects.inv| files.
 
 """
 
-
+import logging
+import os
 import os.path as osp
 import platform
 import re
@@ -80,6 +81,51 @@ def res_cmp(res_path, misc_info):
 def res_dec(res_path, misc_info):
     """Provide Path object to the decompressed attrs inventory in resource."""
     return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value)
+
+
+@pytest.fixture(scope="session")
+def res_cmp_plus_one_line(res_path, misc_info):
+    """res_cmp with a line appended. Overwrites objects.inv file."""
+
+    def func(path_cwd):
+        """Overwrite objects.inv file. New objects.inv contains one additional line.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        logger = logging.getLogger()
+
+        # src
+        str_postfix = "_plus_one_entry"
+        fname = (
+            f"{misc_info.FNames.RES.value}{str_postfix}{misc_info.Extensions.CMP.value}"
+        )
+        path_f_src = res_path / fname
+        reason = f"source file not found src {path_f_src}"
+        assert path_f_src.is_file() and path_f_src.exists(), reason
+
+        # dst
+        fname_dst = f"{misc_info.FNames.INIT.value}{misc_info.Extensions.CMP.value}"
+        path_f_dst = path_cwd / fname_dst
+        reason = f"dest file not found src {path_f_src} dest {path_f_dst}"
+        assert path_f_dst.is_file() and path_f_dst.exists(), reason
+
+        # file sizes differ
+        objects_inv_size_existing = path_f_dst.stat().st_size
+        objects_inv_size_new = path_f_src.stat().st_size
+        reason = f"file sizes do not differ src {path_f_src} dest {path_f_dst}"
+        assert objects_inv_size_new != objects_inv_size_existing, reason
+
+        msg_info = f"copy {path_f_src} --> {path_f_dst}"
+        logger.info(msg_info)
+
+        shutil.copy2(str(path_f_src), str(path_f_dst))
+
+    return func
 
 
 @pytest.fixture(scope="session")
@@ -387,6 +433,12 @@ def is_win():
 
 
 @pytest.fixture(scope="session")
+def is_linux():
+    """Report boolean of whether the current system is Linux."""
+    return platform.system() in ("Linux",)
+
+
+@pytest.fixture(scope="session")
 def unix2dos():
     """Provide function for converting POSIX to Windows EOLs."""
     return partial(re.sub, rb"(?<!\r)\n", b"\r\n")
@@ -396,3 +448,92 @@ def unix2dos():
 def jsonschema_validator():
     """Provide the standard JSON schema validator."""
     return jsonschema.Draft4Validator
+
+
+@pytest.fixture(scope="session")
+def gitattributes():
+    """Projects .gitattributes resource."""
+
+    def func(path_cwd):
+        """Copy over projects .gitattributes to test current sessions folder.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        path_dir = Path(__file__).parent
+        path_f_src = path_dir.joinpath(".gitattributes")
+        path_f_dst = path_cwd / path_f_src.name
+        path_f_dst.touch()
+        assert path_f_dst.is_file()
+        shutil.copy2(path_f_src, path_f_dst)
+        return path_f_dst
+
+    return func
+
+
+@pytest.fixture(scope="session")
+def gitconfig(is_win):
+    """.git/config defines which textconv converts .inv --> .txt.
+
+    :code:`git clone` and the ``.git/config`` exists. But the ``.git`` folder
+    is not shown in the repo. There are addtional settings, instead create a
+    minimalistic file
+    """
+
+    def func(path_cwd):
+        """In tests cwd, to .git/config append textconv for inventory files.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        logger = logging.getLogger()
+
+        soi_textconv_path = "sphobjinv-textconv"
+        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
+        if resolved_soi_textconv_path is None:
+            resolved_soi_textconv_path = soi_textconv_path
+
+        if is_win:
+            # On Windows, extensions Windows searches to find executables
+            msg_info = f"""PATHEXT: {os.environ.get("PATHEXT", None)}"""
+            logger.info(msg_info)
+
+            # On Windows, executable's path must be resolved
+            msg_info = (
+                """.git/config diff textconv executable's path: """
+                f"{resolved_soi_textconv_path}"
+            )
+            logger.info(msg_info)
+
+        path_git_dir_dst = path_cwd / ".git"
+        path_git_dir_dst.mkdir(exist_ok=True)
+        path_git_config_dst = path_git_dir_dst / "config"
+        path_git_config_dst.touch()
+        gc_contents = path_git_config_dst.read_text()
+        assert path_git_config_dst.is_file()
+
+        #    On Windows, RESOLVED path necessary
+        lines = [
+            """[diff "inv"]""",
+            f"""	textconv = {resolved_soi_textconv_path}""",
+        ]
+
+        # .git/config
+        sep = os.linesep
+        gc_textconv = f"{gc_contents}{sep.join(lines)}{sep}"
+        path_git_config_dst.write_text(gc_textconv)
+
+        if is_win:
+            msg_info = f".git/config: {gc_textconv}"
+            logger.info(msg_info)
+        return path_git_config_dst
+
+    return func

@@ -8,6 +8,15 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### [2.4.1.11] - 2024-08-28
+
+#### Tests
+
+  * add resources objects_attrs_plus_one_entry.{txt|inv}
+  * compare existing resources. Rather modify then .txt --> .inv
+  * add fixtures res_cmp_plus_one_line is_linux gitconfig gitattributes
+  * on windows, print txt inventory to check line endings
+
 ### [2.4.1.10] - 2024-08-28
 
 #### Tests
