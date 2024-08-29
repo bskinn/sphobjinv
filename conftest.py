@@ -30,6 +30,7 @@ Sphinx |objects.inv| files.
 """
 
 import logging
+import os
 import os.path as osp
 import platform
 import re
@@ -339,11 +340,7 @@ def run_cmdline_textconv(monkeypatch):
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_no_checks(monkeypatch):
     """Return function to perform command line. So as to debug issues no tests."""
-<<<<<<< HEAD
     from sphobjinv.cli.core_textconv import main as main_textconv
-=======
-    from sphobjinv.cli.core_textconv import main
->>>>>>> 53d495f (git diff support)
 
     def func(arglist, *, prog="sphobjinv-textconv"):
         """Perform the CLI exit-code test."""
@@ -357,19 +354,11 @@ def run_cmdline_no_checks(monkeypatch):
             m.setattr(sys, "argv", runargs)
 
             try:
-<<<<<<< HEAD
                 main_textconv()
             except SystemExit as e:
                 retcode = e.args[0]
                 is_system_exit = True
             else:  # pragma: no cover
-=======
-                main()
-            except SystemExit as e:
-                retcode = e.args[0]
-                is_system_exit = True
-            else:
->>>>>>> 53d495f (git diff support)
                 is_system_exit = False
 
         return retcode, is_system_exit
@@ -438,6 +427,12 @@ def is_win():
 
 
 @pytest.fixture(scope="session")
+def is_linux():
+    """Report boolean of whether the current system is Linux."""
+    return platform.system() in ("Linux",)
+
+
+@pytest.fixture(scope="session")
 def unix2dos():
     """Provide function for converting POSIX to Windows EOLs."""
     return partial(re.sub, rb"(?<!\r)\n", b"\r\n")
@@ -447,3 +442,92 @@ def unix2dos():
 def jsonschema_validator():
     """Provide the standard JSON schema validator."""
     return jsonschema.Draft4Validator
+
+
+@pytest.fixture(scope="session")
+def gitattributes():
+    """Projects .gitattributes resource."""
+
+    def func(path_cwd):
+        """Copy over projects .gitattributes to test current sessions folder.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        path_dir = Path(__file__).parent
+        path_f_src = path_dir.joinpath(".gitattributes")
+        path_f_dst = path_cwd / path_f_src.name
+        path_f_dst.touch()
+        assert path_f_dst.is_file()
+        shutil.copy2(path_f_src, path_f_dst)
+        return path_f_dst
+
+    return func
+
+
+@pytest.fixture(scope="session")
+def gitconfig(is_win):
+    """.git/config defines which textconv converts .inv --> .txt.
+
+    :code:`git clone` and the ``.git/config`` exists. But the ``.git`` folder
+    is not shown in the repo. There are addtional settings, instead create a
+    minimalistic file
+    """
+
+    def func(path_cwd):
+        """In tests cwd, to .git/config append textconv for inventory files.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        logger = logging.getLogger()
+
+        soi_textconv_path = "sphobjinv-textconv"
+        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
+        if resolved_soi_textconv_path is None:
+            resolved_soi_textconv_path = soi_textconv_path
+
+        if is_win:
+            # On Windows, extensions Windows searches to find executables
+            msg_info = f"""PATHEXT: {os.environ.get("PATHEXT", None)}"""
+            logger.info(msg_info)
+
+            # On Windows, executable's path must be resolved
+            msg_info = (
+                """.git/config diff textconv executable's path: """
+                f"{resolved_soi_textconv_path}"
+            )
+            logger.info(msg_info)
+
+        path_git_dir_dst = path_cwd / ".git"
+        path_git_dir_dst.mkdir(exist_ok=True)
+        path_git_config_dst = path_git_dir_dst / "config"
+        path_git_config_dst.touch()
+        gc_contents = path_git_config_dst.read_text()
+        assert path_git_config_dst.is_file()
+
+        #    On Windows, RESOLVED path necessary
+        lines = [
+            """[diff "inv"]""",
+            f"""	textconv = {resolved_soi_textconv_path}""",
+        ]
+
+        # .git/config
+        sep = os.linesep
+        gc_textconv = f"{gc_contents}{sep.join(lines)}{sep}"
+        path_git_config_dst.write_text(gc_textconv)
+
+        if is_win:
+            msg_info = f".git/config: {gc_textconv}"
+            logger.info(msg_info)
+        return path_git_config_dst
+
+    return func
