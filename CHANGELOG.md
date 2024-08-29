@@ -12,7 +12,8 @@ changes.
 
 #### Tests
 
-  * in tests/test_api_good_nonlocal.py provide explicit reasons test skip
+  * refactor .git/config append algo
+  * in tests/test_api_good_nonlocal.py provide explicit reasons to skip test
   * in test_api_inventory_many_url_imports, sequence of inventory file names to skip
   * add resources objects_attrs_plus_one_entry.{txt|inv}
   * compare existing resources. Rather modify then .txt --> .inv

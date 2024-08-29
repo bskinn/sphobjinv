@@ -517,7 +517,6 @@ def gitconfig(is_win):
         path_git_dir_dst.mkdir(exist_ok=True)
         path_git_config_dst = path_git_dir_dst / "config"
         path_git_config_dst.touch()
-        gc_contents = path_git_config_dst.read_text()
         assert path_git_config_dst.is_file()
 
         #    On Windows, RESOLVED path necessary
@@ -527,12 +526,18 @@ def gitconfig(is_win):
         ]
 
         # .git/config
-        sep = os.linesep
-        gc_textconv = f"{gc_contents}{sep.join(lines)}{sep}"
-        path_git_config_dst.write_text(gc_textconv)
+        #    :code:`newline=None` auto translates \n --> os.linesep
+        try:
+            with open(str(path_git_config_dst), "a", newline=None) as f:
+                for additional_section_line in lines:
+                    f.write(f"{additional_section_line}\n")
+        except OSError:
+            reason = "Could not rw .git/config"
+            pytest.xfail(reason)
 
         if is_win:
-            msg_info = f".git/config: {gc_textconv}"
+            file_contents = path_git_config_dst.read_text()
+            msg_info = f".git/config: {file_contents}"
             logger.info(msg_info)
         return path_git_config_dst
 
