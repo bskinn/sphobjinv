@@ -160,6 +160,7 @@ class TestTextconvIntegration:
         sp_out = run(cmd, cwd=wd.cwd)
         retcode = sp_out.returncode
         out = sp_out.stdout
+        err = sp_out.stderr
 
         #    Diagnostics before assertions
         #    On error, not showing locals, so print source file and diff
@@ -168,6 +169,9 @@ class TestTextconvIntegration:
             logger.info(msg_info)
             msg_info = f"diff: {out}"
             logger.info(msg_info)
+            if retcode != 0:
+                msg_info = f"err: {err}"
+                logger.info(msg_info)
             msg_info = f"regex: {expected_diff}"
             logger.info(msg_info)
             msg_info = f"out: {out}"
