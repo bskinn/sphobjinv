@@ -84,8 +84,18 @@ def test_api_inventory_many_url_imports(
     scr_fpath = scratch_path / fname
 
     # Drop most unless testall
-    if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
-        pytest.skip("'--testall' not specified")
+    skips = (
+        "objects_attrs.inv",
+        "objects_attrs_plus_one_entry.inv",
+    )
+    is_not_testall = not pytestconfig.getoption("--testall")
+    if is_not_testall:
+        reason = "'--testall' not specified"
+        pytest.skip(reason)
+    is_skip = fname in skips
+    if is_skip:
+        reason = f"skip online checks for theis inventory {fname}"
+        pytest.skip(reason)
 
     # Construct inventories for comparison
     mch = misc_info.p_inv.match(fname)
