@@ -8,8 +8,25 @@ requires = [
 [project]
 name = "sphobjinv"
 description = "Sphinx objects.inv Inspection/Manipulation Tool"
+keywords = [
+  "inspector",
+  "inventory",
+  "manager",
+  "sphinx",
+  "sphinx-doc",
+]
 license = {text = "MIT License"}
 authors = [{name = "Brian Skinn", email = "brian.skinn@gmail.com"}]
+requires-python = ">=3.8"
+dependencies = [
+  "attrs>=19.2",
+  "certifi",
+  "jsonschema>=3",
+]
+dynamic = [
+  "readme",
+  "version",
+]
 classifiers = [
     "License :: OSI Approved",
     "License :: OSI Approved :: MIT License",
@@ -33,24 +50,17 @@ classifiers = [
     "Topic :: Utilities",
     "Development Status :: 5 - Production/Stable",
 ]
-keywords = ["sphinx", "sphinx-doc", "inventory", "manager", "inspector"]
-requires-python = ">=3.8"
-dependencies = [
-    "attrs>=19.2",
-    "certifi",
-    "jsonschema>=3.0",
-]
-dynamic = ["version", "readme"]
-
 [project.urls]
-Homepage = "https://github.com/bskinn/sphobjinv"
 Changelog = "https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md"
 Docs = "https://sphobjinv.readthedocs.io/en/stable/"
-Thank = "https://fosstodon.org/@btskinn"
 Donate = "https://github.com/sponsors/bskinn"
+Homepage = "https://github.com/bskinn/sphobjinv"
+Thank = "https://fosstodon.org/@btskinn"
 
 [project.scripts]
 sphobjinv = "sphobjinv.cli.core:main"
+sphobjinv-textconv = "sphobjinv.cli.core:main_textconv"
+
 
 [tool.setuptools]
 package-dir = {"" = "src"}

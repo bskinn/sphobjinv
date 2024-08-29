@@ -33,7 +33,7 @@ import sys
 
 from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
-from sphobjinv.cli.parser import getparser, PrsConst
+from sphobjinv.cli.parser import getparser, getparser_textconv, PrsConst
 from sphobjinv.cli.suggest import do_suggest
 from sphobjinv.cli.ui import print_stderr
 
@@ -100,4 +100,30 @@ def main():
     print_stderr(" ", params)
 
     # Clean exit
+    sys.exit(0)
+
+
+def main_textconv():
+    """Entrypoint for textconv operation."""
+    # If no args passed, stick in '-h'
+    if len(sys.argv) == 1:
+        sys.argv.append("-h")
+
+    prs = getparser_textconv()
+    params = vars(prs.parse_args())
+
+    # Print version &c. and exit if indicated
+    if params[PrsConst.VERSION]:
+        print(PrsConst.VER_TXT)
+        sys.exit(0)
+
+    inv, in_path = inv_local(params)
+
+    params[PrsConst.CONTRACT] = False
+    params[PrsConst.EXPAND] = False
+    params[PrsConst.MODE] = PrsConst.PLAIN
+    params[PrsConst.OUTFILE] = "-"
+
+    do_convert(inv, in_path, params)
+
     sys.exit(0)

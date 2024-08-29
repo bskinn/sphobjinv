@@ -381,3 +381,32 @@ def getparser():
     )
 
     return prs
+
+
+def getparser_textconv():
+    """Generate argument parser for textconv entrypoint.
+
+    Returns
+    -------
+    prs
+
+        :class:`~argparse.ArgumentParser` -- Parser for textconv commandline
+        usage of |soi|
+
+    """
+    prs = ap.ArgumentParser(
+        description="Text diffing of intersphinx 'objects.inv' files."
+    )
+    prs.add_argument(
+        "-" + PrsConst.VERSION[0],
+        "--" + PrsConst.VERSION,
+        help="Print package version & other info",
+        action="store_true",
+    )
+
+    prs.add_argument(
+        PrsConst.INFILE,
+        help=("Path to file to be converted."),
+    )
+
+    return prs
