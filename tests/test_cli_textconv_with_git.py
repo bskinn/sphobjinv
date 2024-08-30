@@ -108,7 +108,7 @@ def gitconfig(is_win):
         #    On Windows, RESOLVED path necessary
         #    :code:`git config --list` is your friend
         wd = WorkDir(path_cwd)
-        is_success = wd.git_config_set(key, val)
+        is_success = wd.git_config_set(key, val, is_path=True)
         reason = f"Unable to set git config setting {key} to {val}"
         assert is_success is True, reason
 
