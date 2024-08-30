@@ -30,6 +30,7 @@ Sphinx |objects.inv| files.
 """
 
 import logging
+import os
 import os.path as osp
 import platform
 import re
@@ -462,7 +463,17 @@ def gitattributes():
         path_f_dst = path_cwd / path_f_src.name
         path_f_dst.touch()
         assert path_f_dst.is_file()
-        shutil.copy2(path_f_src, path_f_dst)
+        if not path_f_src.exists():
+            # workflow "Run test suite in sandbox" fails to find .gitattributes
+            sep = os.linesep
+            contents = (
+                f"tests/resource/objects_mkdoc_zlib0.inv binary{sep}"
+                f"tests/resource/objects_attrs.txt binary{sep}"
+                f"*.inv binary diff=inv{sep}"
+            )
+            path_f_dst.write_text(contents)
+        else:
+            shutil.copy2(path_f_src, path_f_dst)
         return path_f_dst
 
     return func
