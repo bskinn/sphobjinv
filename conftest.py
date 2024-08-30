@@ -30,7 +30,6 @@ Sphinx |objects.inv| files.
 """
 
 import logging
-import os
 import os.path as osp
 import platform
 import re
@@ -471,76 +470,5 @@ def gitattributes():
         assert path_f_dst.is_file()
         shutil.copy2(path_f_src, path_f_dst)
         return path_f_dst
-
-    return func
-
-
-@pytest.fixture(scope="session")
-def gitconfig(is_win):
-    """.git/config defines which textconv converts .inv --> .txt.
-
-    :code:`git clone` and the ``.git/config`` exists. But the ``.git`` folder
-    is not shown in the repo. There are addtional settings, instead create a
-    minimalistic file
-    """
-
-    def func(path_cwd):
-        """In tests cwd, to .git/config append textconv for inventory files.
-
-        Parameters
-        ----------
-        path_cwd
-
-            |Path| -- test sessions current working directory
-
-        """
-        logger = logging.getLogger()
-
-        soi_textconv_path = "sphobjinv-textconv"
-        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
-        if resolved_soi_textconv_path is None:
-            resolved_soi_textconv_path = soi_textconv_path
-
-        if is_win:
-            # On Windows, extensions Windows searches to find executables
-            msg_info = f"""PATHEXT: {os.environ.get("PATHEXT", None)}"""
-            logger.info(msg_info)
-
-            # On Windows, executable's path must be resolved
-            msg_info = (
-                """.git/config diff textconv executable's path: """
-                f"{resolved_soi_textconv_path}"
-            )
-            logger.info(msg_info)
-
-        path_git_dir_dst = path_cwd / ".git"
-        path_git_dir_dst.mkdir(exist_ok=True)
-        path_git_config_dst = path_git_dir_dst / "config"
-        path_git_config_dst.touch()
-        assert path_git_config_dst.is_file()
-
-        #    On Windows, RESOLVED path necessary
-        lines = [
-            """[diff "inv"]""",
-            f"""	textconv = {resolved_soi_textconv_path}""",
-        ]
-
-        # .git/config
-        #    :code:`newline=None` auto translates \n --> os.linesep
-        try:
-            f_path = str(path_git_config_dst)
-            with open(f_path, mode="a", newline=os.linesep, encoding="utf-8") as f:
-                for additional_section_line in lines:
-                    f.write(f"{additional_section_line}{os.linesep}")
-                f.write(os.linesep)
-        except OSError:
-            reason = "Could not rw .git/config"
-            pytest.xfail(reason)
-
-        if is_win:
-            file_contents = path_git_config_dst.read_text()
-            msg_info = f".git/config: {file_contents}"
-            logger.info(msg_info)
-        return path_git_config_dst
 
     return func

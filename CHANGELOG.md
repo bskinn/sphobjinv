@@ -12,7 +12,8 @@ changes.
 
 #### Tests
 
-  * refactor .git/config append algo
+  * fix use git config to set textconv executable
+  * add to WorkDir git config list/get/set support
   * in tests/test_api_good_nonlocal.py provide explicit reasons to skip test
   * in test_api_inventory_many_url_imports, sequence of inventory file names to skip
   * add resources objects_attrs_plus_one_entry.{txt|inv}

@@ -15,7 +15,7 @@ import os
 import shlex
 import subprocess as sp  # noqa: S404
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 
 def run(
@@ -237,3 +237,91 @@ class WorkDir:
         self.write("test.txt", f"test {reason}")
         self(self.add_command)
         self.commit(reason=reason, signed=signed)
+
+    def git_config_list(self) -> Dict[str, str]:
+        """:code:`git` returns a line seperated list, parse it.
+
+        Extract the :code:`key=value` pairs.
+
+        Returns
+        -------
+            Dict[str, str] -- git config dotted keys and each respective value
+
+        """
+        cmd = "git config --list"
+        cp_out = run(cmd, cwd=self.cwd)
+        is_key_exists = cp_out is not None and isinstance(cp_out, sp.CompletedProcess)
+        d_ret = {}
+        if is_key_exists:
+            str_blob = cp_out.stdout
+            key_val_pairs = str_blob.split(os.linesep)
+            for key_val_pair in key_val_pairs:
+                key, val = key_val_pair.split("=")
+                d_ret[key] = val
+        else:
+            # no git config settings? Hmmm ...
+            pass
+
+        return d_ret
+
+    def git_config_get(
+        self,
+        dotted_key: str,
+    ) -> str | None:
+        """From :code:`git`, get a config setting value.
+
+        .. seealso:
+
+           git_config_list
+
+        Parameters
+        ----------
+        dotted_key
+            |str| -- a valid :code:`git config` key. View known keys
+            :code:`git config --list`
+
+        Returns
+        -------
+            [str] | |None| -- If the key has a value, the value otherwise |None|
+
+        """
+        # Getting all the key value pairs, can be sure the setting exists
+        # cmd if went the direct route: :code:`git config [dotted key]`
+        d_pairs = self.git_config_list()
+        if dotted_key in d_pairs.keys():
+            ret = d_pairs[dotted_key]
+        else:
+            ret = None
+
+        return ret
+
+    def git_config_set(
+        self,
+        dotted_key: str,
+        val: str,
+    ) -> bool:
+        """Set a :code:`git` config setting.
+
+        Parameters
+        ----------
+        dotted_key
+
+            |str| -- a valid :code:`git config` key. View known keys
+            :code:`git config --list`
+
+        val
+            |str| -- Value to set
+
+        Returns
+        -------
+            [bool| -- |True| on success otherwise |False|
+
+        """
+        cmd = f"git config {dotted_key} {val}"
+        cp_out = run(cmd, cwd=self.cwd)
+        if cp_out is None or cp_out.returncode != 0:
+            ret = False
+        else:
+            ret = True
+
+        return ret
