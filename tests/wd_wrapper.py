@@ -15,7 +15,7 @@ import os
 import platform
 import shlex
 import subprocess as sp  # noqa: S404
-from pathlib import Path
+from pathlib import Path, WindowsPath
 from typing import Dict, List
 
 
@@ -257,8 +257,12 @@ class WorkDir:
             str_blob = cp_out.stdout
             key_val_pairs = str_blob.split(os.linesep)
             for key_val_pair in key_val_pairs:
-                key, val = key_val_pair.split("=")
-                d_ret[key] = val
+                if len(key_val_pair) != 0:
+                    pair = key_val_pair.split("=")
+                    if len(pair) == 2:
+                        key = pair[0]
+                        val = pair[1]
+                        d_ret[key] = val
         else:
             # no git config settings? Hmmm ...
             pass
@@ -331,16 +335,23 @@ class WorkDir:
 
         """
         is_win = platform.system().lower() == "windows"
+        cmd = [
+            "git",
+            "config",
+            dotted_key,
+        ]
         if is_path and is_win:
             # In Bash, single quotes protect (Windows path) backslashes
             # Does not deal with escaping spaces
-            val = f"'{val}'"
-
+            # `Path is Windows safe <https://stackoverflow.com/a/68555279>`_
+            escaped_val = "'" + str(WindowsPath(val)) + "'"
+            cmd.append(escaped_val)
+        else:
+            cmd.append(val)
         # Sphinx hates \$
         # It's non-obvious if the above solution is viable.
         # git config diff.inv.textconv "sh -c 'sphobjinv co plain \"\$0\" -'"
         # git config diff.inv.textconv "sh -c 'sphobjinv-textconv \"\$0\"'"
-        cmd = f"git config {dotted_key} '{val}'"
         cp_out = run(cmd, cwd=self.cwd)
         if cp_out is None or cp_out.returncode != 0:
             ret = False
