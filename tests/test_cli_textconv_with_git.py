@@ -82,6 +82,8 @@ def gitconfig(is_win):
 
         key = "diff.inv.textconv"
         soi_textconv_path = "sphobjinv-textconv"
+
+        #    On Windows, resolved executables paths
         resolved_soi_textconv_path = shutil.which(soi_textconv_path)
         if resolved_soi_textconv_path is None:
             resolved_soi_textconv_path = soi_textconv_path
@@ -93,10 +95,7 @@ def gitconfig(is_win):
             logger_.info(msg_info)
 
             # On Windows, executable's path must be resolved
-            msg_info = (
-                """.git/config diff textconv executable's path: """
-                f"{resolved_soi_textconv_path}"
-            )
+            msg_info = f""".git/config diff textconv executable's path: {val}"""
             logger_.info(msg_info)
 
         path_git_dir_dst = path_cwd / ".git"
@@ -111,6 +110,12 @@ def gitconfig(is_win):
         is_success = wd.git_config_set(key, val, is_path=True)
         reason = f"Unable to set git config setting {key} to {val}"
         assert is_success is True, reason
+
+        if is_win:
+            # .git/config after update
+            gc_contents = path_git_config_dst.read_text()
+            msg_info = f""".git/config (after update):{os.linesep}{gc_contents}"""
+            logger_.info(msg_info)
 
     return func
 
@@ -161,14 +166,15 @@ class TestTextconvIntegration:
         if is_win or is_linux:
             msg_info = f"cwd {wd.cwd!s}"
             logger.info(msg_info)
+        if is_win:
+            from pathlib import WindowsPath
 
-        #    On Windows, unresolved executables paths
-        soi_textconv_path = "sphobjinv-textconv"
-
-        #    On Windows, resolved executables paths
-        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
-        if resolved_soi_textconv_path is None:
-            resolved_soi_textconv_path = soi_textconv_path
+            soi_textconv_path = "sphobjinv-textconv"
+            str_path = shutil.which(soi_textconv_path)
+            if str_path is not None:
+                logger.info(str_path)
+                msg_info = str(WindowsPath(str_path))
+                logger.info(msg_info)
 
         #    git init
         wd("git init")
@@ -177,6 +183,11 @@ class TestTextconvIntegration:
 
         #    Into .git/config, set the textconv absolute path
         gitconfig(wd.cwd)
+        if is_win or is_linux:
+            key = "diff.inv.textconv"
+            gc_val = wd.git_config_get(key)
+            msg_info = f".git/config {key} --> {gc_val}"
+            logging.info(msg_info)
 
         #    .gitattributes
         #    Informs git: .inv are binary files uses textconv "inv" from .git/config
