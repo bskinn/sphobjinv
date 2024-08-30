@@ -5,6 +5,7 @@ source =
 omit =
     # Don't worry about covering vendored libraries
     src/sphobjinv/_vendored/*
+    setup.py
 
 [report]
 exclude_lines =

@@ -10,8 +10,16 @@ changes.
 
 ### [2.4.1.11] - 2024-08-28
 
+#### Administrative
+
+  * azure-pipelines coverage report omit setup.py
+  * README.md affected by version. Update version
+  * azure-pipelines need --testall to get 100% coverage
+
 #### Tests
 
+  * test conftest fixture ensure_doc_scratch
+  * test WorkDir
   * fix inventory path must surround by single quotes
   * fix use git config to set textconv executable
   * add to WorkDir git config list/get/set support

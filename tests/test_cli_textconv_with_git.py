@@ -85,11 +85,11 @@ def gitconfig(is_win):
 
         #    On Windows, resolved executables paths
         resolved_soi_textconv_path = shutil.which(soi_textconv_path)
-        if resolved_soi_textconv_path is None:
+        if resolved_soi_textconv_path is None:  # pragma: no cover
             resolved_soi_textconv_path = soi_textconv_path
         val = resolved_soi_textconv_path
 
-        if is_win:
+        if is_win:  # pragma: no cover
             # On Windows, extensions Windows searches to find executables
             msg_info = f"""PATHEXT: {os.environ.get("PATHEXT", None)}"""
             logger_.info(msg_info)
@@ -111,7 +111,7 @@ def gitconfig(is_win):
         reason = f"Unable to set git config setting {key} to {val}"
         assert is_success is True, reason
 
-        if is_win:
+        if is_win:  # pragma: no cover
             # .git/config after update
             gc_contents = path_git_config_dst.read_text()
             msg_info = f""".git/config (after update):{os.linesep}{gc_contents}"""
@@ -122,6 +122,38 @@ def gitconfig(is_win):
 
 class TestTextconvIntegration:
     """Prove git diff an compare |objects.inv| files."""
+
+    def test_workdir(
+        self,
+        scratch_path,
+    ):
+        """Test interface of WorkDir."""
+        path_cwd = scratch_path
+        wd = WorkDir(path_cwd)
+
+        # __repr__
+        assert len(repr(wd)) != 0
+
+        # run fail
+        cmd = "dsfsadfdsfsadfdsaf"
+        assert run(cmd) is None
+
+        wd("git init")
+        wd("git config user.email test@example.com")
+        wd('git config user.name "a test"')
+
+        # From .git/config get nonexistent key
+        invalid_key = "diff.sigfault.textconv"
+        assert wd.git_config_get(invalid_key) is None
+
+        # Write bytes and str data to file
+        fname = "a.txt"
+        write_these = (
+            b"aaaaa",
+            "aaaaa",
+        )
+        for contents in write_these:
+            wd.write(fname, contents)
 
     def test_textconv_git_diff(
         self,
@@ -166,7 +198,7 @@ class TestTextconvIntegration:
         if is_win or is_linux:
             msg_info = f"cwd {wd.cwd!s}"
             logger.info(msg_info)
-        if is_win:
+        if is_win:  # pragma: no cover
             from pathlib import WindowsPath
 
             soi_textconv_path = "sphobjinv-textconv"
@@ -229,12 +261,12 @@ class TestTextconvIntegration:
 
         #    Diagnostics before assertions
         #    On error, not showing locals, so print source file and diff
-        if is_win or is_linux:
+        if is_win or is_linux:  # pragma: no cover
             msg_info = f"cmd: {cmd}"
             logger.info(msg_info)
             msg_info = f"diff: {out}"
             logger.info(msg_info)
-            if retcode != 0:
+            if retcode != 0:  # pragma: no cover
                 msg_info = f"err: {err}"
                 logger.info(msg_info)
             msg_info = f"regex: {expected_diff}"

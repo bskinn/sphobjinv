@@ -220,7 +220,7 @@ def test_cli_textconv_via_subprocess(
                 text=True,
                 capture_output=True,
             )
-        except (sp.CalledProcessError, sp.TimeoutExpired):
+        except (sp.CalledProcessError, sp.TimeoutExpired):  # pragma: no cover
             pytest.xfail()
         else:
             out = p_result.stdout
@@ -280,7 +280,7 @@ class TestTextconvStdioFail:
             str_err = b_err.decode("utf-8")
             assert retcode == expected_retcode
             assert "Invalid plaintext or JSON inventory format." in str_err
-        else:
+        else:  # pragma: no cover
             reason = (
                 "Piping in zlib inventory via stdin is not supported. "
                 "Was expecting exit code 1"

@@ -89,12 +89,9 @@ def test_api_inventory_many_url_imports(
         "objects_attrs_plus_one_entry.inv",
     )
     is_not_testall = not pytestconfig.getoption("--testall")
-    if is_not_testall:
-        reason = "'--testall' not specified"
-        pytest.skip(reason)
     is_skip = fname in skips
-    if is_skip:
-        reason = f"skip online checks for theis inventory {fname}"
+    if is_not_testall or is_skip:  # pragma: no cover
+        reason = "'--testall' not specified"
         pytest.skip(reason)
 
     # Construct inventories for comparison
