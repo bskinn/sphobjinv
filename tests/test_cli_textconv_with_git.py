@@ -39,6 +39,7 @@ converting an (partially binary) inventory to plain text.
 
 """
 import logging
+import os
 import re
 import shutil
 
@@ -56,6 +57,62 @@ logger = logging.getLogger(__name__)
 def caplog_configure(caplog):
     """Config logging and caplog fixture."""
     caplog.set_level(logging.INFO)
+
+
+@pytest.fixture(scope="session")
+def gitconfig(is_win):
+    """.git/config defines which textconv converts .inv --> .txt.
+
+    :code:`git clone` and the ``.git/config`` exists. But the ``.git`` folder
+    is not shown in the repo. There are addtional settings, instead create a
+    minimalistic file
+    """
+
+    def func(path_cwd):
+        """In tests cwd, to .git/config append textconv for inventory files.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        logger_ = logging.getLogger()
+
+        key = "diff.inv.textconv"
+        soi_textconv_path = "sphobjinv-textconv"
+        resolved_soi_textconv_path = shutil.which(soi_textconv_path)
+        if resolved_soi_textconv_path is None:
+            resolved_soi_textconv_path = soi_textconv_path
+        val = resolved_soi_textconv_path
+
+        if is_win:
+            # On Windows, extensions Windows searches to find executables
+            msg_info = f"""PATHEXT: {os.environ.get("PATHEXT", None)}"""
+            logger_.info(msg_info)
+
+            # On Windows, executable's path must be resolved
+            msg_info = (
+                """.git/config diff textconv executable's path: """
+                f"{resolved_soi_textconv_path}"
+            )
+            logger_.info(msg_info)
+
+        path_git_dir_dst = path_cwd / ".git"
+        path_git_dir_dst.mkdir(exist_ok=True)
+        path_git_config_dst = path_git_dir_dst / "config"
+        path_git_config_dst.touch()
+        assert path_git_config_dst.is_file()
+
+        #    On Windows, RESOLVED path necessary
+        #    :code:`git config --list` is your friend
+        wd = WorkDir(path_cwd)
+        is_success = wd.git_config_set(key, val)
+        reason = f"Unable to set git config setting {key} to {val}"
+        assert is_success is True, reason
+
+    return func
 
 
 class TestTextconvIntegration:
@@ -118,11 +175,8 @@ class TestTextconvIntegration:
         wd("git config user.email test@example.com")
         wd('git config user.name "a test"')
 
-        #    .git/config
-        #    defines the diff textconv "inv"
-        path_git_config = gitconfig(wd.cwd)
-        git_config_contents = path_git_config.read_text()
-        assert """[diff "inv"]""" in git_config_contents
+        #    Into .git/config, set the textconv absolute path
+        gitconfig(wd.cwd)
 
         #    .gitattributes
         #    Informs git: .inv are binary files uses textconv "inv" from .git/config
