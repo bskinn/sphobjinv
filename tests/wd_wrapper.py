@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import itertools
 import os
+import platform
 import shlex
 import subprocess as sp  # noqa: S404
 from pathlib import Path
@@ -299,25 +300,47 @@ class WorkDir:
         self,
         dotted_key: str,
         val: str,
+        is_path: bool = False,
     ) -> bool:
         """Set a :code:`git` config setting.
 
         Parameters
         ----------
         dotted_key
-
             |str| -- a valid :code:`git config` key. View known keys
             :code:`git config --list`
 
         val
             |str| -- Value to set
 
+        is_path
+            |bool| -- On windows, the path needs to be backslash escaped
+
         Returns
         -------
             [bool| -- |True| on success otherwise |False|
 
+        - On Windows, the executable path must be resolved
+
+        - On Windows, Inventory path must be surrounded by single quotes so the
+          backslashes are not removed by bash
+
+        - On Windows, double quotes does not do the backslash escaping
+
+        - On Windows, assume no space in the path
+
         """
-        cmd = f"git config {dotted_key} {val}"
+        is_win = platform.system().lower() == "windows"
+        if is_path and is_win:
+            # In Bash, single quotes protect (Windows path) backslashes
+            # Does not deal with escaping spaces
+            val = f"'{val}'"
+
+        # Sphinx hates \$
+        # It's non-obvious if the above solution is viable.
+        # git config diff.inv.textconv "sh -c 'sphobjinv co plain \"\$0\" -'"
+        # git config diff.inv.textconv "sh -c 'sphobjinv-textconv \"\$0\"'"
+        cmd = f"git config {dotted_key} '{val}'"
         cp_out = run(cmd, cwd=self.cwd)
         if cp_out is None or cp_out.returncode != 0:
             ret = False

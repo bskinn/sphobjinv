@@ -12,6 +12,7 @@ changes.
 
 #### Tests
 
+  * fix inventory path must surround by single quotes
   * fix use git config to set textconv executable
   * add to WorkDir git config list/get/set support
   * in tests/test_api_good_nonlocal.py provide explicit reasons to skip test
