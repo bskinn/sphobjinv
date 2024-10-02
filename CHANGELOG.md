@@ -8,6 +8,17 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### Unreleased
+
+#### Fixed
+
+  * The `super` keyword used in a statement in the HTML footer
+    template was missing parentheses to perform a method call; this
+    caused the template rendering to emit a Python string describing
+    the parent template object, instead of rendering the parent
+    template as intended.
+    ([#298](https://github.com/bskinn/sphobjinv/issues/298))
+
 ### [2.3.1.1] - 2024-05-21
 
 #### Tests
