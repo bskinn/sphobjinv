@@ -23,7 +23,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -55,7 +55,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -79,8 +79,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py38:
-          spec: '3.8'
         py39:
           spec: '3.9'
         py310:
@@ -89,6 +87,8 @@ stages:
           spec: '3.11'
         py312:
           spec: '3.12'
+        py313:
+          spec: '3.13'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -96,8 +96,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py38:
-          spec: '3.8'
         py39:
           spec: '3.9'
         py310:
@@ -106,6 +104,8 @@ stages:
           spec: '3.11'
         py312:
           spec: '3.12'
+        py313:
+          spec: '3.13'
       platforms: [windows, macOs]
 
   - template: azure-sdisttest.yml
@@ -124,7 +124,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -150,7 +150,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -176,7 +176,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
@@ -205,7 +205,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -231,7 +231,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -263,7 +263,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
