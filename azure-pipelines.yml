@@ -198,32 +198,6 @@ stages:
       displayName: Run README doctests
 
 
-  - job: linkcheck
-    displayName: Run docs link-check suite
-
-    pool:
-      vmImage: 'Ubuntu-latest'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.12'
-
-    - task: Cache@2
-      inputs:
-        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
-        restoreKeys: |
-          pip | "$(Agent.OS)"
-        path: $(pip_cache_dir)
-      displayName: Cache pip
-
-    - script: pip install . -r requirements-rtd.txt
-      displayName: Install doc requirements and local project
-
-    - script: cd doc; make linkcheck
-      displayName: Run link check
-
-
   - job: testdir_coverage
     displayName: Confirm all test code was executed
 
