@@ -6,6 +6,7 @@ pr:
 
 variables:
   pip_cache_dir: $(Pipeline.Workspace)/.pip
+  GITHUB_TOKEN: $(GITHUB_TOKEN)
 
 
 stages:
@@ -24,6 +25,8 @@ stages:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.12'
+      env:
+        GITHUB_TOKEN: $(GITHUB_TOKEN)
 
     - task: Cache@2
       inputs:
