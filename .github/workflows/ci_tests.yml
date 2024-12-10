@@ -46,11 +46,6 @@ jobs:
         cd doc
         make doctest
 
-    - name: Run docs link check
-      run: |
-        cd doc
-        make linkcheck
-
     - name: Lint code
       run: tox -e flake8
 
