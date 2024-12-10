@@ -5,7 +5,9 @@ pr:
     - stable
 
 variables:
-  pip_cache_dir: $(Pipeline.Workspace)/.pip
+  - group: default-variables
+  - name: pip_cache_dir
+    value: $(Pipeline.Workspace)/.pip
 
 
 stages:
