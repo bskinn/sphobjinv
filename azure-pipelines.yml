@@ -6,7 +6,6 @@ pr:
 
 variables:
   pip_cache_dir: $(Pipeline.Workspace)/.pip
-  GITHUB_TOKEN: $(GITHUB_TOKEN)
 
 
 stages:
