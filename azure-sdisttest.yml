@@ -12,7 +12,8 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.12'
-      githubToken: $(GITHUB_TOKEN)
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: Cache@2
     inputs:
