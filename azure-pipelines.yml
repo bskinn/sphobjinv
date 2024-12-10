@@ -14,6 +14,17 @@ stages:
   displayName: Check code quality
 
   jobs:
+  - job: test_var
+    displayName: Check for the test variable
+
+    pool:
+      vmImage: 'Ubunto-latest'
+
+    steps:
+    - script: echo $TEST_VAR
+      displayName: Echo var
+
+
   - job: flake8
     displayName: Run all flake8 checks
 
