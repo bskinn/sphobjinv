@@ -5,6 +5,9 @@ parameters:
   pythons: []
   platforms: []
 
+variables:
+- group: default-variables
+
 jobs:
 - ${{ each python in parameters.pythons }}:
   - ${{ each platform in parameters.platforms }}:

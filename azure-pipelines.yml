@@ -5,9 +5,7 @@ pr:
     - stable
 
 variables:
-  - group: default-variables
-  - name: pip_cache_dir
-    value: $(Pipeline.Workspace)/.pip
+  pip_cache_dir: $(Pipeline.Workspace)/.pip
 
 
 stages:
@@ -16,17 +14,6 @@ stages:
   displayName: Check code quality
 
   jobs:
-  - job: test_var
-    displayName: Check for the test variable
-
-    pool:
-      vmImage: 'Ubuntu-latest'
-
-    steps:
-    - script: echo $TEST_VAR
-      displayName: Echo var
-
-
   - job: flake8
     displayName: Run all flake8 checks
 
