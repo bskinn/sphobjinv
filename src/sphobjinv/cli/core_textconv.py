@@ -19,7 +19,7 @@ plain text.
     \(c) Brian Skinn 2016-2024
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -76,12 +76,10 @@ from sphobjinv.cli.parser import getparser_textconv, PrsConst
 
 
 def print_stderr_2(thing, params_b, *, end=os.linesep):
-    r"""Bypass :func:`print_strerr <sphobjinv.cli.ui.print_strerr>`.
+    r"""Bypass parser dependent, print_strerr.
 
     Use along with :func:`unittest.mock.patch` whenever calling
-    :mod:`sphobjinv.cli` internals.
-
-    print_strerr is parser dependent, so cannot be used.
+    sphobjinv.cli internals.
 
     Parameters
     ----------
