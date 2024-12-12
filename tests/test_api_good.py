@@ -494,6 +494,10 @@ class TestInventory:
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
 
+        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
+        if fname in skip_non_package:
+            pytest.skip("Modified not original inventory")
+
         # Drop most unless testall
         if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
             pytest.skip("'--testall' not specified")
@@ -527,6 +531,10 @@ class TestInventory:
         """Confirm no-op per Sphinx on passing through sphobjinv.Inventory."""
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
+
+        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
+        if fname in skip_non_package:
+            pytest.skip("Modified not original inventory")
 
         # Drop most unless testall
         if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":

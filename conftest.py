@@ -29,6 +29,7 @@ Sphinx |objects.inv| files.
 
 """
 
+import logging
 import os.path as osp
 import platform
 import re
@@ -79,6 +80,51 @@ def res_cmp(res_path, misc_info):
 def res_dec(res_path, misc_info):
     """Provide Path object to the decompressed attrs inventory in resource."""
     return res_path / (misc_info.FNames.RES.value + misc_info.Extensions.DEC.value)
+
+
+@pytest.fixture(scope="session")
+def res_cmp_plus_one_line(res_path, misc_info):
+    """res_cmp with a line appended. Overwrites objects.inv file."""
+
+    def func(path_cwd):
+        """Overwrite objects.inv file. New objects.inv contains one additional line.
+
+        Parameters
+        ----------
+        path_cwd
+
+            |Path| -- test sessions current working directory
+
+        """
+        logger = logging.getLogger()
+
+        # src
+        str_postfix = "_plus_one_entry"
+        fname = (
+            f"{misc_info.FNames.RES.value}{str_postfix}{misc_info.Extensions.CMP.value}"
+        )
+        path_f_src = res_path / fname
+        reason = f"source file not found src {path_f_src}"
+        assert path_f_src.is_file() and path_f_src.exists(), reason
+
+        # dst
+        fname_dst = f"{misc_info.FNames.INIT.value}{misc_info.Extensions.CMP.value}"
+        path_f_dst = path_cwd / fname_dst
+        reason = f"dest file not found src {path_f_src} dest {path_f_dst}"
+        assert path_f_dst.is_file() and path_f_dst.exists(), reason
+
+        # file sizes differ
+        objects_inv_size_existing = path_f_dst.stat().st_size
+        objects_inv_size_new = path_f_src.stat().st_size
+        reason = f"file sizes do not differ src {path_f_src} dest {path_f_dst}"
+        assert objects_inv_size_new != objects_inv_size_existing, reason
+
+        msg_info = f"copy {path_f_src} --> {path_f_dst}"
+        logger.info(msg_info)
+
+        shutil.copy2(str(path_f_src), str(path_f_dst))
+
+    return func
 
 
 @pytest.fixture(scope="session")
@@ -151,17 +197,11 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
     # With the conversion of resources/objects_attrs.txt to Unix EOLs in order to
     # provide for a Unix-testable sdist, on Windows systems this resource needs
     # to be converted to DOS EOLs for consistency.
-    if is_win:
+    if is_win:  # pragma: no cover
         win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC.value}"
         win_path.write_bytes(unix2dos(win_path.read_bytes()))
 
     yield tmp_path
-
-
-@pytest.fixture(scope="session")
-def ensure_doc_scratch():
-    """Ensure doc/scratch dir exists, for README shell examples."""
-    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture(scope="session")
@@ -211,7 +251,7 @@ def sphinx_load_test(sphinx_ifile_load):
         """Perform the 'live' inventory load test."""
         try:
             sphinx_ifile_load(path)
-        except Exception as e:  # noqa: PIE786
+        except Exception as e:  # noqa: PIE786  # pragma: no cover
             # An exception here is a failing test, not a test error.
             pytest.fail(e)
 
@@ -251,7 +291,7 @@ def run_cmdline_test(monkeypatch):
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True
-            else:
+            else:  # pragma: no cover
                 ok = False
 
         # Do all pytesty stuff outside monkeypatch context
@@ -259,6 +299,68 @@ def run_cmdline_test(monkeypatch):
 
         # Test that execution completed w/indicated exit code
         assert retcode == expect, runargs
+
+    return func
+
+
+@pytest.fixture()  # Must be function scope since uses monkeypatch
+def run_cmdline_textconv(monkeypatch):
+    """Return function to perform command line exit code test."""
+    from sphobjinv.cli.core_textconv import main as main_textconv
+
+    def func(arglist, *, expect=0):  # , suffix=None):
+        """Perform the CLI exit-code test."""
+
+        # Assemble execution arguments
+        runargs = ["sphobjinv-textconv"]
+        runargs.extend(str(a) for a in arglist)
+
+        # Mock sys.argv, run main, and restore sys.argv
+        with monkeypatch.context() as m:
+            m.setattr(sys, "argv", runargs)
+
+            try:
+                main_textconv()
+            except SystemExit as e:
+                retcode = e.args[0]
+                ok = True
+            else:  # pragma: no cover
+                ok = False
+
+        # Do all pytesty stuff outside monkeypatch context
+        assert ok, "SystemExit not raised on termination."
+
+        # Test that execution completed w/indicated exit code
+        assert retcode == expect, runargs
+
+    return func
+
+
+@pytest.fixture()  # Must be function scope since uses monkeypatch
+def run_cmdline_no_checks(monkeypatch):
+    """Return function to perform command line. So as to debug issues no tests."""
+    from sphobjinv.cli.core_textconv import main as main_textconv
+
+    def func(arglist, *, prog="sphobjinv-textconv"):
+        """Perform the CLI exit-code test."""
+
+        # Assemble execution arguments
+        runargs = [prog]
+        runargs.extend(str(a) for a in arglist)
+
+        # Mock sys.argv, run main, and restore sys.argv
+        with monkeypatch.context() as m:
+            m.setattr(sys, "argv", runargs)
+
+            try:
+                main_textconv()
+            except SystemExit as e:
+                retcode = e.args[0]
+                is_system_exit = True
+            else:  # pragma: no cover
+                is_system_exit = False
+
+        return retcode, is_system_exit
 
     return func
 
@@ -273,7 +375,7 @@ def decomp_cmp_test(misc_info, is_win, unix2dos):
         res_bytes = Path(misc_info.res_decomp_path).read_bytes()
         tgt_bytes = Path(path).read_bytes()  # .replace(b"\r\n", b"\n")
 
-        if is_win:
+        if is_win:  # pragma: no cover
             # Have to explicitly convert these newlines, now that the
             # tests/resource/objects_attrs.txt file is marked 'binary' in
             # .gitattributes

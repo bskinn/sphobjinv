@@ -51,6 +51,8 @@ Donate = "https://github.com/sponsors/bskinn"
 
 [project.scripts]
 sphobjinv = "sphobjinv.cli.core:main"
+sphobjinv-textconv = "sphobjinv.cli.core_textconv:main"
+
 
 [tool.setuptools]
 package-dir = {"" = "src"}
