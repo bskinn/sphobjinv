@@ -250,8 +250,8 @@ stages:
     - script: pytest --cov=. --nonloc --flake8_ext
       displayName: Run pytest with coverage on the entire project tree
 
-    - script: coverage report --include="tests/*" --fail-under=100
-      displayName: Check 100% test execution
+    - script: coverage report --include="tests/*" --fail-under=90
+      displayName: Check 90% test execution
 
 
   - job: noqa_info

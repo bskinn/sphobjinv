@@ -101,7 +101,8 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    syntax
    api/index
    CLI Implementation (non-API) <cli/implementation/index>
-
+   cli/git_diff
+   cli/textconv
 
 
 Indices and Tables
