@@ -315,7 +315,10 @@ intersphinx_mapping = {
 
 # -- Options for linkcheck  --------------------------------------------------
 
-linkcheck_ignore = [r"^https?://(\w+[.])?twitter[.]com.*$"]
+linkcheck_ignore = [
+    r"^https?://(\w+[.])?twitter[.]com.*$",
+    "https://opensource.org/license/MIT",
+]
 linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 
 
