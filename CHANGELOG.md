@@ -19,6 +19,45 @@ changes.
     template as intended.
     ([#298](https://github.com/bskinn/sphobjinv/issues/298))
 
+#### Internal
+
+  * Moved the Sphinx linkcheck job out of CI and into `tox`.
+    * The linkcheck is often flaky, and is a nuisance when it fails the CI.
+      Less-frequent link checking, at release-time, is sufficient.
+
+  * Renamed `.readthedocs.yml` to `.readthedocs.yaml` to comply with the new,
+    strict RtD requirement.
+
+  * Added read-only GitHub PAT to Azure Pipelines config to ensure Python 3.13
+    retrieval from GitHub doesn't hit a rate limit.
+
+  * Update flake8 version pin in `requirements-flake8.txt` to avoid a bug in
+    `pycodestyle`.
+
+  * Removed `.pre-commit-config.yaml`, to remove the expectation of using
+    pre-commit from the project.
+    * For a project with this low an external contribution volume, the costs
+      outweigh the benefits.
+
+  * Added a `black` environment to `tox` for convenience and better
+    encapsulation.
+
+  * Added `flake8-black` to `requirements-flake8.txt` so that blackened status
+    is checked as part of the linting, whether run manually or in CI.
+
+#### Administrative
+
+  * Added support for Python 3.13.
+
+  * Dropped support for Python 3.8 (EOL).
+
+  * Revised and updated `CONTRIBUTING.md`.
+
+  * Updated link target of Pepy badge to match the new URL format.
+
+  * Bumped Read the Docs Python version to 3.12.
+
+
 ### [2.3.1.1] - 2024-05-21
 
 #### Tests
