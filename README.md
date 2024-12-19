@@ -201,7 +201,7 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [mit license]: https://opensource.org/licenses/MIT
 [numpy linspace]: https://numpy.org/doc/1.26/reference/generated/numpy.linspace.html
 [pepy badge]: https://pepy.tech/badge/sphobjinv/month
-[pepy link target]: https://pepy.tech/project/sphobjinv?versions=2.0.1&versions=2.1&versions=2.2.2&versions=2.3&versions=2.3.1
+[pepy link target]: https://pepy.tech/projects/sphobjinv?timeRange=threeMonths&category=version&includeCIDownloads=true&granularity=daily&viewType=chart&versions=2.0.*%2C2.1.*%2C2.2.*%2C2.3.*
 [pypi badge]: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi]
 [pypi link target]: https://pypi.org/project/sphobjinv
 [python versions badge]: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
