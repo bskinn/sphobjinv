@@ -18,6 +18,7 @@ Table of Contents <!-- omit in toc -->
 - [Project Setup](#project-setup)
 - [Working with git](#working-with-git)
 - [Tests](#tests)
+- [Code Autoformatting](#code-autoformatting)
 - [Linting](#linting)
 - [Type Hints](#type-hints)
 - [Documentation](#documentation)
@@ -33,54 +34,40 @@ Table of Contents <!-- omit in toc -->
 
 Start by forking the repo and cloning locally:
 
-```
+```bash
 $ git clone https://github.com/{you}/sphobjinv
 ```
 
 Then, create a virtual environment for the project, in whatever location you
-prefer. Any Python interpreter 3.8+ *should* work fine.
+prefer. Any Python interpreter 3.9+ *should* work fine.
 
 I prefer to use `virtualenv` and create in `./env`:
 
-```
-$ python3.11 -m virtualenv env --prompt="sphobjinv"
+```bash
+$ python3.12 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 $ source env/bin/activate
 
-=== Windows
+# Windows
 > env\scripts\activate
 ```
 
 The next step is to upgrade/install the development requirements:
 
-```
+```bash
 (sphobjinv) $ python -m pip install -U pip setuptools wheel
 (sphobjinv) $ pip install -r requirements-dev.txt
-```
-
-Then, install the [`pre-commit`](https://pre-commit.com/) hooks:
-
-```
-(sphobjinv) $ pre-commit install
-```
-
-One of the `pre-commit` hooks installed on the project is the hook from
-[`black`](https://black.readthedocs.io/en/stable/). If you want to run `black`
-independently from `pre-commit`, you'll need to install it separately:
-
-```
-(sphobjinv) $ pip install black
 ```
 
 Finally, you'll need to build the Sphinx docs locally, as some of the tests
 interact with them:
 
-```
+```bash
 (sphobjinv) $ cd doc
 (sphobjinv) doc $ make html
 ```
@@ -93,7 +80,7 @@ couple of key functionalities you'll need.
 
 First, always hack on a bugfix or feature in a new branch:
 
-```
+```bash
 $ git checkout -b description-of-change
 ```
 
@@ -103,13 +90,13 @@ receives further commits.
 To bring your fork's `main` up to date, you first need to add the main repo as a
 new git remote (one-time task):
 
-```
+```bash
 $ git remote add upstream https://github.com/bskinn/sphobjinv
 ```
 
 Then, any time you need to refresh the fork's `main`:
 
-```
+```bash
 $ git fetch --all
 $ git checkout main
 $ git merge upstream/main   # (should merge without incident)
@@ -123,7 +110,7 @@ $ git push                  # (should push to your fork without incident)
 for most of its automated tests. From a properly configured virtual environment,
 a simple no-arguments invocation is all that is required:
 
-```
+```bash
 $ pytest
 ```
 
@@ -131,7 +118,7 @@ The test suite defaults to running only local tests, those that do **NOT**
 require network access. To include the nonlocal tests, run with the `--nonloc`
 flag:
 
-```
+```bash
 $ pytest --nonloc
 ```
 
@@ -150,16 +137,25 @@ to ignore coverage on certain line(s) of code. Please start a discussion in the
 issue or PR comments before adding such a pragma.
 
 Note that while [`tox`](https://tox.wiki/en/latest/) *is* configured for the
-project, it is **not** set up to be an everyday test runner. Instead, it's used
-to execute an extensive matrix of test environments checking for the
-compatibility of different Python and dependency versions. You can run it if you
-want, but you'll need working versions of all of Python 3.8 through 3.12
-installed and on `PATH` as `python3.8`, `python3.9`, etc. The nonlocal test
-suite is run for each `tox` environment, so it's best to use at most two
-parallel sub-processes to avoid oversaturating your network bandwidth; e.g.:
+project, it is **not** set up to be an everyday test runner. Instead, its
+purpose for testing is to execute an extensive matrix of test environments
+checking for the compatibility of different Python and dependency versions. You
+can run it if you want, but you'll need working versions of all of Python 3.9
+through 3.13 installed and on `PATH` as `python3.9`, `python3.10`, etc. The
+nonlocal test suite is run for each `tox` environment, so it's best to use at
+most two parallel sub-processes to avoid oversaturating your network bandwidth;
+e.g.:
 
-```
+```bash
 $ tox -rp2
+```
+
+## Code Autoformatting
+
+The project is set up with a `tox` environment to blacken the codebase; run with:
+
+```bash
+$ tox -e black
 ```
 
 
@@ -169,7 +165,7 @@ The project uses a number of lints, which are checked using
 [`flake8`](https://flake8.pycqa.org/en/latest/) in CI. To run the lints locally,
 it's easiest to use `tox`:
 
-```
+```bash
 $ tox -e flake8
 ```
 
@@ -185,7 +181,7 @@ functions, classes and methods have docstrings using the
 [`interrogate`](https://pypi.org/project/interrogate/) package. There's a `tox`
 environment for running this check, also:
 
-```
+```bash
 $ tox -e interrogate
 ```
 
@@ -220,11 +216,11 @@ build the docs properly, as Sphinx does its best to detect which files were
 changed and rebuild only the minimum portion of the documentation necessary. If
 the docs seem not to be rendering correctly, try a clean build:
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 doc $ make clean html
 
-=== Windows
+# Windows
 doc> make -Ea
 ```
 
@@ -233,11 +229,11 @@ It's also a good idea to build the complete docs every once in a while with its
 in order to detect any broken cross-references, as these will fail the
 [Azure CI pipeline](#continuous-integration):
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 doc $ O=-n make clean html
 
-=== Windows
+# Windows
 doc> make html -Ean
 ```
 
@@ -250,7 +246,7 @@ with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project, and should
 run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.8 through 3.12, as well
+Github Actions runs the test suite on Linux for Python 3.9 through 3.13, as well
 as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
 configured to run on all commits. The workflow can be skipped per-commit by
 including `[skip ci]` in the commit message.
