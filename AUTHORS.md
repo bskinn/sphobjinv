@@ -2,7 +2,8 @@ Credits
 =======
 
 `sphobjinv` is authored and maintained by Brian Skinn
-([Blog](https://bskinn.github.io)) ([Twitter](https://twitter.com/btskinn)).
+([Blog](https://bskinn.github.io))
+([Mastodon](https://fosstodon.org/@btskinn)).
 
 The idea for the project came about as I was starting to deepen my expertise
 with Sphinx, and found it hugely frustrating to debug cross-references to
