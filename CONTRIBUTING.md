@@ -32,7 +32,7 @@ Table of Contents <!-- omit in toc -->
 
 ## Project Setup
 
-Start by forking the repo and cloning locally:
+Start by forking the repo on GitHub and cloning locally:
 
 ```bash
 $ git clone https://github.com/{you}/sphobjinv
@@ -88,7 +88,7 @@ This makes it a lot simpler to get your repo fork up to date after `main`
 receives further commits.
 
 To bring your fork's `main` up to date, you first need to add the main repo as a
-new git remote (one-time task):
+new git remote (one-time task per clone):
 
 ```bash
 $ git remote add upstream https://github.com/bskinn/sphobjinv
@@ -189,22 +189,23 @@ $ tox -e interrogate
 ## Type Hints
 
 I'd like to [roll out typing](https://github.com/bskinn/sphobjinv/issues/132) on
-the project at some point in the near future, and add
-[`mypy`](https://github.com/python/mypy) checking to CI. (This would be a great
-PR to put together, for anyone interested....) For now, types on contributed
-code are welcomed, but optional. Once the codebase is typed, though, they will
-be a required part of any PR touching code.
+the project at some point in the future, and add
+[`mypy`](https://github.com/python/mypy) checking to CI. A top-to-bottom effort
+to add types doesn't make sense at the moment, though, given open issues like
+[#118] and [#290]. So, for now, types on contributed code are welcomed, but optional.
+Once the codebase is typed, though, they will be a required part of any PR
+touching code.
 
 
 ## Documentation
 
-All of the project documentation (except the README) is generated via
-[Sphinx](https://github.com/sphinx-doc/sphinx), and should be updated for (at
-minimum) any behavior changes in the codebase. API changes should be documented
-in the relevant docstring(s), and possibly in the prose portions of the
-documentation as well. Please use the modified
+All of the project documentation except the README is generated via
+[Sphinx](https://github.com/sphinx-doc/sphinx). API changes must be documented
+in the relevant docstring(s), and possibly also in the prose portions of the
+documentation. Please use the modified
 [NumPy-style](https://numpydoc.readthedocs.io/en/latest/format.html) formatting
-for docstrings that is already in use in the project.
+for docstrings that is already in use in the project. Other changes may also
+warrant documentation changes.
 
 A large number of reStructuredText substitutions are defined in the `rst_epilog`
 setting within `conf.py`, to make the documentation source more readable. Feel
@@ -224,7 +225,7 @@ doc $ make clean html
 doc> make -Ea
 ```
 
-It's also a good idea to build the complete docs every once in a while with its
+It's also a good idea to build the complete docs every once in a while with the
 ['nitpicky' option](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky),
 in order to detect any broken cross-references, as these will fail the
 [Azure CI pipeline](#continuous-integration):
@@ -247,14 +248,14 @@ Both Github Actions and Azure Pipelines are set up for the project, and should
 run on any forks of the repository.
 
 Github Actions runs the test suite on Linux for Python 3.9 through 3.13, as well
-as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
-configured to run on all commits. The workflow can be skipped per-commit by
+as the `flake8` lints and the Sphinx doctests. By default, the Github Actions
+will run on all commits, but the workflows can be skipped per-commit by
 including `[skip ci]` in the commit message.
 
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
 cross-Python-version tests, as well as numerous other checks. Due to its length,
 it is configured to run only on release branches and PRs to `main` or `stable`.
-Azure Pipelines now [also obeys `[skip ci]`
+The Azure Pipelines workflows now [also obey `[skip ci]`
 directives](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#skipping-ci-for-individual-pushes).
 
 
@@ -287,3 +288,7 @@ issue/PR you want to create, though, then don't use them.
 
 All code and documentation contributions will respectively take on the MIT
 License and CC BY 4.0 license of the project at large.
+
+
+[#118]: https://github.com/bskinn/sphobjinv/issues/118
+[#290]: https://github.com/bskinn/sphobjinv/issues/290
