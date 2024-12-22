@@ -29,7 +29,6 @@ Sphinx |objects.inv| files.
 
 """
 
-
 import json
 import re
 import shlex

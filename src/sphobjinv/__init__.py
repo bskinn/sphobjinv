@@ -29,7 +29,6 @@ Sphinx |objects.inv| files.
 
 """
 
-
 from sphobjinv.data import DataFields, DataObjBytes, DataObjStr
 from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.error import SphobjinvError, VersionError
