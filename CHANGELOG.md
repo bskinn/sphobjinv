@@ -10,20 +10,20 @@ changes.
 
 ### Unreleased
 
-#### Fixed
+#### Internal
 
-  * The `super` keyword used in a statement in the HTML footer
+  * **DOC RENDERING FIX**: The `super` keyword used in a statement in the HTML footer
     template was missing parentheses to perform a method call; this
     caused the template rendering to emit a Python string describing
     the parent template object, instead of rendering the parent
     template as intended.
     ([#298](https://github.com/bskinn/sphobjinv/issues/298))
 
-#### Internal
-
   * Moved the Sphinx linkcheck job out of CI and into `tox`.
-    * The linkcheck is often flaky, and is a nuisance when it fails the CI.
-      Less-frequent link checking, at release-time, is sufficient.
+    * The linkcheck is often flaky, and is a nuisance when it fails the CI. For
+      uncertain reasons, the flakiness has increased noticeably in recent
+      months. Less-frequent link checking, at release-time, is sufficient; so,
+      we move the check out of CI.
 
   * Renamed `.readthedocs.yml` to `.readthedocs.yaml` to comply with the new,
     strict RtD requirement.
