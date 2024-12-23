@@ -29,7 +29,6 @@ Sphinx |objects.inv| files.
 
 """
 
-
 import pytest
 
 pytestmark = pytest.mark.fixture

@@ -8,16 +8,55 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
-### Unreleased
+### [2.3.1.2] - 2024-12-22
 
-#### Fixed
+#### Internal
 
-  * The `super` keyword used in a statement in the HTML footer
+  * **DOC RENDERING FIX**: The `super` keyword used in a statement in the HTML footer
     template was missing parentheses to perform a method call; this
     caused the template rendering to emit a Python string describing
     the parent template object, instead of rendering the parent
     template as intended.
     ([#298](https://github.com/bskinn/sphobjinv/issues/298))
+
+  * Moved the Sphinx linkcheck job out of CI and into `tox`.
+    * The linkcheck is often flaky, and is a nuisance when it fails the CI. For
+      uncertain reasons, the flakiness has increased noticeably in recent
+      months. Less-frequent link checking, at release-time, is sufficient; so,
+      we move the check out of CI.
+
+  * Renamed `.readthedocs.yml` to `.readthedocs.yaml` to comply with the new,
+    strict RtD requirement.
+
+  * Added read-only GitHub PAT to Azure Pipelines config to ensure Python 3.13
+    retrieval from GitHub doesn't hit a rate limit.
+
+  * Update flake8 version pin in `requirements-flake8.txt` to avoid a bug in
+    `pycodestyle`.
+
+  * Removed `.pre-commit-config.yaml`, to remove the expectation of using
+    pre-commit from the project.
+    * For a project with this low an external contribution volume, the costs
+      outweigh the benefits.
+
+  * Added a `black` environment to `tox` for convenience and better
+    encapsulation.
+
+  * Added `flake8-black` to `requirements-flake8.txt` so that blackened status
+    is checked as part of the linting, whether run manually or in CI.
+
+#### Administrative
+
+  * Added support for Python 3.13.
+
+  * Dropped support for Python 3.8 (EOL).
+
+  * Revised and updated `CONTRIBUTING.md`.
+
+  * Updated link target of Pepy badge to match the new URL format.
+
+  * Bumped Read the Docs Python version to 3.12.
+
 
 ### [2.3.1.1] - 2024-05-21
 

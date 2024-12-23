@@ -29,7 +29,6 @@ Sphinx |objects.inv| files.
 
 """
 
-
 import os.path as osp
 import platform
 import re

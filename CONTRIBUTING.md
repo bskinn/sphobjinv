@@ -18,6 +18,7 @@ Table of Contents <!-- omit in toc -->
 - [Project Setup](#project-setup)
 - [Working with git](#working-with-git)
 - [Tests](#tests)
+- [Code Autoformatting](#code-autoformatting)
 - [Linting](#linting)
 - [Type Hints](#type-hints)
 - [Documentation](#documentation)
@@ -31,56 +32,42 @@ Table of Contents <!-- omit in toc -->
 
 ## Project Setup
 
-Start by forking the repo and cloning locally:
+Start by forking the repo on GitHub and cloning locally:
 
-```
+```bash
 $ git clone https://github.com/{you}/sphobjinv
 ```
 
 Then, create a virtual environment for the project, in whatever location you
-prefer. Any Python interpreter 3.8+ *should* work fine.
+prefer. Any Python interpreter 3.9+ *should* work fine.
 
 I prefer to use `virtualenv` and create in `./env`:
 
-```
-$ python3.11 -m virtualenv env --prompt="sphobjinv"
+```bash
+$ python3.12 -m virtualenv env --prompt="sphobjinv"
 ```
 
 Activate the environment:
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 $ source env/bin/activate
 
-=== Windows
+# Windows
 > env\scripts\activate
 ```
 
 The next step is to upgrade/install the development requirements:
 
-```
+```bash
 (sphobjinv) $ python -m pip install -U pip setuptools wheel
 (sphobjinv) $ pip install -r requirements-dev.txt
-```
-
-Then, install the [`pre-commit`](https://pre-commit.com/) hooks:
-
-```
-(sphobjinv) $ pre-commit install
-```
-
-One of the `pre-commit` hooks installed on the project is the hook from
-[`black`](https://black.readthedocs.io/en/stable/). If you want to run `black`
-independently from `pre-commit`, you'll need to install it separately:
-
-```
-(sphobjinv) $ pip install black
 ```
 
 Finally, you'll need to build the Sphinx docs locally, as some of the tests
 interact with them:
 
-```
+```bash
 (sphobjinv) $ cd doc
 (sphobjinv) doc $ make html
 ```
@@ -93,7 +80,7 @@ couple of key functionalities you'll need.
 
 First, always hack on a bugfix or feature in a new branch:
 
-```
+```bash
 $ git checkout -b description-of-change
 ```
 
@@ -101,15 +88,15 @@ This makes it a lot simpler to get your repo fork up to date after `main`
 receives further commits.
 
 To bring your fork's `main` up to date, you first need to add the main repo as a
-new git remote (one-time task):
+new git remote (one-time task per clone):
 
-```
+```bash
 $ git remote add upstream https://github.com/bskinn/sphobjinv
 ```
 
 Then, any time you need to refresh the fork's `main`:
 
-```
+```bash
 $ git fetch --all
 $ git checkout main
 $ git merge upstream/main   # (should merge without incident)
@@ -123,7 +110,7 @@ $ git push                  # (should push to your fork without incident)
 for most of its automated tests. From a properly configured virtual environment,
 a simple no-arguments invocation is all that is required:
 
-```
+```bash
 $ pytest
 ```
 
@@ -131,7 +118,7 @@ The test suite defaults to running only local tests, those that do **NOT**
 require network access. To include the nonlocal tests, run with the `--nonloc`
 flag:
 
-```
+```bash
 $ pytest --nonloc
 ```
 
@@ -150,16 +137,25 @@ to ignore coverage on certain line(s) of code. Please start a discussion in the
 issue or PR comments before adding such a pragma.
 
 Note that while [`tox`](https://tox.wiki/en/latest/) *is* configured for the
-project, it is **not** set up to be an everyday test runner. Instead, it's used
-to execute an extensive matrix of test environments checking for the
-compatibility of different Python and dependency versions. You can run it if you
-want, but you'll need working versions of all of Python 3.8 through 3.12
-installed and on `PATH` as `python3.8`, `python3.9`, etc. The nonlocal test
-suite is run for each `tox` environment, so it's best to use at most two
-parallel sub-processes to avoid oversaturating your network bandwidth; e.g.:
+project, it is **not** set up to be an everyday test runner. Instead, its
+purpose for testing is to execute an extensive matrix of test environments
+checking for the compatibility of different Python and dependency versions. You
+can run it if you want, but you'll need working versions of all of Python 3.9
+through 3.13 installed and on `PATH` as `python3.9`, `python3.10`, etc. The
+nonlocal test suite is run for each `tox` environment, so it's best to use at
+most two parallel sub-processes to avoid oversaturating your network bandwidth;
+e.g.:
 
-```
+```bash
 $ tox -rp2
+```
+
+## Code Autoformatting
+
+The project is set up with a `tox` environment to blacken the codebase; run with:
+
+```bash
+$ tox -e black
 ```
 
 
@@ -169,7 +165,7 @@ The project uses a number of lints, which are checked using
 [`flake8`](https://flake8.pycqa.org/en/latest/) in CI. To run the lints locally,
 it's easiest to use `tox`:
 
-```
+```bash
 $ tox -e flake8
 ```
 
@@ -185,7 +181,7 @@ functions, classes and methods have docstrings using the
 [`interrogate`](https://pypi.org/project/interrogate/) package. There's a `tox`
 environment for running this check, also:
 
-```
+```bash
 $ tox -e interrogate
 ```
 
@@ -193,22 +189,23 @@ $ tox -e interrogate
 ## Type Hints
 
 I'd like to [roll out typing](https://github.com/bskinn/sphobjinv/issues/132) on
-the project at some point in the near future, and add
-[`mypy`](https://github.com/python/mypy) checking to CI. (This would be a great
-PR to put together, for anyone interested....) For now, types on contributed
-code are welcomed, but optional. Once the codebase is typed, though, they will
-be a required part of any PR touching code.
+the project at some point in the future, and add
+[`mypy`](https://github.com/python/mypy) checking to CI. A top-to-bottom effort
+to add types doesn't make sense at the moment, though, given open issues like
+[#118] and [#290]. So, for now, types on contributed code are welcomed, but optional.
+Once the codebase is typed, though, they will be a required part of any PR
+touching code.
 
 
 ## Documentation
 
-All of the project documentation (except the README) is generated via
-[Sphinx](https://github.com/sphinx-doc/sphinx), and should be updated for (at
-minimum) any behavior changes in the codebase. API changes should be documented
-in the relevant docstring(s), and possibly in the prose portions of the
-documentation as well. Please use the modified
+All of the project documentation except the README is generated via
+[Sphinx](https://github.com/sphinx-doc/sphinx). API changes must be documented
+in the relevant docstring(s), and possibly also in the prose portions of the
+documentation. Please use the modified
 [NumPy-style](https://numpydoc.readthedocs.io/en/latest/format.html) formatting
-for docstrings that is already in use in the project.
+for docstrings that is already in use in the project. Other changes may also
+warrant documentation changes.
 
 A large number of reStructuredText substitutions are defined in the `rst_epilog`
 setting within `conf.py`, to make the documentation source more readable. Feel
@@ -220,24 +217,24 @@ build the docs properly, as Sphinx does its best to detect which files were
 changed and rebuild only the minimum portion of the documentation necessary. If
 the docs seem not to be rendering correctly, try a clean build:
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 doc $ make clean html
 
-=== Windows
+# Windows
 doc> make -Ea
 ```
 
-It's also a good idea to build the complete docs every once in a while with its
+It's also a good idea to build the complete docs every once in a while with the
 ['nitpicky' option](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-nitpicky),
 in order to detect any broken cross-references, as these will fail the
 [Azure CI pipeline](#continuous-integration):
 
-```
-=== Linux/Mac
+```bash
+# Linux/Mac
 doc $ O=-n make clean html
 
-=== Windows
+# Windows
 doc> make html -Ean
 ```
 
@@ -250,15 +247,15 @@ with `make linkcheck`.
 Both Github Actions and Azure Pipelines are set up for the project, and should
 run on any forks of the repository.
 
-Github Actions runs the test suite on Linux for Python 3.8 through 3.12, as well
-as the `flake8` lints and the Sphinx doctests and link-validity testing, and is
-configured to run on all commits. The workflow can be skipped per-commit by
+Github Actions runs the test suite on Linux for Python 3.9 through 3.13, as well
+as the `flake8` lints and the Sphinx doctests. By default, the Github Actions
+will run on all commits, but the workflows can be skipped per-commit by
 including `[skip ci]` in the commit message.
 
 The Azure Pipelines CI runs an extensive matrix of cross-platform and
 cross-Python-version tests, as well as numerous other checks. Due to its length,
 it is configured to run only on release branches and PRs to `main` or `stable`.
-Azure Pipelines now [also obeys `[skip ci]`
+The Azure Pipelines workflows now [also obey `[skip ci]`
 directives](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#skipping-ci-for-individual-pushes).
 
 
@@ -291,3 +288,7 @@ issue/PR you want to create, though, then don't use them.
 
 All code and documentation contributions will respectively take on the MIT
 License and CC BY 4.0 license of the project at large.
+
+
+[#118]: https://github.com/bskinn/sphobjinv/issues/118
+[#290]: https://github.com/bskinn/sphobjinv/issues/290

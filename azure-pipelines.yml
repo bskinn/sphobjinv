@@ -5,7 +5,9 @@ pr:
     - stable
 
 variables:
-  pip_cache_dir: $(Pipeline.Workspace)/.pip
+- group: default-variables
+- name: pip_cache_dir
+  value: $(Pipeline.Workspace)/.pip
 
 
 stages:
@@ -23,7 +25,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -55,7 +57,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -79,8 +81,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py38:
-          spec: '3.8'
         py39:
           spec: '3.9'
         py310:
@@ -89,6 +89,8 @@ stages:
           spec: '3.11'
         py312:
           spec: '3.12'
+        py313:
+          spec: '3.13'
         pypy3:
           spec: 'pypy3'
       platforms: [linux]
@@ -96,8 +98,6 @@ stages:
   - template: azure-coretest.yml
     parameters:
       pythons:
-        py38:
-          spec: '3.8'
         py39:
           spec: '3.9'
         py310:
@@ -106,6 +106,8 @@ stages:
           spec: '3.11'
         py312:
           spec: '3.12'
+        py313:
+          spec: '3.13'
       platforms: [windows, macOs]
 
   - template: azure-sdisttest.yml
@@ -124,7 +126,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -150,7 +152,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -176,7 +178,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - script: pip install -r requirements-ci.txt
       displayName: Install CI requirements
@@ -196,32 +198,6 @@ stages:
       displayName: Run README doctests
 
 
-  - job: linkcheck
-    displayName: Run docs link-check suite
-
-    pool:
-      vmImage: 'Ubuntu-latest'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.11'
-
-    - task: Cache@2
-      inputs:
-        key: 'pip | "$(Agent.OS)" | requirements-dev.txt | requirements-flake8.txt'
-        restoreKeys: |
-          pip | "$(Agent.OS)"
-        path: $(pip_cache_dir)
-      displayName: Cache pip
-
-    - script: pip install . -r requirements-rtd.txt
-      displayName: Install doc requirements and local project
-
-    - script: cd doc; make linkcheck
-      displayName: Run link check
-
-
   - job: testdir_coverage
     displayName: Confirm all test code was executed
 
@@ -231,7 +207,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:
@@ -263,7 +239,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.11'
+        versionSpec: '3.12'
 
     - task: Cache@2
       inputs:

@@ -28,6 +28,7 @@ jobs:
         inputs:
           versionSpec: '${{ python.value.spec }}'
           architecture: 'x64'
+          githubToken: $(GITHUB_TOKEN)
         displayName: Use cached ${{ coalesce(python.value.name, python.key) }} for tests.
 
       - task: Cache@2
