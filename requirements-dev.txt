@@ -11,11 +11,10 @@ pytest-check>=1.1.2
 pytest-cov
 pytest-timeout
 restview
-
-sphinx==7.1.2
+sphinx==7.4.7  # Staying <8 since 8.0 drops Python 3.9
 sphinx-autobuild
 sphinx-issues
-sphinx-removed-in
+# sphinx-removed-in
 sphinx-rtd-theme>=0.5.1
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
