@@ -3,7 +3,6 @@ build
 certifi
 coverage
 dictdiffer
-interrogate
 jsonschema
 md-toc
 pep517
@@ -12,7 +11,7 @@ pytest-check>=1.1.2
 pytest-cov
 pytest-timeout
 restview
-rope
+
 sphinx==7.1.2
 sphinx-autobuild
 sphinx-issues
@@ -22,6 +21,5 @@ sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox
 twine
-wget
 -r requirements-flake8.txt
 -e .
