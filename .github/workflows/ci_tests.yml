@@ -39,6 +39,9 @@ jobs:
     - name: Run tests & report source coverage
       run: |
         pytest --cov --testall --nonloc
+
+    - name: Confirm successful import of fresh sdist
+      run: |
         tox -e sdist_install
 
     - name: Run doctests
@@ -92,4 +95,7 @@ jobs:
     - name: Run tests & report source coverage
       run: |
         pytest --cov --testall --nonloc
+
+    - name: Confirm successful import of fresh sdist
+      run: |
         tox -e sdist_install
