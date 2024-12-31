@@ -39,7 +39,6 @@ converting an (partially binary) inventory to plain text.
 
 """
 
-
 import json
 import os
 import shlex

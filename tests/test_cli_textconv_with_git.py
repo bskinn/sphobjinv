@@ -38,6 +38,7 @@ converting an (partially binary) inventory to plain text.
 **Members**
 
 """
+
 import logging
 import os
 import re

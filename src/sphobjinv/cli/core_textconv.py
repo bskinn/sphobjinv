@@ -63,6 +63,7 @@ In ``.gitattributes`` append,
 **Members**
 
 """
+
 import contextlib
 import io
 import os

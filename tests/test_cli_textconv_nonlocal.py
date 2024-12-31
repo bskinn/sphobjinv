@@ -38,6 +38,7 @@ converting an (partially binary) inventory to plain text.
 **Members**
 
 """
+
 import pytest
 from stdio_mgr import stdio_mgr
 
