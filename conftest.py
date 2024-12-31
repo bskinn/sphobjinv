@@ -206,6 +206,12 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
 
 
 @pytest.fixture(scope="session")
+def ensure_doc_scratch():
+    """Ensure doc/scratch dir exists, for README shell examples."""
+    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
+
+
+@pytest.fixture(scope="session")
 def bytes_txt(misc_info, res_path):
     """Load and return the contents of the example objects_attrs.txt as bytes."""
     return soi.fileops.readbytes(
