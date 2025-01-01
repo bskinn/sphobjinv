@@ -1,6 +1,5 @@
 attrs>=19.2
-sphinx==7.1.2
+sphinx==7.4.7
 sphinx-issues
-sphinx-removed-in
 sphinx-rtd-theme>=0.5.1
 sphinxcontrib-programoutput
