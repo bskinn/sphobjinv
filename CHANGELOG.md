@@ -8,6 +8,22 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### *Unreleased*
+
+#### Internal
+
+  * Bump dev Sphinx version to 7.4.7 ([#305]).
+    * We stay under 8.0 because Sphinx v8 drops Python 3.9.
+
+  * Clean up dependencies ([#305]).
+    * Remove `pytest-ordering`, as it is no longer used in the test suite and is
+      falling out of maintenance enough to start causing some things to fail.
+    * Remove `sphinx-removed-in`, as `.. versionremoved::` is now a Sphinx
+      built-in.
+    * Remove `interrogate`, `pre-commit`, `rope`, `wget` from `requirements-dev.txt`.
+      * No longer used for most; for `rope`, now no plans to use it.
+
+
 ### [2.3.1.2] - 2024-12-22
 
 #### Internal
@@ -612,3 +628,4 @@ changes.
 
 [#287]: https://github.com/bskinn/sphobjinv/issues/287
 [#289]: https://github.com/bskinn/sphobjinv/pull/289
+[#305]: https://github.com/bskinn/sphobjinv/pull/305

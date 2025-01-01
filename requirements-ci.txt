@@ -8,11 +8,9 @@ md-toc
 pytest>=4.4.0
 pytest-check>=1.1.2
 pytest-cov
-pytest-ordering
 pytest-timeout
-sphinx==7.1.2
+sphinx==7.4.7
 sphinx-issues
-sphinx-removed-in
 sphinx-rtd-theme>=0.5.1
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
