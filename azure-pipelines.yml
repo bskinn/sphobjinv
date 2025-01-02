@@ -1,8 +1,5 @@
-pr:
-  branches:
-    include:
-    - main
-    - stable
+trigger: none  # Disabling these as the first step toward migrating them to GH Actions
+pr: none
 
 variables:
 - group: default-variables
