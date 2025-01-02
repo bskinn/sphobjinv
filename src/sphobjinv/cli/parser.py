@@ -30,6 +30,8 @@ Sphinx |objects.inv| files.
 """
 
 import argparse as ap
+import os
+import textwrap
 
 from sphobjinv.version import __version__
 
@@ -378,6 +380,106 @@ def getparser():
             f"Cannot be used with --{PrsConst.URL}."
         ),
         action="store_true",
+    )
+
+    return prs
+
+
+def getparser_textconv():
+    """Generate argument parser for entrypoint |soi-textconv|.
+
+    git requires textconv filters to accept only one positional
+    argument, INFILE, and nothing more.
+
+    Returns
+    -------
+    prs
+
+        :class:`~argparse.ArgumentParser` -- Parser for commandline usage
+        of |soi-textconv|
+
+    """
+    description = (
+        "Conversion of an inventory file to stdout.\n\n"
+        "textconv utility, for use with git, so git diff understands "
+        "inventory files.\n\n"
+        "Along with a .gitattributes file, allows git diff to convert "
+        "the partial binary inventory file to text.\n\n"
+        "Equivalent to\n\n"
+        "sphobjinv convert plain object.inv -"
+    )
+
+    lst_epilog = [
+        "USAGE",
+        " ",
+        "Place in doc[s]/.gitattributes",
+        " ",
+        """[diff "inv"]""",
+        "  textconv = sphobjinv-textconv",
+        "  binary = true",
+        " ",
+        "Place .gitattributes file in your Sphinx doc[s] folder",
+        "Make a change to an inventory file, see differences: ",
+        " ",
+        "git diff objects.inv",
+        " ",
+        "or",
+        " ",
+        "git diff HEAD objects.inv",
+        " ",
+        "EXIT CODES",
+        " ",
+        "0 -- Successfully convert inventory to stdout or print version or help",
+        "1 -- parsing input file path",
+        "1 -- Unrecognized file format",
+        "1 -- URL mode on local file is invalid",
+        "1 -- No inventory found!",
+    ]
+    sep = os.linesep
+    epilog = sep.join(lst_epilog)
+    epilog += os.linesep
+
+    prs = ap.ArgumentParser(
+        formatter_class=ap.RawTextHelpFormatter,
+        description=textwrap.dedent(description),
+        epilog=textwrap.dedent(epilog),
+    )
+
+    # For UX compatabilty with getparser. Not the intended use case
+    prs.add_argument(
+        "-" + PrsConst.VERSION[0],
+        "--" + PrsConst.VERSION,
+        help="Print package version & other info",
+        action="store_true",
+    )
+
+    # For UX compatabilty with getparser. Not the intended use case
+    prs.add_argument(
+        "-" + PrsConst.EXPAND[0],
+        "--" + PrsConst.EXPAND,
+        help="Expand all URI and display name abbreviations",
+        action="store_true",
+    )
+
+    # For UX compatabilty with getparser. Not the intended use case
+    help_text = (
+        "Treat 'infile' as a URL for download. "
+        f"Cannot be used with --{PrsConst.URL}."
+    )
+    prs.add_argument(
+        "-" + PrsConst.URL[0],
+        "--" + PrsConst.URL,
+        help=help_text,
+        action="store_true",
+    )
+
+    help_text = "Path to an inventory file to be converted and sent to stdout."
+    prs.add_argument(
+        PrsConst.INFILE,
+        nargs="?",
+        const=None,
+        default=None,
+        help=help_text,
     )
 
     return prs

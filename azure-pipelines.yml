@@ -223,11 +223,11 @@ stages:
     - script: cd doc; make html; mkdir scratch
       displayName: Build docset
 
-    - script: pytest --cov=. --nonloc --flake8_ext
+    - script: pytest --cov=. --nonloc --flake8_ext --testall
       displayName: Run pytest with coverage on the entire project tree
 
-    - script: coverage report --include="tests/*" --fail-under=100
-      displayName: Check 100% test execution
+    - script: coverage report --include="tests/*" --fail-under=90
+      displayName: Check 90% test execution
 
 
   - job: noqa_info

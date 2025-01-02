@@ -166,9 +166,15 @@ rst_epilog = r"""
 
     <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv</span>
 
+.. |soi-textconv| raw:: html
+
+    <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv-textconv</span>
+
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
 .. |stdout| replace:: |cour|\ stdout\ |/cour|
+
+.. |stderr| replace:: |cour|\ stderr\ |/cour|
 
 .. |cli:ALL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.ALL`
 
@@ -309,7 +315,10 @@ intersphinx_mapping = {
 
 # -- Options for linkcheck  --------------------------------------------------
 
-linkcheck_ignore = [r"^https?://(\w+[.])?twitter[.]com.*$"]
+linkcheck_ignore = [
+    r"^https?://(\w+[.])?twitter[.]com.*$",
+    "https://opensource.org/license/MIT",
+]
 linkcheck_anchors_ignore = [r"^L\d+$", r"^L\d+-L\d+$"]
 
 

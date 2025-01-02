@@ -494,8 +494,17 @@ class TestInventory:
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
 
+        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
+        if fname in skip_non_package:
+            pytest.skip("Modified not original inventory")
+
         # Drop most unless testall
-        if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
+        skips = (
+            "objects_attrs.inv",
+            "objects_attrs_plus_one_entry.inv",
+        )
+        is_not_test_all = not pytestconfig.getoption("--testall")
+        if is_not_test_all and fname not in skips:  # pragma: no cover
             pytest.skip("'--testall' not specified")
 
         # Make Inventory
@@ -528,8 +537,17 @@ class TestInventory:
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
 
+        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
+        if fname in skip_non_package:
+            pytest.skip("Modified not original inventory")
+
         # Drop most unless testall
-        if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
+        skips = (
+            "objects_attrs.inv",
+            "objects_attrs_plus_one_entry.inv",
+        )
+        is_not_test_all = not pytestconfig.getoption("--testall")
+        if is_not_test_all and fname not in skips:  # pragma: no cover
             pytest.skip("'--testall' not specified")
 
         original_ifile_data = sphinx_ifile_load(testall_inv_path)
