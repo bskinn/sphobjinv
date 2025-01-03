@@ -24,4 +24,5 @@ jobs:
       - name: Report the constants
         run: |
           echo "${{ toJson(needs.define_constants.outputs) }}"
-
+      - name: Report the specific constant
+        run: echo "${{ needs.define_constants.outputs.CURRENT_PYTHON }}"
