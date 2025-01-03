@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
-    if: 'github.event_name != ''push'' || github.event.pull_request.merged == false'
+    if: ${{ github.event_name }} != 'push' || ${{ github.event.pull_request.merged }} == false
     needs: load_constants
 
     steps:
