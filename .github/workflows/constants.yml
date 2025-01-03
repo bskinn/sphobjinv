@@ -4,9 +4,13 @@ on:
   workflow_call:
 
 jobs:
-  define-constants:
+  define_constants:
     name: Define constants
     runs-on: ubuntu-latest
     outputs:
       CURRENT_PYTHON: '3.12'
 
+    steps:
+      - name: Trivial step
+        run: |
+          echo "There needs to be *something* for the job to do..."
