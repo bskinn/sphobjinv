@@ -19,6 +19,9 @@ jobs:
     needs: load_constants
 
     steps:
+    - name: Debug the constants outputs
+      run: echo "${{ toJson(needs.load_constants.outputs) }}"
+
     - name: Check out repo
       uses: actions/checkout@v4
 
