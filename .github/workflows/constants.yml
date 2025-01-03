@@ -1,0 +1,12 @@
+name: Constants Definition
+
+on:
+  workflow_call:
+
+jobs:
+  define-constants:
+    name: Define constants
+    runs-on: ubuntu-latest
+    outputs:
+      CURRENT_PYTHON: '3.12'
+
