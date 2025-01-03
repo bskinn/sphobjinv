@@ -15,3 +15,5 @@ jobs:
         id: define
         run: |
           echo "current_python=3.12" >> "$GITHUB_OUTPUT"
+          echo "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
