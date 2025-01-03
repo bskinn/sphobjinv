@@ -15,5 +15,13 @@ jobs:
         id: define
         run: |
           echo "current_python=3.12" >> "$GITHUB_OUTPUT"
-          echo "$GITHUB_OUTPUT"
-          cat "$GITHUB_OUTPUT"
+
+  report_constants:
+    name: Report constants definition
+    runs-on: ubuntu-latest
+    needs: define_constants
+    steps:
+      - name: Report the constants
+        run: |
+          echo "${{ toJson(needs.define_constants.outputs) }}"
+
