@@ -5,10 +5,6 @@ on:
   - pull_request
 
 jobs:
-  load_constants:
-    name: Load constants
-    uses: ./.github/workflows/constants.yml
-
   current_python_tests:
     name: Run on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -16,19 +12,15 @@ jobs:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
     if: ${{ github.event_name }} != 'push' || ${{ github.event.pull_request.merged }} == false
-    needs: load_constants
 
     steps:
-    - name: Debug the constants outputs
-      run: echo "${{ toJson(needs.load_constants.outputs) }}"
-
     - name: Check out repo
       uses: actions/checkout@v4
 
     - name: Install Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ needs.load_constants.outputs.CURRENT_PYTHON }}
+        python-version: '3.12'
         cache: 'pip'
         cache-dependency-path: |
           requirements-ci.txt
