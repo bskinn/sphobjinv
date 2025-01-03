@@ -8,9 +8,10 @@ jobs:
     name: Define constants
     runs-on: ubuntu-latest
     outputs:
-      CURRENT_PYTHON: '3.12'
+      CURRENT_PYTHON: ${{ steps.define.outputs.current_python }}
 
     steps:
-      - name: Trivial step
+      - name: Define constants
+        id: define
         run: |
-          echo "There needs to be *something* for the job to do..."
+          echo "current_python=3.12" >> "$GITHUB_OUTPUT"
