@@ -1,7 +1,6 @@
 name: 'ALL: Run tests on current Python'
 
 on:
-  - push
   - pull_request
 
 jobs:
@@ -11,7 +10,6 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
-    if: github.event_name != 'push' || !github.event.pull_request || github.event.pull_request.merged
 
     steps:
     - name: Check out repo
