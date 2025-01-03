@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']
-    if: github.event_name != 'push' || github.event.pull_request == null || github.event.pull_request.merged
+    if: github.event_name != 'push' || !github.event.pull_request || github.event.pull_request.merged
 
     steps:
     - name: Check out repo
