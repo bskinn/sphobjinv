@@ -16,8 +16,8 @@ jobs:
     steps:
     - name: Report run metadata
       run: |
-        echo -e "github.event_name:\n\n${{ toJson(github.event_name) }}\n"
-        echo -e "github.event:\n\n${{ toJson(github.event) }}"
+        echo -e "github.event_name:\n\n"${{ toJson(github.event_name) }}"\n"
+        echo -e "github.event:\n\n"${{ toJson(github.event) }}
 
     - name: Check out repo
       uses: actions/checkout@v4
