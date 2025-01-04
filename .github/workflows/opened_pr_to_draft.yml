@@ -1,27 +1,40 @@
-name: 'NEW: Convert to Draft'
+name: 'NEW: Post Draft PR Notice'
 
 on:
   pull_request:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      ticket:
+        type: number
+        required: true
+        description: Issue/PR number to post comment to
+      message:
+        type: string
+        required: false
+        default: ''
+        description: Custom message to post
 
 jobs:
-  mark-as-draft:
-    name: Convert PR to Draft
+  post-draft-notice:
+    name: Post Draft Notice
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ github.event_name == 'workflow_dispatch' }} || ${{ !github.event.pull_request.draft }}
     steps:
-      - name: Convert PR to draft
+      - name: Post notification to indicated ticket
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          curl -X PATCH \
+          curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
-            -d '{"draft": true}'
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ inputs.ticket }}/comments \
+            -d '{"body": "${{ inputs.message }}"}'
 
-      - name: Post notification to PR
+      - name: Post notification to non-draft PR
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d '{"body": "Hello, and thank you for contributing!\n\nThis project is configured to run fewer workflows on draft PRs, so I''ve automatically marked your PR as ''draft'' to provide you with `pytest` pass/fail feedback more quickly.\n\nYou can mark the PR as ''ready'' whenever you like."}'
+            -d '{"body": "Hello, and thank you for contributing!\n\nThis project is configured to run fewer workflows on draft PRs, so if you would like to receive pass/fail feedback from the test suite more quickly, please switch this PR to 'draft' status.\n\nYou can mark the PR as 'ready' whenever you like, to enable the more extensive set of checks."}'
