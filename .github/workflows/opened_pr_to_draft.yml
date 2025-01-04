@@ -2,7 +2,7 @@ name: 'NEW: Post Draft PR Notice'
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, ready_for_review, converted_to_draft]
   workflow_dispatch:
     inputs:
       ticket:
