@@ -11,7 +11,7 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     steps:
       - name: Print PR data payload
-        run: jq -n "${{ toJson(github.event.pull_request) }}"
+        run: jq -n '${{ toJson(github.event.pull_request) }}'
       - name: Post notification to non-draft PR
         if: ${{ !github.event.pull_request.draft }}
         run: |
