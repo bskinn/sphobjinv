@@ -5,7 +5,7 @@ on:
 
 jobs:
   current_python_tests:
-    name: Run on ${{ matrix.os }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
