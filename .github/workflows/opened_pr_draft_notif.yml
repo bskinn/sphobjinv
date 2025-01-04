@@ -2,17 +2,15 @@ name: 'NEW: Post Draft PR Notice'
 
 on:
   pull_request:
-    types: [opened, ready_for_review, converted_to_draft]
+    types: [opened]
 
 jobs:
   post-draft-notice:
-    name: Post Draft Notice
+    name: 'post on new non-draft PR'
     runs-on: ubuntu-latest
     if: ${{ !github.event.pull_request.draft }}
     steps:
-      - name: Print PR data payload
-        run: jq -n '${{ toJson(github.event.pull_request) }}'
-      - name: Post notification to non-draft PR
+      - name: Post notification to new non-draft PR
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
