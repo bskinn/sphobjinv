@@ -1,0 +1,27 @@
+name: Convert New PRs to Draft
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  mark-as-draft:
+    name: Convert PR to Draft
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    steps:
+      - name: Convert PR to draft
+        run: |
+          curl -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
+            -d '{"draft": true}'
+
+      - name: Post notification to PR
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            -d '{"body": "Hello, and thank you for contributing!\n\nThis project is configured to run fewer workflows on draft PRs, so I''ve automatically marked your PR as ''draft''' to provide you with `pytest` pass/fail feedback more quickly.\n\nYou can mark the PR as ''ready'' whenever you like."}'
