@@ -24,4 +24,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d '{"body": "Hello, and thank you for contributing!\n\nThis project is configured to run fewer workflows on draft PRs, so I''ve automatically marked your PR as ''draft''' to provide you with `pytest` pass/fail feedback more quickly.\n\nYou can mark the PR as ''ready'' whenever you like."}'
+            -d '{"body": "Hello, and thank you for contributing!\n\nThis project is configured to run fewer workflows on draft PRs, so I''ve automatically marked your PR as ''draft'' to provide you with `pytest` pass/fail feedback more quickly.\n\nYou can mark the PR as ''ready'' whenever you like."}'
