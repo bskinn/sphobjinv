@@ -1,4 +1,4 @@
-name: Convert New PRs to Draft
+name: 'NEW: Convert to Draft'
 
 on:
   pull_request:
