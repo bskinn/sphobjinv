@@ -1,0 +1,58 @@
+name: 'READY: Lint codebase'
+
+on:
+  pull_request:
+    branches:
+      - main
+      - stable
+
+jobs:
+  lint_flake8:
+    name: flake8
+    runs-on: 'ubuntu-latest'
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        cache-dependency-path: requirements-flake8.txt
+
+    - name: Update pip
+      run: python -m pip install -U pip
+
+    - name: Install tox
+      run: python -m pip install -U tox
+
+    - name: Run flake8
+      run: tox -e flake8
+
+  lint_interrogate:
+    name: interrogate
+    runs-on: 'ubuntu-latest'
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        cache-dependency-path: requirements-interrogate.txt
+
+    - name: Update pip
+      run: python -m pip install -U pip
+
+    - name: Install tox
+      run: python -m pip install -U tox
+
+    - name: Run interrogate
+      run: tox -e interrogate
