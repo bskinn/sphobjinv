@@ -87,11 +87,6 @@ def test_api_inventory_many_url_imports(
     fname = testall_inv_path.name
     scr_fpath = scratch_path / fname
 
-    # Drop most unless testall
-    skip_non_package = ("objects_attrs_plus_one_entry.inv",)
-    if fname in skip_non_package:
-        pytest.skip("Modified not original inventory")
-
     if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
         pytest.skip("'--testall' not specified")
 

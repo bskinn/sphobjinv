@@ -63,7 +63,7 @@ class TestTextconvMisc:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     @pytest.mark.parametrize("cmd", CLI_CMDS)
-    def test_cli_textconv_help(self, cmd, run_cmdline_no_checks):
+    def test_cli_textconv_help(self, cmd, run_cmdline_textconv):
         """Confirm that actual shell invocations do not error.
 
         .. code-block:: shell
@@ -76,7 +76,7 @@ class TestTextconvMisc:
         runargs.append("--help")
 
         with stdio_mgr() as (in_, out_, err_):
-            retcode, is_sys_exit = run_cmdline_no_checks(runargs)
+            retcode, is_sys_exit = run_cmdline_textconv(runargs)
             str_out = out_.getvalue()
             assert "sphobjinv-textconv" in str_out
 
@@ -111,13 +111,13 @@ class TestTextconvMisc:
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_version_exits_ok(self, run_cmdline_textconv):
         """Confirm --version exits cleanly."""
-        run_cmdline_textconv(["-v"])
+        run_cmdline_textconv(["-v"], is_check=True)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_noargs_shows_help(self, run_cmdline_textconv):
         """Confirm help shown when invoked with no arguments."""
         with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_textconv([])
+            run_cmdline_textconv([], is_check=True)
             str_out = out_.getvalue()
             assert "usage: sphobjinv-textconv" in str_out
 
@@ -151,15 +151,15 @@ class TestTextconvGood:
         cli_arglist = [str(src_path)]
 
         # Confirm success, but sadly no stdout
-        run_cmdline_textconv(cli_arglist)
+        run_cmdline_textconv(cli_arglist, is_check=True)
 
         # More than one positional arg. Expect additional positional arg to be ignored
         cli_arglist = [str(src_path), "7"]
-        run_cmdline_textconv(cli_arglist)
+        run_cmdline_textconv(cli_arglist, is_check=True)
 
         # Unknown keyword arg. Expect to be ignored
         cli_arglist = [str(src_path), "--elephant-shoes", "42"]
-        run_cmdline_textconv(cli_arglist)
+        run_cmdline_textconv(cli_arglist, is_check=True)
 
 
 class TestTextconvFail:
@@ -170,14 +170,13 @@ class TestTextconvFail:
         scratch_path,
         misc_info,
         run_cmdline_textconv,
-        run_cmdline_no_checks,
     ):
         """Confirm cmdline contract. Confirm local inventory URLs not allowed."""
         path_cmp = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
 
         # --url instead of infile. local url not allowed
         url_local_path = f"""file://{path_cmp!s}"""
-        run_cmdline_textconv(["-e", "--url", url_local_path], expect=1)
+        run_cmdline_textconv(["-e", "--url", url_local_path], expect=1, is_check=True)
 
 
 @pytest.mark.parametrize(

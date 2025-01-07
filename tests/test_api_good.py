@@ -494,15 +494,8 @@ class TestInventory:
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
 
-        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
-        if fname in skip_non_package:
-            pytest.skip("Modified not original inventory")
-
         # Drop most unless testall
-        skips = (
-            "objects_attrs.inv",
-            "objects_attrs_plus_one_entry.inv",
-        )
+        skips = ("objects_attrs.inv",)
         is_not_test_all = not pytestconfig.getoption("--testall")
         if is_not_test_all and fname not in skips:  # pragma: no cover
             pytest.skip("'--testall' not specified")
@@ -537,15 +530,8 @@ class TestInventory:
         fname = testall_inv_path.name
         scr_fpath = scratch_path / fname
 
-        skip_non_package = ("objects_attrs_plus_one_entry.inv",)
-        if fname in skip_non_package:
-            pytest.skip("Modified not original inventory")
-
         # Drop most unless testall
-        skips = (
-            "objects_attrs.inv",
-            "objects_attrs_plus_one_entry.inv",
-        )
+        skips = ("objects_attrs.inv",)
         is_not_test_all = not pytestconfig.getoption("--testall")
         if is_not_test_all and fname not in skips:  # pragma: no cover
             pytest.skip("'--testall' not specified")

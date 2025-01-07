@@ -69,7 +69,7 @@ class TestTextconvOnlineBad:
         cmd,
         expected,
         msg,
-        run_cmdline_no_checks,
+        run_cmdline_textconv,
     ):
         """Online URL and INFILE "-", cannot specify both.
 
@@ -83,7 +83,7 @@ class TestTextconvOnlineBad:
         # In this case INFILE "-"
         # For this test, URL cannot be local (file:///)
         with stdio_mgr() as (in_, out_, err_):
-            retcode, is_sys_exit = run_cmdline_no_checks(cmd)
+            retcode, is_sys_exit = run_cmdline_textconv(cmd)
             str_err = err_.getvalue()
             assert retcode == expected
             assert msg in str_err
@@ -111,4 +111,4 @@ class TestTextconvOnlineGood:
     ):
         """Valid nonlocal url."""
         cmd = ["--url", url]
-        run_cmdline_textconv(cmd, expect=expected_retcode)
+        run_cmdline_textconv(cmd, expect=expected_retcode, is_check=True)
