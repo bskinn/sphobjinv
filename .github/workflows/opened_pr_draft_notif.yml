@@ -1,4 +1,4 @@
-name: 'NEW: Post Draft PR Notice'
+name: 'OPEN: Post Draft PR Notice'
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   post-draft-notice:
-    name: 'post on new non-draft PR'
+    name: 'on new non-draft PR'
     runs-on: ubuntu-latest
     if: ${{ !github.event.pull_request.draft }}
     steps:
