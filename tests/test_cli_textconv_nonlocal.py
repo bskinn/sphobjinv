@@ -41,6 +41,7 @@ converting an (partially binary) inventory to plain text.
 
 import pytest
 from stdio_mgr import stdio_mgr
+from tests.enum import Entrypoints
 
 CLI_TEST_TIMEOUT = 5
 
@@ -51,7 +52,7 @@ class TestTextconvOnlineBad:
     """Tests for textconv, online, expected-fail behaviors."""
 
     @pytest.mark.parametrize(
-        "url, cmd, expected, msg",
+        "url, runargs, expected, msg",
         (
             (
                 "http://sphobjinv.readthedocs.io/en/v2.0/objects.inv",
@@ -66,10 +67,10 @@ class TestTextconvOnlineBad:
     def test_textconv_both_url_and_infile(
         self,
         url,
-        cmd,
+        runargs,
         expected,
         msg,
-        run_cmdline_textconv,
+        run_cmdline_test,
     ):
         """Online URL and INFILE "-", cannot specify both.
 
@@ -83,9 +84,8 @@ class TestTextconvOnlineBad:
         # In this case INFILE "-"
         # For this test, URL cannot be local (file:///)
         with stdio_mgr() as (in_, out_, err_):
-            retcode, is_sys_exit = run_cmdline_textconv(cmd)
+            run_cmdline_test(runargs, expect=expected, prog=Entrypoints.SOI_TEXTCONV)
             str_err = err_.getvalue()
-            assert retcode == expected
             assert msg in str_err
 
 
@@ -107,8 +107,12 @@ class TestTextconvOnlineGood:
         self,
         url,
         expected_retcode,
-        run_cmdline_textconv,
+        run_cmdline_test,
     ):
         """Valid nonlocal url."""
-        cmd = ["--url", url]
-        run_cmdline_textconv(cmd, expect=expected_retcode, is_check=True)
+        runargs = ["--url", url]
+        run_cmdline_test(
+            runargs,
+            expect=expected_retcode,
+            prog=Entrypoints.SOI_TEXTCONV,
+        )

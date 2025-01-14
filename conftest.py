@@ -43,6 +43,7 @@ import jsonschema
 import pytest
 from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
+from tests.enum import Entrypoints
 
 import sphobjinv as soi
 
@@ -233,13 +234,24 @@ def sphinx_version():
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_test(monkeypatch):
     """Return function to perform command line exit code test."""
-    from sphobjinv.cli.core import main
 
-    def func(arglist, *, expect=0):  # , suffix=None):
+    def func(arglist, *, expect=0, prog: Entrypoints = Entrypoints.SOI):
         """Perform the CLI exit-code test."""
 
         # Assemble execution arguments
-        runargs = ["sphobjinv"]
+        assert isinstance(prog, Entrypoints)
+        runargs = []
+        if prog == Entrypoints.SOI:
+            from sphobjinv.cli.core import main
+
+            ep_fcn = main
+            runargs.append(Entrypoints.SOI.value)
+        else:
+            from sphobjinv.cli.core_textconv import main as main_textconv
+
+            ep_fcn = main_textconv
+            runargs.append(Entrypoints.SOI_TEXTCONV.value)
+
         runargs.extend(str(a) for a in arglist)
 
         # Mock sys.argv, run main, and restore sys.argv
@@ -247,7 +259,7 @@ def run_cmdline_test(monkeypatch):
             m.setattr(sys, "argv", runargs)
 
             try:
-                main()
+                ep_fcn()
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True
@@ -259,45 +271,6 @@ def run_cmdline_test(monkeypatch):
 
         # Test that execution completed w/indicated exit code
         assert retcode == expect, runargs
-
-    return func
-
-
-@pytest.fixture()  # Must be function scope since uses monkeypatch
-def run_cmdline_textconv(monkeypatch):
-    """Return function to perform command line. So as to debug issues no tests.
-
-    Consolidates: run_cmdline_textconv and run_cmdline_no_checks
-    """
-    from sphobjinv.cli.core_textconv import main as main_textconv
-
-    def func(arglist, *, prog="sphobjinv-textconv", is_check=False, expect=0):
-        """Perform the CLI exit-code test."""
-
-        # Assemble execution arguments
-        runargs = [prog]
-        runargs.extend(str(a) for a in arglist)
-
-        # Mock sys.argv, run main, and restore sys.argv
-        with monkeypatch.context() as m:
-            m.setattr(sys, "argv", runargs)
-
-            try:
-                main_textconv()
-            except SystemExit as e:
-                retcode = e.args[0]
-                is_system_exit = True
-            else:
-                is_system_exit = False
-
-        if is_check:
-            # Do all pytesty stuff outside monkeypatch context
-            assert is_system_exit, "SystemExit not raised on termination."
-
-            # Test that execution completed w/indicated exit code
-            assert retcode == expect, runargs
-
-        return retcode, is_system_exit
 
     return func
 

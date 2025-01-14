@@ -46,6 +46,7 @@ import subprocess as sp  # noqa: S404
 
 import pytest
 from stdio_mgr import stdio_mgr
+from tests.enum import Entrypoints
 
 from sphobjinv import Inventory
 from sphobjinv import SourceTypes
@@ -63,7 +64,7 @@ class TestTextconvMisc:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     @pytest.mark.parametrize("cmd", CLI_CMDS)
-    def test_cli_textconv_help(self, cmd, run_cmdline_textconv):
+    def test_cli_textconv_help(self, cmd, run_cmdline_test):
         """Confirm that actual shell invocations do not error.
 
         .. code-block:: shell
@@ -76,7 +77,7 @@ class TestTextconvMisc:
         runargs.append("--help")
 
         with stdio_mgr() as (in_, out_, err_):
-            retcode, is_sys_exit = run_cmdline_textconv(runargs)
+            run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
             str_out = out_.getvalue()
             assert "sphobjinv-textconv" in str_out
 
@@ -109,15 +110,17 @@ class TestTextconvMisc:
             assert f"USAGE{os.linesep}" in str_out
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    def test_cli_version_exits_ok(self, run_cmdline_textconv):
+    def test_cli_version_exits_ok(self, run_cmdline_test):
         """Confirm --version exits cleanly."""
-        run_cmdline_textconv(["-v"], is_check=True)
+        runargs = ["-v"]
+        run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    def test_cli_noargs_shows_help(self, run_cmdline_textconv):
+    def test_cli_noargs_shows_help(self, run_cmdline_test):
         """Confirm help shown when invoked with no arguments."""
         with stdio_mgr() as (in_, out_, err_):
-            run_cmdline_textconv([], is_check=True)
+            runargs = []
+            run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
             str_out = out_.getvalue()
             assert "usage: sphobjinv-textconv" in str_out
 
@@ -133,7 +136,7 @@ class TestTextconvGood:
         self,
         in_ext,
         scratch_path,
-        run_cmdline_textconv,
+        run_cmdline_test,
         misc_info,
     ):
         """Inventory files' path provided via cli. stdout is not captured.
@@ -148,18 +151,17 @@ class TestTextconvGood:
 
         assert src_path.is_file()
 
-        cli_arglist = [str(src_path)]
-
         # Confirm success, but sadly no stdout
-        run_cmdline_textconv(cli_arglist, is_check=True)
+        runargs = [str(src_path)]
+        run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
 
         # More than one positional arg. Expect additional positional arg to be ignored
-        cli_arglist = [str(src_path), "7"]
-        run_cmdline_textconv(cli_arglist, is_check=True)
+        runargs = [str(src_path), "7"]
+        run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
 
         # Unknown keyword arg. Expect to be ignored
-        cli_arglist = [str(src_path), "--elephant-shoes", "42"]
-        run_cmdline_textconv(cli_arglist, is_check=True)
+        runargs = [str(src_path), "--elephant-shoes", "42"]
+        run_cmdline_test(runargs, prog=Entrypoints.SOI_TEXTCONV)
 
 
 class TestTextconvFail:
@@ -169,14 +171,15 @@ class TestTextconvFail:
         self,
         scratch_path,
         misc_info,
-        run_cmdline_textconv,
+        run_cmdline_test,
     ):
         """Confirm cmdline contract. Confirm local inventory URLs not allowed."""
         path_cmp = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
 
         # --url instead of infile. local url not allowed
         url_local_path = f"""file://{path_cmp!s}"""
-        run_cmdline_textconv(["-e", "--url", url_local_path], expect=1, is_check=True)
+        runargs = ["-e", "--url", url_local_path]
+        run_cmdline_test(runargs, expect=1, prog=Entrypoints.SOI_TEXTCONV)
 
 
 @pytest.mark.parametrize(

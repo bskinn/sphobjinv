@@ -1,19 +1,17 @@
-r"""``sphobjinv`` *version definition module*.
-
-``sphobjinv`` is a toolkit for manipulation and inspection of
-Sphinx |objects.inv| files.
+r"""
+Separate :class:`enum.Enum` from ``conftest.py``.
 
 **Author**
     Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
-    18 Mar 2019
+    14 Jan 2025
 
 **Copyright**
     \(c) Brian Skinn 2016-2024
 
 **Source Repository**
-    https://github.com/bskinn/sphobjinv
+    http://www.github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -29,4 +27,11 @@ Sphinx |objects.inv| files.
 
 """
 
-__version__ = "2.3.2.dev0"
+import enum
+
+
+class Entrypoints(enum.Enum):
+    """Entrypoints."""
+
+    SOI = "sphobjinv"
+    SOI_TEXTCONV = "sphobjinv-textconv"
