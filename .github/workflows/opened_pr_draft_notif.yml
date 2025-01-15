@@ -1,4 +1,4 @@
-name: 'OPEN: Post Draft PR Notice'
+name: 'NEW: Post draft PR notice'
 
 on:
   pull_request:
