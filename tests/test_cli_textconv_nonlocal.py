@@ -41,7 +41,8 @@ converting an (partially binary) inventory to plain text.
 
 import pytest
 from stdio_mgr import stdio_mgr
-from tests.enum import Entrypoints
+
+from tests.enums import Entrypoints
 
 CLI_TEST_TIMEOUT = 5
 

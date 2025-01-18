@@ -46,11 +46,11 @@ import subprocess as sp  # noqa: S404
 
 import pytest
 from stdio_mgr import stdio_mgr
-from tests.enum import Entrypoints
 
 from sphobjinv import Inventory
 from sphobjinv import SourceTypes
 from sphobjinv.fileops import readbytes
+from tests.enums import Entrypoints
 
 CLI_TEST_TIMEOUT = 2
 # Is an entrypoint, but not a package

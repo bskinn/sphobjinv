@@ -43,9 +43,9 @@ import jsonschema
 import pytest
 from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
-from tests.enum import Entrypoints
 
 import sphobjinv as soi
+from tests.enums import Entrypoints
 
 
 def pytest_addoption(parser):
@@ -333,12 +333,6 @@ def testall_inv_path(request):
 def is_win():
     """Report boolean of whether the current system is Windows."""
     return platform.system().lower() == "windows"
-
-
-@pytest.fixture(scope="session")
-def is_linux():
-    """Report boolean of whether the current system is Linux."""
-    return platform.system() in ("Linux",)
 
 
 @pytest.fixture(scope="session")
