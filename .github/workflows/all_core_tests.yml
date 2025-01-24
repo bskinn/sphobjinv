@@ -1,4 +1,4 @@
-name: 'ALL: Run tests on current Python'
+name: 'ALL: Run tests on Python 3.12'
 
 on:
   - pull_request
