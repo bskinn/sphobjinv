@@ -1,4 +1,4 @@
-name: 'READY: Test matrix'
+name: 'READY: Run OS/Python test matrix'
 
 on:
   pull_request:
