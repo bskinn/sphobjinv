@@ -1,4 +1,4 @@
-name: 'RELEASE: sdist check'
+name: 'RELEASE: Check sdist'
 
 on:
   pull_request:
