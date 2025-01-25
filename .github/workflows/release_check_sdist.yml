@@ -15,6 +15,7 @@ jobs:
   sdist_build_and_check:
     name: builds & is testable
     runs-on: 'ubuntu-latest'
+    if: ${{ !github.event.pull_request.draft }}
 
     steps:
     - name: Check out repo
