@@ -51,7 +51,7 @@ jobs:
 
     # Only the dir of the unpacked sdist will have a digit in its name
     - name: Store sdist unpack path
-      run: echo "UNPACK_PATH=$( find sandbox -maxdepth 1 -type d -regex './.+[0-9].+' )" >> $GITHUB_ENV
+      run: echo "UNPACK_PATH=$( find sandbox -maxdepth 1 -type d -regex 'sandbox/.+[0-9].+' )" >> $GITHUB_ENV
 
     - name: Report sdist unpack path
       run: echo $UNPACK_PATH
