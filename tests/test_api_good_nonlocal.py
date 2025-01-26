@@ -34,7 +34,7 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.nonloc]
+pytestmark = [pytest.mark.api, pytest.mark.nonloc, pytest.mark.flaky(retries=2, delay=10)]
 
 
 @pytest.fixture(scope="module", autouse=True)
