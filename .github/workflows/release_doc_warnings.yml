@@ -8,13 +8,13 @@ on:
       - synchronize
       - ready_for_review
     branches:
-      - main
       - stable
 
 jobs:
   docs_warnings_as_errors:
     name: with warnings as errors
     runs-on: 'ubuntu-latest'
+    if: ${{ !github.event.pull_request.draft }}
 
     steps:
     - name: Check out repo
