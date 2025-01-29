@@ -14,6 +14,9 @@ jobs:
   sdist_build_and_check:
     name: builds & is testable
     runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !github.event.pull_request.draft }}
 
     steps:

@@ -15,6 +15,9 @@ jobs:
   code_doctests:
     name: in code
     runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !github.event.pull_request.draft }}
 
     steps:

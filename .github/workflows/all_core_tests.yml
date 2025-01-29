@@ -7,6 +7,9 @@ jobs:
   current_python_tests:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.os }}-${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       matrix:
         os: ['ubuntu-latest', 'windows-latest']

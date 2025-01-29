@@ -15,6 +15,9 @@ jobs:
   lint_flake8:
     name: flake8
     runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-flake8-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !github.event.pull_request.draft }}
 
     steps:
@@ -40,6 +43,9 @@ jobs:
   lint_interrogate:
     name: interrogate
     runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-interrogate-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !github.event.pull_request.draft }}
 
     steps:

@@ -14,6 +14,9 @@ jobs:
   docs_warnings_as_errors:
     name: with warnings as errors
     runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     if: ${{ !github.event.pull_request.draft }}
 
     steps:
