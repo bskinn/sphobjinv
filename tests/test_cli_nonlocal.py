@@ -42,7 +42,11 @@ CLI_TEST_TIMEOUT = 5
 p_instance_of = re.compile("^.*instance_of.*$", re.M)
 p_inventory = re.compile("^.*nventory.*$", re.I | re.M)
 
-pytestmark = [pytest.mark.cli, pytest.mark.nonloc, pytest.mark.flaky(retries=2, delay=5)]
+pytestmark = [
+    pytest.mark.cli,
+    pytest.mark.nonloc,
+    pytest.mark.flaky(retries=2, delay=5),
+]
 
 
 @pytest.fixture(scope="module", autouse=True)
