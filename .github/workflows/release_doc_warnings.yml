@@ -1,4 +1,4 @@
-name: 'RELEASE: Build docsx'
+name: 'RELEASE: Build docs'
 
 on:
   pull_request:
