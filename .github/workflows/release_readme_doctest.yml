@@ -31,7 +31,7 @@ jobs:
         cache-dependency-path: requirements-ci.txt
 
     - name: Install CI requirements
-      run: pip install . -r requirements-ci.txt
+      run: pip install -r requirements-ci.txt
 
     - name: Build docs
       run: |
