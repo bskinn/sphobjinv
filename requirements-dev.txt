@@ -5,7 +5,6 @@ coverage
 dictdiffer
 jsonschema
 md-toc
-pep517
 pytest>=4.4.0
 pytest-check>=1.1.2
 pytest-cov
