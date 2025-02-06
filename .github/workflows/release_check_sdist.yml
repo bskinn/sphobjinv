@@ -1,0 +1,78 @@
+name: 'RELEASE: Check sdist'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - stable
+
+jobs:
+  sdist_build_and_check:
+    name: builds & is testable
+    runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        cache-dependency-path: requirements-dev.txt
+
+    - name: Install 'build' package
+      run: python -m pip install build
+
+    - name: Build sdist
+      run: |
+        python -m build -s
+        ls -lah dist
+
+    - name: Create sandbox
+      run: mkdir sandbox
+
+    - name: Unpack sdist in sandbox
+      run: |
+        cp dist/*.gz sandbox/
+        cd sandbox
+        tar xvf *.gz
+
+    - name: Create venv
+      run: |
+        cd sandbox
+        python -m venv env
+
+    # Only the dir of the unpacked sdist will have a digit in its name
+    - name: Store sdist unpack path
+      run: echo "UNPACK_PATH=$( find sandbox -maxdepth 1 -type d -regex 'sandbox/.+[0-9].+' )" >> $GITHUB_ENV
+
+    - name: Report sdist unpack path
+      run: echo $UNPACK_PATH
+
+    - name: Install dev req'ts to venv
+      run: |
+        source sandbox/env/bin/activate
+        cd "$UNPACK_PATH"
+        python -m pip install -r requirements-dev.txt
+
+    - name: Build docs in sandbox
+      run: |
+        source sandbox/env/bin/activate
+        cd "$UNPACK_PATH"/doc
+        O=-Ean make html
+
+    - name: Run test suite in sandbox
+      run: |
+        source sandbox/env/bin/activate
+        cd "$UNPACK_PATH"
+        pytest --nonloc

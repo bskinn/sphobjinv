@@ -8,6 +8,7 @@ md-toc
 pytest>=4.4.0
 pytest-check>=1.1.2
 pytest-cov
+pytest-retry
 pytest-timeout
 sphinx==7.4.7
 sphinx-issues

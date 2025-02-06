@@ -10,7 +10,36 @@ changes.
 
 ### *Unreleased*
 
+#### Tests
+
+  * Add `pytest-retry` to dev requirements and some `flaky` marks ([#306]).
+    * Hopefully will iron out some of the test failures due to transient network
+      problems.
+
 #### Internal
+
+  * Coalesce all CI into GitHub Actions, re-organize, and add tailored execution
+    contexts ([#306]).
+    * Contexts:
+      * DRAFT PRs: Tests run on Python 3.12 for Windows and Linux
+       READY PRs:
+        * Full Mac/Win/Linux test matrix on Python 3.9-3.11, 3.13 (GIL)
+        * Doctests
+        * Linting
+      * READY RELEASE PRs:
+        * sdist builds and is testable
+        * Docs build with warnings treated as errors
+        * flake8 noqa check (nofail, info only)
+        * Doctests on README Python
+        * Coverage check for test suite code
+      * OPENED, READY PRs: Post a comment on the PR noting that CI is much
+        lighter for draft PRs.
+    * Delete Azure Pipelines and old GitHub Actions config
+
+  * Remove obsolete `pep517` from requirements ([#306]).
+
+  * Rename `flake8-noqa` tox environment to `flake8_noqa` ([#306]).
+    * `-` has special meaning when naming tox envs/deps, best to avoid it.
 
   * Bump dev Sphinx version to 7.4.7 ([#305]).
     * We stay under 8.0 because Sphinx v8 drops Python 3.9.
@@ -629,3 +658,4 @@ changes.
 [#287]: https://github.com/bskinn/sphobjinv/issues/287
 [#289]: https://github.com/bskinn/sphobjinv/pull/289
 [#305]: https://github.com/bskinn/sphobjinv/pull/305
+[#306]: https://github.com/bskinn/sphobjinv/pull/306

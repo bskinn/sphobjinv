@@ -1,0 +1,42 @@
+name: 'RELEASE: Run doctests'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - stable
+
+jobs:
+  readme_doctest:
+    name: on readme
+    runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        cache-dependency-path: requirements-ci.txt
+
+    - name: Install CI requirements
+      run: pip install -r requirements-ci.txt
+
+    - name: Build docs
+      run: |
+        cd doc
+        make html
+
+    - name: Run README doctests
+      run: pytest -k readme --doctest-glob="README.md"

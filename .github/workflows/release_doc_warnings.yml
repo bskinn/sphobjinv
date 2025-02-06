@@ -1,0 +1,39 @@
+name: 'RELEASE: Build docs'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - stable
+
+jobs:
+  docs_warnings_as_errors:
+    name: with warnings as errors
+    runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+        cache-dependency-path: requirements-rtd.txt
+
+    - name: Install project and docs requirements
+      run: pip install . -r requirements-rtd.txt
+
+    - name: Build docs with warnings as errors
+      run: |
+        cd doc
+        make html -Wn --keep-going
