@@ -463,7 +463,7 @@ def gitattributes():
         path_f_dst = path_cwd / path_f_src.name
         path_f_dst.touch()
         assert path_f_dst.is_file()
-        if not path_f_src.exists():
+        if not path_f_src.exists():  # pragma: no cover
             # workflow "Run test suite in sandbox" fails to find .gitattributes
             sep = os.linesep
             contents = (

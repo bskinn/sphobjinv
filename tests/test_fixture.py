@@ -72,3 +72,9 @@ def test_decomp_comp_fixture(misc_info, decomp_cmp_test, scratch_path):
     decomp_cmp_test(
         scratch_path / f"{misc_info.FNames.INIT.value}{misc_info.Extensions.DEC.value}"
     )
+
+
+def test_ensure_doc_scratch(scratch_path, ensure_doc_scratch):
+    """Test unused ensure_doc_scratch."""
+    path_cwd = scratch_path
+    assert path_cwd.exists() and path_cwd.is_dir()

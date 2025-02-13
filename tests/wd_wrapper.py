@@ -50,7 +50,7 @@ def run(
 
     try:
         p_out = sp.run(cmd, cwd=cwd, text=True, capture_output=True)  # noqa: S603
-    except sp.CalledProcessError:
+    except (sp.CalledProcessError, FileNotFoundError):
         ret = None
     else:
         ret = p_out
@@ -165,7 +165,7 @@ class WorkDir:
             |str| -- formatted reason
 
         """
-        if given_reason is None:
+        if given_reason is None:  # pragma: no cover
             return f"number-{next(self.__counter)}"
         else:
             return given_reason
@@ -218,7 +218,11 @@ class WorkDir:
             reason=reason,
         )
 
-    def commit_testfile(self, reason: str | None = None, signed: bool = False) -> None:
+    def commit_testfile(
+        self,
+        reason: str | None = None,
+        signed: bool = False,
+    ) -> None:  # pragma: no cover
         """Commit a test.txt file.
 
         Parameters
@@ -340,7 +344,7 @@ class WorkDir:
             "config",
             dotted_key,
         ]
-        if is_path and is_win:
+        if is_path and is_win:  # pragma: no cover
             # In Bash, single quotes protect (Windows path) backslashes
             # Does not deal with escaping spaces
             # `Path is Windows safe <https://stackoverflow.com/a/68555279>`_
@@ -353,7 +357,7 @@ class WorkDir:
         # git config diff.inv.textconv "sh -c 'sphobjinv co plain \"\$0\" -'"
         # git config diff.inv.textconv "sh -c 'sphobjinv-textconv \"\$0\"'"
         cp_out = run(cmd, cwd=self.cwd)
-        if cp_out is None or cp_out.returncode != 0:
+        if cp_out is None or cp_out.returncode != 0:  # pragma: no cover
             ret = False
         else:
             ret = True

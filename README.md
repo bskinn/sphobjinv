@@ -159,7 +159,7 @@ inventory creation/modification:
 >>> inv.project
 'sphobjinv'
 >>> inv.version
-'2.3'
+'2.4'
 >>> inv.objects[0]
 DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
 

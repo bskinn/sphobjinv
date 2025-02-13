@@ -221,7 +221,7 @@ class TestConvertGood:
         if (
             not pytestconfig.getoption("--testall")
             and testall_inv_path.name != "objects_attrs.inv"
-        ):
+        ):  # pragma: no cover
             pytest.skip("'--testall' not specified")
 
         run_cmdline_test(["convert", "plain", str(res_src_path), str(plain_path)])
