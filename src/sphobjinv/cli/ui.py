@@ -29,12 +29,20 @@ Sphinx |objects.inv| files.
 
 """
 
+from __future__ import annotations
+
+import os
 import sys
 
 from sphobjinv.cli.parser import PrsConst
 
 
-def print_stderr(thing, params, *, end="\n"):
+def print_stderr(
+    thing,
+    params,
+    *,
+    end: str | None = os.linesep,
+) -> None:
     r"""Print `thing` to stderr if not in quiet mode.
 
     Quiet mode is indicated by the value at the |cli:QUIET| key
@@ -58,7 +66,10 @@ def print_stderr(thing, params, *, end="\n"):
         |str| -- String to append to printed content (default: ``\n``\ )
 
     """
-    if params[PrsConst.SUBPARSER_NAME][:2] == "su" or not params[PrsConst.QUIET]:
+    is_quiet = params.get(PrsConst.QUIET, False)
+    subparser_name = params.get(PrsConst.SUBPARSER_NAME, None)
+
+    if not is_quiet or (subparser_name is None or subparser_name[:2] == "su"):
         print(thing, file=sys.stderr, end=end)
 
 

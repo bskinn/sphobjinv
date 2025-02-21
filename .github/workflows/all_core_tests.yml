@@ -12,8 +12,11 @@ jobs:
       cancel-in-progress: true
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'windows-latest']
-
+        os:
+          - windows-latest
+          - ubuntu-latest
+        python-version:
+          - '3.12'
     steps:
     - name: Check out repo
       uses: actions/checkout@v4
@@ -21,7 +24,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: "${{ matrix.python-version }}"
         cache: 'pip'
         cache-dependency-path: requirements-ci.txt
 
@@ -43,11 +46,18 @@ jobs:
     - name: Run tests & report source coverage
       run: |
         pytest --cov --testall --nonloc
+        coverage xml -o coverage-service.xml
 
     - name: Submit to Codecov if Linux, ready status, and main/stable
       if: ${{ matrix.os == 'ubuntu-latest' && !github.event.pull_request.draft && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stable') }}
-      run: |
-        coverage xml -o coverage-service.xml
-        curl -Os https://cli.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage-service.xml
+      uses: codecov/codecov-action@v5.3.1
+      with:
+        name: 'service'-${{ github.run_id }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+        slug: bskinn/sphobjinv
+        os: linux
+        flags: unittests
+        files: ./coverage.xml
+        env_vars: OS,PYTHON
+        fail_ci_if_error: true
+        verbose: true

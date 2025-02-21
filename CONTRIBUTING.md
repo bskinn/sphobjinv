@@ -72,7 +72,6 @@ interact with them:
 (sphobjinv) doc $ make html
 ```
 
-
 ## Working with git
 
 There's no way I can fit a whole git tutorial in here, so this just highlights a
@@ -149,6 +148,40 @@ e.g.:
 ```bash
 $ tox -rp2
 ```
+
+
+### pyenv and tox
+
+Contributors are **not expected** to do exhaustive testing on all
+supported py interpreters, leave that to the CI. Not saying can't.
+
+Assumes familiarity with pyenv and shims already installed for various
+py interpreters.
+
+Notable pyenv commands
+
+```bash
+pyenv version
+pyenv versions --bare
+```
+
+Gets the active pyenv version and get all installed pyenv versions respectively.
+
+To configure pyenv within the `.tox/` folder.
+
+```bash
+pyenv versions --bare > .tox/.python-version
+```
+
+Within the package base folder only one py interpreter is available. 
+
+Run tox for py39
+
+```bash
+cd .tox; PYTHONPATH=../ tox --root=.. -c ../tox.ini \
+-e py39-sphx_latest-attrs_latest-jsch_latest --workdir=.; cd - &>/dev/null
+```
+
 
 ## Code Autoformatting
 

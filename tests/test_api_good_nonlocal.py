@@ -87,7 +87,6 @@ def test_api_inventory_many_url_imports(
     fname = testall_inv_path.name
     scr_fpath = scratch_path / fname
 
-    # Drop most unless testall
     if not pytestconfig.getoption("--testall") and fname != "objects_attrs.inv":
         pytest.skip("'--testall' not specified")
 

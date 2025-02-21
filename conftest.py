@@ -45,6 +45,7 @@ from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
+from tests.enums import Entrypoints
 
 
 def pytest_addoption(parser):
@@ -233,13 +234,24 @@ def sphinx_version():
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_test(monkeypatch):
     """Return function to perform command line exit code test."""
-    from sphobjinv.cli.core import main
 
-    def func(arglist, *, expect=0):  # , suffix=None):
+    def func(arglist, *, expect=0, prog: Entrypoints = Entrypoints.SOI):
         """Perform the CLI exit-code test."""
 
         # Assemble execution arguments
-        runargs = ["sphobjinv"]
+        assert isinstance(prog, Entrypoints)
+        runargs = []
+        if prog == Entrypoints.SOI:
+            from sphobjinv.cli.core import main
+
+            ep_fcn = main
+            runargs.append(Entrypoints.SOI.value)
+        else:
+            from sphobjinv.cli.core_textconv import main as main_textconv
+
+            ep_fcn = main_textconv
+            runargs.append(Entrypoints.SOI_TEXTCONV.value)
+
         runargs.extend(str(a) for a in arglist)
 
         # Mock sys.argv, run main, and restore sys.argv
@@ -247,7 +259,7 @@ def run_cmdline_test(monkeypatch):
             m.setattr(sys, "argv", runargs)
 
             try:
-                main()
+                ep_fcn()
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True
