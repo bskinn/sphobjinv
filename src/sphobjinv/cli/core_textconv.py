@@ -68,42 +68,12 @@ import contextlib
 import io
 import os
 import sys
-from unittest.mock import patch
 
 from sphobjinv import Inventory
 from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
 from sphobjinv.cli.parser import getparser_textconv, PrsConst
-
-
-def print_stderr_2(thing, params_b, *, end=os.linesep):
-    r"""Bypass parser dependent, print_strerr.
-
-    Use along with :func:`unittest.mock.patch` whenever calling
-    sphobjinv.cli internals.
-
-    Parameters
-    ----------
-    thing
-
-        *any* -- Object to be printed
-
-    params
-
-        |dict| or |None| -- User input parameters/values mapping
-
-    end
-
-        |str| -- String to append to printed content (default: ``\n``\ )
-
-    """
-    kwargs = {"file": sys.stderr, "end": end}
-    if params_b is None:
-        args = (thing,)
-    else:
-        args = (thing, params_b)
-
-    print(*args, **kwargs)
+from sphobjinv.cli.ui import print_stderr
 
 
 def _update_with_hardcoded(params):
@@ -168,12 +138,11 @@ def _wrap_inv_stdin(params):
 
     """
     f = io.StringIO()
-    with patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2):
-        with contextlib.redirect_stderr(f):
-            with contextlib.suppress(SystemExit):
-                inv = inv_stdin(params)
-        msg_err = f.getvalue().strip()
-        f.close()
+    with contextlib.redirect_stderr(f):
+        with contextlib.suppress(SystemExit):
+            inv = inv_stdin(params)
+    msg_err = f.getvalue().strip()
+    f.close()
 
     is_inv = "inv" in locals() and inv is not None and issubclass(type(inv), Inventory)
 
@@ -221,7 +190,8 @@ def main():
 
     # Regardless of mode, insert extra blank line
     # for cosmetics
-    print_stderr_2(os.linesep, params)
+    d_empty = {}
+    print_stderr(os.linesep, d_empty, end=None)
 
     # Generate the input Inventory based on --url or stdio or file.
     # These inventory-load functions should call
@@ -233,15 +203,14 @@ def main():
         # Bypass problematic sphobjinv.cli.ui:print_stderr
         # sphobjinv-textconv --url 'file:///tests/resource/objects_cclib.inv'
         f = io.StringIO()
-        with patch("sphobjinv.cli.load.print_stderr", wraps=print_stderr_2):
-            with contextlib.redirect_stderr(f):
-                with contextlib.suppress(SystemExit):
-                    inv, in_path = inv_url(params)
-            msg_err = f.getvalue().strip()
-            f.close()
+        with contextlib.redirect_stderr(f):
+            with contextlib.suppress(SystemExit):
+                inv, in_path = inv_url(params)
+        msg_err = f.getvalue().strip()
+        f.close()
 
         if len(msg_err) != 0 and msg_err.startswith("Error: URL mode"):
-            print_stderr_2(msg_err, None)
+            print_stderr(msg_err, d_empty)
             sys.exit(1)
     elif params[PrsConst.INFILE] == "-":
         """
@@ -274,12 +243,12 @@ def main():
 
             """
             msg_err = "Invalid plaintext or JSON inventory format."
-            print_stderr_2(msg_err, None)
+            print_stderr(msg_err, d_empty)
             sys.exit(1)
         else:
             if is_inv:
                 # Cosmetic final blank line
-                print_stderr_2(os.linesep, params)
+                print_stderr(os.linesep, d_empty, end=None)
                 sys.exit(0)
             else:  # pragma: no cover
                 # No inventory
@@ -295,7 +264,7 @@ def main():
         do_convert(inv, in_path, params)
 
         # Cosmetic final blank line
-        print_stderr_2(os.linesep, params)
+        print_stderr(os.linesep, d_empty)
     else:  # pragma: no cover
         # No inventory
         pass

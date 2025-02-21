@@ -46,7 +46,11 @@ from tests.enums import Entrypoints
 
 CLI_TEST_TIMEOUT = 5
 
-pytestmark = [pytest.mark.cli, pytest.mark.nonloc]
+pytestmark = [
+    pytest.mark.cli,
+    pytest.mark.nonloc,
+    pytest.mark.flaky(retries=2, delay=5),
+]
 
 
 class TestTextconvOnlineBad:
