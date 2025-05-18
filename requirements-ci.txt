@@ -1,6 +1,5 @@
 attrs>=19.2
 certifi
-codecov
 coverage
 dictdiffer
 jsonschema

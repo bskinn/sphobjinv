@@ -4,7 +4,6 @@
 #### Current Development Version
 
 [![GitHub Workflow Status][workflow badge]][workflow link target]
-[![Codecov Coverage][codecov badge]][codecov target]
 
 #### Most Recent Stable Release
 
@@ -189,8 +188,6 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [black badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black link target]: https://github.com/psf/black
 [cc-by 4.0]: http://creativecommons.org/licenses/by/4.0/
-[codecov badge]: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
-[codecov target]: https://codecov.io/gh/bskinn/sphobjinv
 [soi docs inv export]: http://sphobjinv.readthedocs.io/en/latest/api_usage.html#exporting-an-inventory
 [github issue tracker]: https://github.com/bskinn/sphobjinv/issues
 [github repo]: https://github.com/bskinn/sphobjinv

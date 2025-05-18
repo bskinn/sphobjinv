@@ -43,11 +43,3 @@ jobs:
     - name: Run tests & report source coverage
       run: |
         pytest --cov --testall --nonloc
-
-    - name: Submit to Codecov if Linux, ready status, and main/stable
-      if: ${{ matrix.os == 'ubuntu-latest' && !github.event.pull_request.draft && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'stable') }}
-      run: |
-        coverage xml -o coverage-service.xml
-        curl -Os https://cli.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} -n 'service'-${{ github.run_id }} -F service -f coverage-service.xml
