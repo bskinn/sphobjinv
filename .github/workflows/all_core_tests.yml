@@ -42,4 +42,4 @@ jobs:
 
     - name: Run tests & report source coverage
       run: |
-        pytest --cov --testall --nonloc
+        pytest --cov --testall
