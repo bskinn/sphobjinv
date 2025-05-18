@@ -18,6 +18,17 @@ changes.
 
 #### Internal
 
+  * Remove job to post a notice on new PRs ([#316]).
+    * The permissions aren't such that it works on PRs from forks, so there's no
+      reason to have it run.
+  * Remove Codecov ([#316]).
+    * It's over-weight for a project and team of this size, and is not worth
+      trying to make work in its current incarnation.
+  * Remove `--nonloc` from CI Python/OS test matrix jobs and add new, targeted
+    `--nonloc` job ([#316]).
+    * Having this many jobs pulling this many inventories at once from remote
+      sites has started to trigger `429 Too Many Requests` responses. Best to
+      lighten the testing load.
   * Coalesce all CI into GitHub Actions, re-organize, and add tailored execution
     contexts ([#306]).
     * Contexts:
@@ -659,3 +670,4 @@ changes.
 [#289]: https://github.com/bskinn/sphobjinv/pull/289
 [#305]: https://github.com/bskinn/sphobjinv/pull/305
 [#306]: https://github.com/bskinn/sphobjinv/pull/306
+[#316]: https://github.com/bskinn/sphobjinv/pull/316
