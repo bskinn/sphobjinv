@@ -34,6 +34,7 @@ import zlib
 from io import BytesIO
 
 import pytest
+import sphinx
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
@@ -166,9 +167,14 @@ def test_name_lead_chars(misc_info, sphinx_ifile_data_count, leadint):
     """Screen for valid/invalid first characters."""
     name = int_to_latin_1(leadint) + " foo"
 
-    # Expect only two fail cases, newline and '#'
+    # For Sphinx < 8.2 expect only two fail cases, newline and '#'
     if leadint in (10, 35):
         pytest.xfail("Known invalid name lead char")
+
+    # Sphinx >= 8.2 uses splitlines(), which strips more line boundary characters.
+    # See https://github.com/bskinn/sphobjinv/issues/314
+    if sphinx.version_info >= (8, 2) and leadint in (11, 12, 13, 28, 29, 30, 133):
+        pytest.xfail("Known invalid name lead char for Sphinx >= 8.2")
 
     test_dataobjstr_valid_objects(
         misc_info,

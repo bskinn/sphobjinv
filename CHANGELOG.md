@@ -15,6 +15,9 @@ changes.
   * Add `pytest-retry` to dev requirements and some `flaky` marks ([#306]).
     * Hopefully will iron out some of the test failures due to transient network
       problems.
+  * Skip more characters in `test_name_lead_chars` for Sphinx 8.2+, that started
+    using `splitlines()` instead of `split('\n')` ([#315]).
+    * Add the boundary Sphinx versions 8.1.3 and 8.2.0 to the tox env list.
 
 #### Internal
 
@@ -670,4 +673,5 @@ changes.
 [#289]: https://github.com/bskinn/sphobjinv/pull/289
 [#305]: https://github.com/bskinn/sphobjinv/pull/305
 [#306]: https://github.com/bskinn/sphobjinv/pull/306
+[#315]: https://github.com/bskinn/sphobjinv/pull/315
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
