@@ -17,7 +17,7 @@ changes.
       problems.
   * Skip more characters in `test_name_lead_chars` for Sphinx 8.2+, that started
     using `splitlines()` instead of `split('\n')` ([#315]).
-  * Run the tests with boundary Sphinx versions: 8.1.3 and 8.2.0.
+    * Add the boundary Sphinx versions 8.1.3 and 8.2.0 to the tox env list.
 
 #### Internal
 
