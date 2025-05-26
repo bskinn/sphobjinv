@@ -8,6 +8,70 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
+### *Unreleased*
+
+...
+
+
+### [2.3.1.3] - 2025-05-26
+
+#### Tests
+
+  * Add `pytest-retry` to dev requirements and some `flaky` marks ([#306]).
+    * Hopefully will iron out some of the test failures due to transient network
+      problems.
+  * Skip more characters in `test_name_lead_chars` for Sphinx 8.2+, that started
+    using `splitlines()` instead of `split('\n')` ([#315]).
+    * Add the boundary Sphinx versions 8.1.3 and 8.2.0 to the tox env list.
+
+#### Internal
+
+  * Remove job to post a notice on new PRs ([#316]).
+    * The permissions aren't such that it works on PRs from forks, so there's no
+      reason to have it run.
+  * Remove Codecov ([#316]).
+    * It's over-weight for a project and team of this size, and is not worth
+      trying to make work in its current incarnation.
+  * Remove `--nonloc` from CI Python/OS test matrix jobs and add new, targeted
+    `--nonloc` job ([#316]).
+    * Having this many jobs pulling this many inventories at once from remote
+      sites has started to trigger `429 Too Many Requests` responses. Best to
+      lighten the testing load.
+  * Coalesce all CI into GitHub Actions, re-organize, and add tailored execution
+    contexts ([#306]).
+    * Contexts:
+      * DRAFT PRs: Tests run on Python 3.12 for Windows and Linux
+       READY PRs:
+        * Full Mac/Win/Linux test matrix on Python 3.9-3.11, 3.13 (GIL)
+        * Doctests
+        * Linting
+      * READY RELEASE PRs:
+        * sdist builds and is testable
+        * Docs build with warnings treated as errors
+        * flake8 noqa check (nofail, info only)
+        * Doctests on README Python
+        * Coverage check for test suite code
+      * OPENED, READY PRs: Post a comment on the PR noting that CI is much
+        lighter for draft PRs.
+    * Delete Azure Pipelines and old GitHub Actions config
+
+  * Remove obsolete `pep517` from requirements ([#306]).
+
+  * Rename `flake8-noqa` tox environment to `flake8_noqa` ([#306]).
+    * `-` has special meaning when naming tox envs/deps, best to avoid it.
+
+  * Bump dev Sphinx version to 7.4.7 ([#305]).
+    * We stay under 8.0 because Sphinx v8 drops Python 3.9.
+
+  * Clean up dependencies ([#305]).
+    * Remove `pytest-ordering`, as it is no longer used in the test suite and is
+      falling out of maintenance enough to start causing some things to fail.
+    * Remove `sphinx-removed-in`, as `.. versionremoved::` is now a Sphinx
+      built-in.
+    * Remove `interrogate`, `pre-commit`, `rope`, `wget` from `requirements-dev.txt`.
+      * No longer used for most; for `rope`, now no plans to use it.
+
+
 ### [2.3.1.2] - 2024-12-22
 
 #### Internal
@@ -612,3 +676,7 @@ changes.
 
 [#287]: https://github.com/bskinn/sphobjinv/issues/287
 [#289]: https://github.com/bskinn/sphobjinv/pull/289
+[#305]: https://github.com/bskinn/sphobjinv/pull/305
+[#306]: https://github.com/bskinn/sphobjinv/pull/306
+[#315]: https://github.com/bskinn/sphobjinv/pull/315
+[#316]: https://github.com/bskinn/sphobjinv/pull/316

@@ -4,7 +4,6 @@
 #### Current Development Version
 
 [![GitHub Workflow Status][workflow badge]][workflow link target]
-[![Codecov Coverage][codecov badge]][codecov target]
 
 #### Most Recent Stable Release
 
@@ -28,7 +27,7 @@
 
 `sphobjinv` (short for '**sph**inx **obj**ects.**inv**') can help!
 
-The syntax required for a functional Sphinx cross-reference is highly
+The syntax required for a functional Sphinx cross-reference is
 non-obvious in many cases. Sometimes Sphinx can guess correctly what
 you mean, but it's pretty hit-or-miss.  The best approach is to provide
 Sphinx with a completely specified cross-reference, and that's where
@@ -178,7 +177,7 @@ Available on [PyPI][pypi link target] (`pip install sphobjinv`).
 Source on [GitHub][github repo]. Bug reports and feature requests are welcomed
 at the [Issues][github issue tracker] page there.
 
-Copyright (c) Brian Skinn 2016-2024
+Copyright (c) Brian Skinn 2016-2025
 
 The `sphobjinv` documentation (including docstrings and README) is licensed
 under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
@@ -189,8 +188,6 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [black badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black link target]: https://github.com/psf/black
 [cc-by 4.0]: http://creativecommons.org/licenses/by/4.0/
-[codecov badge]: https://codecov.io/gh/bskinn/sphobjinv/branch/main/graph/badge.svg
-[codecov target]: https://codecov.io/gh/bskinn/sphobjinv
 [soi docs inv export]: http://sphobjinv.readthedocs.io/en/latest/api_usage.html#exporting-an-inventory
 [github issue tracker]: https://github.com/bskinn/sphobjinv/issues
 [github repo]: https://github.com/bskinn/sphobjinv

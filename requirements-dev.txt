@@ -3,27 +3,21 @@ build
 certifi
 coverage
 dictdiffer
-interrogate
 jsonschema
 md-toc
-pep517
-pre-commit
 pytest>=4.4.0
 pytest-check>=1.1.2
 pytest-cov
-pytest-ordering
+pytest-retry
 pytest-timeout
 restview
-rope
-sphinx==7.1.2
+sphinx==7.4.7  # Staying <8 since 8.0 drops Python 3.9
 sphinx-autobuild
 sphinx-issues
-sphinx-removed-in
 sphinx-rtd-theme>=0.5.1
 sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox
 twine
-wget
 -r requirements-flake8.txt
 -e .

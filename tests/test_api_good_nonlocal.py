@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     21 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2024
+    \(c) Brian Skinn 2016-2025
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
@@ -34,7 +34,11 @@ import pytest
 import sphobjinv as soi
 
 
-pytestmark = [pytest.mark.api, pytest.mark.nonloc]
+pytestmark = [
+    pytest.mark.api,
+    pytest.mark.nonloc,
+    pytest.mark.flaky(retries=2, delay=5),
+]
 
 
 @pytest.fixture(scope="module", autouse=True)

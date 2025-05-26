@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "sphobjinv"
-copyright = "2016-2024, Brian Skinn"
+copyright = "2016-2025, Brian Skinn"
 author = "Brian Skinn"
 
 # The full version for `release`, including alpha/beta/rc tags
@@ -41,7 +41,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinxcontrib.programoutput",
     "sphinx_issues",
-    "sphinx_removed_in",
 ]
 
 # napoleon configuration
