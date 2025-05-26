@@ -10,6 +10,11 @@ changes.
 
 ### *Unreleased*
 
+...
+
+
+### [2.3.1.3] - 2025-05-26
+
 #### Tests
 
   * Add `pytest-retry` to dev requirements and some `flaky` marks ([#306]).

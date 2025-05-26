@@ -27,7 +27,7 @@
 
 `sphobjinv` (short for '**sph**inx **obj**ects.**inv**') can help!
 
-The syntax required for a functional Sphinx cross-reference is highly
+The syntax required for a functional Sphinx cross-reference is
 non-obvious in many cases. Sometimes Sphinx can guess correctly what
 you mean, but it's pretty hit-or-miss.  The best approach is to provide
 Sphinx with a completely specified cross-reference, and that's where
@@ -177,7 +177,7 @@ Available on [PyPI][pypi link target] (`pip install sphobjinv`).
 Source on [GitHub][github repo]. Bug reports and feature requests are welcomed
 at the [Issues][github issue tracker] page there.
 
-Copyright (c) Brian Skinn 2016-2024
+Copyright (c) Brian Skinn 2016-2025
 
 The `sphobjinv` documentation (including docstrings and README) is licensed
 under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]

@@ -9,7 +9,7 @@ exec_ns = {}
 exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"), exec_ns)
 __version__ = exec_ns["__version__"]
 
-version_override = None
+version_override = "2.3.1.2"
 
 
 def readme():
