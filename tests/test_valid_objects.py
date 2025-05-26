@@ -174,7 +174,9 @@ def test_name_lead_chars(misc_info, sphinx_ifile_data_count, leadint):
     # Sphinx >= 8.2 uses splitlines(), which strips more line boundary characters.
     # See https://github.com/bskinn/sphobjinv/issues/314
     if sphinx.version_info >= (8, 2) and leadint in (11, 12, 13, 28, 29, 30, 133):
-        pytest.xfail("Known invalid name lead char for Sphinx >= 8.2")
+        pytest.xfail(
+            "Known invalid name lead char for Sphinx >= 8.2"
+        )  # pragma: no cover
 
     test_dataobjstr_valid_objects(
         misc_info,
