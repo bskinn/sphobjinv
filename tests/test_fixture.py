@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2024
+    \(c) Brian Skinn 2016-2025
 
 **Source Repository**
     http://www.github.com/bskinn/sphobjinv
