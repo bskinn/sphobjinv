@@ -204,5 +204,5 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [python versions badge]: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
 [readthedocs badge]: https://img.shields.io/readthedocs/sphobjinv/latest.svg
 [readthedocs link target]: http://sphobjinv.readthedocs.io/en/latest/
-[workflow badge]: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/ci_tests.yml?logo=github&branch=main
+[workflow badge]: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/all_core_tests.yml?logo=github&branch=main
 [workflow link target]: https://github.com/bskinn/sphobjinv/actions

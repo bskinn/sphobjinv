@@ -1,7 +1,10 @@
 name: 'ALL: Run tests on Python 3.12'
 
 on:
-  - pull_request
+  pull_request:
+  push:
+    branches:
+    - main
 
 jobs:
   current_python_tests:

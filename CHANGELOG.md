@@ -10,7 +10,17 @@ changes.
 
 ### *Unreleased*
 
-...
+#### Internal
+
+  * Add `push` trigger for `all_core_tests.yml` workflow for `main` branch
+    ([#320]).
+    * This will provide `main` branch CI results for this workflow, for the
+      GitHub badge to report.
+
+#### Administrative
+
+  * Update the GitHub badge to point to the new `all_core_tests.yml` workflow
+    ([#320]) instead of the now-removed `ci_tests.yml`.
 
 
 ### [2.3.1.3] - 2025-05-26
@@ -680,3 +690,4 @@ changes.
 [#306]: https://github.com/bskinn/sphobjinv/pull/306
 [#315]: https://github.com/bskinn/sphobjinv/pull/315
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
+[#320]: https://github.com/bskinn/sphobjinv/pull/320
