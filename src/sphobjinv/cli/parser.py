@@ -395,7 +395,9 @@ def getparser_textconv():
 
     """
     prs = ap.ArgumentParser(
-        description="Text diffing of intersphinx 'objects.inv' files."
+        description=(
+            "Emit the plaintext of the local Sphinx inventory at 'infile' to stdout."
+        )
     )
     prs.add_argument(
         "-" + PrsConst.VERSION[0],
@@ -406,7 +408,7 @@ def getparser_textconv():
 
     prs.add_argument(
         PrsConst.INFILE,
-        help=("Path to file to be converted."),
+        help=("Path to file to be converted"),
     )
 
     return prs
