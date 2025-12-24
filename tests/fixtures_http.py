@@ -51,7 +51,7 @@ def _baseurl_for_served_directory(
         directory=str(directory),
     )
 
-    # Bind to port 0 so the OS chooses a free ephemeral port (race-free).
+    # Bind to port 0 so the OS chooses a free ephemeral port
     httpd = http.server.HTTPServer((host, 0), handler_cls)
     port = httpd.server_address[1]
     base_url = f"http://{host}:{port}"
