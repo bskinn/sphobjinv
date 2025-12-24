@@ -22,10 +22,10 @@ jobs:
     strategy:
       matrix:
         os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
-        py: ['3.9', '3.10', '3.11', '3.13']
+        py: ['3.10', '3.11', '3.12', '3.14']
         include:
           - os: 'macos-latest'
-            py: '3.12'
+            py: '3.13'
 
     steps:
     - name: Check out repo
