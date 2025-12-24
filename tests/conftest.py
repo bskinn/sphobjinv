@@ -66,7 +66,7 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def res_path():
     """Provide Path object to the test resource directory."""
-    return Path("tests", "resource")
+    return Path(__file__).resolve().parent / "resource"
 
 
 @pytest.fixture(scope="session")
@@ -161,7 +161,9 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
 @pytest.fixture(scope="session")
 def ensure_doc_scratch():
     """Ensure doc/scratch dir exists, for README shell examples."""
-    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
+    (Path(__file__).resolve().parent.parent / "doc" / "scratch").mkdir(
+        parents=True, exist_ok=True
+    )
 
 
 @pytest.fixture(scope="session")
@@ -305,7 +307,7 @@ def attrs_inventory_test():
 
 testall_inv_paths = [
     p
-    for p in (Path(__file__).parent / "tests" / "resource").iterdir()
+    for p in (Path(__file__).parent / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
 ]
 testall_inv_ids = [p.name[8:-4] for p in testall_inv_paths]
