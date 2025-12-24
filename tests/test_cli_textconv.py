@@ -43,7 +43,7 @@ from tests.enum import CLICommand
 CLI_TEST_TIMEOUT = 2
 CLI_CMDS = ["sphobjinv-textconv"]
 
-pytestmark = [pytest.mark.cli, pytest.mark.local]
+pytestmark = [pytest.mark.cli, pytest.mark.textconv, pytest.mark.local]
 
 
 class TestMisc:
