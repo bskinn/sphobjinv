@@ -6,7 +6,6 @@ graft src/sphobjinv/_vendored/fuzzywuzzy
 graft doc/source
 include doc/make.bat doc/Makefile
 
-include conftest.py
 graft tests
 prune tests/resource
 include tests/resource/objects_attrs* tests/resource/objects_sarge*

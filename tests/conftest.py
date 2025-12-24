@@ -116,7 +116,7 @@ def misc_info(res_path):
 
         # For the URL mode of Inventory instantiation
         remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/main/"
+            "https://raw.githubusercontent.com/bskinn/sphobjinv/main/"
             "tests/resource/objects_{0}.inv"
         )
 
