@@ -626,8 +626,8 @@ class Inventory:
         # Caller's responsibility to ensure URL points
         # someplace safe/sane!
         req = urlrq.Request(url, headers={"User-Agent": "sphobjinv URL/" + soi_version})
-        resp = urlrq.urlopen(req, context=self._sslcontext)  # noqa: S310
-        b_str = resp.read()
+        with urlrq.urlopen(req, context=self._sslcontext) as resp:  # noqa: S310
+            b_str = resp.read()
 
         # Plaintext URL D/L is unreliable; zlib only
         return self._import_zlib_bytes(b_str)
