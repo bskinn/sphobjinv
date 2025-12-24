@@ -55,7 +55,9 @@ def skip_if_no_nonloc(pytestconfig):
 @pytest.mark.parametrize(
     ["name", "url"],
     [
+        # Intentionally HTTP to test insecure remotes
         ("flask", "http://flask.palletsprojects.com/en/1.1.x/objects.inv"),
+        # HTTPS as will usually be the case
         ("h5py", "https://docs.h5py.org/en/stable/objects.inv"),
     ],
     ids=(lambda x: "" if "://" in x else x),
