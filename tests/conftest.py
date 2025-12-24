@@ -45,6 +45,7 @@ from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
+from tests.fixtures_http import resource_http_base_url, resource_url  # noqa: F401
 
 
 def pytest_addoption(parser):
@@ -114,12 +115,6 @@ def misc_info(res_path):
             True: b"attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute",
         }
 
-        # For the URL mode of Inventory instantiation
-        remote_url = (
-            "https://raw.githubusercontent.com/bskinn/sphobjinv/main/"
-            "tests/resource/objects_{0}.inv"
-        )
-
         # Regex pattern for objects_xyz.inv files
         p_inv = re.compile(r"objects_([^.]+)\.inv", re.I)
 
@@ -133,6 +128,16 @@ def misc_info(res_path):
     Info.str_lines = {_: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines}
 
     return Info()
+
+
+@pytest.fixture(scope="session")
+def http_inv_url_template(resource_url) -> str:  # noqa: F811
+    """Provide a template string for accessing files over HTTP.
+
+    Meant to be used via the URL mode of Inventory instantiation.
+
+    """
+    return resource_url("objects_{0}.inv")
 
 
 @pytest.fixture()
