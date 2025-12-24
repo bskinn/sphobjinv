@@ -239,7 +239,6 @@ def run_cmdline_test(monkeypatch):
 
     def func(arglist, *, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""
-
         # Assemble execution arguments
         runargs = ["sphobjinv"]
         runargs.extend(str(a) for a in arglist)
