@@ -335,80 +335,56 @@ class TestMisc:
 class TestFail:
     """Tests for expected-fail behaviors."""
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_wrongfiletype(
-    #     self, scratch_path, run_cmdline_test, monkeypatch
-    # ):
-    #     """Confirm exit code 1 with invalid file format."""
-    #     monkeypatch.chdir(scratch_path)
-    #     fname = "testfile"
-    #     Path(fname).write_bytes(b"this is not objects.inv\n")
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_clifail_convert_wrongfiletype(
+        self, scratch_path, run_cmdline_test, monkeypatch
+    ):
+        """Confirm exit code 1 with invalid file format."""
+        monkeypatch.chdir(scratch_path)
+        fname = "testfile"
+        Path(fname).write_bytes(b"this is not objects.inv\n")
 
-    #     with stdio_mgr() as (in_, out_, err_):
-    #         run_cmdline_test(["convert", "plain", fname], expect=1)
-    #         assert "Unrecognized" in err_.getvalue()
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test([fname], command=CLICommand.Textconv, expect=1)
+            assert "Unrecognized" in err_.getvalue()
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_missingfile(self, run_cmdline_test):
-    #     """Confirm exit code 1 with nonexistent file specified."""
-    #     run_cmdline_test(["convert", "plain", "thisfileshouldbeabsent.txt"], expect=1)
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_clifail_convert_missingfile(self, run_cmdline_test):
+        """Confirm exit code 1 with nonexistent file specified."""
+        run_cmdline_test(
+            ["thisfileshouldbeabsent.txt"], command=CLICommand.Textconv, expect=1
+        )
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_badoutfilename(
-    #     self, scratch_path, run_cmdline_test, misc_info
-    # ):
-    #     """Confirm exit code 1 with invalid output file name."""
-    #     run_cmdline_test(
-    #         [
-    #             "convert",
-    #             "plain",
-    #             str(scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)),
-    #             misc_info.invalid_filename,
-    #         ],
-    #         expect=1,
-    #     )
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_clifail_convert_outputdir_provided(
+        self, res_cmp, scratch_path, run_cmdline_test
+    ):
+        """Confirm exit code 2 when too many inputs are provided."""
+        run_cmdline_test(
+            [
+                res_cmp,
+                str(scratch_path / "objects.txt"),
+            ],
+            command=CLICommand.Textconv,
+            expect=2,
+        )
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_badoutputdir(
-    #     self, res_cmp, scratch_path, run_cmdline_test
-    # ):
-    #     """Confirm exit code 1 when output location can't be created."""
-    #     run_cmdline_test(
-    #         [
-    #             "convert",
-    #             "plain",
-    #             res_cmp,
-    #             str(scratch_path / "nonexistent" / "folder" / "obj.txt"),
-    #         ],
-    #         expect=1,
-    #     )
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_clifail_convert_pathonlysrc(self, scratch_path, run_cmdline_test):
+        """Confirm cmdline plaintext convert with input directory arg fails."""
+        run_cmdline_test(
+            [str(scratch_path)],
+            command=CLICommand.Textconv,
+            expect=1,
+        )
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_pathonlysrc(self, scratch_path, run_cmdline_test):
-    #     """Confirm cmdline plaintext convert with input directory arg fails."""
-    #     run_cmdline_test(["convert", "plain", str(scratch_path)], expect=1)
-
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_clifail_convert_localfile_as_url(
-    #     self, scratch_path, misc_info, run_cmdline_test, check
-    # ):
-    #     """Confirm error when using URL mode on local file."""
-    #     in_path = scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.CMP)
-
-    #     (scratch_path / (misc_info.FNames.INIT + misc_info.Extensions.DEC)).unlink()
-
-    #     with check(msg="path-style"):
-    #         run_cmdline_test(["convert", "plain", "-u", str(in_path)], expect=1)
-
-    #     with check(msg="url-style"):
-    #         file_url = "file:///" + str(in_path.resolve())
-    #         run_cmdline_test(["convert", "plain", "-u", file_url], expect=1)
-
-    # def test_clifail_no_url_with_stdin(self, run_cmdline_test):
-    #     """Confirm parser exit when -u passed with "-" infile."""
-    #     with stdio_mgr() as (in_, out_, err_):
-    #         run_cmdline_test(["convert", "plain", "-u", "-"], expect=2)
-    #         assert "--url not allowed" in err_.getvalue()
+    def test_clifail_no_url_arg(self, run_cmdline_test):
+        """Confirm textconv parser errors on non-existent -u flag."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(
+                ["-u", "nofile.inv"], command=CLICommand.Textconv, expect=2
+            )
+            assert "unrecognized argument" in err_.getvalue()
 
 
 class TestStdio:
