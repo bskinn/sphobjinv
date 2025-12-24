@@ -11,7 +11,7 @@ pytest-cov
 pytest-retry
 pytest-timeout
 restview
-sphinx==8.1.3  # Staying <9 since sphinx-rtd-theme 3.0.2 is incompat w/9.0
+sphinx==8.1.3  # Staying <8.2 to retain Python 3.10 compat
 sphinx-autobuild
 sphinx-issues
 sphinx-rtd-theme>=0.5.1
