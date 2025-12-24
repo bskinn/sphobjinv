@@ -41,7 +41,7 @@ import pytest
 
 @contextlib.contextmanager
 def _baseurl_for_served_directory(
-    directory: Path | str, host: str = "127.0.0.1"
+    directory: Path | str, host: str = "localhost"
 ) -> Generator[str, None, None]:
     """Spin up HTTP server on a directory and yield the server base URL."""
     directory = Path(directory).resolve()
