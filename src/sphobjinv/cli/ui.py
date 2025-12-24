@@ -58,7 +58,11 @@ def print_stderr(thing, params, *, end="\n"):
         |str| -- String to append to printed content (default: ``\n``\ )
 
     """
-    if params[PrsConst.SUBPARSER_NAME][:2] == "su" or not params[PrsConst.QUIET]:
+    if (
+        PrsConst.SUBPARSER_NAME not in params  # textconv
+        or params[PrsConst.SUBPARSER_NAME][:2] == "su"  # suggest is never quiet
+        or not params[PrsConst.QUIET]  # non-quiet convert
+    ):
         print(thing, file=sys.stderr, end=end)
 
 
