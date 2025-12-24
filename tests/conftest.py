@@ -45,6 +45,7 @@ from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
+from tests.fixtures_http import resource_http_base_url, resource_url  # noqa: F401
 
 
 def pytest_addoption(parser):
@@ -66,7 +67,7 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def res_path():
     """Provide Path object to the test resource directory."""
-    return Path("tests", "resource")
+    return Path(__file__).resolve().parent / "resource"
 
 
 @pytest.fixture(scope="session")
@@ -114,12 +115,6 @@ def misc_info(res_path):
             True: b"attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute",
         }
 
-        # For the URL mode of Inventory instantiation
-        remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/main/"
-            "tests/resource/objects_{0}.inv"
-        )
-
         # Regex pattern for objects_xyz.inv files
         p_inv = re.compile(r"objects_([^.]+)\.inv", re.I)
 
@@ -133,6 +128,16 @@ def misc_info(res_path):
     Info.str_lines = {_: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines}
 
     return Info()
+
+
+@pytest.fixture(scope="session")
+def http_inv_url_template(resource_url) -> str:  # noqa: F811
+    """Provide a template string for accessing files over HTTP.
+
+    Meant to be used via the URL mode of Inventory instantiation.
+
+    """
+    return resource_url("objects_{0}.inv")
 
 
 @pytest.fixture()
@@ -161,7 +166,9 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
 @pytest.fixture(scope="session")
 def ensure_doc_scratch():
     """Ensure doc/scratch dir exists, for README shell examples."""
-    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
+    (Path(__file__).resolve().parent.parent / "doc" / "scratch").mkdir(
+        parents=True, exist_ok=True
+    )
 
 
 @pytest.fixture(scope="session")
@@ -237,7 +244,6 @@ def run_cmdline_test(monkeypatch):
 
     def func(arglist, *, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""
-
         # Assemble execution arguments
         runargs = ["sphobjinv"]
         runargs.extend(str(a) for a in arglist)
@@ -305,7 +311,7 @@ def attrs_inventory_test():
 
 testall_inv_paths = [
     p
-    for p in (Path(__file__).parent / "tests" / "resource").iterdir()
+    for p in (Path(__file__).parent / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
 ]
 testall_inv_ids = [p.name[8:-4] for p in testall_inv_paths]

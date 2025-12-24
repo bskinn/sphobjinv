@@ -227,6 +227,8 @@ def getparser():
     # briefly required a/o 3.7.0b4 due to change in default behavior, per:
     # https://bugs.python.org/issue33109. 3.6 behavior restored for
     # 3.7 release.
+    #
+    # We retain for explicitness
     sprs.required = False
 
     spr_convert = sprs.add_parser(

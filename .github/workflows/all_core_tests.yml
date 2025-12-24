@@ -1,4 +1,4 @@
-name: 'ALL: Run tests on Python 3.12'
+name: 'ALL: Run tests on Python 3.13'
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.13'
         cache: 'pip'
         cache-dependency-path: requirements-ci.txt
 
