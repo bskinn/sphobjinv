@@ -64,9 +64,14 @@ def skip_if_no_nonloc(pytestconfig):
 )
 @pytest.mark.timeout(30)
 def test_api_inventory_known_header_required(name, url):
-    """Confirm URL load works on docs pages requiring HTTP header config."""
+    """Confirm URL load works on docs pages requiring HTTP header config.
+
+    With the change to local-server HTTP testing, this test is important because
+    it directly exercises `Inventory` instantiation from a true HTTP(S) remote.
+
+    """
     inv = soi.Inventory(url=url)
-    assert inv.count > 0
+    assert inv.count > 0, f"'{name}' inventory imports without objects"
 
 
 @pytest.mark.testall
