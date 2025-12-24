@@ -39,6 +39,14 @@ from typing import Callable, Generator
 import pytest
 
 
+class NoReverseDNSRequestHandler(http.server.SimpleHTTPRequestHandler):
+    """HTTP request handler that skips reverse DNS lookup when logging."""
+
+    def address_string(self) -> str:
+        """Return the address string without reverse DNS lookup."""
+        return self.client_address[0]
+
+
 @contextlib.contextmanager
 def _baseurl_for_served_directory(
     directory: Path | str, host: str = "localhost"
@@ -47,7 +55,7 @@ def _baseurl_for_served_directory(
     directory = Path(directory).resolve()
 
     handler_cls = functools.partial(
-        http.server.SimpleHTTPRequestHandler,
+        NoReverseDNSRequestHandler,
         directory=str(directory),
     )
 
