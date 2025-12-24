@@ -81,6 +81,7 @@ def test_api_inventory_many_url_imports(
     res_path,
     scratch_path,
     misc_info,
+    http_inv_url_template,
     sphinx_load_test,
     pytestconfig,
 ):
@@ -102,7 +103,7 @@ def test_api_inventory_many_url_imports(
     mch = misc_info.p_inv.match(fname)
     proj_name = mch.group(1)
     inv1 = soi.Inventory(str(res_path / fname))
-    inv2 = soi.Inventory(url=misc_info.remote_url.format(proj_name))
+    inv2 = soi.Inventory(url=http_inv_url_template.format(proj_name))
 
     # Test the things
     assert inv1 == inv2
