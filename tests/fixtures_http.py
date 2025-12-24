@@ -86,7 +86,7 @@ def resource_http_base_url() -> Generator[str, None, None]:
         yield base_url
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def resource_url(resource_http_base_url: str) -> Callable[[str], str]:
     """Provide a function to calculate the full test-resource URL from a relative URL.
 
