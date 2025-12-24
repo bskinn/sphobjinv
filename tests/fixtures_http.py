@@ -32,6 +32,7 @@ Sphinx |objects.inv| files.
 import contextlib
 import functools
 import http.server
+import socketserver
 import threading
 from pathlib import Path
 from typing import Callable, Generator
@@ -39,9 +40,25 @@ from typing import Callable, Generator
 import pytest
 
 
+class NoNameLookupHTTPServer(http.server.HTTPServer):
+    """HTTPServer subclass that doesn't do rDNS lookup when setting server name.
+
+    We use this class because the macOS GitHub runners time out when attempting
+    the rDNS lookup.
+
+    """
+
+    def server_bind(self):
+        """Override server_bind to store the server name."""
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = host  # Override
+        self.server_port = port
+
+
 @contextlib.contextmanager
 def _baseurl_for_served_directory(
-    directory: Path | str, host: str = "localhost"
+    directory: Path | str, host: str = "127.0.0.1"
 ) -> Generator[str, None, None]:
     """Spin up HTTP server on a directory and yield the server base URL."""
     directory = Path(directory).resolve()
@@ -52,7 +69,7 @@ def _baseurl_for_served_directory(
     )
 
     # Bind to port 0 so the OS chooses a free ephemeral port
-    httpd = http.server.HTTPServer((host, 0), handler_cls)
+    httpd = NoNameLookupHTTPServer((host, 0), handler_cls)
     port = httpd.server_address[1]
     base_url = f"http://{host}:{port}"
 
