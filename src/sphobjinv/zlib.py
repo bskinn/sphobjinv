@@ -33,7 +33,6 @@ import io
 import os
 import zlib
 
-
 BUFSIZE = 16 * 1024  # 16k chunks
 
 

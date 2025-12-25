@@ -39,7 +39,7 @@ import certifi
 import jsonschema
 from jsonschema.exceptions import ValidationError
 
-from sphobjinv.data import _utf8_encode, DataObjStr
+from sphobjinv.data import DataObjStr, _utf8_encode
 from sphobjinv.enum import HeaderFields, SourceTypes
 from sphobjinv.fileops import readbytes
 from sphobjinv.re import pb_data, pb_project, pb_version

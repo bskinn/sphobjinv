@@ -33,7 +33,7 @@ import sys
 
 from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
-from sphobjinv.cli.parser import getparser, getparser_textconv, PrsConst
+from sphobjinv.cli.parser import PrsConst, getparser, getparser_textconv
 from sphobjinv.cli.suggest import do_suggest
 from sphobjinv.cli.ui import print_stderr
 

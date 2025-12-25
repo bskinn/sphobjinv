@@ -33,7 +33,6 @@ import pytest
 
 import sphobjinv as soi
 
-
 pytestmark = [
     pytest.mark.api,
     pytest.mark.nonloc,
@@ -55,16 +54,23 @@ def skip_if_no_nonloc(pytestconfig):
 @pytest.mark.parametrize(
     ["name", "url"],
     [
+        # Intentionally HTTP to test insecure remotes
         ("flask", "http://flask.palletsprojects.com/en/1.1.x/objects.inv"),
+        # HTTPS as will usually be the case when retrieving inventories
         ("h5py", "https://docs.h5py.org/en/stable/objects.inv"),
     ],
     ids=(lambda x: "" if "://" in x else x),
 )
 @pytest.mark.timeout(30)
 def test_api_inventory_known_header_required(name, url):
-    """Confirm URL load works on docs pages requiring HTTP header config."""
+    """Confirm URL load works on docs pages requiring HTTP header config.
+
+    With the change to local-server HTTP testing, this test is important because
+    it directly exercises `Inventory` instantiation from a true HTTP(S) remote.
+
+    """
     inv = soi.Inventory(url=url)
-    assert inv.count > 0
+    assert inv.count > 0, f"'{name}' inventory imports without objects"
 
 
 @pytest.mark.testall
@@ -74,6 +80,7 @@ def test_api_inventory_many_url_imports(
     res_path,
     scratch_path,
     misc_info,
+    http_inv_url_template,
     sphinx_load_test,
     pytestconfig,
 ):
@@ -95,7 +102,7 @@ def test_api_inventory_many_url_imports(
     mch = misc_info.p_inv.match(fname)
     proj_name = mch.group(1)
     inv1 = soi.Inventory(str(res_path / fname))
-    inv2 = soi.Inventory(url=misc_info.remote_url.format(proj_name))
+    inv2 = soi.Inventory(url=http_inv_url_template.format(proj_name))
 
     # Test the things
     assert inv1 == inv2

@@ -10,7 +10,47 @@ changes.
 
 ### *Unreleased*
 
+#### Tests
+
+  * Update `tox` env test matrix for `py310` to `py314` ([#325]).
+
+  * Update test path calculations to always be relative to `__file__` ([#325]).
+
+  * Relocate `conftest.py` into `tests` ([#325]).
+    * Since the new HTTP server fixtures are going in their own source file, it
+      made the most sense to pull `conftest.py` into the `tests/` directory
+      also.
+    * Required some updates to paths in fixtures &c.
+
+  * Convert HTTP/URL nonloc tests to use a transient local HTTP server ([#325]).
+    * See `tests/fixtures_http.py`.
+    * With the increased caution many sites, including GitHub, are applying to
+      incoming traffic, using 'raw' GitHub assets in the `sphobjinv` repository
+      has become too flaky.
+    * So, we stand up our own HTTP server as a session-scope fixture, and point
+      (nearly) all of the URL tests at the local server.
+       * A small number of tests remain that do still reach out to an internet
+         `objects.inv`.
+    * A small number of outside-world URL tests remain, to docsets that (so far)
+      have been cooperative. Time will tell if we need to find others.
+
 #### Internal
+
+  * Augment `black` and `flake8` `tox` envs to run `--version` first ([#327]).
+
+  * Remove `-r requirements-flake.txt` from `requirements-dev.txt` ([#327]).
+    * `flake8` should always be run via `tox`.
+
+  * Add `tox` env to run `isort` and execute across codebase ([#327]).
+
+  * Add `flake8-isort` to `flake8` requirements and remove `flake8-import-order`
+    ([#327]).
+    * Also remove `flake8-import-order` config from `tox.ini`.
+
+  * Bump dev-pin Sphinx to v8.1.3 ([#325]).
+    * Two different version constraints at the moment:
+      * Sphinx v8.2 doesn't support Python 3.10 (primary constraint)
+      * Newest `sphinx-rtd-theme` only supports Sphinx `<9` (secondary).
 
   * Add `push` trigger for `all_core_tests.yml` workflow for `main` branch
     ([#320]).
@@ -18,6 +58,12 @@ changes.
       GitHub badge to report.
 
 #### Administrative
+
+  * Add formal support for Python 3.14 ([#325]).
+
+  * Drop support for Python 3.9 (EOL) ([#325]).
+
+  * Bump 'core' dev and CI Python version to 3.13 ([#325]).
 
   * Update the GitHub badge to point to the new `all_core_tests.yml` workflow
     ([#320]) instead of the now-removed `ci_tests.yml`.
@@ -691,3 +737,5 @@ changes.
 [#315]: https://github.com/bskinn/sphobjinv/pull/315
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
 [#320]: https://github.com/bskinn/sphobjinv/pull/320
+[#325]: https://github.com/bskinn/sphobjinv/pull/325
+[#327]: https://github.com/bskinn/sphobjinv/pull/327

@@ -39,10 +39,7 @@ from pathlib import Path
 import pytest
 from stdio_mgr import stdio_mgr
 
-from sphobjinv import HeaderFields
-from sphobjinv import Inventory
-from sphobjinv import SourceTypes
-
+from sphobjinv import HeaderFields, Inventory, SourceTypes
 
 CLI_TEST_TIMEOUT = 2
 CLI_CMDS = ["sphobjinv", "python -m sphobjinv"]
@@ -76,7 +73,7 @@ class TestMisc:
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test([])
 
-            assert "usage: sphobjinv" in out_.getvalue()
+            assert re.search("usage:.*sphobjinv", out_.getvalue(), re.I)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_no_subparser_prs_exit(self, run_cmdline_test):
