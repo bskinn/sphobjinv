@@ -29,6 +29,7 @@ Sphinx |objects.inv| files.
 
 """
 
+import re
 import shlex
 import subprocess as sp  # noqa: S404
 from pathlib import Path
@@ -60,18 +61,18 @@ class TestMisc:
         assert "sphobjinv" in out
         assert "infile" in out
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_cli_version_exits_ok(self, run_cmdline_test):
-    #     """Confirm --version exits cleanly."""
-    #     run_cmdline_test(["-v"])
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_version_exits_ok(self, run_cmdline_test):
+        """Confirm --version exits cleanly."""
+        run_cmdline_test(["-v"], command=CLICommand.Textconv)
 
-    # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
-    # def test_cli_noargs_shows_help(self, run_cmdline_test):
-    #     """Confirm help shown when invoked with no arguments."""
-    #     with stdio_mgr() as (in_, out_, err_):
-    #         run_cmdline_test([])
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_cli_noargs_shows_help(self, run_cmdline_test):
+        """Confirm help shown when invoked with no arguments."""
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test([], command=CLICommand.Textconv)
 
-    #         assert "usage: sphobjinv" in out_.getvalue()
+            assert re.search("usage.+sphobjinv", out_.getvalue(), re.I)
 
     # @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     # def test_cli_no_subparser_prs_exit(self, run_cmdline_test):
