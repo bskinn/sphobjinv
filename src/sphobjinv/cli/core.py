@@ -112,10 +112,7 @@ def main_textconv():
     prs = getparser_textconv()
     params = vars(prs.parse_args())
 
-    # Print version &c. and exit if indicated
-    if params[PrsConst.VERSION]:
-        print(PrsConst.VER_TXT)
-        sys.exit(0)
+    # No version arg handling, using 'version' action in this parser
 
     inv, in_path = inv_local(params)
 

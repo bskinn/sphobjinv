@@ -52,6 +52,9 @@ class PrsConst:
         " https://sphobjinv.readthedocs.io\n"
     )
 
+    #: Short version text for textconv entrypoint
+    VER_TXT_SHORT = f"sphobjinv v{__version__}"
+
     # ### Subparser selectors and argparse param for storing subparser name
     #: Subparser name for inventory file conversions; stored in
     #: :data:`SUBPARSER_NAME` when selected
@@ -405,7 +408,8 @@ def getparser_textconv():
         "-" + PrsConst.VERSION[0],
         "--" + PrsConst.VERSION,
         help="Print package version & other info",
-        action="store_true",
+        action="version",
+        version=PrsConst.VER_TXT_SHORT,
     )
 
     prs.add_argument(
