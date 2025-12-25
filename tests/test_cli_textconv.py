@@ -39,7 +39,6 @@ from stdio_mgr import stdio_mgr
 from sphobjinv import Inventory
 from tests.enum import CLICommand
 
-
 CLI_TEST_TIMEOUT = 2
 CLI_CMDS = ["sphobjinv-textconv"]
 
@@ -94,8 +93,19 @@ class TestMisc:
 class TestConvertGood:
     """Tests for expected-good convert functionality."""
 
-    
+    def test_textconv_matches_main_conv(self, res_cmp, run_cmdline_test):
+        """Ensure that textconv conversion matches main CLI conversion."""
+        with stdio_mgr() as (_, out_, _):
+            run_cmdline_test(
+                ["convert", "plain", res_cmp, "-"], command=CLICommand.Core
+            )
+            core_output = out_.getvalue()
 
+        with stdio_mgr() as (_, out_, _):
+            run_cmdline_test([res_cmp], command=CLICommand.Textconv)
+            textconv_output = out_.getvalue()
+
+        assert core_output == textconv_output
 
 
 class TestFail:
