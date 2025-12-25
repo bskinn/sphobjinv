@@ -19,5 +19,4 @@ sphinxcontrib-programoutput
 stdio-mgr>=1.0.1
 tox
 twine
--r requirements-flake8.txt
 -e .

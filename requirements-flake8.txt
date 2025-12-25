@@ -10,7 +10,7 @@ flake8-comprehensions
 flake8-docstrings>=1.3.1
 flake8-eradicate
 flake8-implicit-str-concat
-flake8-import-order
+flake8-isort
 flake8-pie
 flake8-raise
 flake8-rst-docstrings

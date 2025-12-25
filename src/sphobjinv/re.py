@@ -34,7 +34,6 @@ import re
 from sphobjinv.data import DataFields as DF  # noqa: N817
 from sphobjinv.enum import HeaderFields as HF  # noqa: N817
 
-
 #: Compiled |re| |bytes|  pattern for comment lines in decompressed
 #: inventory files
 pb_comments = re.compile(b"^#.*$", re.M)

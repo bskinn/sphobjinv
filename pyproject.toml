@@ -89,3 +89,9 @@ exclude = '''
 exclude = ["src/sphobjinv/_vendored"]
 fail-under = 100
 verbose = 1
+
+[tool.isort]
+profile = "black"
+known_first_party = ["sphobjinv", "tests"]
+no_lines_before = ["LOCALFOLDER"]
+extend_skip = ["src/sphobjinv/_vendored"]

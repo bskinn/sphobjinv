@@ -33,7 +33,6 @@ import pytest
 
 import sphobjinv as soi
 
-
 pytestmark = [
     pytest.mark.api,
     pytest.mark.nonloc,
