@@ -36,6 +36,17 @@ changes.
 
 #### Internal
 
+  * Augment `black` and `flake8` `tox` envs to run `--version` first ([#327]).
+
+  * Remove `-r requirements-flake.txt` from `requirements-dev.txt` ([#327]).
+    * `flake8` should always be run via `tox`.
+
+  * Add `tox` env to run `isort` and execute across codebase ([#327]).
+
+  * Add `flake8-isort` to `flake8` requirements and remove `flake8-import-order`
+    ([#327]).
+    * Also remove `flake8-import-order` config from `tox.ini`.
+
   * Bump dev-pin Sphinx to v8.1.3 ([#325]).
     * Two different version constraints at the moment:
       * Sphinx v8.2 doesn't support Python 3.10 (primary constraint)
@@ -727,3 +738,4 @@ changes.
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
 [#320]: https://github.com/bskinn/sphobjinv/pull/320
 [#325]: https://github.com/bskinn/sphobjinv/pull/325
+[#327]: https://github.com/bskinn/sphobjinv/pull/327
