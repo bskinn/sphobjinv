@@ -33,7 +33,6 @@ import pytest
 
 import sphobjinv.cli.suggest as soi_cli_suggest
 
-
 pytestmark = [pytest.mark.intersphinx, pytest.mark.local]
 
 

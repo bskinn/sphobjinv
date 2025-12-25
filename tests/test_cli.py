@@ -39,10 +39,7 @@ from pathlib import Path
 import pytest
 from stdio_mgr import stdio_mgr
 
-from sphobjinv import HeaderFields
-from sphobjinv import Inventory
-from sphobjinv import SourceTypes
-
+from sphobjinv import HeaderFields, Inventory, SourceTypes
 
 CLI_TEST_TIMEOUT = 2
 CLI_CMDS = ["sphobjinv", "python -m sphobjinv"]

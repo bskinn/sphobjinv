@@ -36,7 +36,7 @@ from urllib.error import HTTPError, URLError
 
 from jsonschema.exceptions import ValidationError
 
-from sphobjinv import Inventory, readjson, urlwalk, VersionError
+from sphobjinv import Inventory, VersionError, readjson, urlwalk
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.paths import resolve_inpath
 from sphobjinv.cli.ui import err_format, print_stderr
