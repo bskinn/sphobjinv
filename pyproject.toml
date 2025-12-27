@@ -95,3 +95,34 @@ profile = "black"
 known_first_party = ["sphobjinv", "tests"]
 no_lines_before = ["LOCALFOLDER"]
 extend_skip = ["src/sphobjinv/_vendored"]
+
+[tool.mypy]
+mypy_path = "src"
+warn_return_any = true
+warn_unused_configs = true
+any_exprs_report = "mypy_any"
+check_untyped_defs = true
+disallow_incomplete_defs = true
+linecount_report = "mypy_linecount"
+no_implicit_optional = true
+strict_bytes = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+exclude = '''(?x)(
+    ^env/
+  | /_vendored/
+  )'''
+
+[[tool.mypy.overrides]]
+module = [
+  "dictdiffer",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+  "sphobjinv._vendored.*",
+]
+ignore_errors = true

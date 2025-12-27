@@ -81,3 +81,6 @@ doc/scratch/*
 # VS Code
 .vscode
 
+# mypy reports
+mypy_any/
+mypy_linecount/
