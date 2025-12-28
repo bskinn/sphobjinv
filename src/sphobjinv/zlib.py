@@ -32,11 +32,12 @@ Sphinx |objects.inv| files.
 import io
 import os
 import zlib
+from typing import Generator, cast
 
-BUFSIZE = 16 * 1024  # 16k chunks
+BUFSIZE: int = 16 * 1024  # 16k chunks
 
 
-def decompress(bstr):
+def decompress(bstr: bytes) -> bytes:
     """Decompress a version 2 |isphx| |objects.inv| bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
@@ -59,7 +60,7 @@ def decompress(bstr):
     """
     from sphobjinv.error import VersionError
 
-    def decompress_chunks(bstrm):
+    def decompress_chunks(bstrm: io.BytesIO) -> Generator[bytes, None, None]:
         """Handle chunk-wise zlib decompression.
 
         Internal function pulled from intersphinx.py@v1.4.1:
@@ -96,7 +97,7 @@ def decompress(bstr):
     return out_b.replace(b"\n", os.linesep.encode("utf-8"))
 
 
-def compress(bstr):
+def compress(bstr: bytes) -> bytes:
     """Compress a version 2 |isphx| |objects.inv| bytestring.
 
     The `#`-prefixed comment lines are left unchanged, whereas the
@@ -123,7 +124,8 @@ def compress(bstr):
     s = bstr.replace(b"\r\n", b"\n")
 
     # Pull all of the lines
-    m_comments = pb_comments.findall(s)
+    # pb_comments has no capturing groups, so we know m_comments is list[bytes]
+    m_comments = cast(list[bytes], pb_comments.findall(s))
     m_data = pb_data.finditer(s)
 
     # Assemble the binary header comments and data
