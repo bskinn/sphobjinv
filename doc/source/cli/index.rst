@@ -35,25 +35,6 @@ Some notes on these CLI docs:
  * |cour|\ file_head\ |/cour| is a helper function
    that retrieves the head of a specified file.
 
-
-.. program:: sphobjinv
-
-The options for the parent |soi| command are:
-
-.. option:: -h, --help
-
-    Show help message and exit
-
-.. program-output:: sphobjinv --help
-
-
-.. option:: -v, --version
-
-    Print package version & other info
-
-.. program-output:: sphobjinv --version
-
-
 .. toctree::
     :maxdepth: 1
     :hidden:
