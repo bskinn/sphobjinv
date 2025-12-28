@@ -31,6 +31,7 @@ Sphinx |objects.inv| files.
 
 from abc import ABCMeta, abstractmethod
 from enum import Enum
+from typing import Generic, TypeVar
 
 import attr
 
@@ -61,7 +62,7 @@ class DataFields(Enum):
     DispName = "dispname"
 
 
-def _utf8_decode(b):
+def _utf8_decode(b: bytes | str) -> str:
     """Decode (if needed) to str.
 
     Helper for type conversions among DataObjStr and DataObjBytes.
@@ -75,7 +76,7 @@ def _utf8_decode(b):
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
-def _utf8_encode(s):
+def _utf8_encode(s: bytes | str) -> bytes:
     """Encode (if needed) to bytes.
 
     Helper for type conversions among DataObjStr and DataObjBytes.
@@ -89,7 +90,10 @@ def _utf8_encode(s):
         raise TypeError("Argument must be 'bytes' or 'str'")
 
 
-class SuperDataObj(metaclass=ABCMeta):
+T = TypeVar("T", str, bytes)
+
+
+class SuperDataObj(Generic[T], metaclass=ABCMeta):
     """Abstract base superclass defining common methods &c. for data objects.
 
     Intended only to be subclassed
@@ -121,27 +125,27 @@ class SuperDataObj(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self) -> T:
         r"""Object name, as recognized internally by Sphinx\ |dag|."""
 
     @property
     @abstractmethod
-    def domain(self):
+    def domain(self) -> T:
         r"""Sphinx domain containing the object\ |dag|."""
 
     @property
     @abstractmethod
-    def role(self):
+    def role(self) -> T:
         r"""Sphinx role to be used when referencing the object\ |dag|."""
 
     @property
     @abstractmethod
-    def priority(self):
+    def priority(self) -> T:
         r"""Object search priority, as handled internally by Sphinx\ |dag|."""
 
     @property
     @abstractmethod
-    def uri(self):
+    def uri(self) -> T:
         r"""Object URI relative to documentation root\ |dag|.
 
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
@@ -150,7 +154,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def dispname(self):
+    def dispname(self) -> T:
         r"""Object default name in rendered documentation\ |dag|.
 
         Possibly abbreviated; see :ref:`here <syntax_shorthand>`.
@@ -159,7 +163,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def uri_abbrev(self):
+    def uri_abbrev(self) -> T:
         r"""Abbreviation character(s) for URI tail\ |dag|.
 
         ``'$'`` or ``b'$'``
@@ -169,7 +173,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def dispname_abbrev(self):
+    def dispname_abbrev(self) -> T:
         r"""Abbreviation character(s) for display name\ |dag|.
 
         ``'-'`` or ``b'-'``
@@ -179,20 +183,20 @@ class SuperDataObj(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def as_str(self, s):
+    def as_str(self, s) -> "SuperDataObj[str]":
         """:class:`DataObjStr` version of instance."""
 
     @property
     @abstractmethod
-    def as_bytes(self, s):
+    def as_bytes(self, s) -> "SuperDataObj[bytes]":
         """:class:`DataObjBytes` version of instance."""
 
     @abstractmethod
-    def _data_line_postprocess(self, s):
+    def _data_line_postprocess(self, s: T) -> T:
         """Post-process the data_line chars output."""
 
     @property
-    def uri_contracted(self):
+    def uri_contracted(self) -> T:
         """Object-relative URI, contracted with `uri_abbrev`."""
         if self.uri.endswith(self.name):
             return self.uri[: -len(self.name)] + self.uri_abbrev
@@ -200,7 +204,7 @@ class SuperDataObj(metaclass=ABCMeta):
             return self.uri
 
     @property
-    def uri_expanded(self):
+    def uri_expanded(self) -> T:
         """Object-relative URI, with `uri_abbrev` expanded."""
         if self.uri.endswith(self.uri_abbrev):
             return self.uri[: -len(self.uri_abbrev)] + self.name
@@ -208,7 +212,7 @@ class SuperDataObj(metaclass=ABCMeta):
             return self.uri
 
     @property
-    def dispname_contracted(self):
+    def dispname_contracted(self) -> T:
         """Object display name, contracted with `dispname_abbrev`."""
         if self.dispname == self.name:
             return self.dispname_abbrev
@@ -216,7 +220,7 @@ class SuperDataObj(metaclass=ABCMeta):
             return self.dispname
 
     @property
-    def dispname_expanded(self):
+    def dispname_expanded(self) -> T:
         """Object display name, with `dispname_abbrev` expanded."""
         if self.dispname == self.dispname_abbrev:
             return self.name
@@ -224,7 +228,7 @@ class SuperDataObj(metaclass=ABCMeta):
             return self.dispname
 
     @property
-    def as_rst(self):
+    def as_rst(self) -> str:
         r"""|str| reST reference-like object representation.
 
         Typically will NOT function as a proper reST reference
@@ -235,7 +239,7 @@ class SuperDataObj(metaclass=ABCMeta):
         """
         return self.rst_fmt.format(**self.as_str.json_dict())
 
-    def json_dict(self, *, expand=False, contract=False):
+    def json_dict(self, *, expand: bool = False, contract: bool = False):
         r"""Return the object data formatted as a flat |dict|.
 
         The returned |dict| is constructed such that it matches the
@@ -303,7 +307,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
         return d
 
-    def data_line(self, *, expand=False, contract=False):
+    def data_line(self, *, expand: bool = False, contract: bool = False):
         """Compose plaintext |objects.inv| data line from instance contents.
 
         The format of the resulting data line is given by
@@ -351,7 +355,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
         return self._data_line_postprocess(retval)
 
-    def evolve(self, **kwargs):
+    def evolve(self, **kwargs) -> "SuperDataObj[T]":
         r"""Create a new instance with changes applied.
 
         This helper method provides a concise means for creating new
@@ -382,7 +386,7 @@ class SuperDataObj(metaclass=ABCMeta):
 
 
 @attr.s(slots=True)
-class DataObjStr(SuperDataObj):
+class DataObjStr(SuperDataObj[str]):
     """:class:`SuperDataObj` subclass generating |str| object data.
 
     Two :class:`DataObjStr` instances will test equal if all of
@@ -453,7 +457,7 @@ class DataObjStr(SuperDataObj):
 
 
 @attr.s(slots=True)
-class DataObjBytes(SuperDataObj):
+class DataObjBytes(SuperDataObj[bytes]):
     """:class:`SuperDataObj` subclass generating |bytes| object data.
 
     Two :class:`DataObjBytes` instances will test equal if all of
