@@ -1,7 +1,7 @@
 .. Description of convert commandline usage
 
-Command-Line Usage: "sphobjinv convert" Subcommand
-==================================================
+Command-Line Usage: ``sphobjinv convert``
+=========================================
 
 .. program:: sphobjinv convert
 
