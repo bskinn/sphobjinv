@@ -3,19 +3,31 @@
 Command-Line Usage
 ==================
 
-The CLI for |soi| is implemented using two subcommands:
+The primary CLI for |soi| is implemented using two subcommands of the
+``sphobjinv`` entrypoint:
 
-  - A :doc:`convert <convert>` subcommand, which handles conversion of
-    inventories between supported formats (currently zlib-compressed,
+  - ``sphobjinv convert`` (:doc:`docs page <convert>`), which handles conversion
+    of inventories between supported formats (currently zlib-compressed,
     plaintext, and JSON).
-  - A :doc:`suggest <suggest>` subcommand, which provides suggestions for
+  - ``sphobjinv suggest`` (:doc:`docs page <suggest>`), which provides suggestions for
     objects in an inventory matching a desired search term.
 
-More information about the underlying implementation of these subcommands can
-be found :doc:`here <implementation/index>` and in the documentation for the
-:class:`~sphobjinv.inventory.Inventory` object, in particular the
-:meth:`~sphobjinv.inventory.Inventory.data_file` and
-:meth:`~sphobjinv.inventory.Inventory.suggest` methods.
+As of v##VER##, |soi| also provides an auxiliary entrypoint,
+``sphobjinv-textconv`` (:doc:`docs page <textconv>`), which takes a path
+to a file on disk as its single required argument. This entrypoint attempts
+to instantiate an |Inventory| with this file and emit its plaintext
+contents to |stdout|. The following two invocations are thus synonymous::
+
+    $ sphobjinv convert plain path/to/objects.inv -
+
+    $ sphobjinv-textconv path/to/objects.inv
+
+This alternative spelling is less awkward when configuring a Git ``textconv`` to
+allow rendering diffs of |objects.inv| files in plaintext. See the
+``sphobjinv-textconv`` :doc:`entrypoint documentation <textconv>` for more
+information.
+
+----
 
 Some notes on these CLI docs:
 
@@ -39,5 +51,6 @@ Some notes on these CLI docs:
     :maxdepth: 1
     :hidden:
 
-    "convert" Mode <convert>
-    "suggest" Mode <suggest>
+    sphobjinv convert <convert>
+    sphobjinv suggest <suggest>
+    sphobjinv-textconv <textconv>
