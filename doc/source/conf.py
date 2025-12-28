@@ -202,6 +202,12 @@ rst_epilog = r"""
 
 .. |resolve_inpath| replace:: :func:`~sphobjinv.cli.paths.resolve_inpath`
 
+.. |sphobjinv-textconv| replace:: ``sphobjinv-textconv``
+
+.. |sphobjinv convert| replace:: ``sphobjinv convert``
+
+.. |sphobjinv suggest| replace:: ``sphobjinv suggest``
+
 """
 
 
