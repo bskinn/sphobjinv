@@ -51,9 +51,10 @@ invocation and the inventory contents):
 .. command-output:: sphobjinv-textconv objects_pdfminer.inv
     :cwd: /../../tests/resource
 
-Using ``git show --textconv``:
+Using ``git show --textconv`` (with the |textconv| set on-the-fly so that it
+will render correctly in ReadTheDocs builds):
 
-.. command-output:: git show --textconv HEAD:tests/resource/objects_pdfminer.inv
+.. command-output:: git -c diff.objects_inv.textconv=sphobjinv-textconv show --textconv HEAD:tests/resource/objects_pdfminer.inv
     :cwd: /../../tests/resource
 
 ----
