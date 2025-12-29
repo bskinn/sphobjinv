@@ -202,11 +202,11 @@ rst_epilog = r"""
 
 .. |resolve_inpath| replace:: :func:`~sphobjinv.cli.paths.resolve_inpath`
 
-.. |sphobjinv-textconv| replace:: ``sphobjinv-textconv``
+.. |textconv| replace:: |cour|\ textconv\ |/cour|
 
-.. |sphobjinv convert| replace:: ``sphobjinv convert``
+.. |.gitattributes| replace:: |cour|\ .gitattributes\ |/cour|
 
-.. |sphobjinv suggest| replace:: ``sphobjinv suggest``
+.. |sphobjinv-textconv| replace:: |cour|\ sphobjinv-textconv\ |/cour|
 
 """
 
