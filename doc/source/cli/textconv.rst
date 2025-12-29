@@ -5,45 +5,58 @@ Command-Line Usage: ``sphobjinv-textconv``
 
 .. program:: sphobjinv-textconv
 
-``sphobjinv-textconv`` is intentionally implemented with very narrow functionality,
-specifically to simplify configuring |soi| for use as a
-`Git "textconv" <https://git-scm.com/docs/gitattributes#_performing_text_diffs_of_binary_files>`__,
-which is a mechanism for rendering binary files in a diff-able text format. There are
-many examples of `clever`_ application of textconv in the wild.
+``sphobjinv-textconv`` is intentionally implemented with very narrow
+functionality, focused on simplifying use of |soi| as a `Git "textconv"
+<https://git-scm.com/docs/gitattributes#_performing_text_diffs_of_binary_files>`__,
+which is a mechanism for rendering binary files in a diff-able text format.
+There are many `examples`__ of `clever application`__ of `textconv`__ in the
+wild.
 
-Ultimately, a textconv involves three things:
+.. __: https://github.com/pixelb/crudini/issues/90
+.. __: https://github.com/syntevosmartgit/textconv
+.. __: https://stackoverflow.com/questions/55601430/how-to-pass-a-filename-argument-gitconfig-diff-textconv
 
-1. A utility that takes in a file path as a single positional argument.
 
-2. An entry somewhere in Git config declaring a 
+Ultimately, a textconv requires three things:
 
+1. A utility that takes in a file path as a single positional argument and emits
+   a plaintext representation to |stdout|, such as |sphobjinv-textconv|.
+
+2. An entry somewhere in Git config (system, user-global, per-repo, etc.)
+   declaring a "diff driver" set up to use that utility as its |textconv|.
+   Example::
+
+      [diff "objects_inv"]
+	      textconv = sphobjinv-textconv
+
+   Note that the utility must be on path in all contexts where you wish to use
+   it as a textconv.
+
+3. An entry somewhere in |.gitattributes| (system, user-global, per-repo, etc.)
+   that associates a particular file or glob pattern with the diff driver. Example::
+
+      *.inv diff=objects_inv
+
+With |sphobjinv-textconv| configured in this fashion as a textconv for Sphinx
+inventory files, the following should all yield _nearly_ the same output.
+
+Using ``sphobjinv convert``:
+
+.. command-output:: sphobjinv convert plain objects_pdfminer.inv -
+    :cwd: /../../tests/resource
+
+Using ``sphobjinv-textconv`` (note the absence of blank lines between the shell
+invocation and the inventory contents):
+
+.. command-output:: sphobjinv-textconv objects_pdfminer.inv
+    :cwd: /../../tests/resource
+
+Using ``git show --textconv``:
+
+.. command-output:: git show --textconv HEAD:tests/resource/objects_pdfminer.inv
+    :cwd: /../../tests/resource
 
 ----
-
-Basic file conversion to the default output filename is straightforward:
-
-.. doctest:: convert_main
-
-    >>> Path('objects_attrs.txt').is_file()
-    False
-    >>> cli_run('sphobjinv convert plain objects_attrs.inv')
-    <BLANKLINE>
-    Conversion completed.
-    '...objects_attrs.inv' converted to '...objects_attrs.txt' (plain).
-    <BLANKLINE>
-    <BLANKLINE>
-    >>> print(file_head('objects_attrs.txt', head=6))
-    # Sphinx inventory version 2
-    # Project: attrs
-    # Version: 22.1
-    # The remainder of this file is compressed using zlib.
-    attr py:module 0 index.html#module-$ -
-    attr.VersionInfo py:class 1 api.html#$ -
-
-A different target filename can be specified, to avoid overwriting an existing
-file:
-
-
 
 
 **Usage**
@@ -69,5 +82,3 @@ file:
     Display brief package version information and exit.
 
 .. versionadded:: ##VER##
-
-.. _clever: https://github.com/syntevosmartgit/textconv
