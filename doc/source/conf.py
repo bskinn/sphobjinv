@@ -16,6 +16,7 @@
 
 # -- Imports -----------------------------------------------------------------
 import sphobjinv as soi
+from sphobjinv.cli.parser import PrsConst
 
 # -- Project information -----------------------------------------------------
 
@@ -73,7 +74,7 @@ modindex_common_prefix = ["sphobjinv."]
 
 # -- Common epilogue definition  ------------------------------------------------
 
-rst_epilog = r"""
+rst_epilog = rf"""
 
 .. |extlink| image:: /_static/extlink.svg
 
@@ -169,41 +170,13 @@ rst_epilog = r"""
 
     <span style="font-family:courier, monospace; font-size: 90%;">sphobjinv</span>
 
+.. |cli:DEF_THRESH| replace:: {PrsConst.DEF_THRESH}
+
+.. |cli:SUGGEST_CONFIRM_LENGTH| replace:: {PrsConst.SUGGEST_CONFIRM_LENGTH}
+
 .. |stdin| replace:: |cour|\ stdin\ |/cour|
 
 .. |stdout| replace:: |cour|\ stdout\ |/cour|
-
-.. |cli:ALL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.ALL`
-
-.. |cli:DEF_BASENAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_BASENAME`
-
-.. |cli:DEF_OUT_EXT| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.DEF_OUT_EXT`
-
-.. |cli:FOUND_URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.FOUND_URL`
-
-.. |cli:INDEX| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INDEX`
-
-.. |cli:INFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.INFILE`
-
-.. |cli:MODE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.MODE`
-
-.. |cli:OUTFILE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OUTFILE`
-
-.. |cli:OVERWRITE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.OVERWRITE`
-
-.. |cli:QUIET| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.QUIET`
-
-.. |cli:SCORE| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SCORE`
-
-.. |cli:SUBPARSER_NAME| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUBPARSER_NAME`
-
-.. |cli:SUGGEST_CONFIRM_LENGTH| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.SUGGEST_CONFIRM_LENGTH`
-
-.. |cli:URL| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.URL`
-
-.. |cli:VERSION| replace:: :attr:`~sphobjinv.cli.parser.PrsConst.VERSION`
-
-.. |resolve_inpath| replace:: :func:`~sphobjinv.cli.paths.resolve_inpath`
 
 .. |textconv| replace:: |cour|\ textconv\ |/cour|
 
