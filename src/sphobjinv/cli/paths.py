@@ -72,11 +72,11 @@ def resolve_outpath(out_path, in_path, params):
     If the output path or basename are not specified, they are
     taken as the same as the input file. If the extension is
     unspecified, it is taken as the appropriate mode-specific value
-    from |cli:DEF_OUT_EXT|.
+    from DEF_OUT_EXT.
 
-    If |cli:URL| is passed, the input directory
+    If URL is passed, the input directory
     is taken to be :func:`os.getcwd` and the input basename
-    is taken as |cli:DEF_BASENAME|.
+    is taken as DEF_BASENAME.
 
     Parameters
     ----------

@@ -36,13 +36,13 @@ from sphobjinv.cli.write import write_file, write_stdout
 def do_convert(inv, in_path, params):
     r"""Carry out the conversion operation, including writing output.
 
-    If |cli:OVERWRITE| is passed and the output file
-    (the default location, or as passed to |cli:OUTFILE|)
+    If OVERWRITE is passed and the output file
+    (the default location, or as passed to OUTFILE)
     exists, it will be overwritten without a prompt. Otherwise,
     the user will be queried if it is desired to overwrite
     the existing file.
 
-    If |cli:QUIET| is passed, nothing will be
+    If QUIET is passed, nothing will be
     printed to |cour|\ stdout\ |/cour|
     (potentially useful for scripting),
     and any existing output file will be overwritten
@@ -53,7 +53,7 @@ def do_convert(inv, in_path, params):
     inv
 
         |Inventory| -- Inventory object to be output in the format
-        indicated by |cli:MODE|.
+        indicated by MODE.
 
     in_path
 

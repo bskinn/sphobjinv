@@ -43,14 +43,14 @@ def main():
 
     Parses command line arguments,
     handling the no-arguments and
-    |cli:VERSION| cases.
+    VERSION cases.
 
     Creates the |Inventory| from the indicated source
     and method.
 
     Invokes :func:`~sphobjinv.cli.convert.do_convert` or
     :func:`~sphobjinv.cli.suggest.do_suggest`
-    per the subparser name stored in |cli:SUBPARSER_NAME|.
+    per the subparser name stored in SUBPARSER_NAME.
 
     """
     # If no args passed, stick in '-h'
