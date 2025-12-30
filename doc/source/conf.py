@@ -14,6 +14,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+# -- Imports -----------------------------------------------------------------
+import sphobjinv as soi
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +24,8 @@ copyright = "2016-2025, Brian Skinn"
 author = "Brian Skinn"
 
 # The full version for `release`, including alpha/beta/rc tags
-from sphobjinv import __version__ as release
+release = soi.__version__
+
 
 # Just major.minor for `version`
 version = ".".join(release.split(".")[:2])
