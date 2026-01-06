@@ -11,7 +11,7 @@ on:
       - stable
 
 jobs:
-  sdist_build_and_check:
+  ver_placeholder_search:
     name: 'have no ##VER## markers'
     runs-on: 'ubuntu-latest'
     concurrency:
