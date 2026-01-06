@@ -10,7 +10,20 @@ changes.
 
 ### *Unreleased*
 
+#### Added
+
+  * Add `sphobjinv-textconv` CLI entrypoint ([#331]).
+    * Takes a single required argument, the path to a local inventory file, and
+      emits the plaintext inventory to `stdout`.
+    * The target use-case is as a Git textconv, primarily intended for
+      compressed `objects.inv` files; but, it will work with any valid type of
+      input file.
+
 #### Tests
+
+  * Add tests exercising the new `sphobjinv-textconv` CLI entrypoint ([#331]).
+    * Required generalizing the `run_cmdline_test` fixture so that tests can
+      choose between the core and textconv entrypoints.
 
   * Update `tox` env test matrix for `py310` to `py314` ([#325]).
 
@@ -36,6 +49,9 @@ changes.
 
 #### Internal
 
+  * Add Actions workflow to error on a non-draft release branch if any `#VER#`
+    markers remain in docs source ([#331]).
+
   * Augment `black` and `flake8` `tox` envs to run `--version` first ([#327]).
 
   * Remove `-r requirements-flake.txt` from `requirements-dev.txt` ([#327]).
@@ -56,6 +72,30 @@ changes.
     ([#320]).
     * This will provide `main` branch CI results for this workflow, for the
       GitHub badge to report.
+
+#### Documentation
+
+  * Dynamically retrieve the current values of `PrsConst.SUGGEST_CONFIRM_LENGTH`
+    and `PrsConst.DEF_THRESH` to define their replaces in `conf.py` ([#331]).
+
+  * Add `cli/textconv.rst` to document the new `sphobjinv-textconv` CLI
+    entrypoint ([#331]).
+
+  * Cull some superfluous replaces in `conf.py` ([#331]).
+
+  * Relocate the 'help' and 'version' CLI usage documentation content to a new
+    'orphan' page ([#331]).
+    * This keeps the content in the `objects.inv`, for completeness, but keeps
+      it off of the docs nav.
+
+  * Revise 'CLI Usage' documentation to incorporate the `sphobjinv-textconv`
+    entrypoint ([#331]).
+
+  * Remove the 'CLI Implementation' "API reference" docs ([#331]).
+    * They're not part of the public API contract, and they don't actually help
+      understand how the CLI is implemented; so, why bother maintaining them?
+    * Also cull the various `replace` directives defined in `conf.py` for these
+      docs.
 
 #### Administrative
 
@@ -739,3 +779,4 @@ changes.
 [#320]: https://github.com/bskinn/sphobjinv/pull/320
 [#325]: https://github.com/bskinn/sphobjinv/pull/325
 [#327]: https://github.com/bskinn/sphobjinv/pull/327
+[#331]: https://github.com/bskinn/sphobjinv/pull/331

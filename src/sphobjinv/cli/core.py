@@ -33,7 +33,7 @@ import sys
 
 from sphobjinv.cli.convert import do_convert
 from sphobjinv.cli.load import inv_local, inv_stdin, inv_url
-from sphobjinv.cli.parser import PrsConst, getparser
+from sphobjinv.cli.parser import PrsConst, getparser, getparser_textconv
 from sphobjinv.cli.suggest import do_suggest
 from sphobjinv.cli.ui import print_stderr
 
@@ -43,14 +43,14 @@ def main():
 
     Parses command line arguments,
     handling the no-arguments and
-    |cli:VERSION| cases.
+    VERSION cases.
 
     Creates the |Inventory| from the indicated source
     and method.
 
     Invokes :func:`~sphobjinv.cli.convert.do_convert` or
     :func:`~sphobjinv.cli.suggest.do_suggest`
-    per the subparser name stored in |cli:SUBPARSER_NAME|.
+    per the subparser name stored in SUBPARSER_NAME.
 
     """
     # If no args passed, stick in '-h'
@@ -100,4 +100,27 @@ def main():
     print_stderr(" ", params)
 
     # Clean exit
+    sys.exit(0)
+
+
+def main_textconv():
+    """Entrypoint for textconv operation."""
+    # If no args passed, stick in '-h'
+    if len(sys.argv) == 1:
+        sys.argv.append("-h")
+
+    prs = getparser_textconv()
+    params = vars(prs.parse_args())
+
+    # No version arg handling, using 'version' action in this parser
+
+    inv, in_path = inv_local(params)
+
+    params[PrsConst.CONTRACT] = False
+    params[PrsConst.EXPAND] = False
+    params[PrsConst.MODE] = PrsConst.PLAIN
+    params[PrsConst.OUTFILE] = "-"
+
+    do_convert(inv, in_path, params)
+
     sys.exit(0)

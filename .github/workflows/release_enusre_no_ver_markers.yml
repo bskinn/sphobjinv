@@ -1,0 +1,28 @@
+name: 'RELEASE: Check docs source files'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - stable
+
+jobs:
+  ver_placeholder_search:
+    name: 'have no ##VER## markers'
+    runs-on: 'ubuntu-latest'
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    if: ${{ !github.event.pull_request.draft }}
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v6
+
+    - name: Error if any markers found
+      run: |
+        grep -ri '#VER#' doc/source && exit 1 || exit 0

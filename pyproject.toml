@@ -43,14 +43,16 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [project.urls]
-Homepage = "https://github.com/bskinn/sphobjinv"
 Changelog = "https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md"
 Docs = "https://sphobjinv.readthedocs.io/en/stable/"
-Thank = "https://fosstodon.org/@btskinn"
 Donate = "https://github.com/sponsors/bskinn"
+Homepage = "https://github.com/bskinn/sphobjinv"
+Thank = "https://fosstodon.org/@btskinn"
 
 [project.scripts]
 sphobjinv = "sphobjinv.cli.core:main"
+sphobjinv-textconv = "sphobjinv.cli.core:main_textconv"
+
 
 [tool.setuptools]
 package-dir = {"" = "src"}

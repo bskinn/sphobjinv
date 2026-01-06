@@ -52,6 +52,9 @@ class PrsConst:
         " https://sphobjinv.readthedocs.io\n"
     )
 
+    #: Short version text for textconv entrypoint
+    VER_TXT_SHORT = f"sphobjinv v{__version__}"
+
     # ### Subparser selectors and argparse param for storing subparser name
     #: Subparser name for inventory file conversions; stored in
     #: :data:`SUBPARSER_NAME` when selected
@@ -380,6 +383,38 @@ def getparser():
             f"Cannot be used with --{PrsConst.URL}."
         ),
         action="store_true",
+    )
+
+    return prs
+
+
+def getparser_textconv():
+    """Generate argument parser for textconv entrypoint.
+
+    Returns
+    -------
+    prs
+
+        :class:`~argparse.ArgumentParser` -- Parser for textconv commandline
+        usage of |soi|
+
+    """
+    prs = ap.ArgumentParser(
+        description=(
+            "Emit the plaintext of the local Sphinx inventory at 'infile' to stdout."
+        )
+    )
+    prs.add_argument(
+        "-" + PrsConst.VERSION[0],
+        "--" + PrsConst.VERSION,
+        help="Print package version & other info",
+        action="version",
+        version=PrsConst.VER_TXT_SHORT,
+    )
+
+    prs.add_argument(
+        PrsConst.INFILE,
+        help=("Path to file to be converted"),
     )
 
     return prs

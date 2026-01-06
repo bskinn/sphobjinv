@@ -45,6 +45,8 @@ from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
+from sphobjinv.cli.core import main, main_textconv
+from tests.enum import CLICommand
 from tests.fixtures_http import resource_http_base_url, resource_url  # noqa: F401
 
 
@@ -240,20 +242,26 @@ def sphinx_version():
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_test(monkeypatch):
     """Return function to perform command line exit code test."""
-    from sphobjinv.cli.core import main
 
-    def func(arglist, *, expect=0):  # , suffix=None):
+    def func(arglist, *, command=CLICommand.Core, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""
         # Assemble execution arguments
-        runargs = ["sphobjinv"]
+        runargs = [command.value]
         runargs.extend(str(a) for a in arglist)
+
+        # Select the command function to use
+        match command:
+            case CLICommand.Core:
+                cmd_func = main
+            case CLICommand.Textconv:
+                cmd_func = main_textconv
 
         # Mock sys.argv, run main, and restore sys.argv
         with monkeypatch.context() as m:
             m.setattr(sys, "argv", runargs)
 
             try:
-                main()
+                cmd_func()
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True

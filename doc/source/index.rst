@@ -100,8 +100,6 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    levenshtein
    syntax
    api/index
-   CLI Implementation (non-API) <cli/implementation/index>
-
 
 
 Indices and Tables
