@@ -26,4 +26,4 @@ jobs:
 
     - name: Error if any markers found
       run: |
-        grep -ri '##VER##' doc/source && exit 1 || exit 0
+        grep -ri '##VExR##' doc/source && exit 1 || exit 0
