@@ -47,7 +47,7 @@ pytestmark = [pytest.mark.cli, pytest.mark.textconv, pytest.mark.local]
 
 
 class TestMisc:
-    """Tests for miscellaneous CLI functions."""
+    """Tests for miscellaneous textconv entrypoint behavior."""
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     @pytest.mark.parametrize("cmd", CLI_CMDS)
@@ -75,8 +75,8 @@ class TestMisc:
             assert re.search("usage.+sphobjinv", out_.getvalue(), re.I)
 
 
-class TestConvertGood:
-    """Tests for expected-good convert functionality."""
+class TestGood:
+    """Tests for expected-good textconv entrypoint functionality."""
 
     def test_textconv_matches_main_conv(self, res_cmp, run_cmdline_test):
         """Ensure that textconv conversion matches main CLI conversion."""
@@ -92,9 +92,21 @@ class TestConvertGood:
 
         assert core_output == textconv_output
 
+    def test_textconv_matches_original(self, res_cmp, run_cmdline_test):
+        """Confirm textconv produces a consistent Inventory."""
+        with stdio_mgr() as (_, out_, _):
+            run_cmdline_test([str(res_cmp.resolve())], command=CLICommand.Textconv)
+
+            result = out_.getvalue()
+
+        inv1 = Inventory(res_cmp)
+        inv2 = Inventory(result.encode("utf-8"))
+
+        assert inv1 == inv2
+
 
 class TestFail:
-    """Tests for expected-fail behaviors."""
+    """Tests for expected-fail textconv entrypoint behaviors."""
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_clifail_convert_wrongfiletype(
@@ -146,19 +158,3 @@ class TestFail:
                 ["-u", "nofile.inv"], command=CLICommand.Textconv, expect=2
             )
             assert "unrecognized argument" in err_.getvalue()
-
-
-class TestStdio:
-    """Tests for the stdin/stdout functionality."""
-
-    def test_cli_stdio_output(self, res_cmp, run_cmdline_test):
-        """Confirm that inventory data can be written to stdout."""
-        with stdio_mgr() as (_, out_, _):
-            run_cmdline_test([str(res_cmp.resolve())], command=CLICommand.Textconv)
-
-            result = out_.getvalue()
-
-        inv1 = Inventory(res_cmp)
-        inv2 = Inventory(result.encode("utf-8"))
-
-        assert inv1 == inv2
