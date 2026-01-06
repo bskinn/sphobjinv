@@ -246,7 +246,7 @@ def run_cmdline_test(monkeypatch):
     def func(arglist, *, command=CLICommand.Core, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""
         # Assemble execution arguments
-        runargs = [command]
+        runargs = [command.value]
         runargs.extend(str(a) for a in arglist)
 
         # Select the command function to use
