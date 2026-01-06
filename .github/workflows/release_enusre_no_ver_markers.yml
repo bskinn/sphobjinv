@@ -9,7 +9,6 @@ on:
       - ready_for_review
     branches:
       - stable
-      - main
 
 jobs:
   sdist_build_and_check:
@@ -18,7 +17,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    if: ${{ true || !github.event.pull_request.draft }}
+    if: ${{ !github.event.pull_request.draft }}
 
     steps:
     - name: Check out repo
@@ -26,4 +25,4 @@ jobs:
 
     - name: Error if any markers found
       run: |
-        grep -ri '##VExR##' doc/source && exit 1 || exit 0
+        grep -ri '#VER#' doc/source && exit 1 || exit 0
