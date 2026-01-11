@@ -31,7 +31,9 @@ Sphinx |objects.inv| files.
 
 import re
 import ssl
+import sys
 import urllib.request as urlrq
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from zlib import error as zlib_error
 
 import attr
@@ -505,11 +507,24 @@ class Inventory:
         # Composite each string result extracted by fuzzywuzzy
         # and its match score into a single string. The match
         # and score are returned together in a tuple.
-        results = [
-            f"{match} {score}"
-            for match, score in fwp.extract(name, srch_list, limit=None)
-            if score >= thresh
-        ]
+        if "_is_gil_enabled" in dir(sys) and not sys._is_gil_enabled():
+            with ThreadPoolExecutor(max_workers=6) as tpe:
+                futures = [
+                    tpe.submit(fwp.extract, name, [item], limit=None)
+                    for item in srch_list
+                ]
+
+                results = [
+                    "{0} {1}".format(fut_result[0], fut_result[1])
+                    for fut in as_completed(futures)
+                    if (fut_result := fut.result()[0])[1] >= thresh
+                ]
+        else:
+            results = [
+                f"{match} {score}"
+                for match, score in fwp.extract(name, srch_list, limit=None)
+                if score >= thresh
+            ]
 
         # Define regex for splitting the three components, and
         # use it to convert composite result string to tuple:
