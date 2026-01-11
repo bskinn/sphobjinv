@@ -216,10 +216,10 @@ class TestSuggest:
     @pytest.mark.parametrize(
         "url",
         [
-            "http://sphobjinv.readthedocs.io/en/v2.0/modules/",
-            "http://sphobjinv.readthedocs.io/en/v2.0/modules/cmdline.html",
+            "https://sphobjinv.readthedocs.io/en/v2.0/modules/",
+            "https://sphobjinv.readthedocs.io/en/v2.0/modules/cmdline.html",
             (
-                "http://sphobjinv.readthedocs.io/en/v2.0/modules/"
+                "https://sphobjinv.readthedocs.io/en/v2.0/modules/"
                 "cmdline.html#sphobjinv.cmdline.do_convert"
             ),
         ],
@@ -233,18 +233,18 @@ class TestSuggest:
             check.is_true(p_inventory.search(out_.getvalue()))
             check.is_in("LIKELY", err_.getvalue())
             check.is_in(
-                "(http://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
+                "(https://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
             )
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_cli_suggest_from_typical_objinv_url(self, run_cmdline_test, check):
         """Confirm reST-only suggest works for direct objects.inv URL."""
-        url = "http://sphobjinv.readthedocs.io/en/v2.0/objects.inv"
+        url = "https://sphobjinv.readthedocs.io/en/v2.0/objects.inv"
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
 
             check.is_true(p_inventory.search(out_.getvalue()))
             check.is_in("PROBABLY", err_.getvalue())
             check.is_in(
-                "(http://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
+                "(https://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
             )
