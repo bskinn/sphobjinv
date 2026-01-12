@@ -133,6 +133,7 @@ class TestConvert:
         assert "objects" in d.get("metadata", {}).get("url", {})
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    @pytest.mark.filterwarnings("ignore:implicitly cleaning up.*404")
     def test_clifail_bad_url(
         self, run_cmdline_test, misc_info, http_inv_url_template, scratch_path
     ):
@@ -225,6 +226,7 @@ class TestSuggest:
         ],
     )
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    @pytest.mark.filterwarnings("ignore:implicitly cleaning up.*404")
     def test_cli_suggest_from_docset_urls(self, url, run_cmdline_test, check):
         """Confirm reST-only suggest output works from URLs within a docset."""
         with stdio_mgr() as (in_, out_, err_):
