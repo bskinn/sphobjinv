@@ -21,6 +21,12 @@ changes.
 
 #### Tests
 
+  * Add 3.13t and 3.14t to `tox` test matrix ([#333]).
+    * Also add report of the current GIL status to the `tox` env output.
+
+  * Filter newly emerged `ResourceWarning` emitted from implicit cleanup of
+    `tempfile` resources ([#333]).
+
   * Add tests exercising the new `sphobjinv-textconv` CLI entrypoint ([#331]).
     * Required generalizing the `run_cmdline_test` fixture so that tests can
       choose between the core and textconv entrypoints.
@@ -98,6 +104,8 @@ changes.
       docs.
 
 #### Administrative
+
+  * Convert several `http://` to `https://` across the project ([#333]).
 
   * Add formal support for Python 3.14 ([#325]).
 
@@ -780,3 +788,4 @@ changes.
 [#325]: https://github.com/bskinn/sphobjinv/pull/325
 [#327]: https://github.com/bskinn/sphobjinv/pull/327
 [#331]: https://github.com/bskinn/sphobjinv/pull/331
+[#333]: https://github.com/bskinn/sphobjinv/pull/333
