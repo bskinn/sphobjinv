@@ -187,8 +187,8 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 
 [black badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black link target]: https://github.com/psf/black
-[cc-by 4.0]: http://creativecommons.org/licenses/by/4.0/
-[soi docs inv export]: http://sphobjinv.readthedocs.io/en/latest/api_usage.html#exporting-an-inventory
+[cc-by 4.0]: https:/creativecommons.org/licenses/by/4.0/
+[soi docs inv export]: https://sphobjinv.readthedocs.io/en/latest/api_usage.html#exporting-an-inventory
 [github issue tracker]: https://github.com/bskinn/sphobjinv/issues
 [github repo]: https://github.com/bskinn/sphobjinv
 [gitter badge]: https://badges.gitter.im/sphobjinv/community.svg
@@ -203,6 +203,6 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [pypi link target]: https://pypi.org/project/sphobjinv
 [python versions badge]: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python
 [readthedocs badge]: https://img.shields.io/readthedocs/sphobjinv/latest.svg
-[readthedocs link target]: http://sphobjinv.readthedocs.io/en/latest/
+[readthedocs link target]: https://sphobjinv.readthedocs.io/en/latest/
 [workflow badge]: https://img.shields.io/github/actions/workflow/status/bskinn/sphobjinv/all_core_tests.yml?logo=github&branch=main
 [workflow link target]: https://github.com/bskinn/sphobjinv/actions

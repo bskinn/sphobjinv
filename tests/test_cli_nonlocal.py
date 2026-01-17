@@ -13,7 +13,7 @@ Sphinx |objects.inv| files.
     \(c) Brian Skinn 2016-2025
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -153,7 +153,7 @@ class TestConvert:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_clifail_url_no_leading_http(self, run_cmdline_test, scratch_path):
-        """Confirm proper error behavior when a URL w/o leading 'http://' is passed."""
+        """Confirm proper error behavior when a URL w/o leading scheme is passed."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 [
