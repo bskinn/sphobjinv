@@ -13,7 +13,7 @@ Sphinx |objects.inv| files.
     \(c) Brian Skinn 2016-2025
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable

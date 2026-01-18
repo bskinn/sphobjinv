@@ -13,7 +13,7 @@ Sphinx |objects.inv| files.
     \(c) Brian Skinn 2016-2025
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -133,6 +133,7 @@ class TestConvert:
         assert "objects" in d.get("metadata", {}).get("url", {})
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    @pytest.mark.filterwarnings("ignore:implicitly cleaning up.*404")
     def test_clifail_bad_url(
         self, run_cmdline_test, misc_info, http_inv_url_template, scratch_path
     ):
@@ -152,7 +153,7 @@ class TestConvert:
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_clifail_url_no_leading_http(self, run_cmdline_test, scratch_path):
-        """Confirm proper error behavior when a URL w/o leading 'http://' is passed."""
+        """Confirm proper error behavior when a URL w/o leading scheme is passed."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(
                 [
@@ -216,15 +217,16 @@ class TestSuggest:
     @pytest.mark.parametrize(
         "url",
         [
-            "http://sphobjinv.readthedocs.io/en/v2.0/modules/",
-            "http://sphobjinv.readthedocs.io/en/v2.0/modules/cmdline.html",
+            "https://sphobjinv.readthedocs.io/en/v2.0/modules/",
+            "https://sphobjinv.readthedocs.io/en/v2.0/modules/cmdline.html",
             (
-                "http://sphobjinv.readthedocs.io/en/v2.0/modules/"
+                "https://sphobjinv.readthedocs.io/en/v2.0/modules/"
                 "cmdline.html#sphobjinv.cmdline.do_convert"
             ),
         ],
     )
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
+    @pytest.mark.filterwarnings("ignore:implicitly cleaning up.*404")
     def test_cli_suggest_from_docset_urls(self, url, run_cmdline_test, check):
         """Confirm reST-only suggest output works from URLs within a docset."""
         with stdio_mgr() as (in_, out_, err_):
@@ -233,18 +235,18 @@ class TestSuggest:
             check.is_true(p_inventory.search(out_.getvalue()))
             check.is_in("LIKELY", err_.getvalue())
             check.is_in(
-                "(http://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
+                "(https://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
             )
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT * 4)
     def test_cli_suggest_from_typical_objinv_url(self, run_cmdline_test, check):
         """Confirm reST-only suggest works for direct objects.inv URL."""
-        url = "http://sphobjinv.readthedocs.io/en/v2.0/objects.inv"
+        url = "https://sphobjinv.readthedocs.io/en/v2.0/objects.inv"
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", "-u", url, "inventory", "-at", "50"])
 
             check.is_true(p_inventory.search(out_.getvalue()))
             check.is_in("PROBABLY", err_.getvalue())
             check.is_in(
-                "(http://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
+                "(https://sphobjinv.readthedocs.io/en/v2.0/, None)", err_.getvalue()
             )
