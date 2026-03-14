@@ -84,31 +84,31 @@ cross-reference the `linspace` function from numpy (see
 [here][numpy linspace]):
 
 ```none
-$ sphobjinv suggest https://numpy.org/doc/1.26/reference/index.html linspace -su
+$ sphobjinv suggest https://numpy.org/doc/2.4/reference/index.html linspace -su
 
-Attempting https://numpy.org/doc/1.26/reference/index.html ...
+Attempting https://numpy.org/doc/2.4/reference/index.html ...
   ... no recognized inventory.
-Attempting "https://numpy.org/doc/1.26/reference/index.html/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/reference/index.html/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.26/reference/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/reference/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.26/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/objects.inv" ...
   ... inventory found.
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 The intersphinx_mapping for this docset is LIKELY:
 
-  (https://numpy.org/doc/1.26/, None)
+  (https://numpy.org/doc/2.4/, None)
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Project: NumPy
-Version: 1.26
+Version: 2.4
 
-8152 objects in inventory.
+8456 objects in inventory.
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 8 results found at/above current threshold of 75.
 
