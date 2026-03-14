@@ -57,6 +57,8 @@ and package managers, including:
 
   * Arch Linux: ``python-sphobjinv``
 
+  * Debian: ``python-sphobjinv`` (`info <https://packages.debian.org/stable/source/python-sphobjinv>`__)
+
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
   * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
