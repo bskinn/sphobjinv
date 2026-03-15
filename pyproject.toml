@@ -68,6 +68,7 @@ namespaces = false
 version = {attr = "sphobjinv.version.__version__"}
 
 [tool.black]
+target-version = ["py313"]
 line-length = 88
 include = '''
 (
