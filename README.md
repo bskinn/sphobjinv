@@ -42,26 +42,24 @@ For internal cross-references, locate `objects.inv` within `build/html`:
 ```none
 $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Cannot infer intersphinx_mapping from a local objects.inv.
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Project: sphobjinv
-Version: 2.3
+Version: 2.4
 
-220 objects in inventory.
+151 objects in inventory.
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
-11 results found at/above current threshold of 58.
-
+10 results found at/above current threshold of 58.
 
   Name                                                Score
 ---------------------------------------------------  -------
 :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
-:py:class:`sphobjinv.cli.parser.PrsConst`              59
 :py:class:`sphobjinv.data.DataFields`                  59
 :py:class:`sphobjinv.data.DataObjBytes`                59
 :py:class:`sphobjinv.data.DataObjStr`                  59
