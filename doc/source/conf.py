@@ -21,7 +21,7 @@ from sphobjinv.cli.parser import PrsConst
 # -- Project information -----------------------------------------------------
 
 project = "sphobjinv"
-copyright = "2016-2025, Brian Skinn"
+copyright = "2016-2026, Brian Skinn and community contributors"
 author = "Brian Skinn"
 
 # The full version for `release`, including alpha/beta/rc tags
