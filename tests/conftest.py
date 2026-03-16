@@ -310,8 +310,8 @@ def attrs_inventory_test():
 
         """
         assert inv.project == "attrs"
-        assert inv.version == "22.1"
-        assert inv.count == 129
+        assert inv.version == "25.4"
+        assert inv.count == 180
         assert inv.source_type
 
     return func

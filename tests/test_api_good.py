@@ -452,8 +452,8 @@ class TestInventory:
 
     def test_api_inventory_namesuggest(self, res_cmp, check):
         """Confirm object name suggestion is nominally working on a specific object."""
-        rst = ":py:function:`attr.attr.evolve`"
-        idx = 10
+        rst = ":py:function:`attr.evolve`"
+        idx = 18
 
         inv = soi.Inventory(str(res_cmp))
 

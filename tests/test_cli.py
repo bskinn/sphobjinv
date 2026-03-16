@@ -355,7 +355,7 @@ class TestSuggestGood:
         """Confirm with_index suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-it", "50"])
-            assert re.search("^.*instance_of\\S*\\s+82\\s*$", out_.getvalue(), re.M)
+            assert re.search("^.*instance_of\\S*\\s+127\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscore(self, run_cmdline_test, res_cmp):
@@ -373,7 +373,7 @@ class TestSuggestGood:
 
     @pytest.mark.parametrize(
         ["inp", "flags", "nlines"],
-        [("", "-at", 129), ("y\n", "-t", 130), ("n\n", "-t", 1)],
+        [("", "-at", 180), ("y\n", "-t", 181), ("n\n", "-t", 1)],
     )  # Extra line for input() query in the "y\n" case
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_long_list(self, inp, flags, nlines, run_cmdline_test, res_cmp):
