@@ -82,4 +82,4 @@ will render correctly in ReadTheDocs builds):
 
     Display brief package version information and exit.
 
-.. versionadded:: ##VER##
+.. versionadded:: 2.4
