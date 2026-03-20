@@ -17,9 +17,9 @@ Inspecting the contents of an existing inventory is handled entirely by the
 
     >>> inv = soi.Inventory('objects_attrs.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): attrs v22.1, 129 objects>
+    <Inventory (fname_zlib): attrs v25.4, 129 objects>
     >>> inv.version
-    '22.1'
+    '25.4'
     >>> inv.count
     129
 
@@ -56,10 +56,10 @@ inventories, as |bytes|:
 
     >>> inv2 = soi.Inventory(inv.data_file())
     >>> print(inv2)
-    <Inventory (bytes_plain): attrs v22.1, 129 objects>
+    <Inventory (bytes_plain): attrs v25.4, 129 objects>
     >>> inv3 = soi.Inventory(soi.compress(inv.data_file()))
     >>> print(inv3)
-    <Inventory (bytes_zlib): attrs v22.1, 129 objects>
+    <Inventory (bytes_zlib): attrs v25.4, 129 objects>
 
 Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword argument:
 
@@ -67,7 +67,7 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
 
     >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     >>> print(inv4)
-    <Inventory (url): attrs v22.1, 129 objects>
+    <Inventory (url): attrs v25.4, 129 objects>
 
 Comparing Inventories
 ---------------------
@@ -156,7 +156,7 @@ the plaintext |objects.inv| format **as** |bytes| via :meth:`~sphobjinv.inventor
     >>> print(*inv.data_file().splitlines()[:6], sep='\n')
     b'# Sphinx inventory version 2'
     b'# Project: attrs'
-    b'# Version: 22.1'
+    b'# Version: 25.4'
     b'# The remainder of this file is compressed using zlib.'
     b'attr py:module 0 index.html#module-$ -'
     b'attr.VersionInfo py:class 1 api.html#$ -'
@@ -202,7 +202,7 @@ To export plaintext:
     >>> print(*Path('objects_attrs.txt').read_text().splitlines()[:6], sep='\n')
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 22.1
+    # Version: 25.4
     # The remainder of this file is compressed using zlib.
     attr py:module 0 index.html#module-$ -
     attr.VersionInfo py:class 1 api.html#$ -
@@ -216,7 +216,7 @@ For zlib-compressed:
     >>> print(*Path('objects_attrs_new.inv').read_bytes().splitlines()[:4], sep='\n')
     b'# Sphinx inventory version 2'
     b'# Project: attrs'
-    b'# Version: 22.1'
+    b'# Version: 25.4'
     b'# The remainder of this file is compressed using zlib.'
     >>> print(Path('objects_attrs_new.inv').read_bytes().splitlines()[6][:10])
     b'\xbf\x86\x8fL49\xc4\x91\xb8\x8c'
