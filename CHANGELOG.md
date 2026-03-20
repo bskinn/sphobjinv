@@ -8,7 +8,7 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
-### *Unreleased*
+### [2.4] - 2026-03-19
 
 #### Added
 
