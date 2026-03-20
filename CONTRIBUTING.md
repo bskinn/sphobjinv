@@ -122,6 +122,10 @@ flag:
 $ pytest --nonloc
 ```
 
+Most of these nonlocal tests now use an ephemeral local web server instead of
+reaching out to the web, and so should run even without network access and
+should just run faster in general.
+
 When putting together a PR, at minimum, please add/augment the test suite as
 necessary to maintain 100% test coverage. To the extent possible, please go
 beyond this and add tests that check potential edge cases, bad/malformed/invalid
@@ -141,14 +145,14 @@ project, it is **not** set up to be an everyday test runner. Instead, its
 purpose for testing is to execute an extensive matrix of test environments
 checking for the compatibility of different Python and dependency versions. You
 can run it if you want, but you'll need working versions of all of Python 3.10
-through 3.14 installed and on `PATH` as `python3.10`, `python3.11`, etc. The
-nonlocal test suite is run for each `tox` environment, so it's best to use at
-most two parallel sub-processes to avoid oversaturating your network bandwidth;
-e.g.:
+through 3.14 installed and on `PATH` as `python3.10`, `python3.11`, etc., as
+well as free-threaded versions for Python 3.13 onward as `python3.13t`, etc. The
+test matrix can be accelerated by using `tox`'s parallel execution mode; e.g.:
 
 ```bash
 $ tox -rp2
 ```
+
 
 ## Code Autoformatting
 
@@ -244,19 +248,16 @@ with `make linkcheck`.
 
 ## Continuous Integration
 
-Both Github Actions and Azure Pipelines are set up for the project, and should
-run on any forks of the repository.
+Github Actions workflows are set up for the project, and should run on any forks
+of the repository. Note that the CI runs differently on draft versus non-draft
+PRs: on draft PRs, the only workflow that runs runs tests on Windows and Linux
+with one Python version; whereas on non-draft PRs, a complete test matrix of
+platforms and Python versions is run, as well as doctests and linting checks.
 
 Github Actions runs the test suite on Linux for Python 3.10 through 3.14, as well
 as the `flake8` lints and the Sphinx doctests. By default, the Github Actions
 will run on all commits, but the workflows can be skipped per-commit by
 including `[skip ci]` in the commit message.
-
-The Azure Pipelines CI runs an extensive matrix of cross-platform and
-cross-Python-version tests, as well as numerous other checks. Due to its length,
-it is configured to run only on release branches and PRs to `main` or `stable`.
-The Azure Pipelines workflows now [also obey `[skip ci]`
-directives](https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#skipping-ci-for-individual-pushes).
 
 
 ## CHANGELOG
