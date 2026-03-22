@@ -584,7 +584,25 @@ class TestInventory:
                     original_ifile_data
                 ), fname
 
-        elif "sphinx.inv" in fname:  # pragma: no cover
+        elif re.search(r"sphinx.*[.]inv", fname):  # pragma: no cover
+            soi_names = [o.name for o in inv.objects]
+            ifile_names = list(
+                itt.chain.from_iterable(
+                    list(original_ifile_data[k].keys()) for k in original_ifile_data
+                )
+            )
+            # There is the same set of unique names in the sphobjinv Inventory
+            # as in the Sphinx IFile imported data ...
+            assert set(soi_names) == set(ifile_names), fname
+
+            # ... but there are duplicate names in each ...
+            assert inv.count > len(set(soi_names)), fname
+            assert sphinx_ifile_data_count(original_ifile_data) > len(
+                set(ifile_names)
+            ), fname
+
+            # ... and there are always four more items in the sphobjinv Inventory
+            # than in the IFile data.
             assert inv.count == 4 + sphinx_ifile_data_count(original_ifile_data), fname
 
         else:
