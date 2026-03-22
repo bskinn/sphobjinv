@@ -591,6 +591,7 @@ class TestInventory:
                     list(original_ifile_data[k].keys()) for k in original_ifile_data
                 )
             )
+
             # There is the same set of unique names in the sphobjinv Inventory
             # as in the Sphinx IFile imported data ...
             assert set(soi_names) == set(ifile_names), fname
