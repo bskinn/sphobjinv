@@ -25,12 +25,12 @@ jobs:
 
     steps:
     - name: Check out repo
-      uses: actions/checkout@v6
+      uses: actions/checkout@0c366fd6a
       with:
         persist-credentials: false
 
     - name: Install Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@28f2168f4d9
       with:
         python-version: '3.13'
         cache: 'pip'
