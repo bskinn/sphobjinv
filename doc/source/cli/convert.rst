@@ -34,8 +34,8 @@ Basic file conversion to the default output filename is straightforward:
     # Project: attrs
     # Version: 25.4
     # The remainder of this file is compressed using zlib.
-    attr py:module 0 index.html#module-$ -
-    attr.VersionInfo py:class 1 api.html#$ -
+    attr py:module 0 api-attr.html#module-$ -
+    attr.Attribute py:class 1 api-attr.html#$ -
 
 A different target filename can be specified, to avoid overwriting an existing
 file:
@@ -76,7 +76,7 @@ indicated URL):
     >>> print(file_head('objects.txt', head=6))
     # Sphinx inventory version 2
     # Project: attrs
-    # Version: 25.4
+    # Version: ...
     # The remainder of this file is compressed using zlib.
     attr py:module 0 index.html#module-$ -
     attr.VersionInfo py:class 1 api.html#$ -
@@ -137,9 +137,10 @@ If processing of JSON files by API URL is desirable, please
         # Project: attrs
         # Version: 25.4
         # The remainder of this file is compressed using zlib.
-        attr py:module 0 index.html#module-$ -
-        attr.VersionInfo py:class 1 api.html#$ -
-        attr._make.Attribute py:class -1 api.html#attrs.Attribute -
+        attr py:module 0 api-attr.html#module-$ -
+        attr.Attribute py:class 1 api-attr.html#$ -
+        attr.NOTHING py:data 1 api-attr.html#$ -
+        attr.VersionInfo py:class 1 api-attr.html#$ -
         ...
 
 

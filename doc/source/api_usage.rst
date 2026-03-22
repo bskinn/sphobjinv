@@ -17,11 +17,11 @@ Inspecting the contents of an existing inventory is handled entirely by the
 
     >>> inv = soi.Inventory('objects_attrs.inv')
     >>> print(inv)
-    <Inventory (fname_zlib): attrs v25.4, 129 objects>
+    <Inventory (fname_zlib): attrs v25.4, 180 objects>
     >>> inv.version
     '25.4'
     >>> inv.count
-    129
+    180
 
 The location of the inventory file to import can also be provided as
 a :class:`pathlib.Path`, instead of as a string:
@@ -38,16 +38,16 @@ a |list| in the :attr:`~sphobjinv.inventory.Inventory.objects` attribute:
 .. doctest:: api_inspect
 
     >>> len(inv.objects)
-    129
+    180
     >>> dobj = inv.objects[0]
     >>> dobj
-    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='index.html#module-$', dispname='-')
+    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='api-attr.html#module-$', dispname='-')
     >>> dobj.name
     'attr'
     >>> dobj.domain
     'py'
-    >>> [d.name for d in inv.objects if 'validator' in d.uri]
-    ['api_validators', 'examples_validators']
+    >>> [d.name for d in inv.objects if 'validator' in d.name][:2]
+    ['attr.get_run_validators', 'attr.set_run_validators']
 
 :class:`~sphobjinv.inventory.Inventory` objects can also import from plaintext or zlib-compressed
 inventories, as |bytes|:
@@ -56,10 +56,10 @@ inventories, as |bytes|:
 
     >>> inv2 = soi.Inventory(inv.data_file())
     >>> print(inv2)
-    <Inventory (bytes_plain): attrs v25.4, 129 objects>
+    <Inventory (bytes_plain): attrs v25.4, 180 objects>
     >>> inv3 = soi.Inventory(soi.compress(inv.data_file()))
     >>> print(inv3)
-    <Inventory (bytes_zlib): attrs v25.4, 129 objects>
+    <Inventory (bytes_zlib): attrs v25.4, 180 objects>
 
 Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword argument:
 
@@ -67,7 +67,7 @@ Remote |objects.inv| files can also be retrieved via URL, with the *url* keyword
 
     >>> inv4 = soi.Inventory(url='https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv')
     >>> print(inv4)
-    <Inventory (url): attrs v25.4, 129 objects>
+    <Inventory (url): attrs v..., ... objects>
 
 Comparing Inventories
 ---------------------
@@ -118,7 +118,7 @@ The :class:`~sphobjinv.data.DataObjStr` instances can be edited in place:
 
     >>> inv = soi.Inventory('objects_attrs.inv')
     >>> inv.objects[0]
-    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='index.html#module-$', dispname='-')
+    DataObjStr(name='attr', domain='py', role='module', priority='0', uri='api-attr.html#module-$', dispname='-')
     >>> inv.objects[0].uri = 'attribute.html'
     >>> inv.objects[0]
     DataObjStr(name='attr', domain='py', role='module', priority='0', uri='attribute.html', dispname='-')
@@ -130,7 +130,7 @@ New instances can be easily created either by direct instantiation, or by
 
     >>> inv.objects.append(inv.objects[0].evolve(name='attr.Generator', uri='generator.html'))
     >>> inv.count
-    130
+    181
     >>> inv.objects[-1]
     DataObjStr(name='attr.Generator', domain='py', role='module', priority='0', uri='generator.html', dispname='-')
 
@@ -141,7 +141,7 @@ The other attributes of the :class:`~sphobjinv.inventory.Inventory` instance can
     >>> inv.project = 'not_attrs'
     >>> inv.version = '0.1'
     >>> print(inv)
-    <Inventory (fname_zlib): not_attrs v0.1, 130 objects>
+    <Inventory (fname_zlib): not_attrs v0.1, 181 objects>
 
 
 Formatting Inventory Contents
@@ -158,8 +158,8 @@ the plaintext |objects.inv| format **as** |bytes| via :meth:`~sphobjinv.inventor
     b'# Project: attrs'
     b'# Version: 25.4'
     b'# The remainder of this file is compressed using zlib.'
-    b'attr py:module 0 index.html#module-$ -'
-    b'attr.VersionInfo py:class 1 api.html#$ -'
+    b'attr py:module 0 api-attr.html#module-$ -'
+    b'attr.Attribute py:class 1 api-attr.html#$ -'
 
 This method makes use of the :meth:`DataObjStr.data_line <sphobjinv.data.SuperDataObj.data_line>`
 method to format each of the object information lines.
@@ -171,11 +171,11 @@ If desired, the :ref:`shorthand <syntax_shorthand>` used for the
 .. doctest:: api_formatting
 
     >>> print(*inv.data_file(expand=True).splitlines()[4:6], sep='\n')
-    b'attr py:module 0 index.html#module-attr attr'
-    b'attr.VersionInfo py:class 1 api.html#attr.VersionInfo attr.VersionInfo'
+    b'attr py:module 0 api-attr.html#module-attr attr'
+    b'attr.Attribute py:class 1 api-attr.html#attr.Attribute attr.Attribute'
     >>> do = inv.objects[0]
     >>> do.data_line(expand=True)
-    'attr py:module 0 index.html#module-attr attr'
+    'attr py:module 0 api-attr.html#module-attr attr'
 
 
 Exporting an Inventory
@@ -204,8 +204,8 @@ To export plaintext:
     # Project: attrs
     # Version: 25.4
     # The remainder of this file is compressed using zlib.
-    attr py:module 0 index.html#module-$ -
-    attr.VersionInfo py:class 1 api.html#$ -
+    attr py:module 0 api-attr.html#module-$ -
+    attr.Attribute py:class 1 api-attr.html#$ -
 
 For zlib-compressed:
 
@@ -219,7 +219,7 @@ For zlib-compressed:
     b'# Version: 25.4'
     b'# The remainder of this file is compressed using zlib.'
     >>> print(Path('objects_attrs_new.inv').read_bytes().splitlines()[6][:10])
-    b'\xbf\x86\x8fL49\xc4\x91\xb8\x8c'
+    b"$e2'\x92\xbde\xaa\xbdj"
 
 For JSON:
 
