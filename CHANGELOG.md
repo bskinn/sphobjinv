@@ -8,7 +8,7 @@ and this project follows an extension of
 fourth number represents an administrative maintenance release with no code
 changes.
 
-### [2.4] - 2026-03-20
+### [2.4] - 2026-03-22
 
 #### Added
 
@@ -20,6 +20,18 @@ changes.
       input file.
 
 #### Tests
+
+  * Remove flake8_ext test file and machinery ([#336]).
+    * pytest environment now can easily de-sync from the flake8 environment
+      since flake8 is running in tox now.
+    * It was really always over-cautious, too.
+
+  * Exclude `setup.py` from coverage ([#336]).
+    * Necessary due to a change in coverage.py behavior, maybe?
+    * Definitely is not expected to run during execution of the test suite.
+
+  * Remove unused `ensure_doc_scratch` fixture from `conftest.py` ([#336]).
+    * Obsolete now that the README shell examples aren't doctested.
 
   * Add 3.13t and 3.14t to `tox` test matrix ([#333]).
     * Also add report of the current GIL status to the `tox` env output.
@@ -55,6 +67,9 @@ changes.
 
 #### Internal
 
+  * Pin Actions versions to SHAs and de-persist credentials ([#)336].
+    * Closes [#322].
+
   * Add Actions workflow to error on a non-draft release branch if any `#VER#`
     markers remain in docs source ([#331]).
 
@@ -80,6 +95,9 @@ changes.
       GitHub badge to report.
 
 #### Documentation
+
+  * Update Sphinx, attrs, Python, etc. content to freshen and to match the new
+    inventories in the test resources ([#336]).
 
   * Dynamically retrieve the current values of `PrsConst.SUGGEST_CONFIRM_LENGTH`
     and `PrsConst.DEF_THRESH` to define their replaces in `conf.py` ([#331]).
@@ -785,7 +803,9 @@ changes.
 [#315]: https://github.com/bskinn/sphobjinv/pull/315
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
 [#320]: https://github.com/bskinn/sphobjinv/pull/320
+[#322]: https://github.com/bskinn/sphobjinv/issues/322
 [#325]: https://github.com/bskinn/sphobjinv/pull/325
 [#327]: https://github.com/bskinn/sphobjinv/pull/327
 [#331]: https://github.com/bskinn/sphobjinv/pull/331
 [#333]: https://github.com/bskinn/sphobjinv/pull/333
+[#336]: https://github.com/bskinn/sphobjinv/pull/336
