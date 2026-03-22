@@ -584,7 +584,7 @@ class TestInventory:
                     original_ifile_data
                 ), fname
 
-        elif re.search(r"sphinx.*[.]inv", fname):  # pragma: no cover
+        elif re.search(r"sphinx(|_6_0b)[.]inv", fname):  # pragma: no cover
             soi_names = [o.name for o in inv.objects]
             ifile_names = list(
                 itt.chain.from_iterable(
