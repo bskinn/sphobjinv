@@ -115,19 +115,19 @@ class TestCore:
                     soi.DataFields.Domain: b"py",
                     soi.DataFields.Role: b"module",
                     soi.DataFields.Priority: b"0",
-                    soi.DataFields.URI: b"index.html#module-$",
+                    soi.DataFields.URI: b"api-attr.html#module-$",
                     soi.DataFields.DispName: b"-",
                 },
             ],
             [
                 -3,
                 {  # slots std:label -1 examples.html#$ Slots
-                    soi.DataFields.Name: b"validators",
+                    soi.DataFields.Name: b"types",
                     soi.DataFields.Domain: b"std",
-                    soi.DataFields.Role: b"label",
+                    soi.DataFields.Role: b"doc",
                     soi.DataFields.Priority: b"-1",
-                    soi.DataFields.URI: b"init.html#$",
-                    soi.DataFields.DispName: b"Validators",
+                    soi.DataFields.URI: b"types.html",
+                    soi.DataFields.DispName: b"Type Annotations",
                 },
             ],
         ),
@@ -136,7 +136,7 @@ class TestCore:
         """Confirm the regex for loading data lines is working properly."""
         # Prelim approximate check to be sure we're working with the
         # correct file/data.
-        assert len(soi.re.pb_data.findall(bytes_txt)) == 129
+        assert len(soi.re.pb_data.findall(bytes_txt)) == 180
 
         mchs = list(soi.re.pb_data.finditer(bytes_txt))
 
@@ -448,7 +448,7 @@ class TestInventory:
         inv2 = soi.Inventory(d, count_error=False)
 
         # 128 (one less than 129) b/c the loop continues past missing elements
-        assert inv2.count == 128
+        assert inv2.count == 179
 
     def test_api_inventory_namesuggest(self, res_cmp, check):
         """Confirm object name suggestion is nominally working on a specific object."""
