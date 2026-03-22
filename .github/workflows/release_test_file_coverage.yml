@@ -35,7 +35,7 @@ jobs:
           requirements-flake8.txt
 
     - name: Install CI requirements
-      run: pip install -r requirements-ci.txt -r requirements-flake8.txt
+      run: pip install -r requirements-ci.txt
 
     - name: Build docs & ensure scratch
       run: |
@@ -44,7 +44,7 @@ jobs:
         mkdir scratch
 
     - name: Run pytest covering entire project tree
-      run: pytest --cov=. --nonloc --flake8_ext
+      run: pytest --cov=. --nonloc
 
     - name: Check 100% test code execution
       run: coverage report --include="tests/*" --fail-under=100

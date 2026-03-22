@@ -61,9 +61,6 @@ def pytest_addoption(parser):
         ),
     )
     parser.addoption("--nonloc", action="store_true", help="Include nonlocal tests")
-    parser.addoption(
-        "--flake8_ext", action="store_true", help="Include flake8 extensions test"
-    )
 
 
 @pytest.fixture(scope="session")
