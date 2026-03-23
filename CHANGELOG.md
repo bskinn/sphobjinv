@@ -67,7 +67,19 @@ changes.
 
 #### Internal
 
-  * Pin Actions versions to SHAs and de-persist credentials ([#)336].
+  * Convert `build` call into a `tox` env and remove `build` from
+    `requirements-dev.txt` ([#336]).
+
+  * Remove redundant packages from `requirements-dev.txt` and
+    `requirements-ci.txt` that are pulled in by the `-e .` line ([#336]).
+
+  * Add `tests/resource/objects_pdfminer*` to `MANIFEST.in`, to make that
+    inventory available to the docs build in the sdist unpack-and-test workflow
+    job ([#336]).
+    * Otherwise the docs job emits a warning. Not fatal, but better to have a
+      clean build.
+
+  * Pin Actions versions to SHAs and de-persist credentials ([#336]).
     * Closes [#322].
 
   * Add Actions workflow to error on a non-draft release branch if any `#VER#`
