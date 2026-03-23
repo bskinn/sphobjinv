@@ -10,10 +10,10 @@ Sphinx |objects.inv| files.
     21 Jun 2022
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -32,7 +32,6 @@ Sphinx |objects.inv| files.
 import pytest
 
 import sphobjinv.cli.suggest as soi_cli_suggest
-
 
 pytestmark = [pytest.mark.intersphinx, pytest.mark.local]
 

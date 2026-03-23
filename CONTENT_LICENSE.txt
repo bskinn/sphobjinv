@@ -1,4 +1,4 @@
 The sphobjinv documentation (including docstrings and README) is licensed under
 a Creative Commons Attribution 4.0 International License (CC-BY).
 
-See http://creativecommons.org/licenses/by/4.0/.
+See https://creativecommons.org/licenses/by/4.0/.

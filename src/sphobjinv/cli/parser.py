@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     15 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -44,13 +44,17 @@ class PrsConst:
 
     #: Version &c. output blurb
     VER_TXT = (
-        f"\nsphobjinv v{__version__}\n\nCopyright (c) Brian Skinn 2016-2025\n"
+        f"\nsphobjinv v{__version__}\n\n"
+        "Copyright (c) 2016-2026 Brian Skinn and community contributors\n"
         "License: The MIT License\n\n"
         "Bug reports & feature requests:"
         " https://github.com/bskinn/sphobjinv\n"
         "Documentation:"
         " https://sphobjinv.readthedocs.io\n"
     )
+
+    #: Short version text for textconv entrypoint
+    VER_TXT_SHORT = f"sphobjinv v{__version__}"
 
     # ### Subparser selectors and argparse param for storing subparser name
     #: Subparser name for inventory file conversions; stored in
@@ -227,6 +231,8 @@ def getparser():
     # briefly required a/o 3.7.0b4 due to change in default behavior, per:
     # https://bugs.python.org/issue33109. 3.6 behavior restored for
     # 3.7 release.
+    #
+    # We retain for explicitness
     sprs.required = False
 
     spr_convert = sprs.add_parser(
@@ -378,6 +384,38 @@ def getparser():
             f"Cannot be used with --{PrsConst.URL}."
         ),
         action="store_true",
+    )
+
+    return prs
+
+
+def getparser_textconv():
+    """Generate argument parser for textconv entrypoint.
+
+    Returns
+    -------
+    prs
+
+        :class:`~argparse.ArgumentParser` -- Parser for textconv commandline
+        usage of |soi|
+
+    """
+    prs = ap.ArgumentParser(
+        description=(
+            "Emit the plaintext of the local Sphinx inventory at 'infile' to stdout."
+        )
+    )
+    prs.add_argument(
+        "-" + PrsConst.VERSION[0],
+        "--" + PrsConst.VERSION,
+        help="Print package version & other info",
+        action="version",
+        version=PrsConst.VER_TXT_SHORT,
+    )
+
+    prs.add_argument(
+        PrsConst.INFILE,
+        help=("Path to file to be converted"),
     )
 
     return prs

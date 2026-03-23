@@ -1,4 +1,4 @@
-r"""``sphobjinv`` *version definition module*.
+r"""*Test enums for* ``sphobjinv``.
 
 ``sphobjinv`` is a toolkit for manipulation and inspection of
 Sphinx |objects.inv| files.
@@ -7,7 +7,7 @@ Sphinx |objects.inv| files.
     Brian Skinn (brian.skinn@gmail.com)
 
 **File Created**
-    18 Mar 2019
+    22 Dec 2025
 
 **Copyright**
     \(c) 2016-2026 Brian Skinn and community contributors
@@ -29,4 +29,11 @@ Sphinx |objects.inv| files.
 
 """
 
-__version__ = "2.4"
+from enum import Enum
+
+
+class CLICommand(str, Enum):
+    """Enumeration of CLI commands."""
+
+    Core = "sphobjinv"
+    Textconv = "sphobjinv-textconv"

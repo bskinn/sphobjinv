@@ -10,10 +10,10 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -38,7 +38,6 @@ import dictdiffer
 import pytest
 
 import sphobjinv as soi
-
 
 pytestmark = [pytest.mark.api, pytest.mark.local]
 
@@ -116,19 +115,19 @@ class TestCore:
                     soi.DataFields.Domain: b"py",
                     soi.DataFields.Role: b"module",
                     soi.DataFields.Priority: b"0",
-                    soi.DataFields.URI: b"index.html#module-$",
+                    soi.DataFields.URI: b"api-attr.html#module-$",
                     soi.DataFields.DispName: b"-",
                 },
             ],
             [
                 -3,
                 {  # slots std:label -1 examples.html#$ Slots
-                    soi.DataFields.Name: b"validators",
+                    soi.DataFields.Name: b"types",
                     soi.DataFields.Domain: b"std",
-                    soi.DataFields.Role: b"label",
+                    soi.DataFields.Role: b"doc",
                     soi.DataFields.Priority: b"-1",
-                    soi.DataFields.URI: b"init.html#$",
-                    soi.DataFields.DispName: b"Validators",
+                    soi.DataFields.URI: b"types.html",
+                    soi.DataFields.DispName: b"Type Annotations",
                 },
             ],
         ),
@@ -137,7 +136,7 @@ class TestCore:
         """Confirm the regex for loading data lines is working properly."""
         # Prelim approximate check to be sure we're working with the
         # correct file/data.
-        assert len(soi.re.pb_data.findall(bytes_txt)) == 129
+        assert len(soi.re.pb_data.findall(bytes_txt)) == 180
 
         mchs = list(soi.re.pb_data.finditer(bytes_txt))
 
@@ -449,12 +448,12 @@ class TestInventory:
         inv2 = soi.Inventory(d, count_error=False)
 
         # 128 (one less than 129) b/c the loop continues past missing elements
-        assert inv2.count == 128
+        assert inv2.count == 179
 
     def test_api_inventory_namesuggest(self, res_cmp, check):
         """Confirm object name suggestion is nominally working on a specific object."""
-        rst = ":py:function:`attr.attr.evolve`"
-        idx = 10
+        rst = ":py:function:`attr.evolve`"
+        idx = 18
 
         inv = soi.Inventory(str(res_cmp))
 
@@ -585,7 +584,26 @@ class TestInventory:
                     original_ifile_data
                 ), fname
 
-        elif "sphinx.inv" in fname:  # pragma: no cover
+        elif re.search(r"sphinx(|_6_0b)[.]inv", fname):  # pragma: no cover
+            soi_names = [o.name for o in inv.objects]
+            ifile_names = list(
+                itt.chain.from_iterable(
+                    list(original_ifile_data[k].keys()) for k in original_ifile_data
+                )
+            )
+
+            # There is the same set of unique names in the sphobjinv Inventory
+            # as in the Sphinx IFile imported data ...
+            assert set(soi_names) == set(ifile_names), fname
+
+            # ... but there are duplicate names in each ...
+            assert inv.count > len(set(soi_names)), fname
+            assert sphinx_ifile_data_count(original_ifile_data) > len(
+                set(ifile_names)
+            ), fname
+
+            # ... and there are always four more items in the sphobjinv Inventory
+            # than in the IFile data.
             assert inv.count == 4 + sphinx_ifile_data_count(original_ifile_data), fname
 
         else:

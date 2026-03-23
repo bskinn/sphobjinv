@@ -1,7 +1,7 @@
 .. API page
 
-API
-===
+API Reference
+=============
 
 Most (all?) of the objects documented in the below submodules
 are also exposed at the |soi| package root. For example,

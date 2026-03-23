@@ -1,7 +1,7 @@
 .. Description of suggest commandline usage
 
-Command-Line Usage: "suggest" Subcommand
-========================================
+Command-Line Usage: ``sphobjinv suggest``
+=========================================
 
 .. program:: sphobjinv suggest
 
@@ -29,7 +29,7 @@ via :option:`--thresh`:
 Remote |objects.inv| files can be retrieved for inspection by passing the
 :option:`--url` flag:
 
-.. command-output:: sphobjinv suggest https://github.com/bskinn/sphobjinv/raw/main/tests/resource/objects_attrs.inv instance -u -t 48
+.. command-output:: sphobjinv suggest https://sphobjinv.readthedocs.io/en/stable/objects.inv Inventory -u -t 85
    :cwd: /../../tests/resource
 
 The URL provided **MUST** have the leading protocol specified (here,
@@ -82,9 +82,9 @@ If download of JSON files by URL is desirable, please
 
 .. option:: -a, --all
 
-    Display all search results without prompting, regardless of the number of hits.
-    Otherwise, prompt if number of results exceeds
-    :attr:`~sphobjinv.cli.parser.PrsConst.SUGGEST_CONFIRM_LENGTH`.
+    Display all search results without prompting, regardless of the number of
+    hits. Otherwise, prompt for confirmation before displaying the entire result
+    set if count exceeds |cli:SUGGEST_CONFIRM_LENGTH|.
 
 .. option:: -i, --index
 
@@ -99,8 +99,7 @@ If download of JSON files by URL is desirable, please
 .. option:: -t, --thresh <#>
 
     Change the |fuzzywuzzy|_ match quality threshold (0-100; higher values
-    yield fewer results). Default is specified in
-    :attr:`~sphobjinv.cli.parser.PrsConst.DEF_THRESH`.
+    yield fewer results). Current default threshold is |cli:DEF_THRESH|.
 
 .. option:: -u, --url
 

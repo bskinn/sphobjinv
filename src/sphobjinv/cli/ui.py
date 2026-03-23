@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     19 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -37,7 +37,7 @@ from sphobjinv.cli.parser import PrsConst
 def print_stderr(thing, params, *, end="\n"):
     r"""Print `thing` to stderr if not in quiet mode.
 
-    Quiet mode is indicated by the value at the |cli:QUIET| key
+    Quiet mode is indicated by the value at the QUIET key
     within `params`.
 
     Quiet mode is not implemented for the ":doc:`suggest </cli/suggest>`"
@@ -58,7 +58,11 @@ def print_stderr(thing, params, *, end="\n"):
         |str| -- String to append to printed content (default: ``\n``\ )
 
     """
-    if params[PrsConst.SUBPARSER_NAME][:2] == "su" or not params[PrsConst.QUIET]:
+    if (
+        PrsConst.SUBPARSER_NAME not in params  # textconv
+        or params[PrsConst.SUBPARSER_NAME][:2] == "su"  # suggest is never quiet
+        or not params[PrsConst.QUIET]  # non-quiet convert
+    ):
         print(thing, file=sys.stderr, end=end)
 
 

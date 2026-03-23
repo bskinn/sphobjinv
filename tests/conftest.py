@@ -10,10 +10,10 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -45,6 +45,9 @@ from sphinx import __version__ as sphinx_version_str
 from sphinx.util.inventory import InventoryFile as IFile
 
 import sphobjinv as soi
+from sphobjinv.cli.core import main, main_textconv
+from tests.enum import CLICommand
+from tests.fixtures_http import resource_http_base_url, resource_url  # noqa: F401
 
 
 def pytest_addoption(parser):
@@ -58,15 +61,12 @@ def pytest_addoption(parser):
         ),
     )
     parser.addoption("--nonloc", action="store_true", help="Include nonlocal tests")
-    parser.addoption(
-        "--flake8_ext", action="store_true", help="Include flake8 extensions test"
-    )
 
 
 @pytest.fixture(scope="session")
 def res_path():
     """Provide Path object to the test resource directory."""
-    return Path("tests", "resource")
+    return Path(__file__).resolve().parent / "resource"
 
 
 @pytest.fixture(scope="session")
@@ -114,12 +114,6 @@ def misc_info(res_path):
             True: b"attr.Attribute py:class 1 api.html#attr.Attribute attr.Attribute",
         }
 
-        # For the URL mode of Inventory instantiation
-        remote_url = (
-            "https://github.com/bskinn/sphobjinv/raw/main/"
-            "tests/resource/objects_{0}.inv"
-        )
-
         # Regex pattern for objects_xyz.inv files
         p_inv = re.compile(r"objects_([^.]+)\.inv", re.I)
 
@@ -133,6 +127,16 @@ def misc_info(res_path):
     Info.str_lines = {_: Info.byte_lines[_].decode("utf-8") for _ in Info.byte_lines}
 
     return Info()
+
+
+@pytest.fixture(scope="session")
+def http_inv_url_template(resource_url) -> str:  # noqa: F811
+    """Provide a template string for accessing files over HTTP.
+
+    Meant to be used via the URL mode of Inventory instantiation.
+
+    """
+    return resource_url("objects_{0}.inv")
 
 
 @pytest.fixture()
@@ -151,17 +155,11 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
     # With the conversion of resources/objects_attrs.txt to Unix EOLs in order to
     # provide for a Unix-testable sdist, on Windows systems this resource needs
     # to be converted to DOS EOLs for consistency.
-    if is_win:
+    if is_win:  # pragma: no cover
         win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC.value}"
         win_path.write_bytes(unix2dos(win_path.read_bytes()))
 
     yield tmp_path
-
-
-@pytest.fixture(scope="session")
-def ensure_doc_scratch():
-    """Ensure doc/scratch dir exists, for README shell examples."""
-    Path("doc", "scratch").mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture(scope="session")
@@ -211,7 +209,7 @@ def sphinx_load_test(sphinx_ifile_load):
         """Perform the 'live' inventory load test."""
         try:
             sphinx_ifile_load(path)
-        except Exception as e:  # noqa: PIE786
+        except Exception as e:  # noqa: PIE786  pragma: no cover
             # An exception here is a failing test, not a test error.
             pytest.fail(e)
 
@@ -233,25 +231,30 @@ def sphinx_version():
 @pytest.fixture()  # Must be function scope since uses monkeypatch
 def run_cmdline_test(monkeypatch):
     """Return function to perform command line exit code test."""
-    from sphobjinv.cli.core import main
 
-    def func(arglist, *, expect=0):  # , suffix=None):
+    def func(arglist, *, command=CLICommand.Core, expect=0):  # , suffix=None):
         """Perform the CLI exit-code test."""
-
         # Assemble execution arguments
-        runargs = ["sphobjinv"]
+        runargs = [command.value]
         runargs.extend(str(a) for a in arglist)
+
+        # Select the command function to use
+        match command:
+            case CLICommand.Core:
+                cmd_func = main
+            case CLICommand.Textconv:
+                cmd_func = main_textconv
 
         # Mock sys.argv, run main, and restore sys.argv
         with monkeypatch.context() as m:
             m.setattr(sys, "argv", runargs)
 
             try:
-                main()
+                cmd_func()
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True
-            else:
+            else:  # pragma: no cover
                 ok = False
 
         # Do all pytesty stuff outside monkeypatch context
@@ -273,7 +276,7 @@ def decomp_cmp_test(misc_info, is_win, unix2dos):
         res_bytes = Path(misc_info.res_decomp_path).read_bytes()
         tgt_bytes = Path(path).read_bytes()  # .replace(b"\r\n", b"\n")
 
-        if is_win:
+        if is_win:  # pragma: no cover
             # Have to explicitly convert these newlines, now that the
             # tests/resource/objects_attrs.txt file is marked 'binary' in
             # .gitattributes
@@ -296,8 +299,8 @@ def attrs_inventory_test():
 
         """
         assert inv.project == "attrs"
-        assert inv.version == "22.1"
-        assert inv.count == 129
+        assert inv.version == "25.4"
+        assert inv.count == 180
         assert inv.source_type
 
     return func
@@ -305,7 +308,7 @@ def attrs_inventory_test():
 
 testall_inv_paths = [
     p
-    for p in (Path(__file__).parent / "tests" / "resource").iterdir()
+    for p in (Path(__file__).parent / "resource").iterdir()
     if p.name.startswith("objects_") and p.name.endswith(".inv")
 ]
 testall_inv_ids = [p.name[8:-4] for p in testall_inv_paths]

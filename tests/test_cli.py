@@ -10,10 +10,10 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -39,10 +39,7 @@ from pathlib import Path
 import pytest
 from stdio_mgr import stdio_mgr
 
-from sphobjinv import HeaderFields
-from sphobjinv import Inventory
-from sphobjinv import SourceTypes
-
+from sphobjinv import HeaderFields, Inventory, SourceTypes
 
 CLI_TEST_TIMEOUT = 2
 CLI_CMDS = ["sphobjinv", "python -m sphobjinv"]
@@ -76,7 +73,7 @@ class TestMisc:
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test([])
 
-            assert "usage: sphobjinv" in out_.getvalue()
+            assert re.search("usage:.*sphobjinv", out_.getvalue(), re.I)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_no_subparser_prs_exit(self, run_cmdline_test):
@@ -358,7 +355,7 @@ class TestSuggestGood:
         """Confirm with_index suggest works."""
         with stdio_mgr() as (in_, out_, err_):
             run_cmdline_test(["suggest", res_cmp, "instance", "-it", "50"])
-            assert re.search("^.*instance_of\\S*\\s+82\\s*$", out_.getvalue(), re.M)
+            assert re.search("^.*instance_of\\S*\\s+127\\s*$", out_.getvalue(), re.M)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_withscore(self, run_cmdline_test, res_cmp):
@@ -376,7 +373,7 @@ class TestSuggestGood:
 
     @pytest.mark.parametrize(
         ["inp", "flags", "nlines"],
-        [("", "-at", 129), ("y\n", "-t", 130), ("n\n", "-t", 1)],
+        [("", "-at", 180), ("y\n", "-t", 181), ("n\n", "-t", 1)],
     )  # Extra line for input() query in the "y\n" case
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_cli_suggest_long_list(self, inp, flags, nlines, run_cmdline_test, res_cmp):

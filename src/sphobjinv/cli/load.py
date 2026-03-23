@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     17 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -36,7 +36,7 @@ from urllib.error import HTTPError, URLError
 
 from jsonschema.exceptions import ValidationError
 
-from sphobjinv import Inventory, readjson, urlwalk, VersionError
+from sphobjinv import Inventory, VersionError, readjson, urlwalk
 from sphobjinv.cli.parser import PrsConst
 from sphobjinv.cli.paths import resolve_inpath
 from sphobjinv.cli.ui import err_format, print_stderr
@@ -83,8 +83,8 @@ def import_infile(in_path):
 def inv_local(params):
     """Create |Inventory| from local source.
 
-    Uses |resolve_inpath| to sanity-check and/or convert
-    |cli:INFILE|.
+    Uses ``resolve_inpath`` to sanity-check and/or convert
+    INFILE.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -99,12 +99,12 @@ def inv_local(params):
     inv
 
         |Inventory| -- Object representation of the inventory
-        at |cli:INFILE|
+        at INFILE
 
     in_path
 
         |str| -- Input file path as resolved/checked by
-        |resolve_inpath|
+        ``resolve_inpath``
 
     """
     # Resolve input file path
@@ -127,7 +127,7 @@ def inv_local(params):
 def inv_url(params):
     """Create |Inventory| from file downloaded from URL.
 
-    Initially, treats |cli:INFILE| as a download URL to be passed to
+    Initially, treats INFILE as a download URL to be passed to
     the `url` initialization argument
     of :class:`~sphobjinv.inventory.Inventory`.
 
@@ -135,7 +135,7 @@ def inv_url(params):
     searches the directory tree of the URL for |objects.inv|.
 
     Injects the URL at which an inventory was found into `params`
-    under the |cli:FOUND_URL| key.
+    under the FOUND_URL key.
 
     Calls :func:`sys.exit` internally in error-exit situations.
 
@@ -150,11 +150,11 @@ def inv_url(params):
     inv
 
         |Inventory| -- Object representation of the inventory
-        at |cli:INFILE|
+        at INFILE
 
     ret_path
 
-        |str| -- URL from |cli:INFILE| used to construct `inv`.
+        |str| -- URL from INFILE used to construct `inv`.
         If URL is longer than 45 characters, the central portion is elided.
 
     """

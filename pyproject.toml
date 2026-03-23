@@ -8,11 +8,10 @@ requires = [
 [project]
 name = "sphobjinv"
 description = "Sphinx objects.inv Inspection/Manipulation Tool"
-license = {text = "MIT License"}
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [{name = "Brian Skinn", email = "brian.skinn@gmail.com"}]
 classifiers = [
-    "License :: OSI Approved",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Environment :: Console",
     "Framework :: Sphinx",
@@ -21,11 +20,11 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Documentation",
     "Topic :: Documentation :: Sphinx",
     "Topic :: Software Development",
@@ -34,28 +33,29 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
 ]
 keywords = ["sphinx", "sphinx-doc", "inventory", "manager", "inspector"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "attrs>=19.2",
     "certifi",
-    "jsonschema>=3.0",
+    "jsonschema>=3.1.1",
 ]
 dynamic = ["version", "readme"]
 
 [project.urls]
-Homepage = "https://github.com/bskinn/sphobjinv"
 Changelog = "https://github.com/bskinn/sphobjinv/blob/main/CHANGELOG.md"
 Docs = "https://sphobjinv.readthedocs.io/en/stable/"
-Thank = "https://fosstodon.org/@btskinn"
 Donate = "https://github.com/sponsors/bskinn"
+Homepage = "https://github.com/bskinn/sphobjinv"
+Thank = "https://fosstodon.org/@btskinn"
 
 [project.scripts]
 sphobjinv = "sphobjinv.cli.core:main"
+sphobjinv-textconv = "sphobjinv.cli.core:main_textconv"
+
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 platforms = ["any"]
-license-files = ["LICENSE.txt"]
 include-package-data = false
 
 [tool.setuptools.packages.find]
@@ -66,6 +66,7 @@ namespaces = false
 version = {attr = "sphobjinv.version.__version__"}
 
 [tool.black]
+target-version = ["py313"]
 line-length = 88
 include = '''
 (
@@ -89,3 +90,9 @@ exclude = '''
 exclude = ["src/sphobjinv/_vendored"]
 fail-under = 100
 verbose = 1
+
+[tool.isort]
+profile = "black"
+known_first_party = ["sphobjinv", "tests"]
+no_lines_before = ["LOCALFOLDER"]
+extend_skip = ["src/sphobjinv/_vendored"]

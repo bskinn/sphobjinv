@@ -11,7 +11,7 @@ Welcome to sphobjinv!
 
 When documentation is built using, e.g., Sphinx's :obj:`~sphinx.builders.html.StandaloneHTMLBuilder`,
 an inventory of the named objects in the documentation set `is dumped
-<https://github.com/sphinx-doc/sphinx/blob/adde25689377b58791ad2e357817378ad3a08a1b/sphinx/util/inventory.py#L158-L189>`__
+<https://github.com/sphinx-doc/sphinx/blob/e552f8429c3039bc0649a7da82bdfa0df3273c3d/sphinx/util/inventory.py#L175-L207>`__
 to a file called |objects.inv| in the html build directory.
 (One common location is, |cour|\ doc/build/html\ |/cour|, though the exact location will vary
 depending on the details of how Sphinx is configured.)  This file is read by |isphx| when
@@ -57,6 +57,8 @@ and package managers, including:
 
   * Arch Linux: ``python-sphobjinv``
 
+  * Debian: ``python-sphobjinv`` (`info <https://packages.debian.org/stable/source/python-sphobjinv>`__)
+
   * Fedora: ``python-sphobjinv`` (`info <https://src.fedoraproject.org/rpms/python-sphobjinv>`__)
 
   * Gentoo: ``dev-python/sphobjinv`` (`info <https://gitweb.gentoo.org/repo/gentoo.git/tree/dev-python/sphobjinv>`__)
@@ -100,8 +102,6 @@ The project source repository is on GitHub: `bskinn/sphobjinv
    levenshtein
    syntax
    api/index
-   CLI Implementation (non-API) <cli/implementation/index>
-
 
 
 Indices and Tables

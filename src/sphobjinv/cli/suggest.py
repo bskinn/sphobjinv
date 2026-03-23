@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Oct 2022
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -43,18 +43,18 @@ def do_suggest(inv, params):
 
     Results are printed one per line.
 
-    If neither |cli:INDEX| nor |cli:SCORE| is specified,
+    If neither INDEX nor SCORE is specified,
     the results are output without a header.
     If either or both are specified,
     the results are output in a lightweight tabular format.
 
     If the number of results exceeds
-    |cli:SUGGEST_CONFIRM_LENGTH|,
+    SUGGEST_CONFIRM_LENGTH,
     the user will be queried whether to display
     all of the returned results
-    unless |cli:ALL| is specified.
+    unless ALL is specified.
 
-    No |cli:QUIET| option is available here, since
+    No QUIET option is available here, since
     a silent mode for suggestion output is nonsensical.
 
     Parameters
@@ -62,7 +62,7 @@ def do_suggest(inv, params):
     inv
 
         |Inventory| -- Inventory object to be output in the format
-        indicated by |cli:MODE|.
+        indicated by MODE.
 
     params
 

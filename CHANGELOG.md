@@ -2,15 +2,149 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project follows an extension of
-[Semantic Versioning](http://semver.org/spec/v2.0.0.html), where a bump in a
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html), where a bump in a
 fourth number represents an administrative maintenance release with no code
 changes.
 
-### *Unreleased*
+### [2.4] - 2026-03-23
 
-...
+#### Added
+
+  * Add `sphobjinv-textconv` CLI entrypoint ([#331]).
+    * Takes a single required argument, the path to a local inventory file, and
+      emits the plaintext inventory to `stdout`.
+    * The target use-case is as a Git textconv, primarily intended for
+      compressed `objects.inv` files; but, it will work with any valid type of
+      input file.
+
+#### Tests
+
+  * Remove flake8_ext test file and machinery ([#336]).
+    * pytest environment now can easily de-sync from the flake8 environment
+      since flake8 is running in tox now.
+    * It was really always over-cautious, too.
+
+  * Exclude `setup.py` from coverage ([#336]).
+    * Necessary due to a change in coverage.py behavior, maybe?
+    * Definitely is not expected to run during execution of the test suite.
+
+  * Remove unused `ensure_doc_scratch` fixture from `conftest.py` ([#336]).
+    * Obsolete now that the README shell examples aren't doctested.
+
+  * Add 3.13t and 3.14t to `tox` test matrix ([#333]).
+    * Also add report of the current GIL status to the `tox` env output.
+
+  * Filter newly emerged `ResourceWarning` emitted from implicit cleanup of
+    `tempfile` resources ([#333]).
+
+  * Add tests exercising the new `sphobjinv-textconv` CLI entrypoint ([#331]).
+    * Required generalizing the `run_cmdline_test` fixture so that tests can
+      choose between the core and textconv entrypoints.
+
+  * Update `tox` env test matrix for `py310` to `py314` ([#325]).
+
+  * Update test path calculations to always be relative to `__file__` ([#325]).
+
+  * Relocate `conftest.py` into `tests` ([#325]).
+    * Since the new HTTP server fixtures are going in their own source file, it
+      made the most sense to pull `conftest.py` into the `tests/` directory
+      also.
+    * Required some updates to paths in fixtures &c.
+
+  * Convert HTTP/URL nonloc tests to use a transient local HTTP server ([#325]).
+    * See `tests/fixtures_http.py`.
+    * With the increased caution many sites, including GitHub, are applying to
+      incoming traffic, using 'raw' GitHub assets in the `sphobjinv` repository
+      has become too flaky.
+    * So, we stand up our own HTTP server as a session-scope fixture, and point
+      (nearly) all of the URL tests at the local server.
+       * A small number of tests remain that do still reach out to an internet
+         `objects.inv`.
+    * A small number of outside-world URL tests remain, to docsets that (so far)
+      have been cooperative. Time will tell if we need to find others.
+
+#### Internal
+
+  * Convert `build` call into a `tox` env and remove `build` from
+    `requirements-dev.txt` ([#336]).
+
+  * Remove redundant packages from `requirements-dev.txt` and
+    `requirements-ci.txt` that are pulled in by the `-e .` line ([#336]).
+
+  * Add `tests/resource/objects_pdfminer*` to `MANIFEST.in`, to make that
+    inventory available to the docs build in the sdist unpack-and-test workflow
+    job ([#336]).
+    * Otherwise the docs job emits a warning. Not fatal, but better to have a
+      clean build.
+
+  * Pin Actions versions to SHAs and de-persist credentials ([#336]).
+    * Closes [#322].
+
+  * Add Actions workflow to error on a non-draft release branch if any `#VER#`
+    markers remain in docs source ([#331]).
+
+  * Augment `black` and `flake8` `tox` envs to run `--version` first ([#327]).
+
+  * Remove `-r requirements-flake.txt` from `requirements-dev.txt` ([#327]).
+    * `flake8` should always be run via `tox`.
+
+  * Add `tox` env to run `isort` and execute across codebase ([#327]).
+
+  * Add `flake8-isort` to `flake8` requirements and remove `flake8-import-order`
+    ([#327]).
+    * Also remove `flake8-import-order` config from `tox.ini`.
+
+  * Bump dev-pin Sphinx to v8.1.3 ([#325]).
+    * Two different version constraints at the moment:
+      * Sphinx v8.2 doesn't support Python 3.10 (primary constraint)
+      * Newest `sphinx-rtd-theme` only supports Sphinx `<9` (secondary).
+
+  * Add `push` trigger for `all_core_tests.yml` workflow for `main` branch
+    ([#320]).
+    * This will provide `main` branch CI results for this workflow, for the
+      GitHub badge to report.
+
+#### Documentation
+
+  * Update Sphinx, attrs, Python, etc. content to freshen and to match the new
+    inventories in the test resources ([#336]).
+
+  * Dynamically retrieve the current values of `PrsConst.SUGGEST_CONFIRM_LENGTH`
+    and `PrsConst.DEF_THRESH` to define their replaces in `conf.py` ([#331]).
+
+  * Add `cli/textconv.rst` to document the new `sphobjinv-textconv` CLI
+    entrypoint ([#331]).
+
+  * Cull some superfluous replaces in `conf.py` ([#331]).
+
+  * Relocate the 'help' and 'version' CLI usage documentation content to a new
+    'orphan' page ([#331]).
+    * This keeps the content in the `objects.inv`, for completeness, but keeps
+      it off of the docs nav.
+
+  * Revise 'CLI Usage' documentation to incorporate the `sphobjinv-textconv`
+    entrypoint ([#331]).
+
+  * Remove the 'CLI Implementation' "API reference" docs ([#331]).
+    * They're not part of the public API contract, and they don't actually help
+      understand how the CLI is implemented; so, why bother maintaining them?
+    * Also cull the various `replace` directives defined in `conf.py` for these
+      docs.
+
+#### Administrative
+
+  * Convert several `http://` to `https://` across the project ([#333]).
+
+  * Add formal support for Python 3.14 ([#325]).
+
+  * Drop support for Python 3.9 (EOL) ([#325]).
+
+  * Bump 'core' dev and CI Python version to 3.13 ([#325]).
+
+  * Update the GitHub badge to point to the new `all_core_tests.yml` workflow
+    ([#320]) instead of the now-removed `ci_tests.yml`.
 
 
 ### [2.3.1.3] - 2025-05-26
@@ -680,3 +814,10 @@ changes.
 [#306]: https://github.com/bskinn/sphobjinv/pull/306
 [#315]: https://github.com/bskinn/sphobjinv/pull/315
 [#316]: https://github.com/bskinn/sphobjinv/pull/316
+[#320]: https://github.com/bskinn/sphobjinv/pull/320
+[#322]: https://github.com/bskinn/sphobjinv/issues/322
+[#325]: https://github.com/bskinn/sphobjinv/pull/325
+[#327]: https://github.com/bskinn/sphobjinv/pull/327
+[#331]: https://github.com/bskinn/sphobjinv/pull/331
+[#333]: https://github.com/bskinn/sphobjinv/pull/333
+[#336]: https://github.com/bskinn/sphobjinv/pull/336

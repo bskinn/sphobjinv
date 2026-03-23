@@ -10,10 +10,10 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
-    http://www.github.com/bskinn/sphobjinv
+    https://github.com/bskinn/sphobjinv
 
 **Documentation**
     https://sphobjinv.readthedocs.io/en/stable
@@ -36,7 +36,6 @@ from attr.exceptions import FrozenInstanceError
 from jsonschema.exceptions import ValidationError
 
 import sphobjinv as soi
-
 
 pytestmark = [pytest.mark.api, pytest.mark.local]
 

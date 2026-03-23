@@ -1,4 +1,4 @@
-name: 'RELEASE: Check flake8 noqas'
+name: 'RELEASE: Check docs source files'
 
 on:
   pull_request:
@@ -11,8 +11,8 @@ on:
       - stable
 
 jobs:
-  check_flake8_noqa:
-    name: are all relevant (nofail)
+  ver_placeholder_search:
+    name: 'have no ##VER## markers'
     runs-on: 'ubuntu-latest'
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,15 +25,6 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Install Python
-      uses: actions/setup-python@28f2168f4d98ee0445e3c6321f6e6616c83dd5ec
-      with:
-        python-version: '3.13'
-        cache: 'pip'
-        cache-dependency-path: requirements-ci.txt
-
-    - name: Install tox
-      run: pip install tox
-
-    - name: Run never-fail flake8-with-noqa
-      run: tox -e flake8_noqa
+    - name: Error if any markers found
+      run: |
+        grep -ri '#VER#' doc/source && exit 1 || exit 0
