@@ -8,11 +8,10 @@ requires = [
 [project]
 name = "sphobjinv"
 description = "Sphinx objects.inv Inspection/Manipulation Tool"
-license = {text = "MIT License"}
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [{name = "Brian Skinn", email = "brian.skinn@gmail.com"}]
 classifiers = [
-    "License :: OSI Approved",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Environment :: Console",
     "Framework :: Sphinx",
@@ -38,7 +37,7 @@ requires-python = ">=3.10"
 dependencies = [
     "attrs>=19.2",
     "certifi",
-    "jsonschema>=3.0",
+    "jsonschema>=3.1.1",
 ]
 dynamic = ["version", "readme"]
 
@@ -57,7 +56,6 @@ sphobjinv-textconv = "sphobjinv.cli.core:main_textconv"
 [tool.setuptools]
 package-dir = {"" = "src"}
 platforms = ["any"]
-license-files = ["LICENSE.txt"]
 include-package-data = false
 
 [tool.setuptools.packages.find]
@@ -68,6 +66,7 @@ namespaces = false
 version = {attr = "sphobjinv.version.__version__"}
 
 [tool.black]
+target-version = ["py313"]
 line-length = 88
 include = '''
 (

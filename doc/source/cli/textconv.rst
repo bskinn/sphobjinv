@@ -38,7 +38,7 @@ Ultimately, a textconv requires three things:
       *.inv diff=objects_inv
 
 With |sphobjinv-textconv| configured in this fashion as a textconv for Sphinx
-inventory files, the following should all yield _nearly_ the same output.
+inventory files, the following should all yield *nearly* the same output.
 
 Using ``sphobjinv convert``:
 
@@ -82,4 +82,4 @@ will render correctly in ReadTheDocs builds):
 
     Display brief package version information and exit.
 
-.. versionadded:: ##VER##
+.. versionadded:: 2.4

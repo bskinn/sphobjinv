@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     5 Nov 2017
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -45,9 +45,7 @@ pb_project = re.compile(
     [#][ ]Project:[ ]            # Preamble
     (?P<{HF.Project.value}>.*?)  # Lazy rest of line is project name
     \r?$                         # Ignore possible CR at EOL
-    """.encode(
-        encoding="utf-8"
-    ),
+    """.encode(encoding="utf-8"),
     re.M | re.X,
 )
 
@@ -58,9 +56,7 @@ pb_version = re.compile(
     [#][ ]Version:[ ]            # Preamble
     (?P<{HF.Version.value}>.*?)  # Lazy rest of line is version
     \r?$                         # Ignore possible CR at EOL
-    """.encode(
-        encoding="utf-8"
-    ),
+    """.encode(encoding="utf-8"),
     re.M | re.X,
 )
 

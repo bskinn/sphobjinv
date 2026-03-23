@@ -42,26 +42,24 @@ For internal cross-references, locate `objects.inv` within `build/html`:
 ```none
 $ sphobjinv suggest doc/build/html/objects.inv as_rst -st 58
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Cannot infer intersphinx_mapping from a local objects.inv.
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Project: sphobjinv
-Version: 2.3
+Version: 2.4
 
-220 objects in inventory.
+151 objects in inventory.
 
-------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
-11 results found at/above current threshold of 58.
-
+10 results found at/above current threshold of 58.
 
   Name                                                Score
 ---------------------------------------------------  -------
 :py:property:`sphobjinv.data.SuperDataObj.as_rst`      60
-:py:class:`sphobjinv.cli.parser.PrsConst`              59
 :py:class:`sphobjinv.data.DataFields`                  59
 :py:class:`sphobjinv.data.DataObjBytes`                59
 :py:class:`sphobjinv.data.DataObjStr`                  59
@@ -84,31 +82,31 @@ cross-reference the `linspace` function from numpy (see
 [here][numpy linspace]):
 
 ```none
-$ sphobjinv suggest https://numpy.org/doc/1.26/reference/index.html linspace -su
+$ sphobjinv suggest https://numpy.org/doc/2.4/reference/index.html linspace -su
 
-Attempting https://numpy.org/doc/1.26/reference/index.html ...
+Attempting https://numpy.org/doc/2.4/reference/index.html ...
   ... no recognized inventory.
-Attempting "https://numpy.org/doc/1.26/reference/index.html/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/reference/index.html/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.26/reference/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/reference/objects.inv" ...
   ... HTTP error: 404 Not Found.
-Attempting "https://numpy.org/doc/1.26/objects.inv" ...
+Attempting "https://numpy.org/doc/2.4/objects.inv" ...
   ... inventory found.
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 The intersphinx_mapping for this docset is LIKELY:
 
-  (https://numpy.org/doc/1.26/, None)
+  (https://numpy.org/doc/2.4/, None)
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 Project: NumPy
-Version: 1.26
+Version: 2.4
 
-8152 objects in inventory.
+8456 objects in inventory.
 
-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 
 8 results found at/above current threshold of 75.
 
@@ -154,13 +152,13 @@ inventory creation/modification:
 >>> import sphobjinv as soi
 >>> inv = soi.Inventory('doc/build/html/objects.inv')
 >>> print(inv)
-<Inventory (fname_zlib): sphobjinv v2.3, 220 objects>
+<Inventory (fname_zlib): sphobjinv v2.4, 151 objects>
 >>> inv.project
 'sphobjinv'
 >>> inv.version
-'2.3'
+'2.4'
 >>> inv.objects[0]
-DataObjStr(name='sphobjinv.cli.convert', domain='py', role='module', priority='0', uri='cli/implementation/convert.html#module-$', dispname='-')
+DataObjStr(name='sphobjinv.data', domain='py', role='module', priority='0', uri='api/data.html#module-$', dispname='-')
 
 ```
 
@@ -177,7 +175,7 @@ Available on [PyPI][pypi link target] (`pip install sphobjinv`).
 Source on [GitHub][github repo]. Bug reports and feature requests are welcomed
 at the [Issues][github issue tracker] page there.
 
-Copyright (c) Brian Skinn 2016-2025
+Copyright (c) 2016-2026 Brian Skinn and community contributors
 
 The `sphobjinv` documentation (including docstrings and README) is licensed
 under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
@@ -198,7 +196,7 @@ under a [Creative Commons Attribution 4.0 International License][cc-by 4.0]
 [mit license]: https://opensource.org/licenses/MIT
 [numpy linspace]: https://numpy.org/doc/1.26/reference/generated/numpy.linspace.html
 [pepy badge]: https://pepy.tech/badge/sphobjinv/month
-[pepy link target]: https://pepy.tech/projects/sphobjinv?timeRange=threeMonths&category=version&includeCIDownloads=true&granularity=daily&viewType=chart&versions=2.0.*%2C2.1.*%2C2.2.*%2C2.3.*
+[pepy link target]: https://pepy.tech/projects/sphobjinv?timeRange=threeMonths&category=version&includeCIDownloads=true&granularity=daily&versions=2.3.*%2C2.4*
 [pypi badge]: https://img.shields.io/pypi/v/sphobjinv.svg?logo=pypi]
 [pypi link target]: https://pypi.org/project/sphobjinv
 [python versions badge]: https://img.shields.io/pypi/pyversions/sphobjinv.svg?logo=python

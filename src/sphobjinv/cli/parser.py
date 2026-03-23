@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     15 Nov 2020
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -44,7 +44,8 @@ class PrsConst:
 
     #: Version &c. output blurb
     VER_TXT = (
-        f"\nsphobjinv v{__version__}\n\nCopyright (c) Brian Skinn 2016-2025\n"
+        f"\nsphobjinv v{__version__}\n\n"
+        "Copyright (c) 2016-2026 Brian Skinn and community contributors\n"
         "License: The MIT License\n\n"
         "Bug reports & feature requests:"
         " https://github.com/bskinn/sphobjinv\n"

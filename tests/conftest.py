@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     20 Mar 2019
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -61,9 +61,6 @@ def pytest_addoption(parser):
         ),
     )
     parser.addoption("--nonloc", action="store_true", help="Include nonlocal tests")
-    parser.addoption(
-        "--flake8_ext", action="store_true", help="Include flake8 extensions test"
-    )
 
 
 @pytest.fixture(scope="session")
@@ -158,19 +155,11 @@ def scratch_path(tmp_path, res_path, misc_info, is_win, unix2dos):
     # With the conversion of resources/objects_attrs.txt to Unix EOLs in order to
     # provide for a Unix-testable sdist, on Windows systems this resource needs
     # to be converted to DOS EOLs for consistency.
-    if is_win:
+    if is_win:  # pragma: no cover
         win_path = tmp_path / f"{scr_base}{misc_info.Extensions.DEC.value}"
         win_path.write_bytes(unix2dos(win_path.read_bytes()))
 
     yield tmp_path
-
-
-@pytest.fixture(scope="session")
-def ensure_doc_scratch():
-    """Ensure doc/scratch dir exists, for README shell examples."""
-    (Path(__file__).resolve().parent.parent / "doc" / "scratch").mkdir(
-        parents=True, exist_ok=True
-    )
 
 
 @pytest.fixture(scope="session")
@@ -220,7 +209,7 @@ def sphinx_load_test(sphinx_ifile_load):
         """Perform the 'live' inventory load test."""
         try:
             sphinx_ifile_load(path)
-        except Exception as e:  # noqa: PIE786
+        except Exception as e:  # noqa: PIE786  pragma: no cover
             # An exception here is a failing test, not a test error.
             pytest.fail(e)
 
@@ -265,7 +254,7 @@ def run_cmdline_test(monkeypatch):
             except SystemExit as e:
                 retcode = e.args[0]
                 ok = True
-            else:
+            else:  # pragma: no cover
                 ok = False
 
         # Do all pytesty stuff outside monkeypatch context
@@ -287,7 +276,7 @@ def decomp_cmp_test(misc_info, is_win, unix2dos):
         res_bytes = Path(misc_info.res_decomp_path).read_bytes()
         tgt_bytes = Path(path).read_bytes()  # .replace(b"\r\n", b"\n")
 
-        if is_win:
+        if is_win:  # pragma: no cover
             # Have to explicitly convert these newlines, now that the
             # tests/resource/objects_attrs.txt file is marked 'binary' in
             # .gitattributes
@@ -310,8 +299,8 @@ def attrs_inventory_test():
 
         """
         assert inv.project == "attrs"
-        assert inv.version == "22.1"
-        assert inv.count == 129
+        assert inv.version == "25.4"
+        assert inv.count == 180
         assert inv.source_type
 
     return func

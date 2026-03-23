@@ -12,7 +12,7 @@ The primary CLI for |soi| is implemented using two subcommands of the
   - ``sphobjinv suggest`` (:doc:`docs page <suggest>`), which provides suggestions for
     objects in an inventory matching a desired search term.
 
-As of v##VER##, |soi| also provides an auxiliary entrypoint,
+As of v2.4, |soi| also provides an auxiliary entrypoint,
 ``sphobjinv-textconv`` (:doc:`docs page <textconv>`), which takes one required
 argument: a path to a file on disk. This entrypoint attempts to instantiate an
 |Inventory| with this file and emit its plaintext contents to |stdout| with no

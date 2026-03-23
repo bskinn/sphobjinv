@@ -9,13 +9,13 @@ exec_ns = {}
 exec(Path("src", "sphobjinv", "version.py").read_text(encoding="utf-8"), exec_ns)
 __version__ = exec_ns["__version__"]
 
-version_override = "2.3.1.2"
+version_override = None
 
 
 def readme():
     content = Path("README.md").read_text(encoding="utf-8")
 
-    new_ver = version_override if version_override else __version__
+    new_ver = version_override or __version__
 
     # Helper function
     def content_update(content, pattern, sub):

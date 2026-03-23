@@ -8,7 +8,7 @@ include doc/make.bat doc/Makefile
 
 graft tests
 prune tests/resource
-include tests/resource/objects_attrs* tests/resource/objects_sarge*
+include tests/resource/objects_attrs* tests/resource/objects_sarge* tests/resource/objects_pdfminer*
 
 global-exclude __pycache__/*
 prune **/*.egg-info

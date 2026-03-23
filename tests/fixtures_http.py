@@ -10,7 +10,7 @@ Sphinx |objects.inv| files.
     24 Dec 2025
 
 **Copyright**
-    \(c) Brian Skinn 2016-2025
+    \(c) 2016-2026 Brian Skinn and community contributors
 
 **Source Repository**
     https://github.com/bskinn/sphobjinv
@@ -94,7 +94,7 @@ def resource_http_base_url() -> Generator[str, None, None]:
     """Provide base URL of HTTP server exposing tests/resource/*."""  # noqa: RST213
     resource_dir = Path(__file__).resolve().parent / "resource"
 
-    if not resource_dir.is_dir():
+    if not resource_dir.is_dir():  # pragma: no cover
         raise RuntimeError(
             f"Expected test resource directory not found: {resource_dir}"
         )
@@ -119,7 +119,7 @@ def resource_url(resource_http_base_url: str) -> Callable[[str], str]:
     def _calc_path(rel_path: str) -> str:
         """Calculate the full test-resource URL from a relative URL."""
         # Prevent escaping the resource directory.
-        if ".." in Path(rel_path).parts:
+        if ".." in Path(rel_path).parts:  # pragma: no cover
             raise ValueError("Path must not contain '..'")
 
         # Ensure consistent URL path separators.

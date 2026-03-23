@@ -21,10 +21,12 @@ jobs:
 
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+      with:
+        persist-credentials: false
 
     - name: Install Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@28f2168f4d98ee0445e3c6321f6e6616c83dd5ec
       with:
         python-version: '3.13'
         cache: 'pip'
@@ -33,7 +35,7 @@ jobs:
           requirements-flake8.txt
 
     - name: Install CI requirements
-      run: pip install -r requirements-ci.txt -r requirements-flake8.txt
+      run: pip install -r requirements-ci.txt
 
     - name: Build docs & ensure scratch
       run: |
@@ -42,7 +44,7 @@ jobs:
         mkdir scratch
 
     - name: Run pytest covering entire project tree
-      run: pytest --cov=. --nonloc --flake8_ext
+      run: pytest --cov=. --nonloc
 
     - name: Check 100% test code execution
       run: coverage report --include="tests/*" --fail-under=100
