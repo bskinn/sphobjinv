@@ -467,6 +467,19 @@ class TestFail:
         run_cmdline_test(["convert", "plain", str(scratch_path)], expect=1)
 
     @pytest.mark.timeout(CLI_TEST_TIMEOUT)
+    def test_clifail_convert_nonutf8file(
+        self, scratch_path, run_cmdline_test, monkeypatch
+    ):
+        """Confirm exit code 1 (not a traceback) with non-UTF8 binary input."""
+        monkeypatch.chdir(scratch_path)
+        fname = "binaryfile.inv"
+        Path(fname).write_bytes(bytes(range(256)) * 4)
+
+        with stdio_mgr() as (in_, out_, err_):
+            run_cmdline_test(["convert", "plain", fname], expect=1)
+            assert "Unrecognized" in err_.getvalue()
+
+    @pytest.mark.timeout(CLI_TEST_TIMEOUT)
     def test_clifail_convert_localfile_as_url(
         self, scratch_path, misc_info, run_cmdline_test, check
     ):

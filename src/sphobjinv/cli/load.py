@@ -66,7 +66,7 @@ def import_infile(in_path):
     # Try general import, for zlib or plaintext files
     try:
         inv = Inventory(in_path)
-    except AttributeError:
+    except (AttributeError, UnicodeDecodeError):
         pass  # Punt to JSON attempt
     else:
         return inv
@@ -74,7 +74,7 @@ def import_infile(in_path):
     # Maybe it's JSON
     try:
         inv = Inventory(readjson(in_path))
-    except JSONDecodeError:
+    except (JSONDecodeError, UnicodeDecodeError):
         return None
     else:
         return inv
